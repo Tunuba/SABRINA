@@ -18,7 +18,7 @@ import os
 import struct
 import sys
 
-RAIZ = r"C:\Proyectos\SABRINA"
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXE = open(os.path.join(RAIZ, r"extraido\SLUS_012.08"), "rb").read()
 NIVELES = ["FRW", "S1W", "S2W", "S3W", "E1W", "E2W", "E3W", "J1W", "J2W", "J3W", "W1W", "W2W", "W3W", "H1W", "C1W"]
 CARPETA = {"FR": "FRONT", "H1": "HUB", "C1": "CHAOS", "S": "STONE", "E": "EGYPT", "J": "JAPAN", "W": "WEST"}

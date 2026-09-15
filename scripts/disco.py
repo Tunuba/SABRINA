@@ -16,7 +16,7 @@ import shutil
 import sys
 import xml.etree.ElementTree as ET
 
-RAIZ = r"C:\Proyectos\SABRINA"
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DISCO = os.path.join(RAIZ, "disco")
 NOMBRE = "Sabrina the Teenage Witch - A Twitch in Time! (USA)"
 PISTA1 = os.path.join(DISCO, NOMBRE + " (Track 01).bin")

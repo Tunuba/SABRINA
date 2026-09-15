@@ -18,7 +18,7 @@ import sys
 from PIL import Image
 
 ANCHO, ALTO = 512, 220
-EXTRAIDO = r"C:\Proyectos\SABRINA\extraido"
+EXTRAIDO = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "extraido")
 
 
 def pic_a_imagen(datos):

@@ -1,75 +1,73 @@
 # SABRINA
 
-Taller para modificar *Sabrina the Teenage Witch: A Twitch in Time!* (PlayStation, 2000,
-Asylum Entertainment, SLUS-01208), un juego sin comunidad de mods. Todo corre en esta PC, en el
-emulador PCSX-Redux, sin ventana y manejado desde Python.
+Mods para *Sabrina the Teenage Witch: A Twitch in Time!* (PlayStation, 2000, Asylum Entertainment,
+SLUS-01208), un juego que no tenia comunidad de mods, y las herramientas que se hicieron para
+descifrarlo.
+
+## Jugar
+
+1. Consigue tu propia copia del juego, version USA en formato Redump (un .cue con 97 pistas .bin, o el
+   .7z que las trae) y dejala en la carpeta `disco\` o en tu carpeta de Descargas. El juego no viene en
+   este repositorio.
+2. Doble clic en `ARRANCAR.bat`.
+
+La primera vez instala lo que falte (Python si no esta, el emulador PCSX-Redux), comprueba que la copia
+sea la correcta, le aplica el parche y abre el juego. Deja un acceso directo `Sabrina` en el escritorio
+para las siguientes veces.
+
+Teclado: flechas para moverse, X = X, D = circulo, Z = cuadrado, S = triangulo, Enter = START.
+Un mando de Xbox tambien sirve.
+
+Otras formas de correrlo, desde PowerShell en esta carpeta:
+
+```
+.\arrancar.ps1 -Original       el juego sin mods
+.\arrancar.ps1 -SoloInstalar   deja todo listo sin abrir el juego
+.\arrancar.ps1 -Taller         ademas instala las herramientas para investigar (unos 800 MB)
+```
+
+## Que traen los mods
+
+- Menus y pantalla de carga en espanol.
+- Sabrina no pierde vida.
+- Pantalon azul en todos los niveles.
+
+El parche es `mods\sabrina_todo.ppf`. Tambien sirve con PPF-O-Matic sobre la pista 1 de la imagen.
 
 ## Carpetas
 
-| Carpeta | Que hay | En git |
-|---|---|---|
-| `scripts\` | Todas las herramientas propias (Python, Lua, bash) | si |
-| `notas\` | Hallazgos, capturas y registros | solo los .md |
-| `mods\` | Imagenes y datos de cada mod | si |
-| `herramientas\` | PCSX-Redux, Ghidra 12.1.3, JDK 21, mkpsxiso 2.30, jPSXdec 2.1, Nugget | no |
-| `disco\` | La imagen del juego (97 pistas y .cue) y los discos parchados | no |
-| `extraido\` | Los archivos sacados del disco con dumpsxiso, y `sabrina.xml` con el sector de cada uno | no |
-| `estados\` | Estados guardados del emulador (21 MB cada uno) | no |
-| `prueba_disco\` | Disco de prueba propio para ensayar el armado | no |
+- `scripts\` herramientas propias, en Python y Lua.
+- `mods\` los parches PPF.
+- `notas\FORMATOS.md` todo lo descifrado del juego. `notas\OBJETOS.md` los objetos de cada nivel.
+- `herramientas\`, `disco\`, `extraido\`, `estados\` se crean al instalar y no van al repositorio.
 
-La imagen del juego y lo que se saca de ella no va en git ni se comparte. Un mod se comparte como
-parche.
+## Taller
 
-## Herramientas
-
-- **Emulador**: `herramientas\pcsx-redux`, compilacion nocturna 25363 del 2026-09-13, bajada del
-  manifiesto de distrib.app (`https://distrib.app/storage/manifests/pcsx-redux/dev-win-x64/manifest.json`,
-  el enlace de winget ya no existe). Trae OpenBIOS, asi que no hace falta la BIOS de Sony.
-- **Control remoto**: `scripts\emu.py` arranca el emulador sin ventana con `-no-ui -webserver` y carga
-  `scripts\control.lua`, que agrega rutas HTTP para pulsar botones, contar frames, evaluar Lua y
-  guardar o cargar estados. Captura con `/api/v1/screen/still`, RAM con `/api/v1/cpu/ram/raw`,
-  VRAM con `/api/v1/gpu/vram/raw`.
-- **Compilador MIPS**: en WSL `Ubuntu-24.04`, paquete `gcc-mipsel-linux-gnu`. Nugget en
-  `herramientas\nugget`; compilar con `scripts\compilar_ejemplos.sh` (hay que pasar
-  `PREFIX=mipsel-linux-gnu FORMAT=elf32-tradlittlemips`).
-- **Disco**: `dumpsxiso -l` saca los archivos anotando su sector. `scripts\disco.py` parcha la pista
-  de datos en su sitio, recalculando EDC y ECC (verificado contra sectores originales), y escribe un
-  .cue que reusa las pistas de audio originales.
-
-## Uso rapido
+Con `.\arrancar.ps1 -Taller` quedan mkpsxiso, jPSXdec, Java 21 y Ghidra con el cargador de PS1, y los
+archivos del disco en `extraido\`. Desde `scripts\`:
 
 ```
-cd C:\Proyectos\SABRINA\scripts
-python arrancar_sabrina.py 40                 capturas del arranque cada 5 s
-python explorar.py titulo prueba "CROSS w120 c"   parte de un estado, pulsa y captura
-python mod_carga.py                           mod de la pantalla de carga en espanol
+python armar.py sabrina_todo --es --invencible --ropa   vuelve a armar el disco y el parche
+python ino_obj.py H1W                     modelos de un nivel a OBJ con texturas
+python animar.py SABRun                   animacion de Sabrina en GIF
+python wobj.py S3W                        objetos de un nivel
+python pic.py todos salida                pantallas de carga a PNG
+python ir_a_nivel.py saltar 3 30          salta a un nivel en el emulador
+python prueba_final.py sabrina_todo.cue   arranca el disco desde cero y prueba el dano
 ```
 
-```
-python armar.py sabrina_es_inv --es --invencible   disco con mods y su parche PPF en mods\
-python prueba_final.py sabrina_es_inv.cue         arranca ese disco desde cero y prueba el dano
-python mod_invencible.py probar                   laboratorio de dano con y sin parche
-python contar_paso.py saltar "UP:60" 0x8003401c   cuantas veces pasa el juego por una direccion
-python ppf.py aplicar original.bin parche.ppf salida.bin
-```
+`emu.py` maneja el emulador sin ventana por HTTP (`control.lua`): botones, capturas, RAM, VRAM,
+estados guardados y contadores por direccion. Los estados que usan algunos scripts (`titulo`, `saltar`,
+`nivel_S3`) se crean con `explorar.py` e `ir_a_nivel.py` con `--guardar`.
 
-`explorar.py` explica el formato de los pasos. Estados utiles: `titulo` (menu principal),
-`saltar` (dentro del HUB, jugando), `final_hub` (HUB con el disco en espanol e invencible).
-Un estado guardado trae el ejecutable en la RAM: para probar cambios del ejecutable hay que arrancar
-el disco desde cero (paso `arranque` en `explorar.py`).
+Ghidra sin ventana (unos 5 minutos), desde la carpeta del proyecto:
 
-Ghidra sin ventana (unos 5 minutos):
 ```
-$env:JAVA_HOME = 'C:\Proyectos\SABRINA\herramientas\jdk-21.0.12.1+1'
-herramientas\ghidra_12.1.3_PUBLIC\support\analyzeHeadless.bat C:\Proyectos\SABRINA\ghidra sabrina `
-  -import extraido\SLUS_012.08 -overwrite -scriptPath scripts\ghidra -postScript ExportarTodo.java notas\ghidra
+$env:JAVA_HOME = (Get-ChildItem herramientas -Directory -Filter 'jdk-21*').FullName
+$g = (Get-ChildItem herramientas -Directory -Filter 'ghidra_*_PUBLIC').FullName
+& "$g\support\analyzeHeadless.bat" "$PWD\ghidra" sabrina -import extraido\SLUS_012.08 -overwrite `
+  -scriptPath scripts\ghidra -postScript ExportarTodo.java "$PWD\notas\ghidra"
 ```
 
-## Compartir un mod
-
-Solo el `.ppf` de `mods\`. Se aplica sobre la pista 1 de la imagen Redump con `ppf.py aplicar` o con
-PPF-O-Matic, y se juega con el .cue original apuntando a la pista parchada.
-
-## Lo que ya se sabe del juego
-
-Ver `notas\FORMATOS.md`.
+Para compilar codigo MIPS de PS1 hace falta WSL con `gcc-mipsel-linux-gnu` y Nugget en
+`herramientas\nugget` (ver `scripts\compilar_ejemplos.sh`).

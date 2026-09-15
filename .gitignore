@@ -16,3 +16,5 @@ notas/*.png
 mods/*.png
 __pycache__/
 *.estado
+
+*.lnk

@@ -20,7 +20,7 @@ import struct
 import sys
 from collections import Counter, defaultdict
 
-RAIZ = r"C:\Proyectos\SABRINA"
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXE = open(os.path.join(RAIZ, r"extraido\SLUS_012.08"), "rb").read()
 NIVELES = ["FRW", "S1W", "S2W", "S3W", "E1W", "E2W", "E3W", "J1W", "J2W", "J3W", "W1W", "W2W", "W3W", "H1W", "C1W"]
 ESPECIALES = {4: "especial 4", 0x12: "especial 0x12", 0x13: "especial 0x13", 0x17: "sonido"}

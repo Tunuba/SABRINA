@@ -9,7 +9,7 @@ import os
 import struct
 import sys
 
-RAIZ = r"C:\Proyectos\SABRINA"
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def leer_ani(nombre):

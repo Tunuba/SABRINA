@@ -5,7 +5,7 @@
 3. Lo desarma con dumpsxiso y lo vuelve a armar desde el XML que genera.
 4. Compara el disco rearmado con el original, byte a byte.
 
-Uso: python prueba_disco.py        (todo queda en C:\\Proyectos\\SABRINA\\prueba_disco)
+Uso: python prueba_disco.py        (todo queda en prueba_disco)
 """
 import hashlib
 import os

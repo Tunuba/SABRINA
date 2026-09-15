@@ -8,7 +8,7 @@ Uso: python explorar.py <estado_inicial|arranque> <nombre> <pasos> [--guardar es
   arranque en vez de un estado arranca el disco desde cero.
 Ejemplo: python explorar.py titulo nuevo "CROSS w120 c w120 c"
 Las capturas quedan en notas\\capturas\\<nombre>_NN.png y una hoja con todas en <nombre>_hoja.png
-Los estados viven en C:\\Proyectos\\SABRINA\\estados\\<nombre>.estado
+Los estados viven en estados\\<nombre>.estado
 """
 import os
 import sys

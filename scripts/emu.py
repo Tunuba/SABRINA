@@ -2,7 +2,7 @@
 
 Ejemplo
     from emu import Emu
-    with Emu(iso=r"C:\\Proyectos\\SABRINA\\disco\\sabrina.cue") as e:
+    with Emu(iso=os.path.join(RAIZ, "disco", "sabrina_todo.cue")) as e:
         e.esperar(300)              # 5 segundos de juego
         e.pulsar("START")
         e.captura("titulo.png")
@@ -17,7 +17,7 @@ import time
 import urllib.parse
 import urllib.request
 
-RAIZ = r"C:\Proyectos\SABRINA"
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REDUX = os.path.join(RAIZ, "herramientas", "pcsx-redux")
 CONTROL = os.path.join(RAIZ, "scripts", "control.lua")
 LOGS = os.path.join(RAIZ, "notas", "logs")

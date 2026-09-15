@@ -5,7 +5,7 @@ Uso: python cabeceras.py
 import glob
 import os
 
-EXT = os.path.join(r"C:\Proyectos\SABRINA\extraido")
+EXT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "extraido")
 
 for patron in ("SLUS_012.08", r"GRAPHICS\HUB\H1.PIC", r"GRAPHICS\HUB\H1.TEX", r"GRAPHICS\HUB\H1W.INO",
                r"WRLDDATA\HUB\H1W.BIN", r"ANIMS\HUB.ANI", r"ANIMS\SABRINA.ANI", r"SOUND\HUB\H1W.VHD"):
