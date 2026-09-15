@@ -1,12 +1,1036 @@
 funcion	tamano	estado	detalle
 ActivarObjetosCercanos	544	DISTINTO	ActivarObjetosCercanos: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
-BitDeZona	700	DISTINTO	BitDeZona: 0 de 5 capturas y 2 de 65 variantes iguales -> DISTINTO
+ActualizarBarraVida	88	DISTINTO	ActualizarBarraVida: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+Afirmar	48	IGUAL	Afirmar: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+ArchivoAbrir	140	DISTINTO	ArchivoAbrir: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+ArchivoCerrar	152	IGUAL	ArchivoCerrar: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+ArchivoIniciar	120	IGUAL	ArchivoIniciar: 2 de 2 capturas y 24 de 24 variantes iguales -> IGUAL
+ArchivoLeer	272	IGUAL	ArchivoLeer: 2 de 2 capturas y 6 de 6 variantes iguales -> IGUAL
+BitDeZona	700	DISTINTO	BitDeZona: 0 de 9 capturas y 3 de 127 variantes iguales -> DISTINTO
+BuclePrincipal	1492	SIN_CAPTURAS	
+CargarANI	188	NO_COMPILA	src/auto/CargarANI.c:27:30: error: invalid operands to binary - (have ‘s32’ {aka ‘int’} and ‘u8 *’ {aka ‘unsigned char *
+CargarArchivoEntero	68	IGUAL	CargarArchivoEntero: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+CargarINO	184	DISTINTO	CargarINO: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+CargarSonidoNivel	468	IGUAL	CargarSonidoNivel: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+CargarWRLDDATA	308	DISTINTO	CargarWRLDDATA: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+CeldaDePosicion	92	YA_HECHA	
+CrearObjetoMundo	792	IGUAL	CrearObjetoMundo: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+CrearParticula	952	NO_COMPILA	src/auto/CrearParticula.c:5:42: error: array type has incomplete element type ‘struct _struct_tabla_efectos_0x14’
+CrearRecogible	608	NO_COMPILA	src/auto/CrearRecogible.c:97:9: error: ‘sp130’ undeclared (first use in this function); did you mean ‘sp30’?
+D_800609B0	208	SIN_CAPTURAS	
+DanoPorEnemigo	816	DISTINTO	DanoPorEnemigo: 0 de 2 capturas y 0 de 15 variantes iguales -> DISTINTO
 DanoPorSuelo	1864	DISTINTO	DanoPorSuelo: 1 de 2 capturas y 16 de 30 variantes iguales -> DISTINTO
 DibujarCeldasVisibles	508	NO_COMPILA	src/auto/DibujarCeldasVisibles.c:28:14: error: invalid type argument of unary ‘*’ (have ‘int’)
 DibujarTexto	900	DISTINTO	DibujarTexto: 0 de 2 capturas y 0 de 24 variantes iguales -> DISTINTO
 FisicaObjeto	2436	NO_COMPILA	src/auto/FisicaObjeto.c:215:51: error: ‘spB8’ undeclared (first use in this function); did you mean ‘spBC’?
+HerramientaArmarCuadricula	432	SIN_CAPTURAS	
+HerramientaArmarModelos	680	SIN_CAPTURAS	
+HerramientaConvertirPIC	452	SIN_CAPTURAS	
+HerramientaConvertirTEX	204	SIN_CAPTURAS	
+ImprimirDepuracion	960	NO_COMPILA	src/auto/ImprimirDepuracion.c:54:18: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
+IniciarEnemigoTipo15	808	DISTINTO	IniciarEnemigoTipo15: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+IniciarRecogibleTipo18	112	DISTINTO	IniciarRecogibleTipo18: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+IniciarRecogibleTipo19	112	DISTINTO	IniciarRecogibleTipo19: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+IniciarRecogibleTipo23	112	DISTINTO	IniciarRecogibleTipo23: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+IniciarRecogibleTipo4	112	DISTINTO	IniciarRecogibleTipo4: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+LeerCuadriculaINO	312	NO_COMPILA	src/auto/LeerCuadriculaINO.c:31:27: error: ‘sp1E’ undeclared (first use in this function); did you mean ‘sp1C’?
+LeerLetraINO	120	DISTINTO	LeerLetraINO: 0 de 2 capturas y 0 de 27 variantes iguales -> DISTINTO
+LeerMAO	432	NO_COMPILA	src/auto/LeerMAO.c:29:59: error: invalid operands to binary - (have ‘void *’ and ‘u8 *’ {aka ‘unsigned char *’})
+LeerModelosINO	380	DISTINTO	LeerModelosINO: 1 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+LeerNodoModelo	888	NO_COMPILA	src/auto/LeerNodoModelo.c:18:14: error: ‘saved_reg_s1’ undeclared (first use in this function)
+LeerParticulasINO	112	DISTINTO	LeerParticulasINO: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+LeerSpritesINO	284	DISTINTO	LeerSpritesINO: 0 de 2 capturas y 0 de 20 variantes iguales -> DISTINTO
+Liberar	716	DISTINTO	Liberar: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+MatrizDesdeAngulos	548	IGUAL	MatrizDesdeAngulos: 2 de 2 capturas y 1 de 1 variantes iguales -> IGUAL
+PantallasLegales	456	SIN_CAPTURAS	
+PuntoEnTriangulo	516	NO_COMPILA	src/auto/PuntoEnTriangulo.c:35:15: error: invalid type argument of unary ‘*’ (have ‘int’)
 RecogibleNoTomado	84	YA_HECHA	
+RegistrarRecogible	928	DISTINTO	RegistrarRecogible: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+RegistrarTextura	200	DISTINTO	RegistrarTextura: 0 de 2 capturas y 1 de 60 variantes iguales -> DISTINTO
+ReproducirSTR	184	SIN_CAPTURAS	
+Reservar	584	DISTINTO	Reservar: 0 de 2 capturas y 0 de 43 variantes iguales -> DISTINTO
+SubirAVRAM	96	DISTINTO	SubirAVRAM: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+TexturaPorIndice	88	DISTINTO	TexturaPorIndice: 0 de 2 capturas y 36 de 60 variantes iguales -> DISTINTO
+TocarSonido	444	DISTINTO	TocarSonido: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80010000	48	SIN_CAPTURAS	
+func_80010604	8	SIN_CAPTURAS	
+func_8001060C	8	SIN_CAPTURAS	
+func_80010614	8	SIN_CAPTURAS	
+func_8001061C	8	SIN_CAPTURAS	
+func_80010624	8	SIN_CAPTURAS	
+func_8001062C	68	SIN_CAPTURAS	
+func_80010670	88	SIN_CAPTURAS	
+func_800106C8	76	SIN_CAPTURAS	
+func_80010880	160	DISTINTO	func_80010880: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80010920	696	NO_COMPILA	src/auto/func_80010920.c:16:39: error: array type has incomplete element type ‘struct _struct_D_80063534_0x30’
 func_80010BD8	796	NO_COMPILA	src/auto/func_80010BD8.c:7:39: error: array type has incomplete element type ‘struct _struct_D_80063508_0x10’
 func_800112C0	284	NO_COMPILA	src/auto/func_800112C0.c:13:58: error: ‘printf’ undeclared here (not in a function)
 func_800113DC	624	NO_COMPILA	src/auto/func_800113DC.c:55:31: error: invalid use of void expression
 func_8001164C	32	IGUAL	func_8001164C: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8001166C	152	DISTINTO	func_8001166C: 0 de 2 capturas y 3 de 60 variantes iguales -> DISTINTO
+func_80011704	152	DISTINTO	func_80011704: 0 de 2 capturas y 4 de 60 variantes iguales -> DISTINTO
+func_8001179C	28	IGUAL	func_8001179C: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800117B8	128	IGUAL	func_800117B8: 2 de 2 capturas y 25 de 25 variantes iguales -> IGUAL
+func_80011838	24	SIN_CAPTURAS	
+func_80011850	224	DISTINTO	func_80011850: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80011930	560	DISTINTO	func_80011930: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+func_80011B60	572	DISTINTO	func_80011B60: 0 de 2 capturas y 1 de 3 variantes iguales -> DISTINTO
+func_80011D9C	640	DISTINTO	func_80011D9C: 0 de 2 capturas y 0 de 1 variantes iguales -> DISTINTO
+func_8001201C	36	DISTINTO	func_8001201C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80012040	20	SIN_CAPTURAS	
+func_80012054	64	IGUAL	func_80012054: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80012094	72	DISTINTO	func_80012094: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800120DC	48	SIN_CAPTURAS	
+func_8001210C	36	SIN_CAPTURAS	
+func_80012130	688	NO_COMPILA	src/auto/func_80012130.c:43:26: error: ‘func_800123E0’ undeclared (first use in this function); did you mean ‘func_80012
+func_800123E0	608	NO_COMPILA	src/auto/func_800123E0.c:40:26: error: called object is not a function or function pointer
+func_80012640	336	SIN_CAPTURAS	
+func_80012790	316	IGUAL	func_80012790: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800128CC	52	DISTINTO	func_800128CC: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80012900	324	DISTINTO	func_80012900: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80012A44	160	SIN_CAPTURAS	
+func_80012AE4	36	SIN_CAPTURAS	
+func_80012B0C	372	SIN_CAPTURAS	
+func_80012C80	92	SIN_CAPTURAS	
+func_80012CDC	152	SIN_CAPTURAS	
+func_80012D74	104	NO_COMPILA	src/auto/func_80012D74.c:12:43: error: ‘printf’ undeclared here (not in a function)
+func_80012DDC	144	DISTINTO	func_80012DDC: 1 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80012ECC	96	DISTINTO	func_80012ECC: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80012F2C	184	SIN_CAPTURAS	
+func_80012FE4	172	NO_COMPILA	src/auto/func_80012FE4.c:16:54: error: ‘printf’ undeclared here (not in a function)
+func_80013090	92	DISTINTO	func_80013090: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_800130EC	112	NO_COMPILA	src/auto/func_800130EC.c:12:43: error: ‘printf’ undeclared here (not in a function)
+func_8001315C	192	NO_COMPILA	src/auto/func_8001315C.c:12:46: error: ‘printf’ undeclared here (not in a function)
+func_8001321C	1272	NO_COMPILA	src/auto/func_8001321C.c:60:46: error: ‘printf’ undeclared here (not in a function)
+func_80013714	504	SIN_CAPTURAS	
+func_8001390C	236	SIN_CAPTURAS	
+func_800139F8	236	SIN_CAPTURAS	
+func_80013AE4	324	SIN_CAPTURAS	
+func_80013C28	252	SIN_CAPTURAS	
+func_80013D24	40	SIN_CAPTURAS	
+func_800140BC	24	IGUAL	func_800140BC: 2 de 2 capturas y 35 de 35 variantes iguales -> IGUAL
+func_800140DC	40	SIN_CAPTURAS	
+func_8001410C	20	SIN_CAPTURAS	
+func_8001412C	20	SIN_CAPTURAS	
+func_8001414C	20	SIN_CAPTURAS	
+func_8001416C	20	IGUAL	func_8001416C: 2 de 2 capturas y 32 de 32 variantes iguales -> IGUAL
+func_8001418C	20	SIN_CAPTURAS	
+func_800141AC	20	SIN_CAPTURAS	
+func_800141CC	20	SIN_CAPTURAS	
+func_800142FC	12	SIN_CAPTURAS	
+func_800143E4	16	SIN_CAPTURAS	
+func_800143F4	16	SIN_CAPTURAS	
+func_800144C4	156	SIN_CAPTURAS	
+func_80014560	56	SIN_CAPTURAS	
+func_80014598	52	SIN_CAPTURAS	
+func_80014670	256	SIN_CAPTURAS	
+func_80014774	412	SIN_CAPTURAS	
+func_80014910	120	SIN_CAPTURAS	
+func_80014988	56	SIN_CAPTURAS	
+func_800149C0	104	SIN_CAPTURAS	
+func_80014A28	64	SIN_CAPTURAS	
+func_80014A6C	16	SIN_CAPTURAS	
+func_80014AEC	20	IGUAL	func_80014AEC: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80014B00	20	IGUAL	func_80014B00: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80014B4C	52	DISTINTO	func_80014B4C: 1 de 2 capturas y 19 de 60 variantes iguales -> DISTINTO
+func_80014F10	48	IGUAL	func_80014F10: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80014FF0	56	DISTINTO	func_80014FF0: 2 de 2 capturas y 31 de 33 variantes iguales -> DISTINTO
+func_800150F0	52	DISTINTO	func_800150F0: 0 de 2 capturas y 6 de 32 variantes iguales -> DISTINTO
+func_80016170	60	SIN_CAPTURAS	
+func_800161BC	12	SIN_CAPTURAS	
+func_800161C8	12	SIN_CAPTURAS	
+func_800161D4	152	DISTINTO	func_800161D4: 1 de 2 capturas y 27 de 47 variantes iguales -> DISTINTO
+func_8001626C	376	DISTINTO	func_8001626C: 0 de 2 capturas y 0 de 48 variantes iguales -> DISTINTO
+func_800163E4	216	SIN_CAPTURAS	
+func_800164BC	464	DISTINTO	func_800164BC: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001668C	328	SIN_CAPTURAS	
+func_800167D4	160	SIN_CAPTURAS	
+func_80016874	120	SIN_CAPTURAS	
+func_800168EC	36	SIN_CAPTURAS	
+func_80016910	48	SIN_CAPTURAS	
+func_80016940	48	SIN_CAPTURAS	
+func_80016970	48	DISTINTO	func_80016970: 0 de 2 capturas y 0 de 35 variantes iguales -> DISTINTO
+func_800169A0	52	SIN_CAPTURAS	
+func_800169D4	48	SIN_CAPTURAS	
+func_80016A04	16	IGUAL	func_80016A04: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80016A14	24	IGUAL	func_80016A14: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80016A2C	108	DISTINTO	func_80016A2C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80016A98	44	SIN_CAPTURAS	
+func_80016AC4	36	SIN_CAPTURAS	
+func_80016AF4	88	SIN_CAPTURAS	
+func_80016B4C	384	NO_COMPILA	src/auto/func_80016B4C.c:56:23: error: invalid type argument of unary ‘*’ (have ‘u32’ {aka ‘unsigned int’})
+func_80016CCC	172	DISTINTO	func_80016CCC: 0 de 2 capturas y 2 de 35 variantes iguales -> DISTINTO
+func_80016D78	36	SIN_CAPTURAS	
+func_80016DA0	76	SIN_CAPTURAS	
+func_80016DEC	20	SIN_CAPTURAS	
+func_80016E00	16	IGUAL	func_80016E00: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80016E1C	284	SIN_CAPTURAS	
+func_80016F38	544	SIN_CAPTURAS	
+func_80017158	116	SIN_CAPTURAS	
+func_800171CC	312	SIN_CAPTURAS	
+func_80017304	16	SIN_CAPTURAS	
+func_800175F4	76	SIN_CAPTURAS	
+func_800177B4	128	SIN_CAPTURAS	
+func_80017B5C	24	SIN_CAPTURAS	
+func_80017B7C	12	SIN_CAPTURAS	
+func_80017B8C	48	SIN_CAPTURAS	
+func_80017BC0	172	SIN_CAPTURAS	
+func_80017C6C	80	SIN_CAPTURAS	
+func_80017CBC	40	SIN_CAPTURAS	
+func_80017CE4	40	SIN_CAPTURAS	
+func_80017D3C	68	DISTINTO	func_80017D3C: 0 de 2 capturas y 0 de 30 variantes iguales -> DISTINTO
+func_80017D80	468	NO_COMPILA	src/auto/func_80017D80.c:32:9: error: ‘spB0’ undeclared (first use in this function)
+func_80018218	144	SIN_CAPTURAS	
+func_800182A8	352	DISTINTO	func_800182A8: 0 de 2 capturas y 0 de 30 variantes iguales -> DISTINTO
+func_80018408	128	DISTINTO	func_80018408: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80018488	288	DISTINTO	func_80018488: 0 de 2 capturas y 0 de 34 variantes iguales -> DISTINTO
+func_800185A8	200	SIN_CAPTURAS	
+func_800188C4	224	NO_COMPILA	src/auto/func_800188C4.c:22:9: error: ‘spAC’ undeclared (first use in this function); did you mean ‘spA8’?
+func_800189A4	352	DISTINTO	func_800189A4: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80018C8C	44	DISTINTO	func_80018C8C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80018CB8	132	SIN_CAPTURAS	
+func_800190C0	280	SIN_CAPTURAS	
+func_800191D8	92	DISTINTO	func_800191D8: 0 de 2 capturas y 0 de 15 variantes iguales -> DISTINTO
+func_80019234	84	DISTINTO	func_80019234: 0 de 2 capturas y 5 de 31 variantes iguales -> DISTINTO
+func_80019288	236	DISTINTO	func_80019288: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80019374	132	DISTINTO	func_80019374: 0 de 2 capturas y 0 de 10 variantes iguales -> DISTINTO
+func_800193F8	108	SIN_CAPTURAS	
+func_80019464	184	SIN_CAPTURAS	
+func_8001951C	540	SIN_CAPTURAS	
+func_80019738	172	SIN_CAPTURAS	
+func_800197E4	56	SIN_CAPTURAS	
+func_8001981C	1000	NO_COMPILA	src/auto/func_8001981C.c:49:5: error: ‘func_80046B90’ undeclared here (not in a function)
+func_80019C04	192	DISTINTO	func_80019C04: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80019CC4	84	DISTINTO	func_80019CC4: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80019D18	104	IGUAL	func_80019D18: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80019D80	572	IGUAL	func_80019D80: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80019FBC	332	SIN_CAPTURAS	
+func_8001A108	288	SIN_CAPTURAS	
+func_8001A228	664	SIN_CAPTURAS	
+func_8001A4C0	352	SIN_CAPTURAS	
+func_8001A620	72	SIN_CAPTURAS	
+func_8001A668	236	SIN_CAPTURAS	
+func_8001A754	1668	SIN_CAPTURAS	
+func_8001ADD8	348	SIN_CAPTURAS	
+func_8001B000	200	SIN_CAPTURAS	
+func_8001B0C8	972	SIN_CAPTURAS	
+func_8001B494	68	DISTINTO	func_8001B494: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001B5F8	8	SIN_CAPTURAS	
+func_8001B600	152	SIN_CAPTURAS	
+func_8001B698	808	SIN_CAPTURAS	
+func_8001B9C0	776	SIN_CAPTURAS	
+func_8001BE8C	256	IGUAL	func_8001BE8C: 2 de 2 capturas y 57 de 57 variantes iguales -> IGUAL
+func_8001BF8C	120	IGUAL	func_8001BF8C: 2 de 2 capturas y 55 de 55 variantes iguales -> IGUAL
+func_8001C004	204	IGUAL	func_8001C004: 2 de 2 capturas y 53 de 53 variantes iguales -> IGUAL
+func_8001C0D0	176	DISTINTO	func_8001C0D0: 2 de 2 capturas y 9 de 57 variantes iguales -> DISTINTO
+func_8001C180	84	IGUAL	func_8001C180: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+func_8001C1D4	172	DISTINTO	func_8001C1D4: 0 de 2 capturas y 1 de 12 variantes iguales -> DISTINTO
+func_8001C280	80	SIN_CAPTURAS	
+func_8001C2D0	52	SIN_CAPTURAS	
+func_8001C304	56	IGUAL	func_8001C304: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8001C33C	84	IGUAL	func_8001C33C: 2 de 2 capturas y 10 de 10 variantes iguales -> IGUAL
+func_8001C390	52	SIN_CAPTURAS	
+func_8001C3C4	64	DISTINTO	func_8001C3C4: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001C404	88	GTE	
+func_8001C45C	824	DISTINTO	func_8001C45C: 0 de 2 capturas y 0 de 13 variantes iguales -> DISTINTO
+func_8001C794	64	DISTINTO	func_8001C794: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001CB4C	704	SIN_CAPTURAS	
+func_8001D518	60	DISTINTO	func_8001D518: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001D554	108	SIN_CAPTURAS	
+func_8001D5C0	440	SIN_CAPTURAS	
+func_8001D778	372	DISTINTO	func_8001D778: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001D8EC	1664	DISTINTO	func_8001D8EC: 0 de 2 capturas y 3 de 15 variantes iguales -> DISTINTO
+func_8001DF6C	212	SIN_CAPTURAS	
+func_8001E040	44	SIN_CAPTURAS	
+func_8001E06C	248	DISTINTO	func_8001E06C: 0 de 2 capturas y 0 de 12 variantes iguales -> DISTINTO
+func_8001E164	204	DISTINTO	func_8001E164: 2 de 2 capturas y 25 de 26 variantes iguales -> DISTINTO
+func_8001E230	172	IGUAL	func_8001E230: 2 de 2 capturas y 26 de 26 variantes iguales -> IGUAL
+func_8001E2DC	136	IGUAL	func_8001E2DC: 2 de 2 capturas y 14 de 14 variantes iguales -> IGUAL
+func_8001E588	544	IGUAL	func_8001E588: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8001E7A8	332	IGUAL	func_8001E7A8: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8001E8F4	164	IGUAL	func_8001E8F4: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8001E998	68	IGUAL	func_8001E998: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8001E9DC	8	IGUAL	func_8001E9DC: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8001ED9C	72	DISTINTO	func_8001ED9C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001EDE4	1112	DISTINTO	func_8001EDE4: 0 de 2 capturas y 0 de 26 variantes iguales -> DISTINTO
+func_8001F23C	196	DISTINTO	func_8001F23C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001F300	52	DISTINTO	func_8001F300: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001F334	44	IGUAL	func_8001F334: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8001F360	188	IGUAL	func_8001F360: 2 de 2 capturas y 25 de 25 variantes iguales -> IGUAL
+func_8001F41C	140	DISTINTO	func_8001F41C: 0 de 2 capturas y 0 de 23 variantes iguales -> DISTINTO
+func_8001F518	12	DISTINTO	func_8001F518: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8001F524	420	SIN_CAPTURAS	
+func_8001F6C8	884	GTE	
+func_8001FA3C	544	GTE	
+func_8001FC5C	152	IGUAL	func_8001FC5C: 2 de 2 capturas y 31 de 31 variantes iguales -> IGUAL
+func_8001FCF4	52	DISTINTO	func_8001FCF4: 0 de 2 capturas y 0 de 10 variantes iguales -> DISTINTO
+func_8001FD28	40	DISTINTO	func_8001FD28: 0 de 2 capturas y 0 de 10 variantes iguales -> DISTINTO
+func_8001FD50	1348	GTE	
+func_80020294	604	M2C_FALLA	Cannot find branch target func_80020294
+func_800204F0	496	GTE	
+func_800206E0	8	IGUAL	func_800206E0: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800206E8	8	IGUAL	func_800206E8: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800206F0	116	DISTINTO	func_800206F0: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80020764	72	DISTINTO	func_80020764: 0 de 2 capturas y 0 de 33 variantes iguales -> DISTINTO
+func_800207AC	108	IGUAL	func_800207AC: 2 de 2 capturas y 6 de 6 variantes iguales -> IGUAL
+func_80020818	560	DISTINTO	func_80020818: 0 de 2 capturas y 1 de 60 variantes iguales -> DISTINTO
+func_80021120	112	DISTINTO	func_80021120: 1 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80021190	68	SIN_CAPTURAS	
+func_800211D4	256	DISTINTO	func_800211D4: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800212D4	204	SIN_CAPTURAS	
+func_800213A0	412	SIN_CAPTURAS	
+func_8002153C	660	SIN_CAPTURAS	
+func_800217D0	260	DISTINTO	func_800217D0: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800218D4	244	DISTINTO	func_800218D4: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_800219C8	48	IGUAL	func_800219C8: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_800219F8	56	DISTINTO	func_800219F8: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80021A30	100	IGUAL	func_80021A30: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80021A94	184	SIN_CAPTURAS	
+func_80021B4C	240	NO_COMPILA	src/auto/func_80021B4C.c:36:55: error: ‘subroutine_arg3’ undeclared (first use in this function)
+func_80021C3C	12	IGUAL	func_80021C3C: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80021C48	156	SIN_CAPTURAS	
+func_80021CE4	96	NO_COMPILA	src/auto/func_80021CE4.c:19:15: error: invalid type argument of unary ‘*’ (have ‘int’)
+func_80021D44	272	DISTINTO	func_80021D44: 2 de 2 capturas y 11 de 27 variantes iguales -> DISTINTO
+func_80021E54	284	DISTINTO	func_80021E54: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+func_80021F70	236	IGUAL	func_80021F70: 2 de 2 capturas y 29 de 29 variantes iguales -> IGUAL
+func_8002205C	168	IGUAL	func_8002205C: 2 de 2 capturas y 22 de 22 variantes iguales -> IGUAL
+func_80022104	136	IGUAL	func_80022104: 2 de 2 capturas y 7 de 7 variantes iguales -> IGUAL
+func_8002218C	28	DISTINTO	func_8002218C: 0 de 2 capturas y 1 de 27 variantes iguales -> DISTINTO
+func_800221A8	84	IGUAL	func_800221A8: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+func_800221FC	96	IGUAL	func_800221FC: 2 de 2 capturas y 59 de 59 variantes iguales -> IGUAL
+func_8002225C	60	IGUAL	func_8002225C: 2 de 2 capturas y 24 de 24 variantes iguales -> IGUAL
+func_80022298	120	IGUAL	func_80022298: 2 de 2 capturas y 22 de 22 variantes iguales -> IGUAL
+func_80022310	216	SIN_CAPTURAS	
+func_800223E8	100	NO_COMPILA	src/auto/func_800223E8.c:17:16: error: ‘sp50’ undeclared (first use in this function); did you mean ‘sp20’?
+func_8002244C	108	SIN_CAPTURAS	
+func_800224B8	112	SIN_CAPTURAS	
+func_80022528	60	DISTINTO	func_80022528: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80022564	176	DISTINTO	func_80022564: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80022614	772	DISTINTO	func_80022614: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80022918	692	DISTINTO	func_80022918: 0 de 1 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80022BCC	384	NO_COMPILA	src/auto/func_80022BCC.c:131:30: error: invalid type argument of unary ‘*’ (have ‘int’)
+func_80022D4C	268	NO_COMPILA	src/auto/func_80022D4C.c:37:26: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
+func_80022E58	156	NO_COMPILA	src/auto/func_80022E58.c:8:42: error: ‘func_80022BCC’ undeclared here (not in a function)
+func_80022EF4	140	DISTINTO	func_80022EF4: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80022FD8	100	DISTINTO	func_80022FD8: 0 de 1 capturas y 13 de 30 variantes iguales -> DISTINTO
+func_8002303C	1600	DISTINTO	func_8002303C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8002367C	1136	NO_COMPILA	src/auto/func_8002367C.c:120:13: error: ‘default’ label not within a switch statement
+func_80023AEC	80	DISTINTO	func_80023AEC: 1 de 2 capturas y 30 de 60 variantes iguales -> DISTINTO
+func_80023B3C	768	DISTINTO	func_80023B3C: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+func_80023E3C	408	SIN_CAPTURAS	
+func_80023FD4	576	SIN_CAPTURAS	
+func_80024294	108	SIN_CAPTURAS	
+func_80024300	40	M2C_FALLA	Cannot find jtbl target caseD_0
+func_80024444	12	DISTINTO	func_80024444: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80024450	284	SIN_CAPTURAS	
+func_800249B8	20	DISTINTO	func_800249B8: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800249CC	124	DISTINTO	func_800249CC: 0 de 2 capturas y 0 de 17 variantes iguales -> DISTINTO
+func_80024A48	316	GTE	
+func_80024DE4	8	SIN_CAPTURAS	
+func_80024DEC	8	SIN_CAPTURAS	
+func_80024DF4	8	IGUAL	func_80024DF4: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80024DFC	368	NO_COMPILA	src/auto/func_80024DFC.c:22:14: error: ‘saved_reg_s5’ undeclared (first use in this function)
+func_80024F6C	8	IGUAL	func_80024F6C: 1 de 1 capturas y 30 de 30 variantes iguales -> IGUAL
+func_80024F74	8	SIN_CAPTURAS	
+func_80024F84	8	SIN_CAPTURAS	
+func_80024F8C	104	IGUAL	func_80024F8C: 2 de 2 capturas y 1 de 1 variantes iguales -> IGUAL
+func_80024FF4	96	IGUAL	func_80024FF4: 2 de 2 capturas y 1 de 1 variantes iguales -> IGUAL
+func_8002505C	8	IGUAL	func_8002505C: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80025064	8	IGUAL	func_80025064: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8002506C	492	DISTINTO	func_8002506C: 1 de 1 capturas y 6 de 12 variantes iguales -> DISTINTO
+func_80025258	72	IGUAL	func_80025258: 2 de 2 capturas y 22 de 22 variantes iguales -> IGUAL
+func_800252A0	1088	DISTINTO	func_800252A0: 1 de 2 capturas y 0 de 18 variantes iguales -> DISTINTO
+func_800256E0	188	NO_COMPILA	src/auto/func_800256E0.c:25:52: error: ‘func_8002579C’ undeclared (first use in this function); did you mean ‘func_80025
+func_8002579C	8	SIN_CAPTURAS	
+func_800257A4	80	DISTINTO	func_800257A4: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800257F4	368	IGUAL	func_800257F4: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80025964	68	DISTINTO	func_80025964: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800259A8	104	IGUAL	func_800259A8: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80025A10	400	DISTINTO	func_80025A10: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80025BA0	240	NO_COMPILA	src/auto/func_80025BA0.c:10:5: error: ‘func_80027368’ undeclared here (not in a function)
+func_80025C90	280	SIN_CAPTURAS	
+func_80025DA8	44	SIN_CAPTURAS	
+func_80025DD4	20	SIN_CAPTURAS	
+func_80025EF8	820	NO_COMPILA	src/auto/func_80025EF8.c:47:17: error: too few arguments to function ‘D_8006CFA4’
+func_8002622C	528	DISTINTO	func_8002622C: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_8002643C	632	DISTINTO	func_8002643C: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_800266B4	144	IGUAL	func_800266B4: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80026744	40	DISTINTO	func_80026744: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80026778	168	SIN_CAPTURAS	
+func_80026820	1016	SIN_CAPTURAS	
+func_80026C18	28	SIN_CAPTURAS	
+func_80026C34	200	SIN_CAPTURAS	
+func_80026CFC	84	SIN_CAPTURAS	
+func_80026D50	96	SIN_CAPTURAS	
+func_80026DB0	20	SIN_CAPTURAS	
+func_80026DC4	32	SIN_CAPTURAS	
+func_80026DE4	32	SIN_CAPTURAS	
+func_80026E04	32	SIN_CAPTURAS	
+func_80026E24	20	SIN_CAPTURAS	
+func_80026E3C	12	SIN_CAPTURAS	
+func_80026E48	132	SIN_CAPTURAS	
+func_80026ECC	624	SIN_CAPTURAS	
+func_8002713C	56	SIN_CAPTURAS	
+func_80027174	212	SIN_CAPTURAS	
+func_80027248	104	SIN_CAPTURAS	
+func_800272B0	152	SIN_CAPTURAS	
+func_80027348	32	SIN_CAPTURAS	
+func_80027368	72	DISTINTO	func_80027368: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_800273B0	216	DISTINTO	func_800273B0: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80027488	172	DISTINTO	func_80027488: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80027534	196	DISTINTO	func_80027534: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_800275F8	916	NO_COMPILA	src/auto/func_800275F8.c:43:9: error: too few arguments to function ‘D_8006CF90’
+func_80027998	32	SIN_CAPTURAS	
+func_800279B8	76	IGUAL	func_800279B8: 2 de 2 capturas y 34 de 34 variantes iguales -> IGUAL
+func_80027A04	204	DISTINTO	func_80027A04: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80027AD0	248	SIN_CAPTURAS	
+func_80027BC8	212	SIN_CAPTURAS	
+func_80027C9C	168	SIN_CAPTURAS	
+func_80027D44	56	SIN_CAPTURAS	
+func_80027D7C	116	SIN_CAPTURAS	
+func_80027DF0	280	DISTINTO	func_80027DF0: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80027F08	68	DISTINTO	func_80027F08: 0 de 2 capturas y 0 de 22 variantes iguales -> DISTINTO
+func_80027F4C	272	IGUAL	func_80027F4C: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+func_8002805C	636	DISTINTO	func_8002805C: 0 de 2 capturas y 0 de 24 variantes iguales -> DISTINTO
+func_800282D8	124	SIN_CAPTURAS	
+func_80028354	112	DISTINTO	func_80028354: 2 de 2 capturas y 37 de 60 variantes iguales -> DISTINTO
+func_800283C4	568	SIN_CAPTURAS	
+func_800285FC	624	NO_COMPILA	src/auto/func_800285FC.c:103:21: error: too many arguments to function ‘func_800285FC’
+func_8002886C	1000	NO_COMPILA	src/auto/func_8002886C.c:100:13: error: too few arguments to function ‘D_8006CF88’
+func_80028C54	172	SIN_CAPTURAS	
+func_80028D0C	52	SIN_CAPTURAS	
+func_80028D40	844	NO_COMPILA	src/auto/func_80028D40.c:45:17: error: too many arguments to function ‘func_80028D40’
+func_8002908C	32	DISTINTO	func_8002908C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800290AC	160	IGUAL	func_800290AC: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8002914C	200	SIN_CAPTURAS	
+func_80029214	732	IGUAL	func_80029214: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800294F0	40	SIN_CAPTURAS	
+func_80029518	24	SIN_CAPTURAS	
+func_80029530	28	SIN_CAPTURAS	
+func_800297CC	60	SIN_CAPTURAS	
+func_80029808	40	IGUAL	func_80029808: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80029830	40	SIN_CAPTURAS	
+func_80029858	40	IGUAL	func_80029858: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8002988C	144	SIN_CAPTURAS	
+func_8002991C	16	DISTINTO	func_8002991C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8002992C	16	DISTINTO	func_8002992C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8002993C	12	DISTINTO	func_8002993C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80029948	108	SIN_CAPTURAS	
+func_800299B4	32	IGUAL	func_800299B4: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800299D4	20	SIN_CAPTURAS	
+func_800299E8	52	SIN_CAPTURAS	
+func_80029A1C	52	SIN_CAPTURAS	
+func_80029A50	32	IGUAL	func_80029A50: 2 de 2 capturas y 37 de 37 variantes iguales -> IGUAL
+func_80029A70	32	IGUAL	func_80029A70: 2 de 2 capturas y 49 de 49 variantes iguales -> IGUAL
+func_80029A90	20	DISTINTO	func_80029A90: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80029AA4	20	DISTINTO	func_80029AA4: 1 de 2 capturas y 16 de 60 variantes iguales -> DISTINTO
+func_80029AB8	316	DISTINTO	func_80029AB8: 0 de 2 capturas y 6 de 6 variantes iguales -> DISTINTO
+func_80029BF4	308	IGUAL	func_80029BF4: 2 de 2 capturas y 44 de 44 variantes iguales -> IGUAL
+func_80029D28	332	DISTINTO	func_80029D28: 0 de 2 capturas y 3 de 3 variantes iguales -> DISTINTO
+func_80029EB4	32	SIN_CAPTURAS	
+func_80029ED4	36	SIN_CAPTURAS	
+func_80029EF8	32	SIN_CAPTURAS	
+func_80029F18	260	DISTINTO	func_80029F18: 0 de 2 capturas y 0 de 34 variantes iguales -> DISTINTO
+func_8002A09C	1372	NO_COMPILA	src/auto/func_8002A09C.c:274:32: error: ‘sp19’ undeclared (first use in this function); did you mean ‘sp18’?
+func_8002A5F8	216	IGUAL	func_8002A5F8: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8002A6D0	640	DISTINTO	func_8002A6D0: 0 de 2 capturas y 0 de 31 variantes iguales -> DISTINTO
+func_8002A950	712	DISTINTO	func_8002A950: 0 de 2 capturas y 0 de 45 variantes iguales -> DISTINTO
+func_8002AC18	1036	DISTINTO	func_8002AC18: 0 de 2 capturas y 0 de 38 variantes iguales -> DISTINTO
+func_8002B024	136	IGUAL	func_8002B024: 2 de 2 capturas y 32 de 32 variantes iguales -> IGUAL
+func_8002B0AC	212	DISTINTO	func_8002B0AC: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8002B180	240	SIN_CAPTURAS	
+func_8002B270	76	SIN_CAPTURAS	
+func_8002B2BC	480	SIN_CAPTURAS	
+func_8002B49C	360	SIN_CAPTURAS	
+func_8002B704	236	SIN_CAPTURAS	
+func_8002B7F0	32	DISTINTO	func_8002B7F0: 2 de 2 capturas y 9 de 18 variantes iguales -> DISTINTO
+func_8002B810	708	SIN_CAPTURAS	
+func_8002BAD4	164	DISTINTO	func_8002BAD4: 0 de 2 capturas y 33 de 46 variantes iguales -> DISTINTO
+func_8002BB78	668	NO_COMPILA	src/auto/func_8002BB78.c:68:37: error: ‘sp18’ undeclared (first use in this function); did you mean ‘sp1B’?
+func_8002BE14	104	IGUAL	func_8002BE14: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8002BE88	728	DISTINTO	func_8002BE88: 0 de 2 capturas y 0 de 9 variantes iguales -> DISTINTO
+func_8002C160	52	DISTINTO	func_8002C160: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8002CB00	32	SIN_CAPTURAS	
+func_8002CB2C	132	SIN_CAPTURAS	
+func_8002CBB0	0	ERROR	[Errno 12] Cannot allocate memory
+func_8002CD3C	376	NO_COMPILA	src/auto/func_8002CD3C.c:157:23: error: ‘func_8002CBB0’ undeclared (first use in this function); did you mean ‘func_8002
+func_8002CEB4	0	ERROR	[Errno 12] Cannot allocate memory
+func_8002CF28	488	DISTINTO	func_8002CF28: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_8002D170	128	SIN_CAPTURAS	
+func_8002D520	28	SIN_CAPTURAS	
+func_8002D540	44	SIN_CAPTURAS	
+func_8002D56C	424	SIN_CAPTURAS	
+func_8002D714	2332	SIN_CAPTURAS	
+func_8002E030	196	SIN_CAPTURAS	
+func_8002E0F4	8	SIN_CAPTURAS	
+func_8002E0FC	280	SIN_CAPTURAS	
+func_8002E21C	768	SIN_CAPTURAS	
+func_8002E51C	1792	SIN_CAPTURAS	
+func_8002EC1C	224	DISTINTO	func_8002EC1C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8002ECFC	52	DISTINTO	func_8002ECFC: 0 de 2 capturas y 0 de 24 variantes iguales -> DISTINTO
+func_8002ED30	28	DISTINTO	func_8002ED30: 0 de 2 capturas y 0 de 27 variantes iguales -> DISTINTO
+func_8002ED4C	124	DISTINTO	func_8002ED4C: 0 de 2 capturas y 1 de 23 variantes iguales -> DISTINTO
+func_8002EDC8	452	DISTINTO	func_8002EDC8: 0 de 2 capturas y 0 de 26 variantes iguales -> DISTINTO
+func_8002EF8C	0	ERROR	[Errno 12] Cannot allocate memory
+func_8002EFD0	92	IGUAL	func_8002EFD0: 2 de 2 capturas y 22 de 22 variantes iguales -> IGUAL
+func_8002F298	652	NO_COMPILA	src/auto/func_8002F298.c:218:18: error: ‘spDA’ undeclared (first use in this function); did you mean ‘spD8’?
+func_8002F524	604	NO_COMPILA	src/auto/func_8002F524.c:202:18: error: ‘spCA’ undeclared (first use in this function); did you mean ‘spC8’?
+func_8002F780	544	NO_COMPILA	src/auto/func_8002F780.c:183:18: error: ‘spB6’ undeclared (first use in this function); did you mean ‘spB4’?
+func_8002F9A0	604	NO_COMPILA	src/auto/func_8002F9A0.c:204:18: error: ‘spCA’ undeclared (first use in this function); did you mean ‘spC8’?
+func_8002FBFC	616	NO_COMPILA	src/auto/func_8002FBFC.c:208:18: error: ‘spCA’ undeclared (first use in this function); did you mean ‘spC8’?
+func_8002FE64	184	NO_COMPILA	src/auto/func_8002FE64.c:61:18: error: ‘sp3A’ undeclared (first use in this function); did you mean ‘sp38’?
+func_8002FF1C	156	SIN_CAPTURAS	
+func_8002FFB8	176	IGUAL	func_8002FFB8: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80030068	92	IGUAL	func_80030068: 2 de 2 capturas y 23 de 23 variantes iguales -> IGUAL
+func_800300C4	104	SIN_CAPTURAS	
+func_8003012C	48	DISTINTO	func_8003012C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003015C	48	DISTINTO	func_8003015C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003018C	16	IGUAL	func_8003018C: 2 de 2 capturas y 30 de 30 variantes iguales -> IGUAL
+func_8003019C	108	NO_COMPILA	src/auto/func_8003019C.c:27:47: error: ‘func_8003018C’ undeclared (first use in this function); did you mean ‘func_80030
+func_80030208	3164	NO_COMPILA	src/auto/func_80030208.c:93:55: error: ‘func_80024DF4’ undeclared (first use in this function)
+func_80030E64	100	NO_COMPILA	src/auto/func_80030E64.c:23:47: error: ‘func_80030208’ undeclared (first use in this function); did you mean ‘func_80030
+func_80030EC8	80	SIN_CAPTURAS	
+func_80030F18	232	DISTINTO	func_80030F18: 0 de 2 capturas y 0 de 48 variantes iguales -> DISTINTO
+func_80031000	180	SIN_CAPTURAS	
+func_800313E4	176	SIN_CAPTURAS	
+func_80031494	164	DISTINTO	func_80031494: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80031538	352	IGUAL	func_80031538: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80031698	572	DISTINTO	func_80031698: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_800318D4	32	SIN_CAPTURAS	
+func_800318F4	3256	DISTINTO	func_800318F4: 2 de 2 capturas y 29 de 30 variantes iguales -> DISTINTO
+func_800325AC	1516	IGUAL	func_800325AC: 2 de 2 capturas y 11 de 11 variantes iguales -> IGUAL
+func_80032B98	952	DISTINTO	func_80032B98: 0 de 2 capturas y 0 de 24 variantes iguales -> DISTINTO
+func_80032F50	64	IGUAL	func_80032F50: 2 de 2 capturas y 38 de 38 variantes iguales -> IGUAL
+func_80032F90	452	DISTINTO	func_80032F90: 0 de 2 capturas y 4 de 22 variantes iguales -> DISTINTO
+func_80033AD8	68	IGUAL	func_80033AD8: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80033B1C	940	DISTINTO	func_80033B1C: 1 de 2 capturas y 8 de 12 variantes iguales -> DISTINTO
+func_80033EC8	256	DISTINTO	func_80033EC8: 0 de 2 capturas y 0 de 34 variantes iguales -> DISTINTO
+func_80034710	96	SIN_CAPTURAS	
+func_80034770	12	SIN_CAPTURAS	
+func_8003477C	628	SIN_CAPTURAS	
+func_800349F0	1428	SIN_CAPTURAS	
+func_80034F84	76	SIN_CAPTURAS	
+func_80034FD0	200	DISTINTO	func_80034FD0: 0 de 1 capturas y 0 de 7 variantes iguales -> DISTINTO
+func_80035098	12	DISTINTO	func_80035098: 0 de 1 capturas y 0 de 30 variantes iguales -> DISTINTO
+func_800350A4	88	DISTINTO	func_800350A4: 0 de 2 capturas y 0 de 23 variantes iguales -> DISTINTO
+func_800350FC	148	DISTINTO	func_800350FC: 2 de 2 capturas y 23 de 60 variantes iguales -> DISTINTO
+func_80035190	388	DISTINTO	func_80035190: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+func_80035314	3900	NO_COMPILA	src/auto/func_80035314.c:220:28: error: ‘sp7C’ undeclared (first use in this function); did you mean ‘sp78’?
+func_80036250	188	DISTINTO	func_80036250: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_8003630C	260	DISTINTO	func_8003630C: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80036410	276	DISTINTO	func_80036410: 0 de 2 capturas y 0 de 23 variantes iguales -> DISTINTO
+func_80036524	204	IGUAL	func_80036524: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_800365F0	656	DISTINTO	func_800365F0: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80036880	1240	DISTINTO	func_80036880: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80036D58	1296	DISTINTO	func_80036D58: 0 de 2 capturas y 0 de 16 variantes iguales -> DISTINTO
+func_80037268	16	SIN_CAPTURAS	
+func_80037278	496	IGUAL	func_80037278: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80037468	720	NO_COMPILA	src/auto/func_80037468.c:124:58: error: ‘func_80037738’ undeclared (first use in this function); did you mean ‘func_8003
+func_80037738	548	NO_COMPILA	src/auto/func_80037738.c:98:58: error: ‘func_80024F6C’ undeclared (first use in this function)
+func_8003795C	188	DISTINTO	func_8003795C: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+func_80037A18	932	NO_COMPILA	src/auto/func_80037A18.c:39:50: error: ‘sp58’ undeclared (first use in this function); did you mean ‘sp54’?
+func_80037DBC	36	SIN_CAPTURAS	
+func_80037DE0	256	SIN_CAPTURAS	
+func_80037EE0	68	SIN_CAPTURAS	
+func_80037F24	560	SIN_CAPTURAS	
+func_80038154	200	SIN_CAPTURAS	
+func_8003821C	252	DISTINTO	func_8003821C: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80038318	1536	DISTINTO	func_80038318: 1 de 2 capturas y 13 de 24 variantes iguales -> DISTINTO
+func_80038918	196	SIN_CAPTURAS	
+func_800389DC	280	SIN_CAPTURAS	
+func_80038AF4	324	SIN_CAPTURAS	
+func_80038C38	256	SIN_CAPTURAS	
+func_80038D38	280	SIN_CAPTURAS	
+func_80038E50	100	SIN_CAPTURAS	
+func_80038EB4	84	SIN_CAPTURAS	
+func_80038F08	164	SIN_CAPTURAS	
+func_80038FAC	132	SIN_CAPTURAS	
+func_80039030	108	SIN_CAPTURAS	
+func_8003909C	104	SIN_CAPTURAS	
+func_80039104	556	SIN_CAPTURAS	
+func_80039330	32	SIN_CAPTURAS	
+func_80039350	800	SIN_CAPTURAS	
+func_80039670	204	SIN_CAPTURAS	
+func_8003973C	76	SIN_CAPTURAS	
+func_80039788	132	SIN_CAPTURAS	
+func_8003980C	404	SIN_CAPTURAS	
+func_800399A0	72	SIN_CAPTURAS	
+func_800399E8	76	SIN_CAPTURAS	
+func_80039A34	60	SIN_CAPTURAS	
+func_80039A70	132	NO_COMPILA	src/auto/func_80039A70.c:29:26: error: ‘sp24’ undeclared (first use in this function)
+func_80039AF4	40	IGUAL	func_80039AF4: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+func_80039B1C	132	NO_COMPILA	src/auto/func_80039B1C.c:29:26: error: ‘sp20’ undeclared (first use in this function)
+func_80039BA0	40	IGUAL	func_80039BA0: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+func_80039BC8	388	DISTINTO	func_80039BC8: 2 de 2 capturas y 18 de 19 variantes iguales -> DISTINTO
+func_80039D4C	132	SIN_CAPTURAS	
+func_80039DD0	236	SIN_CAPTURAS	
+func_80039EBC	232	SIN_CAPTURAS	
+func_80039FA4	204	IGUAL	func_80039FA4: 2 de 2 capturas y 12 de 12 variantes iguales -> IGUAL
+func_8003A070	268	DISTINTO	func_8003A070: 0 de 2 capturas y 0 de 11 variantes iguales -> DISTINTO
+func_8003A17C	212	DISTINTO	func_8003A17C: 2 de 2 capturas y 8 de 9 variantes iguales -> DISTINTO
+func_8003A250	8	IGUAL	func_8003A250: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8003A258	8	SIN_CAPTURAS	
+func_8003A260	8	IGUAL	func_8003A260: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8003A46C	184	NO_COMPILA	src/auto/func_8003A46C.c:20:88: error: invalid type argument of unary ‘*’ (have ‘int’)
+func_8003A524	556	DISTINTO	func_8003A524: 0 de 2 capturas y 2 de 13 variantes iguales -> DISTINTO
+func_8003A750	508	DISTINTO	func_8003A750: 2 de 2 capturas y 15 de 29 variantes iguales -> DISTINTO
+func_8003A94C	1244	NO_COMPILA	src/auto/func_8003A94C.c:55:14: error: ‘saved_reg_s2’ undeclared (first use in this function)
+func_8003AE84	196	NO_COMPILA	src/auto/func_8003AE84.c:37:37: error: ‘sp24’ undeclared (first use in this function)
+func_8003AF48	84	DISTINTO	func_8003AF48: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+func_8003AF9C	1008	NO_COMPILA	src/auto/func_8003AF9C.c:50:14: error: ‘saved_reg_s3’ undeclared (first use in this function)
+func_8003B38C	336	DISTINTO	func_8003B38C: 0 de 2 capturas y 0 de 3 variantes iguales -> DISTINTO
+func_8003B4DC	96	SIN_CAPTURAS	
+func_8003B53C	64	SIN_CAPTURAS	
+func_8003B57C	792	SIN_CAPTURAS	
+func_8003B894	660	SIN_CAPTURAS	
+func_8003BB28	128	SIN_CAPTURAS	
+func_8003BBA8	92	SIN_CAPTURAS	
+func_8003BC04	176	SIN_CAPTURAS	
+func_8003BCB4	280	SIN_CAPTURAS	
+func_8003BDCC	100	SIN_CAPTURAS	
+func_8003BE38	396	SIN_CAPTURAS	
+func_8003BFC4	40	DISTINTO	func_8003BFC4: 0 de 2 capturas y 0 de 45 variantes iguales -> DISTINTO
+func_8003BFEC	508	IGUAL	func_8003BFEC: 2 de 2 capturas y 32 de 32 variantes iguales -> IGUAL
+func_8003C1E8	832	NO_COMPILA	src/auto/func_8003C1E8.c:37:49: error: ‘func_8003BFEC’ undeclared (first use in this function); did you mean ‘func_8003C
+func_8003C528	336	SIN_CAPTURAS	
+func_8003C678	640	SIN_CAPTURAS	
+func_8003C8F8	228	DISTINTO	func_8003C8F8: 0 de 2 capturas y 0 de 27 variantes iguales -> DISTINTO
+func_8003C9DC	1064	SIN_CAPTURAS	
+func_8003CE04	236	SIN_CAPTURAS	
+func_8003CEF0	112	SIN_CAPTURAS	
+func_8003CF60	172	DISTINTO	func_8003CF60: 0 de 2 capturas y 19 de 31 variantes iguales -> DISTINTO
+func_8003D00C	136	IGUAL	func_8003D00C: 2 de 2 capturas y 29 de 29 variantes iguales -> IGUAL
+func_8003D094	196	SIN_CAPTURAS	
+func_8003D158	8	SIN_CAPTURAS	
+func_8003D160	280	SIN_CAPTURAS	
+func_8003D278	504	SIN_CAPTURAS	
+func_8003D478	380	SIN_CAPTURAS	
+func_8003D5F4	500	SIN_CAPTURAS	
+func_8003D7E8	20	DISTINTO	func_8003D7E8: 0 de 2 capturas y 2 de 60 variantes iguales -> DISTINTO
+func_8003D9D0	116	DISTINTO	func_8003D9D0: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003DC08	64	IGUAL	func_8003DC08: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8003DC48	252	SIN_CAPTURAS	
+func_8003DD44	48	DISTINTO	func_8003DD44: 0 de 2 capturas y 5 de 60 variantes iguales -> DISTINTO
+func_8003DD74	16	DISTINTO	func_8003DD74: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003DD84	28	SIN_CAPTURAS	
+func_8003DDA0	92	DISTINTO	func_8003DDA0: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_8003DDFC	108	IGUAL	func_8003DDFC: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8003DE68	128	SIN_CAPTURAS	
+func_8003DEE8	264	SIN_CAPTURAS	
+func_8003DFF0	112	SIN_CAPTURAS	
+func_8003E060	84	IGUAL	func_8003E060: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8003E0B4	16	IGUAL	func_8003E0B4: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_8003E0C4	448	SIN_CAPTURAS	
+func_8003E284	40	IGUAL	func_8003E284: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8003E2AC	40	SIN_CAPTURAS	
+func_8003E2D4	640	SIN_CAPTURAS	
+func_8003E554	188	IGUAL	func_8003E554: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8003E610	640	DISTINTO	func_8003E610: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003E890	132	DISTINTO	func_8003E890: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003E914	68	SIN_CAPTURAS	
+func_8003E958	164	NO_COMPILA	src/auto/func_8003E958.c:30:9: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
+func_8003E9FC	60	SIN_CAPTURAS	
+func_8003EA38	88	SIN_CAPTURAS	
+func_8003EA90	92	IGUAL	func_8003EA90: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8003EAF8	36	SIN_CAPTURAS	
+func_8003F728	36	DISTINTO	func_8003F728: 0 de 2 capturas y 8 de 60 variantes iguales -> DISTINTO
+func_8003F7A8	36	DISTINTO	func_8003F7A8: 0 de 2 capturas y 8 de 60 variantes iguales -> DISTINTO
+func_8003FD68	40	DISTINTO	func_8003FD68: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8003FD90	24	IGUAL	func_8003FD90: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80041C48	56	SIN_CAPTURAS	
+func_80041CD8	560	SIN_CAPTURAS	
+func_80041F08	76	DISTINTO	func_80041F08: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_80041F54	72	SIN_CAPTURAS	
+func_80041FC8	384	SIN_CAPTURAS	
+func_800425C8	860	DISTINTO	func_800425C8: 2 de 2 capturas y 56 de 60 variantes iguales -> DISTINTO
+func_80042924	116	IGUAL	func_80042924: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80042B68	12	SIN_CAPTURAS	
+func_80042B78	1156	IGUAL	func_80042B78: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80043358	104	IGUAL	func_80043358: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800433C0	288	DISTINTO	func_800433C0: 0 de 2 capturas y 32 de 60 variantes iguales -> DISTINTO
+func_800447DC	8	SIN_CAPTURAS	
+func_800447E4	1004	DISTINTO	func_800447E4: 0 de 2 capturas y 4 de 20 variantes iguales -> DISTINTO
+func_80044BD4	104	DISTINTO	func_80044BD4: 2 de 2 capturas y 33 de 60 variantes iguales -> DISTINTO
+func_80044C40	52	DISTINTO	func_80044C40: 0 de 2 capturas y 0 de 28 variantes iguales -> DISTINTO
+func_80044D64	196	DISTINTO	func_80044D64: 0 de 2 capturas y 0 de 30 variantes iguales -> DISTINTO
+func_80044E28	8	IGUAL	func_80044E28: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+func_80044E30	280	SIN_CAPTURAS	
+func_80045278	1788	DISTINTO	func_80045278: 0 de 2 capturas y 0 de 21 variantes iguales -> DISTINTO
+func_80045974	196	SIN_CAPTURAS	
+func_80045A38	8	SIN_CAPTURAS	
+func_80045A40	280	SIN_CAPTURAS	
+func_80045B60	404	SIN_CAPTURAS	
+func_80045CF4	492	SIN_CAPTURAS	
+func_80045EE0	196	SIN_CAPTURAS	
+func_80045FA4	8	SIN_CAPTURAS	
+func_80045FAC	280	NO_COMPILA	src/auto/func_80045FAC.c:22:52: error: ‘func_80024F74’ undeclared (first use in this function); did you mean ‘func_80045
+func_800460CC	860	DISTINTO	func_800460CC: 0 de 2 capturas y 0 de 22 variantes iguales -> DISTINTO
+func_80046428	1796	DISTINTO	func_80046428: 0 de 2 capturas y 2 de 31 variantes iguales -> DISTINTO
+func_80046B2C	36	SIN_CAPTURAS	
+func_80046B50	28	SIN_CAPTURAS	
+func_80046B6C	36	SIN_CAPTURAS	
+func_80046B90	28	DISTINTO	func_80046B90: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_80046BAC	24	SIN_CAPTURAS	
+func_80046BC4	84	SIN_CAPTURAS	
+func_80046C18	316	SIN_CAPTURAS	
+func_80046D54	24	SIN_CAPTURAS	
+func_80046D6C	160	SIN_CAPTURAS	
+func_80046E0C	152	SIN_CAPTURAS	
+func_80046EA4	8	SIN_CAPTURAS	
+func_80046EAC	20	SIN_CAPTURAS	
+func_80046EC0	24	SIN_CAPTURAS	
+func_80046ED8	156	SIN_CAPTURAS	
+func_80046F74	156	SIN_CAPTURAS	
+func_80047010	64	SIN_CAPTURAS	
+func_80047058	12	SIN_CAPTURAS	
+func_80047064	324	SIN_CAPTURAS	
+func_800471A8	36	SIN_CAPTURAS	
+func_800471CC	44	SIN_CAPTURAS	
+func_800471F8	60	SIN_CAPTURAS	
+func_80047234	12	SIN_CAPTURAS	
+func_80047240	32	SIN_CAPTURAS	
+func_800472D0	8	SIN_CAPTURAS	
+func_800472D8	16	SIN_CAPTURAS	
+func_80047358	8	SIN_CAPTURAS	
+func_80047360	16	SIN_CAPTURAS	
+func_80047710	712	IGUAL	func_80047710: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800479D8	16	IGUAL	func_800479D8: 2 de 2 capturas y 31 de 31 variantes iguales -> IGUAL
+func_800479E8	188	DISTINTO	func_800479E8: 0 de 2 capturas y 0 de 30 variantes iguales -> DISTINTO
+func_80047AA4	932	DISTINTO	func_80047AA4: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+func_80047F0C	8	SIN_CAPTURAS	
+func_80047F14	16	SIN_CAPTURAS	
+func_80047F24	172	SIN_CAPTURAS	
+func_80047FD0	16	SIN_CAPTURAS	
+func_80047FE0	68	SIN_CAPTURAS	
+func_80048024	112	SIN_CAPTURAS	
+func_80048094	112	SIN_CAPTURAS	
+func_80048104	96	SIN_CAPTURAS	
+func_80048164	196	DISTINTO	func_80048164: 2 de 2 capturas y 11 de 12 variantes iguales -> DISTINTO
+func_80048228	332	IGUAL	func_80048228: 2 de 2 capturas y 25 de 25 variantes iguales -> IGUAL
+func_80048374	116	SIN_CAPTURAS	
+func_800483E8	16	SIN_CAPTURAS	
+func_800483F8	112	DISTINTO	func_800483F8: 0 de 2 capturas y 0 de 27 variantes iguales -> DISTINTO
+func_80048468	100	DISTINTO	func_80048468: 2 de 2 capturas y 13 de 14 variantes iguales -> DISTINTO
+func_800484CC	416	SIN_CAPTURAS	
+func_8004866C	76	DISTINTO	func_8004866C: 0 de 2 capturas y 3 de 26 variantes iguales -> DISTINTO
+func_800486B8	88	SIN_CAPTURAS	
+func_80048710	68	SIN_CAPTURAS	
+func_80048754	92	DISTINTO	func_80048754: 0 de 2 capturas y 2 de 12 variantes iguales -> DISTINTO
+func_800487B0	84	DISTINTO	func_800487B0: 0 de 2 capturas y 0 de 14 variantes iguales -> DISTINTO
+func_80048804	252	SIN_CAPTURAS	
+func_80048900	8	SIN_CAPTURAS	
+func_80048908	188	SIN_CAPTURAS	
+func_800489C4	816	DISTINTO	func_800489C4: 0 de 2 capturas y 0 de 26 variantes iguales -> DISTINTO
+func_80048CF4	204	IGUAL	func_80048CF4: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80048DC0	684	SIN_CAPTURAS	
+func_8004906C	164	DISTINTO	func_8004906C: 2 de 2 capturas y 8 de 9 variantes iguales -> DISTINTO
+func_80049110	264	DISTINTO	func_80049110: 0 de 2 capturas y 0 de 27 variantes iguales -> DISTINTO
+func_80049218	156	SIN_CAPTURAS	
+func_800492B4	212	IGUAL	func_800492B4: 2 de 2 capturas y 3 de 3 variantes iguales -> IGUAL
+func_80049388	404	SIN_CAPTURAS	
+func_8004951C	456	SIN_CAPTURAS	
+func_800496E4	528	SIN_CAPTURAS	
+func_800498F4	308	SIN_CAPTURAS	
+func_80049A28	424	SIN_CAPTURAS	
+func_80049BD0	528	SIN_CAPTURAS	
+func_80049DE0	196	SIN_CAPTURAS	
+func_80049EA4	8	SIN_CAPTURAS	
+func_80049EAC	280	SIN_CAPTURAS	
+func_80049FCC	372	SIN_CAPTURAS	
+func_8004A140	492	SIN_CAPTURAS	
+func_8004A39C	8	SIN_CAPTURAS	
+func_8004A3A4	16	SIN_CAPTURAS	
+func_8004A3B4	244	SIN_CAPTURAS	
+func_8004A4A8	1596	SIN_CAPTURAS	
+func_8004AAE4	64	SIN_CAPTURAS	
+func_8004AB24	652	SIN_CAPTURAS	
+func_8004ADB0	244	SIN_CAPTURAS	
+func_8004AEA4	8	IGUAL	func_8004AEA4: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8004AEAC	164	SIN_CAPTURAS	
+func_8004AF50	508	SIN_CAPTURAS	
+func_8004B14C	208	DISTINTO	func_8004B14C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004B21C	252	DISTINTO	func_8004B21C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004B318	8	IGUAL	func_8004B318: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8004B320	2688	DISTINTO	func_8004B320: 0 de 2 capturas y 0 de 25 variantes iguales -> DISTINTO
+func_8004BDA0	944	DISTINTO	func_8004BDA0: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004C150	212	SIN_CAPTURAS	
+func_8004C224	8	IGUAL	func_8004C224: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_8004C22C	364	DISTINTO	func_8004C22C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004C3A0	224	DISTINTO	func_8004C3A0: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004C480	148	DISTINTO	func_8004C480: 0 de 1 capturas y 0 de 19 variantes iguales -> DISTINTO
+func_8004C514	148	DISTINTO	func_8004C514: 0 de 1 capturas y 0 de 18 variantes iguales -> DISTINTO
+func_8004C5A8	148	DISTINTO	func_8004C5A8: 0 de 1 capturas y 0 de 19 variantes iguales -> DISTINTO
+func_8004C63C	148	SIN_CAPTURAS	
+func_8004C6D0	48	SIN_CAPTURAS	
+func_8004C700	48	SIN_CAPTURAS	
+func_8004C730	236	SIN_CAPTURAS	
+func_8004C81C	8	SIN_CAPTURAS	
+func_8004C824	8	SIN_CAPTURAS	
+func_8004C82C	544	SIN_CAPTURAS	
+func_8004CA4C	16	SIN_CAPTURAS	
+func_8004CA5C	92	SIN_CAPTURAS	
+func_8004CAB8	144	DISTINTO	func_8004CAB8: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004CB48	1400	SIN_CAPTURAS	
+func_8004D0C0	2564	NO_COMPILA	src/auto/func_8004D0C0.c:410:54: error: ‘func_80025064’ undeclared (first use in this function); did you mean ‘func_8004
+func_8004DAC4	168	SIN_CAPTURAS	
+func_8004DB6C	164	SIN_CAPTURAS	
+func_8004DC10	104	SIN_CAPTURAS	
+func_8004DC78	8	SIN_CAPTURAS	
+func_8004E194	164	NO_COMPILA	src/auto/func_8004E194.c:32:24: error: ‘sp’ undeclared (first use in this function); did you mean ‘s8’?
+func_8004E238	48	DISTINTO	func_8004E238: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004E268	60	DISTINTO	func_8004E268: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8004E2A4	40	IGUAL	func_8004E2A4: 2 de 2 capturas y 38 de 38 variantes iguales -> IGUAL
+func_8004E2CC	24	SIN_CAPTURAS	
+func_8004E2E4	72	IGUAL	func_8004E2E4: 2 de 2 capturas y 15 de 15 variantes iguales -> IGUAL
+func_8004E32C	684	DISTINTO	func_8004E32C: 0 de 2 capturas y 0 de 18 variantes iguales -> DISTINTO
+func_8004E5D8	64	DISTINTO	func_8004E5D8: 0 de 2 capturas y 0 de 13 variantes iguales -> DISTINTO
+func_8004E618	168	DISTINTO	func_8004E618: 0 de 2 capturas y 0 de 9 variantes iguales -> DISTINTO
+func_8004E6C0	108	SIN_CAPTURAS	
+func_8004E72C	72	SIN_CAPTURAS	
+func_8004E774	136	DISTINTO	func_8004E774: 0 de 2 capturas y 0 de 12 variantes iguales -> DISTINTO
+func_8004E7FC	112	DISTINTO	func_8004E7FC: 0 de 2 capturas y 0 de 3 variantes iguales -> DISTINTO
+func_8004E86C	88	IGUAL	func_8004E86C: 2 de 2 capturas y 9 de 9 variantes iguales -> IGUAL
+func_8004E8C4	460	NO_COMPILA	src/auto/func_8004E8C4.c:35:164: error: invalid type argument of unary ‘*’ (have ‘int’)
+func_8004EA90	28	SIN_CAPTURAS	
+func_8004EAAC	60	SIN_CAPTURAS	
+func_8004EAE8	28	SIN_CAPTURAS	
+func_8004EB04	204	SIN_CAPTURAS	
+func_8004EBD0	396	SIN_CAPTURAS	
+func_8004ED5C	96	SIN_CAPTURAS	
+func_8004EDBC	96	SIN_CAPTURAS	
+func_8004EE1C	8	SIN_CAPTURAS	
+func_8004EE24	208	SIN_CAPTURAS	
+func_8004EEF4	968	SIN_CAPTURAS	
+func_8004F2BC	28	SIN_CAPTURAS	
+func_8004F2D8	536	SIN_CAPTURAS	
+func_8004F4F0	28	SIN_CAPTURAS	
+func_8004F50C	92	SIN_CAPTURAS	
+func_8004F568	716	SIN_CAPTURAS	
+func_8004F834	228	SIN_CAPTURAS	
+func_8004F918	52	SIN_CAPTURAS	
+func_8004F94C	28	SIN_CAPTURAS	
+func_8004F968	52	SIN_CAPTURAS	
+func_8004F99C	44	SIN_CAPTURAS	
+func_8004F9C8	48	SIN_CAPTURAS	
+func_8004F9F8	24	SIN_CAPTURAS	
+func_8004FA10	68	SIN_CAPTURAS	
+func_8004FA54	504	SIN_CAPTURAS	
+func_8004FC4C	184	SIN_CAPTURAS	
+func_8004FD04	48	SIN_CAPTURAS	
+func_8004FD34	768	SIN_CAPTURAS	
+func_80050034	680	SIN_CAPTURAS	
+func_800502DC	316	SIN_CAPTURAS	
+func_80050418	316	SIN_CAPTURAS	
+func_80050554	320	SIN_CAPTURAS	
+func_80050694	320	SIN_CAPTURAS	
+func_800507D4	84	SIN_CAPTURAS	
+func_80050828	172	DISTINTO	func_80050828: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_800508D4	92	SIN_CAPTURAS	
+func_80050938	112	SIN_CAPTURAS	
+func_800509A8	64	SIN_CAPTURAS	
+func_800509E8	104	SIN_CAPTURAS	
+func_80050A50	104	SIN_CAPTURAS	
+func_80050AB8	392	SIN_CAPTURAS	
+func_80050C40	68	SIN_CAPTURAS	
+func_80050C84	184	SIN_CAPTURAS	
+func_80050D3C	184	SIN_CAPTURAS	
+func_80050DF4	280	SIN_CAPTURAS	
+func_80050F0C	280	SIN_CAPTURAS	
+func_80051024	608	SIN_CAPTURAS	
+func_80051284	20	SIN_CAPTURAS	
+func_80051298	284	SIN_CAPTURAS	
+func_800513B4	508	SIN_CAPTURAS	
+func_800515B0	436	SIN_CAPTURAS	
+func_80051764	188	SIN_CAPTURAS	
+func_80051820	180	SIN_CAPTURAS	
+func_800519E4	20	SIN_CAPTURAS	
+func_800519F8	20	SIN_CAPTURAS	
+func_80051A0C	20	SIN_CAPTURAS	
+func_80051A20	20	SIN_CAPTURAS	
+func_80051A34	20	SIN_CAPTURAS	
+func_80051A48	20	SIN_CAPTURAS	
+func_80051A5C	20	SIN_CAPTURAS	
+func_80051A70	20	SIN_CAPTURAS	
+func_80051A84	476	SIN_CAPTURAS	
+func_80051C60	180	SIN_CAPTURAS	
+func_80051D14	264	SIN_CAPTURAS	
+func_80051E1C	216	SIN_CAPTURAS	
+func_80051EF4	216	SIN_CAPTURAS	
+func_80051FCC	60	SIN_CAPTURAS	
+func_80052008	60	SIN_CAPTURAS	
+func_80052114	44	SIN_CAPTURAS	
+func_80052140	68	SIN_CAPTURAS	
+func_80052184	36	SIN_CAPTURAS	
+func_800521AC	148	SIN_CAPTURAS	
+func_80052240	112	SIN_CAPTURAS	
+func_800522B0	52	SIN_CAPTURAS	
+func_800522E4	108	SIN_CAPTURAS	
+func_80052350	56	SIN_CAPTURAS	
+func_80052388	40	SIN_CAPTURAS	
+func_800523B4	112	SIN_CAPTURAS	
+func_80052434	324	SIN_CAPTURAS	
+func_80052578	524	SIN_CAPTURAS	
+func_80052784	296	SIN_CAPTURAS	
+func_800528AC	1452	SIN_CAPTURAS	
+func_80052E58	68	SIN_CAPTURAS	
+func_80052E9C	8	SIN_CAPTURAS	
+func_80052EA4	200	SIN_CAPTURAS	
+func_80052F6C	84	SIN_CAPTURAS	
+func_80052FC0	120	SIN_CAPTURAS	
+func_80053038	256	SIN_CAPTURAS	
+func_80053138	280	SIN_CAPTURAS	
+func_80053250	76	SIN_CAPTURAS	
+func_8005329C	332	SIN_CAPTURAS	
+func_800533E8	24	SIN_CAPTURAS	
+func_80053400	160	SIN_CAPTURAS	
+func_800534A0	56	SIN_CAPTURAS	
+func_800534D8	196	SIN_CAPTURAS	
+func_8005359C	552	SIN_CAPTURAS	
+func_800537C4	68	SIN_CAPTURAS	
+func_80053808	152	SIN_CAPTURAS	
+func_800538A0	304	SIN_CAPTURAS	
+func_800539D0	148	SIN_CAPTURAS	
+func_80053A64	52	SIN_CAPTURAS	
+func_80053A98	152	DISTINTO	func_80053A98: 2 de 2 capturas y 23 de 24 variantes iguales -> DISTINTO
+func_80053B30	104	IGUAL	func_80053B30: 2 de 2 capturas y 31 de 31 variantes iguales -> IGUAL
+func_80053B98	220	DISTINTO	func_80053B98: 0 de 2 capturas y 0 de 29 variantes iguales -> DISTINTO
+func_80053C74	612	NO_COMPILA	src/auto/func_80053C74.c:71:45: error: ‘subroutine_arg3’ undeclared (first use in this function)
+func_80053ED8	156	SIN_CAPTURAS	
+func_80053F74	244	DISTINTO	func_80053F74: 0 de 2 capturas y 0 de 35 variantes iguales -> DISTINTO
+func_80054068	1748	NO_COMPILA	src/auto/func_80054068.c:201:9: error: multiple default labels in one switch
+func_8005473C	176	SIN_CAPTURAS	
+func_800547EC	168	SIN_CAPTURAS	
+func_80054894	452	SIN_CAPTURAS	
+func_80054A58	508	SIN_CAPTURAS	
+func_80054C5C	1440	SIN_CAPTURAS	
+func_800551FC	148	SIN_CAPTURAS	
+func_80055290	48	SIN_CAPTURAS	
+func_800552C0	712	SIN_CAPTURAS	
+func_80055588	116	SIN_CAPTURAS	
+func_800555FC	24	SIN_CAPTURAS	
+func_80055614	16	SIN_CAPTURAS	
+func_80055624	16	SIN_CAPTURAS	
+func_80055634	708	SIN_CAPTURAS	
+func_800558F8	160	SIN_CAPTURAS	
+func_80055998	160	SIN_CAPTURAS	
+func_80055A38	448	SIN_CAPTURAS	
+func_80055BF8	16	SIN_CAPTURAS	
+func_80055C08	8	SIN_CAPTURAS	
+func_80055C10	148	IGUAL	func_80055C10: 2 de 2 capturas y 28 de 28 variantes iguales -> IGUAL
+func_80055CA4	8	IGUAL	func_80055CA4: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80055CAC	320	IGUAL	func_80055CAC: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80055DEC	24	SIN_CAPTURAS	
+func_80055E04	252	SIN_CAPTURAS	
+func_80055F00	52	SIN_CAPTURAS	
+func_80055F34	140	SIN_CAPTURAS	
+func_80055FC0	720	SIN_CAPTURAS	
+func_80056290	308	IGUAL	func_80056290: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_800563C4	408	DISTINTO	func_800563C4: 0 de 1 capturas y 0 de 18 variantes iguales -> DISTINTO
+func_8005655C	40	SIN_CAPTURAS	
+func_80056584	1156	DISTINTO	func_80056584: 0 de 2 capturas y 0 de 22 variantes iguales -> DISTINTO
+func_80056A08	272	IGUAL	func_80056A08: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+func_80056B18	248	SIN_CAPTURAS	
+func_80056C18	208	DISTINTO	func_80056C18: 0 de 2 capturas y 0 de 23 variantes iguales -> DISTINTO
+func_80056CE8	1684	NO_COMPILA	src/auto/func_80056CE8.c:209:5: error: ‘default’ label not within a switch statement
+func_8005737C	68	SIN_CAPTURAS	
+func_800573C0	592	SIN_CAPTURAS	
+func_80057610	496	SIN_CAPTURAS	
+func_80057800	332	SIN_CAPTURAS	
+func_8005794C	196	SIN_CAPTURAS	
+func_80057A10	8	SIN_CAPTURAS	
+func_80057A18	280	SIN_CAPTURAS	
+func_80057B38	360	SIN_CAPTURAS	
+func_80057CA0	492	SIN_CAPTURAS	
+func_80057E8C	8	SIN_CAPTURAS	
+func_80057E94	160	SIN_CAPTURAS	
+func_80057F34	920	GTE	
+func_800582CC	912	GTE	
+func_8005865C	912	GTE	
+func_800589EC	1272	GTE	
+func_80058EE4	1276	GTE	
+func_800593E0	1276	GTE	
+func_800598DC	1616	GTE	
+func_80059F2C	136	SIN_CAPTURAS	
+func_80059FB4	8	SIN_CAPTURAS	
+func_80059FBC	560	SIN_CAPTURAS	
+func_8005A1EC	372	DISTINTO	func_8005A1EC: 0 de 1 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_8005A360	3168	DISTINTO	func_8005A360: 0 de 2 capturas y 0 de 0 variantes iguales -> DISTINTO
+func_8005AFC0	72	SIN_CAPTURAS	
+func_8005B008	328	SIN_CAPTURAS	
+func_8005B150	580	SIN_CAPTURAS	
+func_8005B394	204	SIN_CAPTURAS	
+func_8005B460	12	SIN_CAPTURAS	
+func_8005B46C	192	SIN_CAPTURAS	
+func_8005B52C	596	SIN_CAPTURAS	
+func_8005B780	20	SIN_CAPTURAS	
+func_8005B794	320	SIN_CAPTURAS	
+func_8005B8D4	192	SIN_CAPTURAS	
+func_8005B994	124	SIN_CAPTURAS	
+func_8005BA10	1216	SIN_CAPTURAS	
+func_8005BED0	1160	SIN_CAPTURAS	
+func_8005C358	1416	NO_COMPILA	src/auto/func_8005C358.c:129:23: error: void value not ignored as it ought to be
+func_8005C8E0	76	SIN_CAPTURAS	
+func_8005C92C	20	SIN_CAPTURAS	
+func_8005C940	36	SIN_CAPTURAS	
+func_8005C964	108	SIN_CAPTURAS	
+func_8005C9D0	968	SIN_CAPTURAS	
+func_8005CD98	176	SIN_CAPTURAS	
+func_8005CE48	116	SIN_CAPTURAS	
+func_8005CEBC	368	SIN_CAPTURAS	
+func_8005D02C	164	SIN_CAPTURAS	
+func_8005D0D0	36	SIN_CAPTURAS	
+func_8005D0F4	112	SIN_CAPTURAS	
+func_8005D164	108	SIN_CAPTURAS	
+func_8005D1D0	156	SIN_CAPTURAS	
+func_8005D26C	308	SIN_CAPTURAS	
+func_8005D3A0	60	SIN_CAPTURAS	
+func_8005D3DC	24	SIN_CAPTURAS	
+func_8005D3F4	272	SIN_CAPTURAS	
+func_8005D504	8	SIN_CAPTURAS	
+func_8005D50C	824	SIN_CAPTURAS	
+func_8005D844	92	SIN_CAPTURAS	
+func_8005D8A0	48	SIN_CAPTURAS	
+func_8005D8D0	240	SIN_CAPTURAS	
+func_8005D9C0	144	SIN_CAPTURAS	
+func_8005DA50	140	SIN_CAPTURAS	
+func_8005DADC	148	SIN_CAPTURAS	
+func_8005DB70	148	SIN_CAPTURAS	
+func_8005DC04	24	SIN_CAPTURAS	
+func_8005DC1C	124	SIN_CAPTURAS	
+func_8005DCA0	52	SIN_CAPTURAS	
+func_8005DCD4	124	SIN_CAPTURAS	
+func_8005DD50	32	SIN_CAPTURAS	
+func_8005DD70	60	SIN_CAPTURAS	
+func_8005DDAC	60	SIN_CAPTURAS	
+func_8005DDE8	36	SIN_CAPTURAS	
+func_8005E27C	20	DISTINTO	func_8005E27C: 0 de 2 capturas y 0 de 26 variantes iguales -> DISTINTO
+func_8005E290	16	SIN_CAPTURAS	
+func_8005E2A0	764	SIN_CAPTURAS	
+func_8005E59C	764	DISTINTO	func_8005E59C: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+func_8005E898	356	SIN_CAPTURAS	
+func_8005E9FC	216	SIN_CAPTURAS	
+func_8005EAD4	684	SIN_CAPTURAS	
+func_8005ED80	12	SIN_CAPTURAS	
+func_8005ED8C	5092	SIN_CAPTURAS	
+func_80060170	260	SIN_CAPTURAS	
+func_80060274	244	SIN_CAPTURAS	
+func_80060368	496	SIN_CAPTURAS	
+func_80060558	56	IGUAL	func_80060558: 2 de 2 capturas y 29 de 29 variantes iguales -> IGUAL
+func_80060590	56	IGUAL	func_80060590: 2 de 2 capturas y 25 de 25 variantes iguales -> IGUAL
+func_800605C8	484	SIN_CAPTURAS	
+func_800607AC	516	IGUAL	func_800607AC: 2 de 2 capturas y 4 de 4 variantes iguales -> IGUAL
+thunk_FUN_8001e588	8	IGUAL	thunk_FUN_8001e588: 2 de 2 capturas y 0 de 0 variantes iguales -> IGUAL
+thunk_FUN_8003be38	8	SIN_CAPTURAS	
+thunk_FUN_80042924	8	IGUAL	thunk_FUN_80042924: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
+thunk_FUN_80047234	8	SIN_CAPTURAS	
+thunk_FUN_8004866c	8	IGUAL	thunk_FUN_8004866c: 2 de 2 capturas y 27 de 27 variantes iguales -> IGUAL
+thunk_FUN_8004866c_8002E214	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_8003D470	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80044F48	8	IGUAL	thunk_FUN_8004866c_80044F48: 1 de 1 capturas y 13 de 13 variantes iguales -> IGUAL
+thunk_FUN_8004866c_80045B58	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_800460C4	8	IGUAL	thunk_FUN_8004866c_800460C4: 1 de 1 capturas y 13 de 13 variantes iguales -> IGUAL
+thunk_FUN_8004866c_80049FC4	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80054C54	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80056C10	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80057B30	8	SIN_CAPTURAS	
+thunk_FUN_8004aea4	8	IGUAL	thunk_FUN_8004aea4: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL

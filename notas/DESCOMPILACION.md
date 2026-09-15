@@ -54,8 +54,14 @@ En lugar de igualar los bytes, cada funcion se reescribe en C y se demuestra que
   La primera version comparaba una copia que nadie escribia.
 - Las instrucciones del GTE (cop2) no las emula Unicorn; esas funciones no se pueden verificar asi.
 
-Verificadas a mano: `RecogibleNoTomado` (`decomp\src\WobjCode\recogibles.c`) y `CeldaDePosicion`
-(`decomp\src\modelLoader\cuadricula.c`).
+- Las capturas tienen que venir de lugares distintos. `BitDeZona` paso todo con capturas del HUB, que no
+  tiene zonas, y un mutante (zona 3 devuelve 5 en vez de 4) tambien paso: esa rama nunca corria. Con 4
+  capturas mas en Stone 3 (8 zonas) y variantes con indices chicos, el mutante cae y la buena pasa 9 de 9
+  capturas y 349 de 349 variantes. Antes de dar por buena una funcion con ramas, probar un mutante en una
+  rama.
+
+Verificadas a mano: `RecogibleNoTomado` (`decomp\src\WobjCode\recogibles.c`), `CeldaDePosicion`
+(`decomp\src\modelLoader\cuadricula.c`) y `BitDeZona` (`decomp\src\SceneProcessing\zonas.c`).
 
 ## Lote automatico
 

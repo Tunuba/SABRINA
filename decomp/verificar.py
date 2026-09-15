@@ -117,7 +117,9 @@ def variantes(regs, pool, n, rnd):
         for i in (4, 5, 6, 7):
             if rnd.random() < 0.6:
                 t = rnd.random()
-                if t < 0.4:
+                if t < 0.25:
+                    v = rnd.randrange(0, 0x2000)        # indices chicos (celdas, objetos, tablas)
+                elif t < 0.5:
                     v = rnd.choice(pool)
                 elif t < 0.8:
                     v = rnd.choice(pool) + rnd.choice((1, -1)) * rnd.choice(pool)

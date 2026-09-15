@@ -33,6 +33,18 @@ Doble clic en `Sabrina.lnk` (escritorio o raiz) o `ARRANCAR.bat`. Disco con mods
   con CodeWarrior (no hay compilador para igualar bytes), asi que se hace descompilacion funcional
   verificada con capturas reales y Unicorn. Ver `notas\DESCOMPILACION.md`.
 
+## Donde quedo la descompilacion (2026-09-15)
+
+Lote de `auto.py` sobre las 1033 funciones del juego (ver `decomp\progreso.tsv`):
+
+- IGUAL 130 automaticas mas 3 a mano (RecogibleNoTomado, CeldaDePosicion, BitDeZona): 133 funciones,
+  unos 20.5 KB de los 293 KB de codigo del juego (7 %).
+- DISTINTO 236, NO_COMPILA 72, GTE 13 (Unicorn no emula el coprocesador geometrico), M2C_FALLA 2,
+  ERROR 3, SIN_CAPTURAS 577 (no se ejecutaron en la ronda de cobertura).
+- Ojo con las IGUAL automaticas: pasaron con las capturas que hay. Una rama que ninguna captura recorre no
+  queda probada (le paso a BitDeZona con capturas solo del HUB). Para las importantes, capturar en otro
+  nivel y probar un mutante en una rama.
+
 ## Como retomar la descompilacion
 
 ```
