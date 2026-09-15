@@ -97,6 +97,49 @@ H.cargar = function(req)
   return 'ok'
 end
 
+-- Contadores de paso por una direccion (punto de interrupcion que no pausa). Requiere arrancar el
+-- emulador con -debugger -interpreter (emu.py lo hace con depurar=True).
+--   contar?a=0x8003401c&t=Exec     pone el contador (t: Exec, Read o Write)
+--   cuenta?a=0x8003401c            devuelve cuantas veces paso
+Control.bps = {}
+H.contar = function(req)
+  local q = consulta(req)
+  local a = tonumber(q.a)
+  if not a then return error400('falta a') end
+  local c = { n = 0 }
+  c.bp = PCSX.addBreakpoint(a, q.t or 'Exec', tonumber(q.w or '4'), 'contador', function()
+    c.n = c.n + 1
+    return true
+  end)
+  Control.bps[a] = c
+  return 'ok'
+end
+H.cuenta = function(req)
+  local c = Control.bps[tonumber(consulta(req).a)]
+  return c and tostring(c.n) or error400('no hay contador ahi')
+end
+
+-- Laboratorio de dano: justo cuando el juego entra al manejador de suelo de Sabrina (FUN_80033fc8,
+-- a0 = objeto), escribe que esta en el suelo (+0x8c bit 0x10) sobre un suelo de tipo t (+0x80).
+-- Asi el juego corre su propio codigo de dano sin tener que llegar a un nivel con lava.
+--   suelo?t=4&n=1     inyecta n veces (una por pasada del manejador con el objeto de Sabrina)
+H.suelo = function(req)
+  local q = consulta(req)
+  local t, n = tonumber(q.t or '4'), tonumber(q.n or '1')
+  local hechos = 0
+  Control.bpsuelo = PCSX.addBreakpoint(0x80033fc8, 'Exec', 4, 'suelo', function()
+    if hechos >= n then return true end
+    local a0 = PCSX.getRegisters().GPR.n.a0
+    if a0 == rd32(0x8007caf8) then
+      wr16(a0 + 0x80, t)
+      wr16(a0 + 0x8c, bit.bor(rd16(a0 + 0x8c), 0x10))
+      hechos = hechos + 1
+    end
+    return true
+  end)
+  return 'ok'
+end
+
 H.salir = function(req)
   PCSX.nextTick(function() PCSX.quit(0) end)
   return 'ok'

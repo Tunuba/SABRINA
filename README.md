@@ -45,8 +45,30 @@ python explorar.py titulo prueba "CROSS w120 c"   parte de un estado, pulsa y ca
 python mod_carga.py                           mod de la pantalla de carga en espanol
 ```
 
+```
+python armar.py sabrina_es_inv --es --invencible   disco con mods y su parche PPF en mods\
+python prueba_final.py sabrina_es_inv.cue         arranca ese disco desde cero y prueba el dano
+python mod_invencible.py probar                   laboratorio de dano con y sin parche
+python contar_paso.py saltar "UP:60" 0x8003401c   cuantas veces pasa el juego por una direccion
+python ppf.py aplicar original.bin parche.ppf salida.bin
+```
+
 `explorar.py` explica el formato de los pasos. Estados utiles: `titulo` (menu principal),
-`saltar` (dentro del HUB, jugando).
+`saltar` (dentro del HUB, jugando), `final_hub` (HUB con el disco en espanol e invencible).
+Un estado guardado trae el ejecutable en la RAM: para probar cambios del ejecutable hay que arrancar
+el disco desde cero (paso `arranque` en `explorar.py`).
+
+Ghidra sin ventana (unos 5 minutos):
+```
+$env:JAVA_HOME = 'C:\Proyectos\SABRINA\herramientas\jdk-21.0.12.1+1'
+herramientas\ghidra_12.1.3_PUBLIC\support\analyzeHeadless.bat C:\Proyectos\SABRINA\ghidra sabrina `
+  -import extraido\SLUS_012.08 -overwrite -scriptPath scripts\ghidra -postScript ExportarTodo.java notas\ghidra
+```
+
+## Compartir un mod
+
+Solo el `.ppf` de `mods\`. Se aplica sobre la pista 1 de la imagen Redump con `ppf.py aplicar` o con
+PPF-O-Matic, y se juega con el .cue original apuntando a la pista parchada.
 
 ## Lo que ya se sabe del juego
 

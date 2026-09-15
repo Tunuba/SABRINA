@@ -24,8 +24,11 @@ LOGS = os.path.join(RAIZ, "notas", "logs")
 
 
 class Emu:
-    def __init__(self, iso=None, exe=None, puerto=8091, bios=None, log="emu.log", extra=()):
+    def __init__(self, iso=None, exe=None, puerto=8091, bios=None, log="emu.log", extra=(), depurar=False):
         os.makedirs(LOGS, exist_ok=True)
+        if depurar:
+            # los puntos de interrupcion (contar en control.lua) solo funcionan con el interprete
+            extra = (*extra, "-debugger", "-interpreter")
         self.base = f"http://127.0.0.1:{puerto}"
         args = [os.path.join(REDUX, "pcsx-redux.exe"), "-no-ui", "-stdout",
                 "-bios", bios or os.path.join(REDUX, "openbios.bin"),
