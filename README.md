@@ -39,6 +39,9 @@ El parche es `mods\sabrina_todo.ppf`. Tambien sirve con PPF-O-Matic sobre la pis
 - `scripts\` herramientas propias, en Python y Lua.
 - `mods\` los parches PPF.
 - `notas\FORMATOS.md` todo lo descifrado del juego. `notas\OBJETOS.md` los objetos de cada nivel.
+- `notas\DESCOMPILACION.md` la descompilacion (`decomp\`) y `notas\TRASPASO.md` por donde seguir.
+- `notas\simbolos.tsv` nombres de funciones y datos; `notas\modulos.tsv` a que archivo fuente pertenece
+  cada tramo del ejecutable.
 - `herramientas\`, `disco\`, `extraido\`, `estados\` se crean al instalar y no van al repositorio.
 
 ## Taller
@@ -49,7 +52,12 @@ archivos del disco en `extraido\`. Desde `scripts\`:
 ```
 python armar.py sabrina_todo --es --invencible --ropa   vuelve a armar el disco y el parche
 python ino_obj.py H1W                     modelos de un nivel a OBJ con texturas
+python nivel_completo.py S3W              el nivel entero con sus objetos y rutas, a OBJ
 python animar.py SABRun                   animacion de Sabrina en GIF
+python animar.py S3W RockTroll STONE TROLLtaunt   animacion de cualquier personaje
+python sprites.py S3W [particulas]        sprites de pantalla o cuadros de particulas
+python letra.py FRW "Pulsa = para seguir" texto con la letra del juego
+python vab.py todos                       sonidos de todos los niveles a WAV
 python wobj.py S3W                        objetos de un nivel
 python pic.py todos salida                pantallas de carga a PNG
 python ir_a_nivel.py saltar 3 30          salta a un nivel en el emulador
@@ -60,13 +68,18 @@ python prueba_final.py sabrina_todo.cue   arranca el disco desde cero y prueba e
 estados guardados y contadores por direccion. Los estados que usan algunos scripts (`titulo`, `saltar`,
 `nivel_S3`) se crean con `explorar.py` e `ir_a_nivel.py` con `--guardar`.
 
-Ghidra sin ventana (unos 5 minutos), desde la carpeta del proyecto:
+Ghidra sin ventana, desde la carpeta del proyecto. La primera vez importa y analiza (unos 5 minutos);
+despues se aplican los simbolos (gp y nombres), se crean las funciones que solo se alcanzan por punteros y
+se exporta:
 
 ```
 $env:JAVA_HOME = (Get-ChildItem herramientas -Directory -Filter 'jdk-21*').FullName
 $g = (Get-ChildItem herramientas -Directory -Filter 'ghidra_*_PUBLIC').FullName
 & "$g\support\analyzeHeadless.bat" "$PWD\ghidra" sabrina -import extraido\SLUS_012.08 -overwrite `
   -scriptPath scripts\ghidra -postScript ExportarTodo.java "$PWD\notas\ghidra"
+& "$g\support\analyzeHeadless.bat" "$PWD\ghidra" sabrina -process SLUS_012.08 -scriptPath scripts\ghidra `
+  -postScript AplicarSimbolos.java "$PWD\notas\simbolos.tsv" -postScript FuncionesPorPunteros.java `
+  -postScript ExportarTodo.java "$PWD\notas\ghidra"
 ```
 
 Para compilar codigo MIPS de PS1 hace falta WSL con `gcc-mipsel-linux-gnu` y Nugget en

@@ -51,8 +51,10 @@ def compilar(c, excluir):
     """Compila y enlaza el .c en BASE_C. Devuelve (binario, {nombre: direccion})."""
     tmp = tempfile.mkdtemp()
     obj = os.path.join(tmp, "f.o")
+    # gnu89 y -w: el C de m2c llama funciones sin prototipo y mezcla enteros y punteros, como el original
     r = subprocess.run(["mipsel-linux-gnu-gcc", "-c", "-O2", "-march=r3000", "-mabi=32", "-mno-abicalls", "-fno-pic",
                         "-G0", "-fno-builtin", "-ffreestanding", "-fno-strict-aliasing", "-msoft-float",
+                        "-std=gnu89", "-w", "-fcommon",
                         "-I", os.path.join(AQUI, "include"), "-o", obj, c], capture_output=True, text=True)
     if r.returncode:
         raise SystemExit("no compila:\n" + r.stderr)

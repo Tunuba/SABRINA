@@ -1,0 +1,12 @@
+funcion	tamano	estado	detalle
+ActivarObjetosCercanos	544	DISTINTO	ActivarObjetosCercanos: 0 de 2 capturas y 0 de 60 variantes iguales -> DISTINTO
+BitDeZona	700	DISTINTO	BitDeZona: 0 de 5 capturas y 2 de 65 variantes iguales -> DISTINTO
+DanoPorSuelo	1864	DISTINTO	DanoPorSuelo: 1 de 2 capturas y 16 de 30 variantes iguales -> DISTINTO
+DibujarCeldasVisibles	508	NO_COMPILA	src/auto/DibujarCeldasVisibles.c:28:14: error: invalid type argument of unary ‘*’ (have ‘int’)
+DibujarTexto	900	DISTINTO	DibujarTexto: 0 de 2 capturas y 0 de 24 variantes iguales -> DISTINTO
+FisicaObjeto	2436	NO_COMPILA	src/auto/FisicaObjeto.c:215:51: error: ‘spB8’ undeclared (first use in this function); did you mean ‘spBC’?
+RecogibleNoTomado	84	YA_HECHA	
+func_80010BD8	796	NO_COMPILA	src/auto/func_80010BD8.c:7:39: error: array type has incomplete element type ‘struct _struct_D_80063508_0x10’
+func_800112C0	284	NO_COMPILA	src/auto/func_800112C0.c:13:58: error: ‘printf’ undeclared here (not in a function)
+func_800113DC	624	NO_COMPILA	src/auto/func_800113DC.c:55:31: error: invalid use of void expression
+func_8001164C	32	IGUAL	func_8001164C: 2 de 2 capturas y 60 de 60 variantes iguales -> IGUAL
