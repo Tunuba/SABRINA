@@ -20,6 +20,8 @@ import struct
 import sys
 from collections import Counter, defaultdict
 
+import ino
+
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXE = open(os.path.join(RAIZ, r"extraido\SLUS_012.08"), "rb").read()
 NIVELES = ["FRW", "S1W", "S2W", "S3W", "E1W", "E2W", "E3W", "J1W", "J2W", "J3W", "W1W", "W2W", "W3W", "H1W", "C1W"]
@@ -50,6 +52,30 @@ def leer_nivel(nombre):
         objs.append(dict(i=k, x=x, y=y, z=z, tipo=tipo, rot=(rx, ry, rz), esc=(sx, sy, sz),
                          params=d[o + 0x1C:o + 0x9C]))
     return objs
+
+
+def leer_rutas(nombre):
+    """Puntos de ruta de patrulla (segunda lista del .BIN, 24 bytes): x y z, int16 numero, anterior y
+    siguiente (0 = ninguno), relleno. El juego los carga en 0x800D58A4."""
+    carpeta = {"FR": "FRONT", "H1": "HUB", "C1": "CHAOS"}.get(nombre[:2], {"S": "STONE", "E": "EGYPT", "J": "JAPAN", "W": "WEST"}.get(nombre[0]))
+    d = open(os.path.join(RAIZ, "extraido", "WRLDDATA", carpeta, nombre + ".BIN"), "rb").read()
+    p = 4 + struct.unpack_from("<i", d, 0)[0] * 0x9C
+    m = struct.unpack_from("<i", d, p)[0]
+    res = []
+    for k in range(m):
+        x, y, z, num, ant, sig = struct.unpack_from("<3i3h", d, p + 4 + k * 0x18)
+        res.append(dict(num=num, x=x, y=y, z=z, anterior=ant, siguiente=sig))
+    return res
+
+
+def params_enemigo(o):
+    """Parametros de un enemigo (FUN_80044f50 y parecidas): +00 int16 primer punto de ruta (0 o -1 = quieto),
+    +04 y +08 dos radios en 16.16 que el juego eleva al cuadrado (vista y ataque)."""
+    ruta, r1, r2 = struct.unpack_from("<hxxii", o["params"], 0)
+    return dict(ruta=ruta, radio1=r1 / 65536, radio2=r2 / 65536)
+
+
+ENEMIGOS = (2, 14, 15, 16, 17, 22)
 
 
 def textos_por_funcion():
@@ -87,9 +113,17 @@ if __name__ == "__main__":
     textos = textos_por_funcion()
     if len(sys.argv) > 1:
         nv = NIVELES.index(sys.argv[1])
+        lista = ino.modelos_del_nivel(nv)
         for o in leer_nivel(sys.argv[1]):
-            print(f"{o['i']:3d} tipo {o['tipo']:3d}  pos {o['x']:>9d} {o['y']:>8d} {o['z']:>9d}  rot {o['rot']}  "
-                  f"{nombre_tipo(nv, o['tipo'], textos)}")
+            fn, m = clase(nv, o["tipo"])
+            modelo = lista[m - 1].split("\\")[-1] if m and 0 < m <= len(lista) else "-"
+            extra = ""
+            if o["tipo"] in ENEMIGOS:
+                p = params_enemigo(o)
+                extra = f"  ruta {p['ruta']} radios {p['radio1']:.1f} {p['radio2']:.1f}"
+            print(f"{o['i']:3d} tipo {o['tipo']:3d}  pos {o['x']:>9d} {o['y']:>8d} {o['z']:>9d}  {modelo}{extra}")
+        rutas = leer_rutas(sys.argv[1])
+        print(f"{len(rutas)} puntos de ruta")
         sys.exit()
     lineas = ["# Objetos de cada nivel (WRLDDATA)", "", "Generado por `scripts\\wobj.py`. Tipo, cantidad y quien lo maneja.", ""]
     for nv, nombre in enumerate(NIVELES):

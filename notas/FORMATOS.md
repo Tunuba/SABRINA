@@ -132,9 +132,15 @@ int32 v0 v1 v2, int32 textura, u0 v0 u1 v1 u2 v2, y 6 bytes:
 - Listas (8 bytes): int16 cantidad, int32 inicio en la tabla de indices; los indices (int16) son
   triangulos del modelo del mundo. Es la colision por celda. Comprobado: la suma de las listas es igual a
   la cantidad de indices y todos caen dentro del mundo, en todos los niveles.
-- Celdas (12 bytes): int16, int16, int16 cantidad de objetos, int16 primer objeto de WRLDDATA (los
-  objetos van ordenados por celda), uint32 valor de zona. FUN_80020f00 activa los objetos de las celdas
-  cercanas a Sabrina. Comprobado: 119 de 119 objetos de Stone 3 caen en la celda que los lista.
+- Celdas (12 bytes): int16 primer triangulo de suelo de la celda (-1 ninguno), int16 cuantos, int16
+  cantidad de objetos, int16 primer objeto de WRLDDATA (los objetos van ordenados por celda), uint32 zona.
+  Los rangos de suelo cubren justo todos los triangulos de suelo normal (2085 de 2085 en Stone 3, 512
+  de 512 en Chaos; en Egypt 1 tambien 76 de tipo 0x80, otro suelo caminable). FUN_80020f00 activa los
+  objetos de las celdas cercanas a Sabrina: 119 de 119 objetos de Stone 3 caen en la celda que los lista.
+- Zona: siempre una potencia de dos (FUN_80020a48 pasa el numero de zona 0-16 a un bit). El juego dibuja
+  y activa solo la zona de Sabrina y las dos vecinas (el bit corrido a cada lado): el nivel esta partido
+  en hasta 16 salas en fila. Stone 3 tiene 8, Egypt 1 tiene 10, el HUB ninguna.
+- Escala: una posicion de WRLDDATA o del objeto de Sabrina es la coordenada del modelo del mundo por 256.
 
 ## Seccion 2 del .INO: sprites de pantalla
 
@@ -158,6 +164,23 @@ West: gordo, nino, coyote), 3 Salem en su burbuja, 13 trampa con puas, 24 y 25 g
 (RockTroll, chaos), 39 ficha del zodiaco, 40 cofre, 41 caja, 46 roca rodante, 47 mula, 49 FashionDiva, 50
 el ropero, 51 pesa, 52 planta rodante. Los tipos 4, 0x12, 0x13 y 0x17 son objetos para recoger: el
 juego anota en 0x800C7990 los ya recogidos y no los vuelve a poner.
+
+## Rutas de patrulla y parametros de enemigos
+
+La segunda lista de WRLDDATA (registros de 24 bytes, se carga en 0x800D58A4) son puntos de ruta: x y z,
+int16 numero, anterior y siguiente (0 = ninguno). Hay rutas de ida y vuelta (1-2) y cerradas (11 a 19).
+Enemigos (FUN_80044f50 y parecidas): vida en +0x118 (2, 1 en Egypt), dano que hacen en +0x119 (1).
+Parametros: +00 int16 primer punto de ruta (0 o -1 = quieto; si no, arranca ahi y la sigue), +04 y +08
+dos radios en 16.16 que el juego eleva al cuadrado (de 0.7 a 12). Casi todos los enemigos estan parados
+justo sobre su primer punto. En los objetos para recoger los parametros son basura del editor salvo el
+byte 4 (siempre 0: gema de valor 1; la tabla de 0x800757CC da valores 1 2 3 5 10 20 50 100).
+
+## Seccion 5 del .INO: cuadros de particulas
+
+Registros de 32 bytes: h4 h5 tamano en el mundo (0x1000 = 1.0), h6 TPAGE, h7 CLUT, h8 u v, h14 u y v
+finales (el tamano en pixeles sale de ahi). En Stone 3: chispas (12 cuadros), la gema que gira (8
+cuadros, gris porque el juego le cambia la paleta), huevo, herradura, abanico, escarabajo y la estrella
+1UP. Cada efecto (tabla en 0x80074898) dice desde que cuadro empieza. `sprites.py S3W particulas`.
 
 ## Direcciones de los codigos de GameShark (confirman lo propio)
 
@@ -183,8 +206,9 @@ los 15 bancos la tabla de tamanos suma justo el .VBD). `FMV\*.STR` salen a AVI c
 
 - `.INO`: empieza con `00 10 00 10 40 00 40 00` y un numero (0x29D en el HUB); luego entradas de
   12 bytes `ff ff 00 00 00 00 02 00 00 00 00 00`. Parece una cuadricula de 64x64 del mundo.
-- Los parametros propios de cada tipo de objeto (`+0x1C`, 127 bytes).
-- Las particulas (seccion 5 del .INO) y los campos de las celdas que no son objetos.
+- Los parametros de los objetos que no son enemigos (cofres, Salem, jefes).
+- La partida guardada (bloque de 0x13AC bytes en 0x800C8518): se saben vidas +0x00, gemas +0x3E y
+  huevos +0x62.
 - `ANIMS\*.ANI`: firma `MAO\0`.
 - `SOUND\*.VHD/.VBD`: VAB estandar de Sony (`pBAV`).
 - `FMV\*.STR`: video estandar, se abre con jPSXdec.
