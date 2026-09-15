@@ -70,12 +70,57 @@ Dos buffers de 512x220 en la mitad izquierda de la VRAM (y 0 y y 220 aprox.).
 Lo lee FUN_8002456c (WobjCode.c): un contador de 32 bits, esa cantidad de objetos del mundo de 0x9C bytes,
 otro contador y registros de 0x18 bytes. En el HUB: 8 objetos y 2 registros, 1304 bytes justos.
 
+## Ciclo principal y selector de niveles
+
+FUN_80010030 es el ciclo principal. Carga el nivel del byte `0x8007CA00` (0 menu, 1-3 Stone, 4-6 Egypt,
+7-9 Japan, 10-12 West, 13 HUB, 14 Chaos; tablas de nombres en 0x80062A38 sonido, 0x80062A78 .TEX,
+0x80062AB8 .PIC) y juega mientras el halfword `0x8007C9FC` no sea 0. `scripts\ir_a_nivel.py` escribe el
+nivel y pone ese halfword en 0: el juego carga el nivel pedido (probado con Stone 3, Volcanic Caves).
+Restos de desarrollo en ese ciclo: si falta el .PIC o el .TEX, convierte desde los originales y dice
+"Please restart.... :oP".
+
+## Posicion de Sabrina, resuelto
+
+`+0x24 +0x28 +0x2C` de su objeto son x y z (int32). En el HUB no cambiaban porque al empezar Sabrina
+esta frenada ante FashionDiva. `scripts\visitar.py` la teletransporta junto a cada objeto de un nivel.
+
+## `WRLDDATA\*.BIN`, objetos (FUN_800246a0)
+
+`+0x00 +0x04 +0x08` posicion, `+0x0C` tipo (int16), `+0x0E +0x10 +0x12` rotacion, `+0x14 +0x16 +0x18`
+escala (4096 = 1.0), `+0x1C` 127 bytes de parametros. Tipo 1 = inicio de Sabrina (su x coincide con la
+de ella al empezar). Tipos 4, 0x12, 0x13, 0x17 aparte (0x17 sonido). El resto usa la tabla de clases
+(0x80074858 + 4*nivel, 0x54 bytes por tipo: funcion que lo maneja y modelo), igual en todos los niveles.
+Enemigos: 2, 14, 15, 16, 17, 22 (sus funciones restan +0x118). Resumen en `notas\OBJETOS.md`
+(`scripts\wobj.py`); fotos por tipo en Stone 3 con `visitar.py`.
+
+## `.INO`, resuelto (`scripts\ino.py`, `scripts\ino_obj.py`)
+
+Leido del cargador FUN_80018670, en este orden:
+1. cuadricula del mundo: int16 A, int16 B, int16 ancho, int16 alto, int32 C; A*12, B*8, C*2 bytes (64x64)
+2. uint16 n; n*32 bytes (FUN_80024328)
+3. int16 ntex; ntex*32 (texturas); 0xDC bytes; un arbol de nodos por modelo de la lista del nivel
+   (punteros en 0x8007C244 + 4*nivel; nombres .bud de desarrollo, por ejemplo `SABdefault.bud`)
+4. uint16 n; n*12 bytes (FUN_80018c14)
+5. uint16 n; n*32 bytes de particulas (FUN_8001f4a8)
+Nodo: int16 nvert (negativo = fin), int16 ntri, int16 nhijos, MATRIX de 32 bytes, int16 largo y nombre
+(con cero al final), hijos, triangulos de 28 bytes (int32 v0 v1 v2, int32 textura, 6 bytes de UV, 6 sin
+descifrar) y vertices de 12 bytes (int16 x y z, relleno, r g b, relleno).
+Comprobado: en el HUB los 124 nodos caen exactos sobre los 124 nombres del archivo, y el juego carga 25
+modelos en el HUB y 51 en Stone 3, lo mismo que las listas. `FRW.INO` se lee hasta el ultimo byte; en
+los demas queda una cola que el juego no lee (en el HUB trae una segunda copia de COSTUMEwest): parecen
+restos de una version anterior del archivo que la herramienta del estudio no recorto.
+Sabrina son dos modelos (cadera para abajo y para arriba) por traje: default, egypt, japan, stone, west.
+Las funciones FUN_8001cf88 y FUN_8001d368 son la herramienta que armaba los .INO desde .bud, .TNF y
+.XDX; quedaron en el juego.
+
 ## Por descifrar
 
 - `.INO`: empieza con `00 10 00 10 40 00 40 00` y un numero (0x29D en el HUB); luego entradas de
   12 bytes `ff ff 00 00 00 00 02 00 00 00 00 00`. Parece una cuadricula de 64x64 del mundo.
-- Que hay dentro de cada objeto de 0x9C de `WRLDDATA` (posicion, tipo de enemigo u objeto).
-- La posicion de Sabrina: `+0x24 +0x28 +0x2C` no cambian al caminar en el HUB; falta encontrarla.
+- Los parametros propios de cada tipo de objeto (`+0x1C`) y el nombre de cada tipo.
+- Los registros de textura de 32 bytes del .INO (para dibujar los modelos con textura) y los 6 bytes
+  finales de cada triangulo.
+- Las secciones 2 y 4 del .INO.
 - `ANIMS\*.ANI`: firma `MAO\0`.
 - `SOUND\*.VHD/.VBD`: VAB estandar de Sony (`pBAV`).
 - `FMV\*.STR`: video estandar, se abre con jPSXdec.
