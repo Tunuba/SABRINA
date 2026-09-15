@@ -36,6 +36,10 @@ class Emu:
         if exe:
             args += ["-exe", exe]
         self.log = os.path.join(LOGS, log)
+        # La salida estandar del lanzador llega vacia; los mensajes del emulador y los printf del
+        # juego (por ejemplo "Loading %s...") van a -logfile
+        self.tty = self.log.replace(".log", ".tty.log")
+        args += ["-logfile", self.tty]
         self._logf = open(self.log, "wb")
         self.p = subprocess.Popen(args, cwd=REDUX, stdout=self._logf, stderr=subprocess.STDOUT,
                                   creationflags=subprocess.CREATE_NO_WINDOW)

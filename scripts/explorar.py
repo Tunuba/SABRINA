@@ -47,7 +47,10 @@ def recorrer(e, nombre, pasos):
 if __name__ == "__main__":
     inicio, nombre, pasos = sys.argv[1], sys.argv[2], sys.argv[3]
     final = sys.argv[sys.argv.index("--guardar") + 1] if "--guardar" in sys.argv else None
-    with Emu(iso=CUE, log=f"explorar_{nombre}.log", extra=("-fastboot",)) as e:
+    # --cue otro.cue usa un disco parchado (en la carpeta disco). Ojo: un estado guardado trae el
+    # ejecutable viejo en la RAM, asi que para ver cambios del ejecutable hay que partir de "arranque".
+    cue = os.path.join(RAIZ, "disco", sys.argv[sys.argv.index("--cue") + 1]) if "--cue" in sys.argv else CUE
+    with Emu(iso=cue, log=f"explorar_{nombre}.log", extra=("-fastboot",)) as e:
         if inicio != "arranque":
             e.cargar(estado(inicio))
             e.esperar(2)

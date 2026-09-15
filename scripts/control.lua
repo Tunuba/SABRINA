@@ -24,6 +24,16 @@ end
 
 local function error400(texto) return 'HTTP/1.1 400 Bad Request\r\n\r\n' .. texto end
 
+-- Lectura y escritura de la RAM por direccion de la PS1 (0x80xxxxxx), para usar desde eval.
+-- Van aqui y no en cada eval porque una URL larga hace que el servidor conteste 404.
+local function p(a, t) return ffi.cast(t, PCSX.getMemPtr() + bit.band(a, 0x1fffff)) end
+function rd32(a) return p(a, 'uint32_t*')[0] end
+function wr32(a, v) p(a, 'uint32_t*')[0] = v end
+function rd16(a) return p(a, 'uint16_t*')[0] end
+function wr16(a, v) p(a, 'uint16_t*')[0] = v end
+function rd8(a) return p(a, 'int8_t*')[0] end
+function wr8(a, v) p(a, 'uint8_t*')[0] = v end
+
 Control = { frames = 0, pulsados = {} }
 local pad = PCSX.SIO0.slots[1].pads[1]
 local B = PCSX.CONSTS.PAD.BUTTON
