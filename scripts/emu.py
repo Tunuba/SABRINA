@@ -104,6 +104,10 @@ class Emu:
     def vram(self):
         return self._pedir("/api/v1/gpu/vram/raw")
 
+    def escribir_vram(self, x, y, ancho, alto, datos):
+        """Escribe un rectangulo de la VRAM (unidades de 16 bits). datos: bytes de ancho*alto*2."""
+        return self._pedir("/api/v1/gpu/vram/raw", datos=bytes(datos), x=x, y=y, width=ancho, height=alto)
+
     def guardar(self, ruta):
         return self.lua("guardar", n=os.path.abspath(ruta))
 

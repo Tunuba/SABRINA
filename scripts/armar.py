@@ -3,6 +3,7 @@
 Uso: python armar.py nombre [--es] [--invencible]
   --es          menus del ejecutable y pantalla de carga en espanol
   --invencible  Sabrina no pierde vida (ver mod_invencible.py)
+  --ropa        pantalon azul en todos los niveles (ver mod_ropa.py)
 Deja
   disco\\<nombre> (Track 01).bin y disco\\<nombre>.cue   para jugar en el emulador
   mods\\<nombre>.ppf                                    parche sobre la pista 1 original
@@ -29,6 +30,11 @@ if "--invencible" in sys.argv:
     exe = mod_invencible.parchar_exe(exe)
     descripcion.append("invencible")
     print(f"invencible: {len(mod_invencible.PARCHES)} instrucciones")
+if "--ropa" in sys.argv:
+    import mod_ropa
+    print("ropa: pantalon azul")
+    cambios.update(mod_ropa.cambios_disco(disco.RAIZ))
+    descripcion.append("pantalon azul")
 if not descripcion:
     sys.exit("no elegiste ningun mod")
 cambios[traducir.EXE] = exe

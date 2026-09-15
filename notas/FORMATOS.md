@@ -90,5 +90,18 @@ otro contador y registros de 0x18 bytes. En el HUB: 8 objetos y 2 registros, 130
    (`control.lua`, ruta `suelo`): el juego original baja la vida de 20 a 19, el parchado se queda en 20,
    tambien arrancando el disco armado desde cero (`prueba_final.py`).
 
-Todo junto: `python armar.py sabrina_es_inv --es --invencible` deja el disco para el emulador y
-`mods\sabrina_es_inv.ppf` (20 KB) para compartir.
+4. Pantalon azul, `scripts\mod_ropa.py`: 6 o 7 paletas por nivel, en los 14 niveles. Comprobado en el
+   HUB arrancando el disco desde cero.
+
+Todo junto: `python armar.py sabrina_todo --es --invencible --ropa` deja el disco para el emulador y
+`mods\sabrina_todo.ppf` (32 KB) para compartir. `jugar.ps1` lo abre con ventana.
+
+## Paletas de Sabrina (decodificando los paquetes de la GPU)
+
+`scripts\gpu_paquetes.py` recorre la RAM buscando los paquetes de poligonos con textura (comandos
+0x24-0x3F) y los agrupa por paleta (CLUT) y pagina de textura, con la caja que ocupan en pantalla. En el
+HUB, de 4400 poligonos, Sabrina usa las paletas de 4 bits de la fila 472 de la VRAM y la de 8 bits
+(512,473) para cabeza y pelo. Comprobado cambiandolas en vivo con `probar_paletas.py`: piernas
+(832,472), cadera (864,472), brazo (896,472), pelo (512,473). La paleta de las piernas esta identica en
+los 14 niveles (en otra posicion en cada .TEX); `FR.TEX` no la tiene y en esas filas trae pixeles de
+imagenes. Los colores guardados son oscuros porque la GPU los multiplica por el color del vertice.
