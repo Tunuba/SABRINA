@@ -1,0 +1,11 @@
+herramientas/
+disco/
+extraido/
+estados/
+prueba_disco/
+notas/logs/
+notas/capturas/
+notas/pic/
+notas/*.png
+__pycache__/
+*.estado
