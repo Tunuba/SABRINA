@@ -1,13 +1,18 @@
+# Nada del juego va al repositorio: ni la imagen, ni lo que se saca de ella.
 herramientas/
 disco/
 extraido/
 estados/
 prueba_disco/
 ghidra/
-notas/ghidra/decompilado.c
+notas/ghidra/
 notas/logs/
 notas/capturas/
 notas/pic/
+notas/tex/
+notas/modelos/
+notas/textos_exe.txt
 notas/*.png
+mods/*.png
 __pycache__/
 *.estado
