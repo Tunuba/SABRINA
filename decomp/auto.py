@@ -65,7 +65,7 @@ def armar_datos_m2c():
                 l = l.replace(m.group(0), f".word .L{m.group(1)}")
         salida.append(l)
     open(DATOS_M2C, "w").writelines(salida)
-    codigo, puestas = [], set()
+    codigo, puestas, final = [], set(), False
     for l in open(os.path.join(AQUI, "asm/800.s")):
         m = re.match(r"\s*\.L([0-9A-F]{8}):", l)
         if m:
@@ -74,12 +74,23 @@ def armar_datos_m2c():
         if m and m.group(1) in destinos and m.group(1) not in puestas:
             codigo.append(f"  .L{m.group(1)}:\n")
             puestas.add(m.group(1))
+        # llamada al final (`j Funcion` y su hueco): m2c no ve lo que escribe el hueco y se come argumentos;
+        # se le da como `jal Funcion`, el hueco y `jr $ra`, que para el C es lo mismo (return Funcion(...))
+        if re.match(r"\s*/\*.*\*/\s+j\s+[A-Za-z_]\w*\s*$", l):
+            l = re.sub(r"(\*/\s+)j(\s+)", r"\1jal\2", l)
+            final = True
+            codigo.append(l)
+            continue
         codigo.append(l)
+        if final and m:
+            codigo.append("    jr         $ra\n    nop\n")
+            final = False
     open(CODIGO_M2C, "w").writelines(codigo)
 
 
 SOLO_TIPOS = os.path.join(AQUI, "build", "solo_tipos.h")
-DECL = re.compile(r"^(extern|static)\s+([\w\s\*]+?)\s*\b(\w+)\s*(\[[^\]]*\])?\s*(=.*)?;")
+# `static s8 D_8006553C[0xE0] = {` con el inicializador en las lineas siguientes tambien cuenta
+DECL = re.compile(r"^(extern|static)\s+([\w\s\*]+?)\s*\b(\w+)\s*(\[[^\]]*\])?\s*(=.*)?(;.*|=\s*\{\s*)$")
 
 
 def m2c(funcion, contexto, extra=()):
@@ -100,37 +111,113 @@ def declaraciones(texto):
     return res
 
 
+PROTOTIPOS = os.path.join(AQUI, "include", "prototipos.h")
+
+
+def base_contexto(funcion):
+    """Tipos de juego.h y los prototipos de aridad.py (cuantos argumentos pasar en cada llamada y si lo que
+    devuelven se usa). El de la propia funcion va solo si se sabe si devuelve algo (sin la marca ?); si no,
+    m2c lo deduce."""
+    protos = [l for l in open(PROTOTIPOS) if not (re.match(r"\w+ " + funcion + r"\(", l) and "/* ? */" in l)] \
+        if os.path.exists(PROTOTIPOS) else []
+    nombres = {m.group(1) for l in protos for m in [re.match(r"(?:s32|void) (\w+)\(", l)] if m}
+    return open(SOLO_TIPOS).read() + "\n" + "".join(protos), nombres
+
+
 def m2c_dos_pasadas(funcion, extra=()):
     """1) sin tipos de datos, para que m2c infiera el ancho de cada acceso; 2) con esos tipos y los
     desconocidos como arreglos de bytes. Devuelve (texto, declaraciones para el encabezado)."""
-    t1 = m2c(funcion, SOLO_TIPOS, extra)
+    base, funciones = base_contexto(funcion)
+    ctx1 = os.path.join(AQUI, "build", "ctx", funcion + "_1.h")
+    os.makedirs(os.path.dirname(ctx1), exist_ok=True)
+    open(ctx1, "w").write(base)
+    t1 = m2c(funcion, ctx1, extra)
     decl = declaraciones(t1)
     lineas = []
     for nom, (tipo, arr) in decl.items():
+        if nom in funciones:
+            continue                                   # es una funcion; ya tiene su prototipo
         if "M2C_UNK" in tipo or tipo in ("?", ""):
             lineas.append(f"extern u8 {nom}[];")
         else:
             lineas.append(f"extern {tipo} {nom}{'[]' if arr else ''};")
     ctx = os.path.join(AQUI, "build", "ctx", funcion + ".h")
-    os.makedirs(os.path.dirname(ctx), exist_ok=True)
     with open(ctx, "w") as f:
-        f.write(open(SOLO_TIPOS).read() + "\n" + "\n".join(lineas) + "\n")
+        f.write(base + "\n" + "\n".join(lineas) + "\n")
     t2 = m2c(funcion, ctx, extra)
     return t2, lineas
 
 
+_funciones = None
+
+
+def funciones_elf():
+    global _funciones
+    if _funciones is None:
+        sal = subprocess.run(["mipsel-linux-gnu-nm", os.path.join(AQUI, "build/slus_012.08.elf")],
+                             capture_output=True, text=True).stdout
+        # en el ELF de splat los datos tambien quedan como T: las funciones son las marcadas type:func en
+        # symbol_addrs.txt y las func_ que puso splat
+        marcadas = set(re.findall(r"^(\w+) = 0x[0-9A-Fa-f]+; // type:func", open(os.path.join(AQUI, "symbol_addrs.txt")).read(), re.M))
+        _funciones = {p[2] for p in (l.split() for l in sal.splitlines()) if len(p) == 3 and p[1] in "Tt"
+                      and (p[2] in marcadas or re.fullmatch(r"func_[0-9A-F]{8}", p[2]))}
+    return _funciones
+
+
+DEFINICION = re.compile(r"^(static\s+)?[\w\s\*]+?\b\w+\s*(\[[^\]]*\])?\s*(=.*)?;?$")
+
+
+def ensanchar_parametros(t):
+    """Un parametro s8/u8/s16/u16 llega en un registro entero. GCC da por hecho que quien llama ya lo
+    recorto; el codigo del juego lo recorta el mismo. Para hacer lo mismo con cualquier valor del registro,
+    el parametro entra como s32 y se recorta al empezar la funcion."""
+    m = re.search(r"^(\w[\w\s\*]*?\b\w+)\(([^)]*)\)\s*\{\n", t, re.M)
+    if not m or m.group(2).strip() in ("", "void"):
+        return t
+    params, recortes = [], []
+    for p in m.group(2).split(","):
+        q = re.fullmatch(r"\s*(s8|u8|s16|u16)\s+(\w+)\s*", p)
+        if q:
+            params.append(f"s32 {q.group(2)}_reg")
+            recortes.append(f"    {q.group(1)} {q.group(2)} = ({q.group(1)}) {q.group(2)}_reg;\n")
+        else:
+            params.append(p.strip())
+    if not recortes:
+        return t
+    return t[:m.start()] + f"{m.group(1)}({', '.join(params)}) {{\n" + "".join(recortes) + t[m.end():]
+
+
 def limpiar(texto, externas):
     lineas = []
+    profundidad, en_dato = 0, False
     for l in texto.splitlines():
         s = l.strip()
-        if DECL.match(s) and "(" not in s.split("=")[0]:
+        if en_dato:                                    # sigue el inicializador de un dato de varias lineas
+            en_dato = not s.endswith(";")
+            continue
+        if profundidad == 0 and s and not s.startswith(("#", "/*", "//")) and "(" not in s.split("=")[0] \
+                and DEFINICION.match(s):
+            # dato del juego que m2c define con su valor inicial (`s32 D_8007CA88 = 0;`): compilado asi seria
+            # una copia nueva y no la memoria del juego; va en el encabezado como extern
+            en_dato = not s.endswith(";")
+            continue
+        afuera = profundidad == 0
+        profundidad += l.count("{") - l.count("}")
+        if afuera and DECL.match(s) and "(" not in s.split("=")[0]:
             continue                                   # datos: van en el encabezado como extern
-        if re.match(r"^[\w\s\*]+\b\w+\s*\([^;{]*\)\s*;\s*(/\*.*\*/)?$", s):
-            continue                                   # prototipos que inventa m2c
+        if afuera and re.match(r"^[\w\s\*]+\b\w+\s*\([^;{]*\)\s*;\s*(/\*.*\*/)?$", s):
+            continue                                   # prototipos que inventa m2c (dentro de una funcion
+                                                       # la misma forma es `return f(x);`)
         lineas.append(l)
     t = "\n".join(lineas)
     t = re.sub(r"(?<![\w?])\?(?![\w?])", "s32", t)             # tipos desconocidos
+    t = ensanchar_parametros(t)
     cab = "\n".join(e.replace("M2C_UNK", "u8") for e in externas)
+    # funciones que se usan como valor (punteros a funcion): sin declaracion no compila; se declaran sin
+    # prototipo, igual que la declaracion implicita de una llamada
+    definidas = set(re.findall(r"^\w[\w\s\*]*?\b(\w+)\s*\([^;]*$", t, re.M))
+    como_valor = {n for n in re.findall(r"\b([A-Za-z_]\w*)\b(?!\s*\()", t) if n in funciones_elf()}
+    cab += "".join(f"\nextern s32 {n}();" for n in sorted(como_valor - definidas))
     return ('#include "juego.h"\n#include "m2c_macros.h"\n#include "m2c_ajustes.h"\n\n' + cab + "\n\n" + t + "\n")
 
 
@@ -163,7 +250,8 @@ def procesar(funcion, tam):
             with contextlib.redirect_stdout(salida):
                 ok = verificar.verificar(c, [funcion], n_variantes=30)
             ultima = salida.getvalue().strip().split("\n")[-1]
-            return funcion, tam, "IGUAL" if ok else "DISTINTO", ultima[:120]
+            estado = ultima.rsplit("-> ", 1)[-1] if "-> " in ultima else ("IGUAL" if ok else "DISTINTO")
+            return funcion, tam, estado, ultima[:120]
         except SystemExit as ex:
             msg = str(ex).strip().split("\n")
             err = next((m for m in msg if "error" in m), msg[-1] if msg else "")
@@ -185,7 +273,8 @@ def main():
     hechas = set()
     for c in glob.glob(os.path.join(AQUI, "src", "*", "*.c")):
         if os.sep + "auto" + os.sep not in c:
-            hechas |= set(re.findall(r"^\w[\w\s\*]*?\b(\w+)\(", open(c).read(), re.M))
+            # definiciones, no las declaraciones extern de lo que se llama
+            hechas |= set(re.findall(r"^(?!extern\b)\w[\w\s\*]*?\b(\w+)\([^;]*$", open(c).read(), re.M))
     funcs = []
     for l in open(os.path.join(AQUI, "funciones_juego.tsv")):
         d, tam, nom = l.split()
@@ -208,8 +297,16 @@ def main():
                 res.append((futs[fu], 0, "ERROR", str(e)[:120]))
             if (i + 1) % 50 == 0:
                 print(f"  {i + 1} de {len(futs)}", flush=True)
+    tsv = os.path.join(AQUI, "progreso.tsv")
+    if a.solo and os.path.exists(tsv):
+        # con --solo se actualizan esas filas y el resto queda como estaba
+        nuevas = {r[0] for r in res}
+        for l in list(open(tsv))[1:]:
+            p = l.rstrip("\n").split("\t")
+            if p[0] not in nuevas:
+                res.append((p[0], int(p[1]), p[2], p[3] if len(p) > 3 else ""))
     res.sort()
-    with open(os.path.join(AQUI, "progreso.tsv"), "w") as f:
+    with open(tsv, "w") as f:
         f.write("funcion\ttamano\testado\tdetalle\n")
         for r in res:
             f.write("\t".join(str(x) for x in r) + "\n")

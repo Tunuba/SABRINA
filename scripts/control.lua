@@ -142,17 +142,25 @@ end
 
 -- Captura de llamadas reales para verificar la descompilacion: las primeras n veces que el juego entra a
 -- la direccion a, guarda los registros y toda la memoria (RAM de 2 MB y el scratchpad de 1 KB).
---   capturar?a=0x80047e48&n=5&dir=C:\...\capturas\RecogibleNoTomado
+--   capturar?a=0x80047e48&n=5&dir=C:\...\capturas\RecogibleNoTomado[&inicio=5][&geo=1]
 -- Deja en dir: NN.ram, NN.spad y NN.regs (una linea "r0 at v0 ... ra pc hi lo" en hexadecimal).
 H.capturar = function(req)
   local q = consulta(req)
   local a, n, dir = tonumber(q.a), tonumber(q.n or '5'), q.dir
+  -- inicio: numero del primer archivo (para sumar capturas a las que ya hay)
+  -- geo=1: en vez de las primeras n llamadas, las llamadas 1, 4, 16, 64... (situaciones mas distintas)
+  local inicio, geo = tonumber(q.inicio or '0'), q.geo == '1'
   if not a or not dir then return error400('faltan a o dir') end
-  local hechas = 0
+  local hechas, llamadas, proxima = 0, 0, 1
   Control.bpcap = Control.bpcap or {}
   Control.bpcap[a] = PCSX.addBreakpoint(a, 'Exec', 4, 'captura', function()
     if hechas >= n then return true end
-    local nombre = string.format('%s\\%02d', dir, hechas)
+    llamadas = llamadas + 1
+    if geo then
+      if llamadas < proxima then return true end
+      proxima = proxima * 4
+    end
+    local nombre = string.format('%s\\%02d', dir, inicio + hechas)
     local f = Support.File.open(nombre .. '.ram', 'TRUNCATE')
     f:write(ffi.string(PCSX.getMemPtr(), 0x200000))
     f:close()
