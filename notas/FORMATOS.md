@@ -113,14 +113,78 @@ Sabrina son dos modelos (cadera para abajo y para arriba) por traje: default, eg
 Las funciones FUN_8001cf88 y FUN_8001d368 son la herramienta que armaba los .INO desde .bud, .TNF y
 .XDX; quedaron en el juego.
 
+## Triangulo de 28 bytes, completo
+
+int32 v0 v1 v2, int32 textura, u0 v0 u1 v1 u2 v2, y 6 bytes:
+- byte 0: tipo de superficie. 0 suelo normal, 0x01 otro suelo, 0x02 suelo que hace dano, 0x08 muerte,
+  0x10 pared (su normal es horizontal en los 252 triangulos de Stone 3), 0x40 pared especial. Son los
+  valores que mira FUN_80033fc8 en `+0x80` del objeto.
+- byte 1: siempre 0.
+- bytes 2 a 4: normal de la cara, int8 con 127 = 1.0; en los 2473 triangulos de Stone 3 apunta del lado
+  de (v1-v0)x(v2-v0).
+- byte 5: ejes para la prueba de colision (FUN_8003a268): bits 0-1 un eje, bits 2-3 el otro. 8 = plano
+  XZ (suelos), 9 = YZ, 4 = XY (paredes).
+
+## Cuadricula del mundo (seccion 1 del .INO)
+
+64x64 celdas de 0x40000 unidades, de -0x800000 a 0x800000 en x y z (FUN_8003ae28). Fila =
+(~((z >> 16) + 0x80) & 0xFF) >> 2, columna = ((x >> 16) + 0x80) >> 2.
+- Listas (8 bytes): int16 cantidad, int32 inicio en la tabla de indices; los indices (int16) son
+  triangulos del modelo del mundo. Es la colision por celda. Comprobado: la suma de las listas es igual a
+  la cantidad de indices y todos caen dentro del mundo, en todos los niveles.
+- Celdas (12 bytes): int16, int16, int16 cantidad de objetos, int16 primer objeto de WRLDDATA (los
+  objetos van ordenados por celda), uint32 valor de zona. FUN_80020f00 activa los objetos de las celdas
+  cercanas a Sabrina. Comprobado: 119 de 119 objetos de Stone 3 caen en la celda que los lista.
+
+## Seccion 2 del .INO: sprites de pantalla
+
+59 registros con el formato de textura: iconos de los 6 hechizos, el aro, la barra de vida, los digitos,
+gemas, huevo, los 12 signos del zodiaco, los objetos anacronicos y los retratos para los dialogos.
+`scripts\sprites.py`.
+
+## Seccion 4 del .INO: la letra
+
+Un registro de 12 bytes por casilla (94): +4 TPAGE, +5 avance, +6 CLUT (cada letra tiene la suya), +8 u,
++9 v, +10 ancho, alto 32. El juego pasa cada caracter ASCII a su casilla con la tabla de 128 bytes en
+`0x8006551C`: a-z 0-25, A-Z 47-72, 0-9 35-44, y los iconos @ triangulo, < cuadrado, = X, > circulo,
+` cruceta, ^ bloque de barra. El espacio da 126 y avanza 7 sin dibujar. `scripts\letra.py`.
+
+## Objetos: que es cada tipo
+
+El numero de tipo es un puesto; la tabla de clases de cada nivel dice que modelo usa (entrada m-1 de la
+lista de modelos del nivel). 1 Sabrina, 2/15/16/17/22 enemigos (Stone: brujo, cavernicola,
+triceratops, planta, cavernicola mujer; Egypt: lanzador, camello, guardia; Japan: monje, ninja, geisha;
+West: gordo, nino, coyote), 3 Salem en su burbuja, 13 trampa con puas, 24 y 25 gemas especiales, 28 jefe
+(RockTroll, chaos), 39 ficha del zodiaco, 40 cofre, 41 caja, 46 roca rodante, 47 mula, 49 FashionDiva, 50
+el ropero, 51 pesa, 52 planta rodante. Los tipos 4, 0x12, 0x13 y 0x17 son objetos para recoger: el
+juego anota en 0x800C7990 los ya recogidos y no los vuelve a poner.
+
+## Direcciones de los codigos de GameShark (confirman lo propio)
+
+Vida 0x8008B210 (= objeto de Sabrina + 0x118), vidas 0x800C8518, gemas 0x800C8556, huevos 0x800C857A,
+hechizos 0x8007C8B0 a 0x8007C8B5, objetos anacronicos 0x8007C88C a 0x8007C88F. 0x800C8518 es tambien el
+bloque de 0x13AC bytes que prepara el ciclo principal: parece la partida guardada.
+
+## Animaciones, nombres
+
+Las tablas de punteros a los nombres .MAO dan el orden real de cada .ANI: Sabrina 0x8006DA34 (47),
+Egypt 0x8006DEC8 (43), Stone 0x8006E30C (38), Japan 0x8006E774 (43), West 0x8006EC18 (44), Chaos 0x8006ED94
+(8), Hub 0x8006EE40 (6). En las 229 animaciones, donde hay modelo, los huesos coinciden con sus piezas
+(`scripts\anims_nombres.py`). `animar.py` hace GIF de cualquier personaje; los texeles con el bit 15 se
+mezclan al 50 % (la burbuja de Salem).
+
+## Sonidos y videos
+
+`SOUND\*.VHD/.VBD` son VAB estandar; `scripts\vab.py` saca las 45 a 55 muestras de cada nivel a WAV (en
+los 15 bancos la tabla de tamanos suma justo el .VBD). `FMV\*.STR` salen a AVI con jPSXdec:
+`java -jar jpsxdec.jar -f "<pista 1>.bin" -x indice.idx -a video -dir notas\videos`.
+
 ## Por descifrar
 
 - `.INO`: empieza con `00 10 00 10 40 00 40 00` y un numero (0x29D en el HUB); luego entradas de
   12 bytes `ff ff 00 00 00 00 02 00 00 00 00 00`. Parece una cuadricula de 64x64 del mundo.
-- Los parametros propios de cada tipo de objeto (`+0x1C`) y el nombre de cada tipo.
-- Los registros de textura de 32 bytes del .INO (para dibujar los modelos con textura) y los 6 bytes
-  finales de cada triangulo.
-- Las secciones 2 y 4 del .INO.
+- Los parametros propios de cada tipo de objeto (`+0x1C`, 127 bytes).
+- Las particulas (seccion 5 del .INO) y los campos de las celdas que no son objetos.
 - `ANIMS\*.ANI`: firma `MAO\0`.
 - `SOUND\*.VHD/.VBD`: VAB estandar de Sony (`pBAV`).
 - `FMV\*.STR`: video estandar, se abre con jPSXdec.

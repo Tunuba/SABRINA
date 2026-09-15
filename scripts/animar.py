@@ -8,6 +8,8 @@ la de la pieza en el modelo. Sabrina son dos modelos: piernas (8 huesos, animaci
 
 Uso: python animar.py SABRun [traje]      traje: default, egypt, japan, stone, west
      python animar.py todas               un GIF por cada animacion de Sabrina (traje default)
+     python animar.py S3W RockTroll STONE TROLLtaunt     cualquier personaje: nivel, modelo, .ANI, animacion
+Los nombres de las animaciones salen de las tablas de punteros del ejecutable (anims_nombres.py).
 Salida: notas\\modelos\\animaciones\\<nombre>.gif
 """
 import os
@@ -105,7 +107,36 @@ def animar(nombre, traje="default"):
     return ruta, imgs
 
 
+def animar_personaje(nivel, modelo, mundo, anim, giro=2.4, inclinacion=0.15):
+    """Anima un modelo de un solo cuerpo (enemigos, Salem, Chaos) con una animacion de <mundo>.ANI."""
+    from anims_nombres import nombres_de
+    s = ino.leer_ino(nivel)
+    tex = Texturas(nivel, s["texturas"])
+    mods = {nom.replace("\\", "/").split("/")[-1][:-4].lower(): h for nom, h in s["modelos"]}
+    nodos = mods[modelo.lower()]
+    anims, _ = ani.leer_ani(mundo)
+    nombres = [n.split("\\")[-1][:-4].lower() for n in nombres_de(mundo.upper())]
+    a = anims[nombres.index(anim.lower())]
+    marcos = []
+    for f in range(len(a["pistas"])):
+        ang, tr = cuadro(a, f)
+        marcos.append(aplanar_anim(nodos, ang, tr))
+    todos = np.vstack([m[0] for m in marcos]) * np.array([1, -1, 1])
+    centro = (todos.max(0) + todos.min(0)) / 2
+    esc = 0.8 * 360 / max(np.ptp(todos[:, 1]), np.ptp(todos[:, 0]), np.ptp(todos[:, 2]), 1)
+    imgs = [dibujar(V, C, T, D, tex, ancho=360, alto=360, giro=giro, inclinacion=inclinacion, centro=centro, esc=esc)
+            for V, C, T, D in marcos]
+    os.makedirs(OUT, exist_ok=True)
+    ruta = os.path.join(OUT, f"{anim}.gif")
+    imgs[0].save(ruta, save_all=True, append_images=imgs[1:], duration=66, loop=0)
+    return ruta, imgs
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 5:           # nivel modelo mundo animacion
+        ruta, imgs = animar_personaje(*sys.argv[1:5])
+        print(ruta, len(imgs), "cuadros")
+        sys.exit()
     if sys.argv[1] == "todas":
         for n in nombres_sabrina():
             if n.startswith("SAB") and not n.startswith("SAB1"):

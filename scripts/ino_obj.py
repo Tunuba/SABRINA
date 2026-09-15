@@ -41,7 +41,9 @@ class Texturas:
 
     def _rgb(self, v):
         r, g, b = v & 31, (v >> 5) & 31, (v >> 10) & 31
-        return np.stack([r, g, b], -1).astype(float) * (255 / 31), v != 0
+        # alfa: 0 transparente, 1 opaco, 0.5 semitransparente (bit 15 encendido: la PS1 lo mezcla con el fondo)
+        alfa = np.where(v == 0, 0.0, np.where(v & 0x8000, 0.5, 1.0))
+        return np.stack([r, g, b], -1).astype(float) * (255 / 31), alfa
 
     def pagina(self, tpage, clut):
         """(rgb 256x256x3, alfa 256x256) de la pagina vista con esa paleta, o None si no esta en el .TEX."""
@@ -164,7 +166,8 @@ def dibujar(V, C, T, D=None, tex=None, ancho=480, alto=360, giro=0.6, inclinacio
     sin_luz = (col > 250).all()
     if sin_luz:
         col = np.full_like(col, 128.0)       # personajes: la luz la pone el juego al vuelo
-    for k, (a, b, c) in enumerate(T):
+    # dos pasadas: primero lo opaco (escribe profundidad), despues lo semitransparente mezclado al 50 %
+    for pasada, (a, b, c), k in [(p, t, i) for p in (0, 1) for i, t in enumerate(T)]:
         xs, ys = np.array([sx[a], sx[b], sx[c]]), np.array([sy[a], sy[b], sy[c]])
         x0, x1 = max(int(xs.min()), 0), min(int(xs.max()) + 1, ancho)
         y0, y1 = max(int(ys.min()), 0), min(int(ys.max()) + 1, alto)
@@ -192,7 +195,11 @@ def dibujar(V, C, T, D=None, tex=None, ancho=480, alto=360, giro=0.6, inclinacio
                 u = np.clip((w0 * uv[0, 0] + w1 * uv[1, 0] + w2 * uv[2, 0]).astype(int), 0, 255)
                 v = np.clip((w0 * uv[0, 1] + w1 * uv[1, 1] + w2 * uv[2, 1]).astype(int), 0, 255)
                 texel, alfa = pag[0][v, u], pag[1][v, u]
-                ok &= alfa
+                ok &= (alfa == 1.0) if pasada == 0 else (alfa == 0.5)
+        if pasada == 1 and texel is None:
+            continue
+        if not ok.any():
+            continue
         if texel is not None:
             rgb = texel * vc / 128.0
             if sin_luz:
@@ -201,8 +208,12 @@ def dibujar(V, C, T, D=None, tex=None, ancho=480, alto=360, giro=0.6, inclinacio
         else:
             n = np.cross(P[b] - P[a], P[c] - P[a])
             rgb = vc * (0.45 + 0.55 * abs(n[2]) / (np.linalg.norm(n) + 1e-9)) * 1.6
-        zona[ok] = zz[ok]
-        img[y0:y1, x0:x1][ok] = np.clip(rgb[ok], 0, 255)
+        if pasada == 0:
+            zona[ok] = zz[ok]
+            img[y0:y1, x0:x1][ok] = np.clip(rgb[ok], 0, 255)
+        else:
+            trozo = img[y0:y1, x0:x1]
+            trozo[ok] = np.clip(trozo[ok] * 0.5 + rgb[ok] * 0.5, 0, 255)
     return Image.fromarray(img.astype(np.uint8))
 
 
