@@ -20,3 +20,12 @@ __pycache__/
 *.lnk
 notas/sonidos/
 notas/videos/
+# descompilacion: el desensamblado, lo compilado, las capturas de memoria y el C sacado del juego no se publican
+decomp/asm/
+decomp/build/
+decomp/capturas/
+decomp/src/
+decomp/SLUS_012.08
+decomp/*.ld
+decomp/*.d
+decomp/undefined_*.txt

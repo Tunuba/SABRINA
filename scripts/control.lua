@@ -140,6 +140,43 @@ H.suelo = function(req)
   return 'ok'
 end
 
+-- Captura de llamadas reales para verificar la descompilacion: las primeras n veces que el juego entra a
+-- la direccion a, guarda los registros y toda la memoria (RAM de 2 MB y el scratchpad de 1 KB).
+--   capturar?a=0x80047e48&n=5&dir=C:\...\capturas\RecogibleNoTomado
+-- Deja en dir: NN.ram, NN.spad y NN.regs (una linea "r0 at v0 ... ra pc hi lo" en hexadecimal).
+H.capturar = function(req)
+  local q = consulta(req)
+  local a, n, dir = tonumber(q.a), tonumber(q.n or '5'), q.dir
+  if not a or not dir then return error400('faltan a o dir') end
+  local hechas = 0
+  Control.bpcap = Control.bpcap or {}
+  Control.bpcap[a] = PCSX.addBreakpoint(a, 'Exec', 4, 'captura', function()
+    if hechas >= n then return true end
+    local nombre = string.format('%s\\%02d', dir, hechas)
+    local f = Support.File.open(nombre .. '.ram', 'TRUNCATE')
+    f:write(ffi.string(PCSX.getMemPtr(), 0x200000))
+    f:close()
+    f = Support.File.open(nombre .. '.spad', 'TRUNCATE')
+    f:write(ffi.string(PCSX.getScratchPtr(), 0x400))
+    f:close()
+    local r = PCSX.getRegisters()
+    local t = {}
+    for i = 0, 31 do t[#t + 1] = string.format('%08x', r.GPR.r[i]) end
+    t[#t + 1] = string.format('%08x', r.pc)
+    t[#t + 1] = string.format('%08x', r.GPR.n.hi)
+    t[#t + 1] = string.format('%08x', r.GPR.n.lo)
+    f = Support.File.open(nombre .. '.regs', 'TRUNCATE')
+    f:write(table.concat(t, ' '))
+    f:close()
+    hechas = hechas + 1
+    return true
+  end)
+  return 'ok'
+end
+H.capturadas = function(req)
+  return 'ok'
+end
+
 H.salir = function(req)
   PCSX.nextTick(function() PCSX.quit(0) end)
   return 'ok'

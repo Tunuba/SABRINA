@@ -1,0 +1,83 @@
+direccion	tipo	nombre	nota
+80084754	dato	_gp	valor del registro gp en todo el juego
+80010030	funcion	BuclePrincipal	carga el nivel de nivel_actual y juega mientras jugando != 0
+80010ef4	funcion	ImprimirDepuracion	printf del juego; en la version comercial no sale por ningun lado
+80012e6c	funcion	SubirAVRAM	sube un .PIC o .TEX a la VRAM
+80017d0c	funcion	Afirmar	assert con archivo y linea
+80017f54	funcion	CargarArchivoEntero	lee un archivo del CD a memoria
+80017f98	funcion	ReproducirSTR	video FMV
+80018050	funcion	PantallasLegales	logos y aviso legal (FET, FEP, FEA, FEaC)
+80018670	funcion	CargarINO	lee las cinco secciones del .INO
+80018728	funcion	ArchivoIniciar
+80018838	funcion	ArchivoAbrir	imprime "Loading %s..."
+80018b04	funcion	ArchivoLeer
+800187a0	funcion	ArchivoCerrar
+80018c14	funcion	LeerLetraINO	seccion 4: tabla de letras
+80018d3c	funcion	DibujarTexto	textos de menus con la letra del nivel
+8001af34	funcion	HerramientaConvertirTEX	del desarrollo: arma el .TEX desde los originales
+8001b4d8	funcion	RegistrarTextura	lista de texturas del .INO
+8001b5a0	funcion	TexturaPorIndice
+8001bcc8	funcion	HerramientaConvertirPIC	del desarrollo: arma el .PIC desde los originales
+8001c7d4	funcion	LeerNodoModelo	arbol de nodos de un modelo
+8001ce0c	funcion	LeerModelosINO	seccion 3: texturas, tabla de 0xDC y modelos del nivel
+8001cf88	funcion	HerramientaArmarModelos	del desarrollo: arma los modelos del .INO desde .bud y .TNF
+8001d230	funcion	LeerCuadriculaINO	seccion 1: celdas, listas de colision e indices
+8001d368	funcion	HerramientaArmarCuadricula	del desarrollo: desde .XDX
+8001e364	funcion	MatrizDesdeAngulos	Rx * Ry * Rz * escala
+8001e9e4	funcion	CrearParticula	efecto de la tabla de 0x80074898
+8001f4a8	funcion	LeerParticulasINO	seccion 5: cuadros de particulas
+80020a48	funcion	BitDeZona	numero de zona 0-16 a un bit
+80020d04	funcion	DibujarCeldasVisibles	celdas de la zona de Sabrina y las vecinas
+80020f00	funcion	ActivarObjetosCercanos	crea los objetos de las celdas cercanas
+80022f80	funcion	ActualizarBarraVida
+80024328	funcion	LeerSpritesINO	seccion 2: sprites de pantalla
+8002456c	funcion	CargarWRLDDATA	objetos y puntos de ruta del nivel
+800246a0	funcion	CrearObjetoMundo	usa la tabla de clases del nivel
+80024b84	funcion	CrearRecogible	tipos 4, 0x12, 0x13, 0x17
+8002f02c	funcion	LeerMAO	una animacion
+8002f1dc	funcion	CargarANI	anims\%s
+800310b4	funcion	DanoPorEnemigo	resta el +0x119 del atacante salvo con truco_invencible
+80033154	funcion	FisicaObjeto	gravedad 0x51E, colision, tipo de suelo en +0x80
+80033fc8	funcion	DanoPorSuelo	tipos de suelo 8, 4 y 2; imprime SABRINA IS INVINCIBLE
+8003a268	funcion	PuntoEnTriangulo	prueba 2D con los ejes del byte 27 del triangulo
+8003ae28	funcion	CeldaDePosicion	x, z a indice de celda 64x64
+8003d7fc	funcion	CargarSonidoNivel	SOUND\%s
+8003da4c	funcion	TocarSonido	efecto de sonido
+80044f50	funcion	IniciarEnemigoTipo15	vida, dano, ruta y radios
+80047260	funcion	IniciarRecogibleTipo18
+800472e8	funcion	IniciarRecogibleTipo19
+80047370	funcion	RegistrarRecogible
+80047e48	funcion	RecogibleNoTomado	1 si no esta en recogidos
+80047e9c	funcion	IniciarRecogibleTipo4
+8004a32c	funcion	IniciarRecogibleTipo23
+8004dc80	funcion	Reservar	malloc con archivo y linea
+8004dec8	funcion	Liberar
+80062a38	dato	tabla_sonido_niveles	nombres .raw por nivel
+80062a78	dato	tabla_tex_niveles
+80062ab8	dato	tabla_pic_niveles
+8006551c	dato	ascii_a_letra	128 bytes
+8006da34	dato	mao_sabrina	47 punteros
+8006dec8	dato	mao_egypt	43
+8006e30c	dato	mao_stone	38
+8006e774	dato	mao_japan	43
+8006ec18	dato	mao_west	44
+8006ed94	dato	mao_chaos	8
+8006ee40	dato	mao_hub	6
+8006ee58	dato	texto_invencible
+80074858	dato	tabla_clases_niveles	15 punteros a registros de 0x54 por tipo
+80074898	dato	tabla_efectos
+800757cc	dato	tabla_valor_gemas	pares efecto, valor
+8007c244	dato	tabla_modelos_niveles	15 punteros a listas de nombres .bud
+8007c88c	dato	objetos_anacronicos	4 bytes
+8007c8b0	dato	hechizos	6 bytes, cantidad de cada hechizo
+8007c9fc	dato	jugando	int16
+8007ca00	dato	nivel_actual	0 menu, 1-3 Stone, 4-6 Egypt, 7-9 Japan, 10-12 West, 13 HUB, 14 Chaos
+8007caf8	dato	p_sabrina	puntero al objeto de Sabrina
+8007cb1d	dato	vida_barra	copia de la vida para la pantalla
+8007cb74	dato	truco_invencible	nadie lo escribe
+80086364	dato	modelos_cargados	punteros, desde el indice 1
+800c7990	dato	recogidos	registros de 0x38
+800c8518	dato	partida	bloque de 0x13AC; vidas en +0
+800c8556	dato	gemas
+800c857a	dato	huevos
+800d58a4	dato	puntos_ruta	registros de 0x18
