@@ -22,7 +22,7 @@ typedef struct Nodo {
     u8 _54[4];
     void *dibujo;                    /* 0x58, lo que hay que dibujar */
     s16 visible;                     /* 0x5C */
-    s16 orden;                       /* 0x5E */
+    s16 triangulos;                  /* 0x5E, cuantos triangulos tiene el dibujo */
     u8 _60[4];
     u8 banderas;                     /* 0x64, bit 0 no dibujar, bit 1 la matriz de mundo esta al dia */
     u8 _65[3];

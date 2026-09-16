@@ -81,7 +81,16 @@ En lugar de igualar los bytes, cada funcion se reescribe en C y se demuestra que
   pero falla en 13 de 294 variantes; la buena pasa las 294.
 - Unicorn traduce 0x80xxxxxx a la direccion fisica 0x0xxxxxxx: hay que mapear y leer la memoria fisica.
   La primera version comparaba una copia que nadie escribia.
-- Las instrucciones del GTE (cop2) no las emula Unicorn; esas funciones no se pueden verificar asi.
+- Las instrucciones del GTE (cop2) no las emula Unicorn: las emula `decomp\gte.py`, que engancha cada
+  direccion cop2 y hace la cuenta en Python. Estan las cinco ordenes que usa el juego (mvmva, op, rtps,
+  rtpt y nclip), la division por la z con su tabla igual que el hardware (se aparta de la cuenta exacta
+  como mucho en 2, que es lo que se aparta la consola) y el registro de banderas (control 31), que el
+  juego lee con `cfc2 $31` para saber si un triangulo se le salio de la pantalla. Una orden que no este
+  hecha para la corrida: dejarla pasar en silencio haria que las dos versiones se equivocaran igual y el
+  verificador aprobaria sin mirar nada.
+- Ojo con lo que el GTE deja demostrado: las dos versiones ven el mismo coprocesador, asi que un error en
+  gte.py no rompe la comparacion, pero haria que los caminos que toma el codigo no sean los del juego de
+  verdad. Por eso conviene mirar la cobertura de las funciones que dibujan.
 
 - Las capturas tienen que venir de lugares distintos. `BitDeZona` paso todo con capturas del HUB, que no
   tiene zonas, y un mutante (zona 3 devuelve 5 en vez de 4) tambien paso: esa rama nunca corria. Con 4
@@ -101,6 +110,16 @@ Escritas a mano, en `decomp\src\` (el C de m2c queda en `src\auto\` y no se toca
   cada paso, elegir la animacion de su tabla y poner velocidad 0x1000.
 - `varios\azar.c` (numero al azar en punto fijo con una tabla), `varios\matematicas.c` (raiz cuadrada por
   Heron), `varios\bloques.c` (tamano redondeado a bloques), `varios\sonidos_reiniciar.c`, `audio\cd.c`.
+- `geometria\vectores.c`, `geometria\angulos.c`, `geometria\arbol.c` y `geometria\camara.c`: lo que usa el
+  coprocesador. `arbol.c` tiene el recorrido del arbol de piezas de un modelo en sus dos versiones, la que
+  llama a func_80020294 y su gemela func_8001FD50, que lleva el dibujo de los triangulos adentro;
+  `camara.c`, la matriz de la camara, que recibe tres vectores por valor.
+- `objetos\particulas.c` func_8001F6C8: cada particula es un cuadrado suelto que siempre mira a la camara.
+  Pasa IGUAL pero sus capturas solo recorren 40 de 221 instrucciones: no hay ninguna particula viva en
+  ellas. Hace falta capturarla jugando donde salten chispas.
+- `include\dibujo.h` (CuadroTex y TriTex, los POLY_FT4 y POLY_GT3 de Sony), `include\modelo.h` (Vertice,
+  Triangulo de 28 bytes, Textura) y `include\nodo.h` (Matriz y Nodo; el campo 0x5E no era un orden, es
+  cuantos triangulos tiene el dibujo).
 - `include\objeto.h`: lo que se sabe del objeto del mundo (funcion de estado en +0, animacion en +0x1C,
   posicion en +0x24, tabla de animaciones en +0x64, forma de colision en +0xF4, vida en +0x118). Cada campo
   lleva una comprobacion en compilacion de que cae donde debe.

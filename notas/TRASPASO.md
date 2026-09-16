@@ -1,6 +1,6 @@
 # Traspaso, para seguir en otro chat
 
-Estado al 2026-09-15. Leer primero este archivo, luego `README.md`, `notas\FORMATOS.md` y
+Estado al 2026-09-16. Leer primero este archivo, luego `README.md`, `notas\FORMATOS.md` y
 `notas\DESCOMPILACION.md`.
 
 ## Donde esta cada cosa
@@ -31,49 +31,78 @@ Doble clic en `Sabrina.lnk` (escritorio o raiz) o `ARRANCAR.bat`. Disco con mods
   cualquier animacion (`animar.py`), sprites (`sprites.py`), letra (`letra.py`), sonidos (`vab.py`).
 - Descompilacion: ejecutable reconstruido identico desde el desensamblado de splat; el juego se compilo
   con CodeWarrior (no hay compilador para igualar bytes), asi que se hace descompilacion funcional
-  verificada con capturas reales y Unicorn. Ver `notas\DESCOMPILACION.md`.
+  verificada con capturas reales, Unicorn y el coprocesador geometrico emulado. Ver
+  `notas\DESCOMPILACION.md`.
 
-## Donde quedo la descompilacion (2026-09-15, noche)
+## Donde quedo la descompilacion (2026-09-16, madrugada)
 
-Lote de `auto.py` sobre las 1035 funciones del juego (ver `decomp\progreso.tsv`):
+Termino el lote de `auto.py` con las capturas nuevas (`decomp\progreso.tsv`):
 
-- **222 funciones verificadas: 37432 de los 293812 bytes de codigo del juego, el 12.7 %.** Son 182 del lote
-  automatico y 40 escritas a mano (las de `decomp\src\` sin contar la carpeta auto).
-- DISTINTO 64, NO_COMPILA 112, IGUAL_V0 15 (todo igual menos el registro de retorno, que no se puede
-  probar porque a esa funcion solo se llega por punteros), GTE 10 (faltan de pasar a mano, ya se pueden
-  verificar), M2C_FALLA 2.
+- **247 funciones verificadas: 44156 de los 293812 bytes de codigo del juego, el 15.0 %.** Son 204 del lote
+  automatico y 43 escritas a mano (las de `decomp\src\` sin contar la carpeta auto).
+- DISTINTO 72, NO_COMPILA 120, IGUAL_V0 22 (todo igual menos el registro de retorno, que no se puede
+  probar porque a esa funcion solo se llega por punteros), GTE 7, M2C_FALLA 2.
 - NO_TERMINA 35: la original se queda dando vueltas en el emulador esperando al hardware (el CD, el
   sonido). No se pueden verificar asi; habria que simular esos registros.
-- SIN_CAPTURAS 575: nunca se ejecutaron en las rondas de captura. **Es la mitad del codigo y el siguiente
-  paso**: `python scripts\capturar_mas.py` (menus, tarjeta de memoria, hechizos, jefes, otros niveles).
+- SIN_CAPTURAS 530, eran 575: la ronda de `capturar_mas.py` le dio capturas a 45. **Sigue siendo el
+  siguiente paso y lo que mas rinde**: `python scripts\capturar_mas.py` (menus, tarjeta de memoria,
+  hechizos, jefes, otros niveles) y despues el lote otra vez.
 - Lo verificado ya no es solo lo que pasa el verificador: `mutantes.py` mide si el verificador cazaria un
-  error. `func_8001BE8C` (los angulos) mata sus 10 mutantes; `func_8003AE84` deja vivos 3, porque en sus
-  capturas la consulta de colision nunca acierta.
+  error y `cobertura.py`, cuanto del codigo recorren las capturas. `func_8001BE8C` (los angulos) mata sus
+  10 mutantes; `func_8003AE84` deja vivos 3, porque en sus capturas la consulta de colision nunca acierta.
 
-## Ojo al retomar (2026-09-15, 21:30)
+## El coprocesador geometrico, ya de verdad (2026-09-16)
 
-Quedo corriendo un lote de fondo con las capturas nuevas de `capturar_mas.py` (1039 capturas mas, 45
-funciones capturadas por primera vez, 532 siguen sin capturas). Guarda cada 25 funciones en
-`decomp\progreso.tsv` y lleva la cuenta en `decompuild\hechas.txt`; si quedo a medias, se sigue con:
+`gte.py` emulaba solo dos ordenes (mvmva y op) y las otras tres que usa el juego las dejaba pasar en
+silencio. Eso es peor que fallar: las dos versiones se equivocan igual, la comparacion pasa y el
+verificador aprueba sin haber probado nada. Ahora:
 
-```
-wsl -d Ubuntu-24.04 -- bash -lc "cd /mnt/c/Proyectos/SABRINA/decomp && . ~/decomp-herramientas/venv/bin/activate && setsid nohup python3 auto.py --procesos 5 --seguir > build/auto_log.txt 2>&1 &"
-```
-
-Los numeros de abajo (222 funciones, 12.7 %) son los de **antes** de ese lote; al terminar, `reporte.py`
-da los nuevos.
+- Estan las cinco ordenes del juego (mvmva, op, rtps, rtpt, nclip), la division por la z con la tabla del
+  hardware (se aparta de la cuenta exacta como mucho en 2, que es lo que se aparta la consola) y el
+  registro de banderas (control 31), que el juego lee con `cfc2 $31` para saber si un triangulo se le
+  salio de la pantalla. Una orden que no este hecha para la corrida en vez de seguir callada.
+- El gancho ya no adelanta el contador: escribe un `nop` encima de la instruccion y deja que Unicorn lo
+  ejecute. Adelantarlo se comia los saltos, porque GCC puede poner un `swc2` en el hueco de retardo de una
+  llamada (en el juego no pasa; en el C que genera GCC, si).
+- Las macros de `include\gte.h` que tocan memoria llevan `: "memory"`. Sin eso GCC adelanta las lecturas
+  del C a antes de que el `swc2` escriba y lee basura. Si se toca `gte.h` o `gte.py`, volver a verificar
+  todo lo que los usa: `wsl ... "cd /mnt/c/Proyectos/SABRINA/decomp && ./reverificar_gte.sh"`.
+- Escritas a mano y verificadas: `geometria\camara.c` func_8001FA3C (arma la matriz de la camara; recibe
+  tres vectores por valor, que es lo que deja los nueve enteros corridos en la pila),
+  `objetos\particulas.c` func_8001F6C8 (el cuadrado que siempre mira a la camara) y, en
+  `geometria\arbol.c`, func_8001FD50, el gemelo de func_800204F0 con el dibujo de los triangulos adentro.
+- Tipos nuevos: `include\dibujo.h` (CuadroTex y TriTex, los POLY_FT4 y POLY_GT3 de Sony) y
+  `include\modelo.h` (Vertice, Triangulo de 28 bytes, Textura). El campo 0x5E del nodo no era un orden:
+  es cuantos triangulos tiene el dibujo.
+- La tabla `D_80068878` son los que parten un triangulo que sale demasiado grande en pantalla; el indice
+  sale de sumar 1, 4 y 7 segun cual de los tres lados se paso de largo (entradas 1, 4, 5, 7, 8, 11 y 12).
+  Las 7 funciones que quedan marcadas GTE son justo esas y func_800598DC, el que parte en cuatro.
+- Ojo con la cobertura: `func_8001F6C8` pasa IGUAL tocando 40 de 221 instrucciones, porque en sus capturas
+  no hay ninguna particula viva; `func_8001FD50` toca 220 de 337 y `func_8001FA3C`, las 136. Para la
+  primera: `python scripts\capturar_mas.py 3 1,5 --solo func_8001F6C8` jugando donde salten chispas.
 
 ## Como retomar la descompilacion
 
 ```
 cd C:\Proyectos\SABRINA
-wsl -d Ubuntu-24.04 -- bash -lc "cd /mnt/c/Proyectos/SABRINA/decomp && . ~/decomp-herramientas/venv/bin/activate && python3 auto.py --procesos 6"
+wsl -d Ubuntu-24.04 -- bash -lc "cd /mnt/c/Proyectos/SABRINA/decomp && . ~/decomp-herramientas/venv/bin/activate && python3 auto.py --procesos 5"
 ```
 
-Con 6 procesos, no mas: con mas, Windows se queda sin memoria y mata el lote. Tarda cerca de una hora, asi
-que conviene lanzarlo desprendido (`setsid nohup python3 auto.py --procesos 6 > build/auto_log.txt 2>&1 &`):
-las sesiones de wsl pueden morir todas juntas y el lote solo escribe `progreso.tsv` al final (va dejando lo
-hecho en `build\progreso_parcial.tsv`).
+Con 5 o 6 procesos, no mas: con mas, Windows se queda sin memoria y mata el lote (y tampoco conviene
+correr nada en paralelo mientras, que tambien lo mata). Tarda cerca de una hora. **No basta con
+desprenderlo**: `setsid nohup` no lo salva si la maquina virtual de WSL se apaga sola al quedarse sin
+ninguna sesion, que es como murio en 575 de 995. Se lanza con un proceso oculto de Windows que la
+sostenga:
+
+```
+Start-Process -WindowStyle Hidden wsl.exe -ArgumentList '-d','Ubuntu-24.04','--','bash','-lc',
+  'cd /mnt/c/Proyectos/SABRINA/decomp && ./lanzar_lote.sh 5'
+```
+
+`lanzar_lote.sh` retoma con `--seguir` lo que ya haya en `build\hechas.txt`, va guardando cada 25 y deja
+el avance en `build\auto_log2.txt`. Si algo se murio, mirar `uptime` dentro de WSL: si dice pocos minutos,
+se reinicio la maquina virtual.
+
 Deja `decomp\progreso.tsv`. Para una funcion: `bash decomp/ver_funcion.sh Nombre` (ensamblador),
 borrador en `decomp\src\auto\Nombre.c`, se corrige a mano y se pasa a `decomp\src\<modulo>\*.c`, y
 `python3 verificar.py src/<modulo>/archivo.c Nombre` hasta IGUAL. auto.py no toca las que ya estan a mano
@@ -95,13 +124,14 @@ Si `aridad.py` o los tipos cambian, `python3 aridad.py` rehace `include\prototip
 1. Pasar a mano las funciones de `progreso.tsv` que salieron DISTINTO o NO_COMPILA, empezando por las
    chicas; anotar los tipos que se van entendiendo (estructura del objeto, de la camara, del jugador) en
    `decomp\include\juego.h` para que m2c los use.
-2. **Lo que mas rinde: mas capturas.** 575 funciones (la mitad del codigo) nunca se ejecutaron. Correr
-   `python scripts\capturar_mas.py`, que suma capturas espaciadas en otros niveles y en los menus, y
-   despues el lote otra vez.
+2. **Lo que mas rinde: mas capturas.** 530 funciones (casi la mitad del codigo) nunca se ejecutaron.
+   Correr `python scripts\capturar_mas.py` en los niveles que faltan, que suma capturas espaciadas, y
+   despues el lote otra vez. Tambien sirve para las que pasan con poca cobertura, como las particulas.
 3. Armado "movible": reemplazar en `armar.sh` las funciones ya en C por su version compilada para tener un
    ejecutable jugable hecho desde C (hoy el C solo se verifica; el ejecutable se arma del ensamblador).
-4. Las 10 funciones GTE que quedan: ya se pueden verificar (gte.py emula el coprocesador y gte.h tiene las
-   macros para escribirlas en C), solo falta pasarlas a mano. Las tres hechas estan en
-   `decomp\src\geometria\`.
+4. Las 7 funciones GTE que quedan son las que parten y recortan un triangulo demasiado grande: las de la
+   tabla `D_80068878` (func_80057F34, func_800582CC, func_8005865C, func_800589EC, func_80058EE4,
+   func_800593E0) y func_800598DC, que parte en cuatro. Se verifican igual que las otras; solo falta
+   pasarlas a mano. Las seis hechas estan en `decomp\src\geometria\` y `decomp\src\objetos\`.
 5. Pendientes del juego: parametros de objetos que no son enemigos, formato de la partida guardada
    (bloque de 0x13AC en 0x800C8518).
