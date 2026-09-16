@@ -53,6 +53,17 @@ Dos buffers de 512x220 en la mitad izquierda de la VRAM (y 0 y y 220 aprox.).
   pantalla copia el valor en `0x8007CB1D`. `+0x70` estado (2 = muerta), `+0x3C` velocidad vertical (la
   gravedad suma 0x51E), `+0x80` tipo de suelo que pisa (lo recalcula la fisica cada paso: 8 muerte, 4 y 2
   dano), `+0x8C` bit 0x10 en el suelo. `+0x118` es la vida de TODOS los objetos, enemigos incluidos.
+- **El objeto por dentro** (de las funciones ya verificadas, en `decomp\include\objeto.h`): `+0x00` la
+  funcion que lo mueve en cada paso, que es su estado (cambiar de estado es cambiar ese puntero); `+0x08`
+  la funcion que le avisa de otro objeto; `+0x1C` su estado de animacion (ahi `+0x4C` la velocidad, 0x1000
+  normal, y `+0x51` que animacion se ve); `+0x22` el tipo de WRLDDATA; `+0x24` la posicion; `+0x38` y
+  `+0x40` el empuje en x y z; `+0x64` la tabla de que animacion usar para cada cosa (0 morir, 3 recibir
+  golpe, 0x15 quieta); `+0x6C` su registro de WRLDDATA; `+0x74` una segunda parte, con `+0x88` los pasos
+  que faltan para que le pueda volver a doler; `+0xF4` la forma de colision, cuyas banderas caen en
+  `+0x112` (0x800 hace dano al tocar); `+0x119` el dano que hace, que se multiplica por cuatro.
+- **La forma de colision** (`+0xF4`, 0x24 bytes): apunta a la posicion del objeto y guarda las medidas,
+  con el radio tambien elevado al cuadrado. Tipo 1 y tipo 2 segun donde va el radio, tipo 3 se copia tal
+  cual. `CrearObjetoMundo` la copia de la clase del objeto y la ajusta segun el tipo.
 - **Truco escondido**: si la palabra `0x8007CB74` no es 0, el juego imprime "SABRINA IS INVINCIBLE" y no
   aplica dano de enemigos ni de suelo. Ningun codigo la enciende. Solo se lee en `0x80031300` y `0x8003401C`.
   El printf no sale por ningun lado en la version comercial.

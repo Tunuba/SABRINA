@@ -14,6 +14,14 @@ typedef unsigned long long u64;
 typedef float f32;
 typedef double f64;
 
+/* Comprobacion en compilacion de que un campo cae donde debe. Con SIN_COMPROBACIONES no se pone: es para
+ * darle estos tipos a m2c, que no entiende __builtin_offsetof. */
+#ifdef SIN_COMPROBACIONES
+#define EN(tipo, campo, desp)
+#else
+#define EN(tipo, campo, desp) typedef char en_##tipo##_##campo[(__builtin_offsetof(tipo, campo) == (desp)) ? 1 : -1]
+#endif
+
 #ifndef NULL
 #define NULL ((void *)0)
 #endif

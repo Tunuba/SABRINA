@@ -84,7 +84,7 @@ def main():
             vivos.append(que)
         print(f"  {'VIVO ' if estado in ('IGUAL', 'IGUAL_V0') else 'muerto'} {que} ({estado})", flush=True)
     print(f"{funcion}: {len(todos) - len(vivos)} de {len(todos)} mutantes muertos")
-    return vivos
+    return vivos, len(todos)
 
 
 if __name__ == "__main__":

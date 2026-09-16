@@ -18,7 +18,9 @@ from explorar import CUE, estado, recorrer
 
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 n = int(args[0]) if args else 3
-niveles = [int(x) for x in args[1].split(",")] if len(args) > 1 else [5, 8, 11, 16]
+# 0 menu, 1-3 Stone, 4-6 Egypt, 7-9 Japan, 10-12 West, 13 HUB, 14 Chaos; la primera ronda vio 3, 4, 7, 10,
+# 14 y el HUB
+niveles = [int(x) for x in args[1].split(",")] if len(args) > 1 else [0, 1, 5, 8, 11]
 solo = set(sys.argv[sys.argv.index("--solo") + 1].split(",")) if "--solo" in sys.argv else None
 MAXIMO = 12                               # capturas por funcion como mucho (2 MB cada una)
 CAPT = os.path.join(RAIZ, "decomp", "capturas")

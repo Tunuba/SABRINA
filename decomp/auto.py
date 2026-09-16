@@ -267,8 +267,9 @@ def main():
     a = ap.parse_args()
     armar_datos_m2c()
     os.makedirs(os.path.join(AQUI, "build"), exist_ok=True)
-    tipos = subprocess.run(["mipsel-linux-gnu-cpp", "-P", "-I", os.path.join(AQUI, "include"),
-                            os.path.join(AQUI, "include", "juego.h")], capture_output=True, text=True).stdout
+    # los tipos que ya se entienden (objeto.h) y los prototipos escritos a mano van al contexto de m2c
+    tipos = subprocess.run(["mipsel-linux-gnu-cpp", "-P", "-DSIN_COMPROBACIONES", "-I", os.path.join(AQUI, "include"),
+                            os.path.join(AQUI, "include", "tipos_conocidos.h")], capture_output=True, text=True).stdout
     open(SOLO_TIPOS, "w").write(tipos)
     hechas = set()
     for c in glob.glob(os.path.join(AQUI, "src", "*", "*.c")):

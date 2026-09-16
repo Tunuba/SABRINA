@@ -49,14 +49,25 @@ Lote de `auto.py` sobre las 1033 funciones del juego (ver `decomp\progreso.tsv`)
 
 ```
 cd C:\Proyectos\SABRINA
-wsl -d Ubuntu-24.04 -- bash -lc "cd /mnt/c/Proyectos/SABRINA/decomp && . ~/decomp-herramientas/venv/bin/activate && python3 auto.py --procesos 10"
+wsl -d Ubuntu-24.04 -- bash -lc "cd /mnt/c/Proyectos/SABRINA/decomp && . ~/decomp-herramientas/venv/bin/activate && python3 auto.py --procesos 6"
 ```
 
+Con 6 procesos, no mas: con mas, Windows se queda sin memoria y mata el lote. Tarda un par de horas.
 Deja `decomp\progreso.tsv`. Para una funcion: `bash decomp/ver_funcion.sh Nombre` (ensamblador),
 borrador en `decomp\src\auto\Nombre.c`, se corrige a mano y se pasa a `decomp\src\<modulo>\*.c`, y
-`python3 verificar.py src/<modulo>/archivo.c Nombre` hasta IGUAL. auto.py no toca las que ya estan a mano.
+`python3 verificar.py src/<modulo>/archivo.c Nombre` hasta IGUAL. auto.py no toca las que ya estan a mano
+y con `--solo A,B` rehace solo esas, dejando el resto de progreso.tsv como estaba.
 Para funciones sin capturas: `python scripts\capturar.py <estado> "<pasos>" Nombre:3` (con `ir:N` para
-cargar un nivel antes).
+cargar un nivel antes) o `python scripts\capturar_mas.py` para una ronda entera.
+
+Antes de creerle a un IGUAL:
+
+```
+python3 mutantes.py src/<modulo>/archivo.c Funcion     # mete errores a proposito; deben morir todos
+python3 cobertura.py --solo Funcion                    # cuanto del codigo recorren las capturas
+```
+
+Si `aridad.py` o los tipos cambian, `python3 aridad.py` rehace `include\prototipos.h` para m2c.
 
 ## Siguiente
 

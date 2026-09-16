@@ -24,9 +24,12 @@ def main():
     sim = verificar.simbolos()
     marcadas = set(re.findall(r"^(\w+) = 0x[0-9A-Fa-f]+; // type:func",
                               open(os.path.join(AQUI, "symbol_addrs.txt")).read(), re.M))
+    # las que ya tienen prototipo escrito a mano en tipos_conocidos.h no se tocan
+    a_mano = set(re.findall(r"^[\w\s\*]+?(\w+)\s*\([^;]*\);",
+                            open(os.path.join(AQUI, "include", "tipos_conocidos.h")).read(), re.M))
     nombres = {}
     for n, d in sim.items():
-        if (n in marcadas or re.fullmatch(r"func_[0-9A-F]{8}", n)) and d in ins and "." not in n:
+        if (n in marcadas or re.fullmatch(r"func_[0-9A-F]{8}", n)) and d in ins and "." not in n                 and n not in a_mano:
             nombres.setdefault(d, n)
     inicios = sorted(nombres)
     rango = {d: (d, inicios[i + 1] if i + 1 < len(inicios) else d + 0x1000) for i, d in enumerate(inicios)}

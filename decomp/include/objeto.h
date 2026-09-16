@@ -5,9 +5,6 @@
 
 #include "juego.h"
 
-/* Comprobacion en compilacion de que un campo cae donde debe. */
-#define EN(tipo, campo, desp) typedef char en_##tipo##_##campo[(__builtin_offsetof(tipo, campo) == (desp)) ? 1 : -1]
-
 typedef struct Objeto Objeto;
 
 /* Forma de colision de un objeto: el centro (apunta a la posicion del objeto) y las medidas, que dependen
@@ -66,7 +63,7 @@ struct Objeto {
     u8 _44[0x20];
     u16 *animaciones;                /* 0x64, numero de animacion para cada accion */
     u8 _68[4];
-    void *_6C;
+    void *datos;                     /* 0x6C, su registro de WRLDDATA (0x9C bytes) */
     s16 estado;                      /* 0x70, 2 = muerto */
     s16 _72;
     ObjExtra extra;                  /* 0x74 */
