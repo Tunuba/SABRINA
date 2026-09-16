@@ -259,11 +259,38 @@ def procesar(funcion, tam):
     return resultado
 
 
+TSV = os.path.join(AQUI, "progreso.tsv")
+
+
+def leer_progreso():
+    if not os.path.exists(TSV):
+        return {}
+    filas = {}
+    for l in list(open(TSV))[1:]:
+        p = l.rstrip("\n").split("\t")
+        if len(p) >= 3:
+            filas[p[0]] = (p[0], int(p[1]), p[2], p[3] if len(p) > 3 else "")
+    return filas
+
+
+def guardar_progreso(res, antes):
+    """Escribe progreso.tsv con lo de esta corrida encima de lo que ya habia."""
+    filas = dict(antes)
+    for r in res:
+        filas[r[0]] = r
+    with open(TSV, "w") as f:
+        f.write("funcion\ttamano\testado\tdetalle\n")
+        for r in sorted(filas.values()):
+            f.write("\t".join(str(x) for x in r) + "\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--solo", default="")
     ap.add_argument("--max-tam", type=int, default=100000)
     ap.add_argument("--procesos", type=int, default=10)
+    # para retomar un lote que se murio a medias: salta las que ya hizo esta tanda (build/hechas.txt)
+    ap.add_argument("--seguir", action="store_true")
     a = ap.parse_args()
     armar_datos_m2c()
     os.makedirs(os.path.join(AQUI, "build"), exist_ok=True)
@@ -283,34 +310,39 @@ def main():
             continue                  # etiquetas de un switch que Ghidra tomo por funciones
         if (not a.solo or nom in a.solo.split(",")) and int(tam) <= a.max_tam:
             funcs.append((nom, int(tam)))
-    res = []
+    antes = leer_progreso()
+    hechas_txt = os.path.join(AQUI, "build", "hechas.txt")
+    ya_de_esta_tanda = set(open(hechas_txt).read().split()) if a.seguir and os.path.exists(hechas_txt) else set()
+    if ya_de_esta_tanda:
+        print(f"retomando: {len(ya_de_esta_tanda)} ya hechas en esta tanda", flush=True)
+    elif not a.solo:
+        open(hechas_txt, "w").close()
+    res = [antes[n] for n in ya_de_esta_tanda if n in antes]
     with ProcessPoolExecutor(a.procesos) as ex:
         futs = {}
         for nom, tam in funcs:
             if nom in hechas:
                 res.append((nom, tam, "YA_HECHA", ""))
+            elif a.seguir and nom in ya_de_esta_tanda:
+                continue                  # ya tiene resultado de una corrida anterior
             else:
                 futs[ex.submit(procesar, nom, tam)] = nom
+        print(f"{len(futs)} funciones por hacer", flush=True)
         for i, fu in enumerate(as_completed(futs)):
             try:
                 res.append(fu.result())
             except Exception as e:
                 res.append((futs[fu], 0, "ERROR", str(e)[:120]))
-            if (i + 1) % 50 == 0:
+            if (i + 1) % 25 == 0:
                 print(f"  {i + 1} de {len(futs)}", flush=True)
-    tsv = os.path.join(AQUI, "progreso.tsv")
-    if a.solo and os.path.exists(tsv):
-        # con --solo se actualizan esas filas y el resto queda como estaba
-        nuevas = {r[0] for r in res}
-        for l in list(open(tsv))[1:]:
-            p = l.rstrip("\n").split("\t")
-            if p[0] not in nuevas:
-                res.append((p[0], int(p[1]), p[2], p[3] if len(p) > 3 else ""))
-    res.sort()
-    with open(tsv, "w") as f:
-        f.write("funcion\ttamano\testado\tdetalle\n")
-        for r in res:
-            f.write("\t".join(str(x) for x in r) + "\n")
+                guardar_progreso(res, antes)      # por si el lote se muere a medias (ya paso dos veces)
+                with open(hechas_txt, "w") as f:
+                    f.write("\n".join(sorted(r[0] for r in res)))
+    if a.solo or a.seguir:
+        guardar_progreso(res, antes)
+    else:
+        guardar_progreso(res, {})
+    res = list(leer_progreso().values())
     from collections import Counter
     c = Counter(r[2] for r in res)
     bytes_ok = sum(r[1] for r in res if r[2] in ("IGUAL", "YA_HECHA"))

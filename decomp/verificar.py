@@ -25,6 +25,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 
 import gte
 from unicorn import Uc, UcError, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_HOOK_MEM_READ
@@ -69,6 +70,8 @@ def compilar(c, excluir):
     und = subprocess.run(["mipsel-linux-gnu-nm", "-u", obj], capture_output=True, text=True).stdout.split()
     und = [u for u in und if u != "U"]
     sim = simbolos()
+    # las ayudas de 64 bits que pide GCC son las mismas rutinas que ya trae el juego
+    sim = dict(sim, __muldi3=sim["func_80029214"])
     # un dato del juego definido en el C seria una copia nueva, no la memoria del juego: la funcion leeria y
     # escribiria esa copia y podria pasar la verificacion sin tocar lo que toca la original
     for l in subprocess.run(["mipsel-linux-gnu-nm", obj], capture_output=True, text=True).stdout.splitlines():
@@ -428,6 +431,14 @@ def verificar(c, funciones, n_variantes=60):
         solo_v0 = 0                  # ejecuciones que solo difieren en v0 (para una void sin probar)
         ok = 0
         entradas = {}                # por captura: lo que la original lee de la RAM antes de escribirlo
+        reloj = time.time()
+        # una funcion que espera al hardware (el CD, el sonido) nunca termina en el emulador: da vueltas
+        # hasta el tope de instrucciones en cada corrida y se lleva el lote por delante
+        primera = ejecutar(caps[0][:-5], sim[f], None)
+        if primera["error"] and "no termino" in primera["error"]:
+            print(f"{f}: la original no termina en el emulador (espera al hardware) -> NO_TERMINA")
+            total_ok = False
+            continue
         for cap in caps:
             base = cap[:-5]
             # el rastreo va en una corrida aparte: con los ganchos de memoria puestos Unicorn a veces corre
@@ -443,6 +454,12 @@ def verificar(c, funciones, n_variantes=60):
                 print(f"  {f} {os.path.basename(base)}: " + "; ".join(d))
             else:
                 ok += 1
+        # una funcion lenta de simular (las de biblioteca, con sus bucles largos) se prueba con menos
+        # variantes: si no, una sola funcion se lleva media hora
+        lento = (time.time() - reloj) / max(len(caps), 1)
+        if lento > 0.5:
+            n_variantes = max(6, int(n_variantes * 0.5 / lento))
+            print(f"  {f}: {lento:.1f} s por corrida, se prueban {n_variantes} variantes")
         # variantes de los argumentos sobre la memoria de cada captura
         rnd = random.Random(1234)
         pool = constantes_de(f)
