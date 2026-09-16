@@ -50,6 +50,19 @@ Lote de `auto.py` sobre las 1035 funciones del juego (ver `decomp\progreso.tsv`)
   error. `func_8001BE8C` (los angulos) mata sus 10 mutantes; `func_8003AE84` deja vivos 3, porque en sus
   capturas la consulta de colision nunca acierta.
 
+## Ojo al retomar (2026-09-15, 21:30)
+
+Quedo corriendo un lote de fondo con las capturas nuevas de `capturar_mas.py` (1039 capturas mas, 45
+funciones capturadas por primera vez, 532 siguen sin capturas). Guarda cada 25 funciones en
+`decomp\progreso.tsv` y lleva la cuenta en `decompuild\hechas.txt`; si quedo a medias, se sigue con:
+
+```
+wsl -d Ubuntu-24.04 -- bash -lc "cd /mnt/c/Proyectos/SABRINA/decomp && . ~/decomp-herramientas/venv/bin/activate && setsid nohup python3 auto.py --procesos 5 --seguir > build/auto_log.txt 2>&1 &"
+```
+
+Los numeros de abajo (222 funciones, 12.7 %) son los de **antes** de ese lote; al terminar, `reporte.py`
+da los nuevos.
+
 ## Como retomar la descompilacion
 
 ```
