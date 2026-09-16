@@ -80,6 +80,11 @@ verificador aprueba sin haber probado nada. Ahora:
 - Ojo con la cobertura: `func_8001F6C8` pasa IGUAL tocando 40 de 221 instrucciones, porque en sus capturas
   no hay ninguna particula viva; `func_8001FD50` toca 220 de 337 y `func_8001FA3C`, las 136. Para la
   primera: `python scripts\capturar_mas.py 3 1,5 --solo func_8001F6C8` jugando donde salten chispas.
+- Los mutantes de `func_8001FD50` (12 de los 16, a los otros los mato Windows por memoria): 6 muertos y 6
+  vivos. Siguen vivos quitar `gte_poner_matriz(&camara);` (en esas capturas la matriz de la camara ya
+  estaba puesta de antes), quitar el `codigo |= 2` de la mezcla, el tope 0x400 de la z, un `<` por `<=`,
+  un `>=` por `>` y el 7 del reparto de lados. Esa funcion pasa, pero sus capturas no fijan esos numeros;
+  con capturas de otros niveles deberian caer.
 
 ## Como retomar la descompilacion
 
