@@ -78,5 +78,9 @@ Si `aridad.py` o los tipos cambian, `python3 aridad.py` rehace `include\prototip
    ejecuto 459 de 1037 funciones).
 3. Armado "movible": reemplazar en `armar.sh` las funciones ya en C por su version compilada para tener un
    ejecutable jugable hecho desde C (hoy el C solo se verifica; el ejecutable se arma del ensamblador).
-4. Pendientes del juego: parametros de objetos que no son enemigos, formato de la partida guardada
+4. Las 13 funciones GTE (11.8 KB, el 4 % del codigo) no se pueden verificar porque Unicorn no emula el
+   coprocesador geometrico. Idea: interceptar las instrucciones cop2 en Unicorn y emularlas en Python. No
+   hace falta que el GTE sea perfecto para comparar: si las dos versiones ven el mismo GTE, la comparacion
+   sigue valiendo; lo unico que cambia es que los caminos que tomen sean los de verdad.
+5. Pendientes del juego: parametros de objetos que no son enemigos, formato de la partida guardada
    (bloque de 0x13AC en 0x800C8518).

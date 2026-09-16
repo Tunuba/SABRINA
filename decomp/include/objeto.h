@@ -56,11 +56,14 @@ struct Objeto {
     u16 _20;
     u16 tipo;                        /* 0x22, el tipo de WRLDDATA */
     s32 x, y, z;                     /* 0x24 */
-    u8 _30[8];
+    s16 rot[3];                      /* 0x30, giro x, y, z */
+    s16 _36;
     s32 empuje_x;                    /* 0x38 */
     s32 vel_y;                       /* 0x3C, la gravedad le suma 0x51E en cada paso */
     s32 empuje_z;                    /* 0x40 */
-    u8 _44[0x20];
+    u8 _44[0x10];
+    s32 escala[3];                   /* 0x54, la de su clase por la de WRLDDATA, entre 0x1000 */
+    void *modelo;                    /* 0x60 */
     u16 *animaciones;                /* 0x64, numero de animacion para cada accion */
     u8 _68[4];
     void *datos;                     /* 0x6C, su registro de WRLDDATA (0x9C bytes) */
@@ -76,7 +79,10 @@ EN(Objeto, aviso, 0x08);
 EN(Objeto, anim, 0x1C);
 EN(Objeto, tipo, 0x22);
 EN(Objeto, x, 0x24);
+EN(Objeto, rot, 0x30);
 EN(Objeto, empuje_x, 0x38);
+EN(Objeto, escala, 0x54);
+EN(Objeto, modelo, 0x60);
 EN(Objeto, vel_y, 0x3C);
 EN(Objeto, animaciones, 0x64);
 EN(Objeto, estado, 0x70);

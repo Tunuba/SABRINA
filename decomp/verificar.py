@@ -13,11 +13,12 @@ en 0x80400000, fuera de los 2 MB de RAM de la PS1 pero en la misma region de 256
 funciones originales funciona. Todos los simbolos externos se resuelven a sus direcciones reales (los del
 ELF que arma armar.sh).
 
-Las llamadas a la BIOS (0xA0, 0xB0, 0xC0) vuelven enseguida. Las instrucciones del GTE (cop2) no las
-emula Unicorn: una funcion que las use no se puede verificar asi.
+Las llamadas a la BIOS (0xA0, 0xB0, 0xC0) vuelven enseguida. Las instrucciones del coprocesador geometrico
+(cop2) no las ejecuta Unicorn: se emulan en Python (gte.py) con un gancho en la direccion de cada una.
 
 Uso: python3 verificar.py src/Archivo.c Funcion [Funcion...]
 """
+import functools
 import glob
 import os
 import struct
@@ -25,6 +26,7 @@ import subprocess
 import sys
 import tempfile
 
+import gte
 from unicorn import Uc, UcError, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_HOOK_MEM_READ
 from unicorn.mips_const import UC_MIPS_REG_PC, UC_MIPS_REG_RA, UC_MIPS_REG_V0, UC_MIPS_REG_V1, UC_MIPS_REG_SP, \
     UC_MIPS_REG_HI, UC_MIPS_REG_LO, UC_MIPS_REG_ZERO
@@ -289,13 +291,34 @@ def variantes(regs, pool, n, rnd):
     return res
 
 
+def cop2_en_binario(binario):
+    """Direcciones de instrucciones cop2 dentro del C ya compilado, que se carga en BASE_C."""
+    res = set()
+    for i in range(0, len(binario) - 3, 4):
+        w = struct.unpack_from("<I", binario, i)[0]
+        if (w >> 26) & 0x3F in (0x12, 0x32, 0x3A):
+            res.add(BASE_C + i)
+    return res
+
+
+@functools.lru_cache(maxsize=1)
+def direcciones_cop2():
+    return gte.instrucciones_cop2(desensamblado()[0])
+
+
+@functools.lru_cache(maxsize=16)
+def _memoria(captura):
+    """La RAM y el scratchpad de una captura, guardados en memoria: son 2 MB por captura y cada variante
+    arranca de ahi; leerlos del disco de Windows en cada corrida era lo que hacia lento el lote."""
+    return open(captura + ".ram", "rb").read(), open(captura + ".spad", "rb").read()
+
+
 def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia=None):
     """Corre desde la captura. parche: {direccion fisica: bytes} que se escriben encima de la RAM.
     trazar: devuelve tambien en "lecturas" lo que la funcion lee de la RAM antes de escribirlo (sus
     entradas en memoria), como {direccion fisica: tamano}; y en "propias" las que lee el codigo de la propia
     funcion (propia = (inicio, fin)), no las funciones a las que llama."""
-    ram = open(captura + ".ram", "rb").read()
-    spad = open(captura + ".spad", "rb").read()
+    ram, spad = _memoria(captura)
     if regs is None:
         regs = [int(x, 16) for x in open(captura + ".regs").read().split()]
     uc = Uc(UC_ARCH_MIPS, UC_MODE_MIPS32 + UC_MODE_LITTLE_ENDIAN)
@@ -328,6 +351,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     uc.hook_add(UC_HOOK_CODE, codigo, begin=0xA0, end=0xC4)
     uc.hook_add(UC_HOOK_MEM_WRITE, escritura, begin=0x1F801000, end=0x1F803000)
+    # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
+    gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))
     lecturas, escritas, propias = {}, set(), set()
     if trazar:
         pila = ((sp & 0x1FFFFF) - 0x4000, sp & 0x1FFFFF)
