@@ -23,4 +23,4 @@ cd "$RAIZ/decomp"
 [ -f SLUS_012.08 ] || cp "$RAIZ/extraido/SLUS_012.08" .
 [ -d asm ] || python -m splat split slus_012.08.yaml
 bash armar.sh | tail -1
-echo "Listo. Faltan las capturas (se regeneran): desde Git Bash, bash scripts/rondas_paralelo.sh 4 12"
+echo "Listo. Faltan las capturas (se regeneran): desde Git Bash, bash scripts/rondas_paralelo.sh 8 12"

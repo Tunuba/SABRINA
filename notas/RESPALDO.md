@@ -34,6 +34,14 @@ Lo que NO va, porque se regenera:
 
 ## Llevarlo a otra PC
 
+**Lo corto:** `git clone https://github.com/Tunuba/SABRINA`, pon tu copia del juego en `SABRINA\disco\` (o en
+Descargas) y haz doble clic en **`RESTAURAR.bat`**. Instala todo lo que falte (Windows, WSL y herramientas),
+rearma el ejecutable (tiene que decir IGUAL), crea la tarea del respaldo y deja las capturas y el lote
+corriendo en segundo plano. Se puede correr las veces que quieras: salta lo que ya esta hecho. Si WSL no
+estaba instalado, lo instala y pide volver a correrlo tras reiniciar.
+
+Lo mismo, paso por paso:
+
 0. Si la PC vieja ya no existe: `git clone https://github.com/Tunuba/SABRINA` trae todo lo propio, como mucho
    con una hora de atraso. Faltan los estados del emulador (`estados\`): `scripts\crear_estado_saltar.py`
    rehace `saltar`, que es el unico que usan las capturas. Sigue en el paso 3.

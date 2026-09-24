@@ -15,7 +15,9 @@ for s in $(find asm -name '*.s' -not -path '*/nonmatchings/*'); do
     $AS $ASFLAGS -o "$o" "$s"
   fi
 done
-for c in $(find src -name '*.c' 2>/dev/null); do
+# El C todavia solo se verifica (verificar.py); el ejecutable sale del ensamblador. compilar_c.sh sera el
+# paso del "armado movible" (TRASPASO.md, Siguiente 3): mientras no exista, el C no entra al armado.
+[ -f compilar_c.sh ] && for c in $(find src -name '*.c' -not -path '*/auto/*' 2>/dev/null); do
   o="build/${c%.c}.c.o"
   mkdir -p "$(dirname "$o")"
   bash compilar_c.sh "$c" "$o"
