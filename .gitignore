@@ -20,12 +20,16 @@ __pycache__/
 *.lnk
 notas/sonidos/
 notas/videos/
-# descompilacion: el desensamblado, lo compilado, las capturas de memoria y el C sacado del juego no se publican
+# descompilacion: el C (decomp/src) SI se publica desde 2026-09-24, para no perderlo nunca mas (ver
+# notas/RESPALDO.md). El desensamblado y lo compilado se regeneran; las capturas son RAM del juego (~5 GB).
 decomp/asm/
 decomp/build/
 decomp/capturas/
-decomp/src/
 decomp/SLUS_012.08
 decomp/*.ld
 decomp/*.d
 decomp/undefined_*.txt
+# borradores temporales de los agentes
+decomp/tmp_*/
+decomp/g[0-9][0-9]_*
+decomp/tmp_*.sh

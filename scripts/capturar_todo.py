@@ -3,7 +3,10 @@
 Cada funcion guarda sus primeras n llamadas (memoria y registros) en decomp\\capturas\\<funcion>\\ y la
 captura se apaga sola. Al final dice cuantas funciones se ejecutaron.
 
-Uso: python capturar_todo.py [n] [estado]
+Uso: python capturar_todo.py [n] [estado] [--parte i/k] [--puerto P]
+
+El emulador no acepta mas de ~896 puntos de interrupcion por sesion: con --parte se reparten las funciones
+entre k emuladores a la vez (cada uno con su --puerto), y asi tambien se usan mas nucleos.
 """
 import os
 import sys
@@ -12,20 +15,24 @@ import time
 from emu import RAIZ, Emu
 from explorar import CUE, estado, recorrer
 
-n = int(sys.argv[1]) if len(sys.argv) > 1 else 2
-est = sys.argv[2] if len(sys.argv) > 2 else "saltar"
+args = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith("--") and not sys.argv[i - 1].startswith("--")]
+n = int(args[0]) if args else 2
+est = args[1] if len(args) > 1 else "saltar"
+parte, partes = (int(x) for x in sys.argv[sys.argv.index("--parte") + 1].split("/")) if "--parte" in sys.argv else (0, 1)
+puerto = int(sys.argv[sys.argv.index("--puerto") + 1]) if "--puerto" in sys.argv else 8091
 CAPT = os.path.join(RAIZ, "decomp", "capturas")
 funcs = []
 for l in open(os.path.join(RAIZ, "decomp", "funciones_juego.tsv")):
     d, tam, nom = l.split()
     funcs.append((int(d, 16), nom))
+funcs = funcs[parte::partes]
 
 # recorrido: moverse, saltar, atacar, pausar, y saltar de nivel en nivel
 JUGAR = ("UP:40 CROSS w20 UP:30 SQUARE w30 CIRCLE w30 TRIANGLE w30 LEFT:20 UP:40 CROSS w30 RIGHT:20 UP:60 "
          "SQUARE w30 R1 w20 L1 w20 START w40 DOWN w10 START w40 UP:90 CROSS w40")
 
 t0 = time.time()
-with Emu(iso=CUE, log="capturar_todo.log", extra=("-fastboot",), depurar=True) as e:
+with Emu(iso=CUE, log=f"capturar_todo_{parte}.log", extra=("-fastboot",), depurar=True, puerto=puerto) as e:
     e.cargar(estado(est))
     e.esperar(2)
     import urllib.error

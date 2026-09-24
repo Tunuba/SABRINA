@@ -1,5 +1,10 @@
 # Traspaso, para seguir en otro chat
 
+**2026-09-24: el proyecto esta en `D:\proyectos personales\Sabrina decomp\SABRINA` (PC nueva) y WSL es la
+distro `Ubuntu`.** Lo primero: `notas\RESPALDO.md` (respaldo automatico cada 15 min y como migrar a otra
+PC sin perder nada) y la bitacora por fases en `notas\fases\` (la mas nueva manda sobre lo que diga
+este archivo).
+
 Estado al 2026-09-16. Leer primero este archivo, luego `README.md`, `notas\FORMATOS.md` y
 `notas\DESCOMPILACION.md`.
 
@@ -14,6 +19,87 @@ Estado al 2026-09-16. Leer primero este archivo, luego `README.md`, `notas\FORMA
   reinstala con `.\arrancar.ps1 -Taller` y los `scripts\decomp_*.sh`.
 - Estados del emulador en `estados\`: `titulo`, `saltar` (HUB jugando), `nivel_S3`, `final_hub`.
 - Ghidra: proyecto en `ghidra\`, exportado a `notas\ghidra\` (funciones.tsv, textos.tsv, decompilado.c).
+
+## Panel en vivo (`panel_color\`), y el proximo paso pendiente
+
+`python panel_color\panel_color.py` abre un menu con paneles para tocar la RAM del HUB en vivo:
+textura de Sabrina (con export a disco), saltos/movimiento, vida/objetos, camara (bloqueo real de
+rotacion, encontrado por `GPU::Vsync`, ver el resto de este parrafo) y modelos 3D (escala por eje,
+con vista previa en Python, y "piso bajo Sabrina" que de verdad mueve la colision, no solo lo
+visual). Tecnicas nuevas que valen para seguir: instalar codigo Lua largo en pedazos (el endpoint
+`eval` corta ~250 caracteres), y que solo un gancho de `GPU::Vsync` le gana la carrera al juego
+para sostener un valor que se reescribe solo (los puntos de interrupcion y `nextTick` no sirvieron).
+
+**Ya comprobado (2026-09-19), no era un bug**: moviendo la camara (con el panel) a una posicion
+"imposible" el piso se veia duplicado infinitas veces. La sospecha de entonces (que la formula de
+celda del mundo, `fila = (~((z >> 16) + 0x80) & 0xFF) >> 2`, envuelve con `& 0xFF` y por eso siempre
+encuentra una celda real) resulto ser cierta para Z pero NO explica esto: `columna` no tiene esa
+mascara (`((x >> 16) + 0x80) >> 2`, se sale de 0-63 sin envolver si x es muy grande), y ademas la
+camara no toca la posicion de Sabrina -son sistemas separados, celda_de solo se usa para colision-.
+Se probo en vivo teletransportando a Sabrina lejos por X y por Z (y los dos juntos): en los tres
+casos se cae y muere por caida, identico, sin importar que el eje "envuelva" o no -la prueba fina de
+colision (¿el punto cae DENTRO de un triangulo real?) descarta igual en los tres casos-. El piso
+duplicado de la camara es otra cosa: trabando los valores de camara 4, 5 o 6 (`panel_camara.py`) a
+un numero grande se reproduce el mismo patron -es la malla real del piso (349 triangulos) vista
+desde un angulo que la camara normal del juego nunca usa, mostrando de golpe varias repeticiones de
+su textura (el sello circular), no geometria fantasma ni una celda mal calculada.
+
+## Recolor del traje default: mod_rosa.py y mod_bruja.py (2026-09-19)
+
+Dos pruebas de recoloreo del traje default de Sabrina (piernas, cadera/cintura, brazo/manos,
+pelo-cabeza), cambiando las paletas de la VRAM. `mod_bruja.py` es la version mas nueva y corrige las
+etiquetas de `mod_rosa.py` (lo que creia "cadera" era el borde de la cintura, y "brazo" las manos),
+leyendo los nodos del `.INO` en vez de tantear la RAM en vivo. `mods\sabrina_rosa.ppf` y
+`mods\sabrina_bruja.ppf` ya estan armados (`python mod_bruja.py disco`). `crear_estado_saltar.py`
+rehace `estados\saltar.estado` si hace falta.
+
+## Nivel fantasma: armar un `.INO` propio desde cero (2026-09-19)
+
+Se puede: `scripts\ino_escribir.py` es el escritor inverso de `ino.py` (verificado con viaje de ida
+y vuelta byte a byte contra H1W.INO real) y `scripts\nivel_fantasma.py` arma un HUB alternativo
+-el piso reemplazado por una malla propia, todo lo que no sea Sabrina/su sombra/el skybox real
+(SkyDome1) vaciado (engranajes, ropero, FashionDiva, iconos)- que se parcha en
+`disco\sabrina_fantasma.cue` con `disco.parchar()` (mismo mecanismo que usan los mods de textura,
+solo que reemplazando un archivo mas grande: el `.INO` se rellena con ceros hasta medir igual que el
+original, que es lo unico que pide `parchar()`). Panel nuevo en `panel_color\panel_fantasma.py`
+("Nivel fantasma" en el menu) que lo arma y arranca en una ventana aparte (puerto 8092, no toca la
+sesion principal); usa una `queue.Queue` para pasar mensajes del hilo de fondo al principal -llamar
+`self.after()` directo desde el hilo de fondo tira `RuntimeError: main thread is not in main loop`
+en una prueba automatizada, aunque el `mainloop()` real de la app quizas lo tolere-.
+
+**El hallazgo real: un triangulo puede ser demasiado grande para el motor de dibujo del juego.** La
+primera version del piso (un cuadrado de 2 triangulos de 32000 unidades de lado) cargaba perfecto en
+RAM (comprobado leyendo el nodo real en vivo: `visible=4`, `banderas` sin bloquear -ver
+`decomp\src\geometria\arbol.c func_8001FD50`, compartido por un amigo junto con el resto de
+`decompilacion\`, integrar esa carpeta al `decomp\` propio en algun momento) pero quedaba
+invisible, igual que el skybox real (SkyDome1) sin tocar. Esa funcion tiene una rama para
+"triangulo demasiado grande en pantalla" que lo manda a partir (`D_80068878`/`func_800598DC`, las 7
+funciones GTE que quedan pendientes en la descompilacion, ver "Siguiente" mas abajo) en vez de
+dibujarlo directo. La mediana real de un triangulo de piso del HUB mide ~571 unidades (maximo real
+~6969); el cuadrado gigante tenia ~45000 de diagonal, 80 veces mas grande que cualquier cosa que el
+juego dibuje normalmente. Con una grilla de triangulos del tamano real (mediana ~571, `SPACING=700`
+en `nivel_fantasma.py`) el piso se dibuja bien. El skybox real sigue sin verse -mismo problema,
+sospecha sin confirmar: sus triangulos tambien deben ser grandes por naturaleza; para tener un cielo
+de verdad habria que subdividirlo en triangulos chicos, como se hizo con el piso.
+
+Cadena completa (la paso el amigo, por Ghidra y el desensamblado, sin verificar jugando): carga
+`BuclePrincipal` (0x80010030) -> `CargarINO` (0x80018670) -> `LeerModelosINO` (0x8001CE0C) ->
+`LeerNodoModelo` (0x8001C7D4, recursiva para los hijos, es la que ya se conocia como FUN_8001c7d4).
+Dibujo: `func_80021A30` llama a `func_8001FD50` una vez por cuadro para dos nodos, `DAT_8007C9F0` y
+`DAT_8007C9F4` (creados por `FUN_8001E164`); `func_80021B4C` tambien lo llama, y `func_8001FD50` se
+llama a si misma para los hijos. Sin confirmar todavia si esos dos nodos son especificamente
+mundo+cielo o alguna otra cosa; tampoco hay una funcion de piso separada para dibujar -el piso solo
+se consulta para colision, con `func_8003AF48`, `func_800223E8` y `func_8003AE84` (`suelo.c`)-.
+
+Dos bugs mas encontrados jugandolo de verdad (no solo con capturas automaticas), ya arreglados: el
+piso con las 2 caras (por si el problema era la orientacion, cuando todavia no se sabia que era el
+tamano) hacia parpadear -dos triangulos identicos compitiendo por los mismos pixeles-, ahora una
+sola cara; y las 4096 celdas de colision viendo TODOS los triangulos del piso (en vez de solo las
+cercanas) iba lento -ahora cada triangulo se reparte en su celda real, con la posicion pasada a la
+escala de Sabrina (coordenada del modelo * 256, `CeldaDePosicion` trabaja en esa escala, confirmado
+con `decomp\src\colision\suelo.c`), y la inmensa mayoria de celdas quedan vacias como en un nivel de
+verdad. **Sin probar todavia**: si el parpadeo/lentitud se sintieron mejor jugandolo de verdad (solo
+se midio tiempo real headless, 300 cuadros en 5.02s contra 5.00s ideales, sin atraso).
 
 ## Jugar
 
@@ -140,3 +226,11 @@ Si `aridad.py` o los tipos cambian, `python3 aridad.py` rehace `include\prototip
    pasarlas a mano. Las seis hechas estan en `decomp\src\geometria\` y `decomp\src\objetos\`.
 5. Pendientes del juego: parametros de objetos que no son enemigos, formato de la partida guardada
    (bloque de 0x13AC en 0x800C8518).
+6. Integrar `decompilacion\` (lo que paso un amigo: `decomp\src\geometria`, `colision`, `objetos` y
+   notas actualizadas) al `decomp\` propio -por ahora quedo aparte, sin mezclar-.
+7. Nivel fantasma (ver mas arriba): probarlo jugado de verdad para confirmar que el parpadeo/lentitud
+   se arreglaron; si se quiere el skybox real (SkyDome1) visible, subdividirlo en triangulos chicos
+   como se hizo con el piso -sospecha sin confirmar todavia de que es el mismo problema del tamano-.
+   Las 7 funciones GTE del punto 4 (el que parte triangulos grandes) son sospechosas de tener algun
+   caso no contemplado para triangulos muy por fuera del rango que usa el juego real; si alguna vez
+   se pasan a mano, ojo con probarlas con algo mucho mas grande que lo normal.

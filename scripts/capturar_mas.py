@@ -5,7 +5,8 @@ nivel. Esta pone en cada funcion del juego una captura espaciada (las llamadas 1
 a las que ya tiene, y juega otro recorrido: chocar contra paredes, caer, atacar, pausar y los menus, en
 niveles que la primera ronda no visito.
 
-Uso: python capturar_mas.py [n por funcion] [niveles separados por comas] [--solo F1,F2]
+Uso: python capturar_mas.py [n por funcion] [niveles separados por comas] [--solo F1,F2] [--parte i/k] [--puerto P]
+     (--parte: ver capturar_todo.py, el emulador no acepta mas de ~896 puntos de interrupcion)
      python capturar_mas.py 3 5,8,11,16
 """
 import os
@@ -16,11 +17,13 @@ import urllib.error
 from emu import RAIZ, Emu
 from explorar import CUE, estado, recorrer
 
-args = [a for a in sys.argv[1:] if not a.startswith("--")]
+args = [a for i, a in enumerate(sys.argv[1:], 1) if not a.startswith("--") and not sys.argv[i - 1].startswith("--")]
 n = int(args[0]) if args else 3
 # 0 menu, 1-3 Stone, 4-6 Egypt, 7-9 Japan, 10-12 West, 13 HUB, 14 Chaos; la primera ronda vio 3, 4, 7, 10,
 # 14 y el HUB
 niveles = [int(x) for x in args[1].split(",")] if len(args) > 1 else [0, 1, 5, 8, 11]
+parte, partes = (int(x) for x in sys.argv[sys.argv.index("--parte") + 1].split("/")) if "--parte" in sys.argv else (0, 1)
+puerto = int(sys.argv[sys.argv.index("--puerto") + 1]) if "--puerto" in sys.argv else 8091
 solo = set(sys.argv[sys.argv.index("--solo") + 1].split(",")) if "--solo" in sys.argv else None
 MAXIMO = 12                               # capturas por funcion como mucho (2 MB cada una)
 CAPT = os.path.join(RAIZ, "decomp", "capturas")
@@ -30,6 +33,7 @@ for l in open(os.path.join(RAIZ, "decomp", "funciones_juego.tsv")):
     d, tam, nom = l.split()
     if not nom.startswith(("caseD_", "switchD_", "LAB_")) and (solo is None or nom in solo):
         funcs.append((int(d, 16), nom))
+funcs = funcs[parte::partes]
 
 # contra las paredes (largo hacia cada lado), saltos, ataques, hechizos y los menus
 JUGAR = ("UP:90 LEFT:60 UP:60 RIGHT:90 DOWN:60 CROSS w10 UP+CROSS:30 w30 SQUARE w20 CIRCLE w20 "
@@ -44,10 +48,10 @@ def cuantas(nom):
 
 t0 = time.time()
 antes = {nom: cuantas(nom) for _, nom in funcs}
-with Emu(iso=CUE, log="capturar_mas.log", extra=("-fastboot",), depurar=True) as e:
+with Emu(iso=CUE, log=f"capturar_mas_{parte}.log", extra=("-fastboot",), depurar=True, puerto=puerto) as e:
     e.cargar(estado("saltar"))
     e.esperar(2)
-    puestas = 0
+    puestas, fallidas = 0, []
     for d, nom in funcs:
         ya = antes[nom]
         if ya >= MAXIMO:
@@ -58,7 +62,10 @@ with Emu(iso=CUE, log="capturar_mas.log", extra=("-fastboot",), depurar=True) as
             e.lua("capturar", a=d, n=min(n, MAXIMO - ya), dir=carpeta, inicio=ya, geo=1)
             puestas += 1
         except urllib.error.HTTPError:
-            pass
+            fallidas.append(nom)
+    if fallidas:
+        print(f"{len(fallidas)} capturas no se pudieron poner (tope de puntos de interrupcion? usar --parte), "
+              f"por ejemplo {fallidas[:3]}", flush=True)
     print(f"{puestas} capturas puestas en {time.time() - t0:.0f} s", flush=True)
     recorrer(e, "mas_hub", JUGAR)
     for nivel in niveles:

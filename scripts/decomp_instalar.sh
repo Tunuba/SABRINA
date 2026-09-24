@@ -2,7 +2,7 @@
 # Instala en WSL las herramientas de descompilacion (todas libres):
 #   splat (parte el ejecutable), m2c (MIPS a C), asm-differ (compara), maspsx (imita el ensamblador de Sony)
 #   y compiladores GCC viejos para PS1 compilados por decompals/old-gcc.
-# Uso, desde la carpeta del proyecto: wsl -d Ubuntu-24.04 -- bash scripts/decomp_instalar.sh
+# Uso, desde la carpeta del proyecto: wsl -d Ubuntu -- bash scripts/decomp_instalar.sh
 set -e
 H="$HOME/decomp-herramientas"
 mkdir -p "$H"

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Compila ejemplos de psyqo (Nugget) con el compilador MIPS de Ubuntu en WSL.
-# Uso, desde la carpeta del proyecto: wsl -d Ubuntu-24.04 -- bash scripts/compilar_ejemplos.sh hello padtest
+# Uso, desde la carpeta del proyecto: wsl -d Ubuntu -- bash scripts/compilar_ejemplos.sh hello padtest
 # El compilador de Debian/Ubuntu se llama mipsel-linux-gnu y su enlazador nombra el formato
 # elf32-tradlittlemips, no elf32-littlemips como espera Nugget por defecto.
 RAIZ="$(dirname "$(dirname "$(readlink -f "$0")")")"

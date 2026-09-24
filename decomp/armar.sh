@@ -1,6 +1,6 @@
 #!/bin/bash
 # Arma SLUS_012.08 desde asm/ (y src/ cuando haya C) y lo compara con el original.
-# Uso: wsl -d Ubuntu-24.04 -- bash decomp/armar.sh
+# Uso: wsl -d Ubuntu -- bash decomp/armar.sh
 set -e
 cd "$(dirname "$(readlink -f "$0")")"
 AS="mipsel-linux-gnu-as"
