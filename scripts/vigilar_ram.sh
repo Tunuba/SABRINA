@@ -11,6 +11,10 @@ TOPE=${1:-92}
 TOPE_CPU=${2:-95}
 LOG="$(dirname "$0")/../notas/logs/vigilar_ram.txt"
 altas=0; bajas=0
+# una sola copia: si ya hay otra corriendo, esta se va
+PIDF="$(dirname "$0")/../notas/logs/vigilar_ram.pid"
+if [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF")" 2>/dev/null; then echo "ya hay un vigilante corriendo"; exit 0; fi
+echo $$ > "$PIDF"
 # si el vigilante se cierra, que no quede nada congelado
 trap 'wsl -d Ubuntu -- bash "/mnt/d/proyectos personales/Sabrina decomp/SABRINA/scripts/verificadores.sh" soltar; exit' EXIT INT TERM
 detener() {

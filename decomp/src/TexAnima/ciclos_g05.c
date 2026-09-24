@@ -53,7 +53,10 @@ void func_80022564(void) {
     }
 }
 
-void func_80022BCC(s32 n) {
+/* Arma el cuadro siguiente de la textura n y lo sube, si le toca. Lo que devuelve es lo que queda en v0
+ * en el original: el TexCiclo si la subio, o la cuenta de espera ya sumada (sin recortar a 8 bits). */
+s32 func_80022BCC(s32 n) {
+    s32 c;
     u8 *dst;
     u8 *src;
     u8 *p;
@@ -80,8 +83,12 @@ void func_80022BCC(s32 n) {
             }
         }
         SubirAVRAM(&D_8008AF74[n]->rect, D_8008AF60[n]);
-        D_8008AF74[n]->fase = fase + 1;
+        t = D_8008AF74[n];
+        t->fase = fase + 1;
+        return (s32) t;
     } else {
-        D_8007CB14[n]++;
+        c = D_8007CB14[n] + 1;
+        D_8007CB14[n] = c;
+        return c;
     }
 }

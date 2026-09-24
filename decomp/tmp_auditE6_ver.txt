@@ -1,0 +1,7 @@
+  func_8004E618: 0.9 s por corrida, se prueban 31 variantes
+func_8004E618: 9 de 9 capturas y 254 de 254 variantes iguales -> IGUAL
+  func_8004E774: 0.8 s por corrida, se prueban 20 variantes
+func_8004E774: 9 de 9 capturas y 196 de 196 variantes iguales -> IGUAL
+  func_8004E86C: void y ningun llamador lee v0 al volver; v0 no se compara
+func_8004E86C: 9 de 9 capturas y 203 de 203 variantes iguales -> IGUAL
+  func_8004E8C4: 0.7 s por corrida, se prueban 14 variantes

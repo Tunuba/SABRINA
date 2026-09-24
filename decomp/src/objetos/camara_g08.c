@@ -69,6 +69,10 @@ void func_80036250(void) {
     s32 t;
     void *nodo;
 
+    /* __builtin_dwarf_cfa es la pila al entrar (la del llamador); el original tiene 0x40 bytes de marco y
+     * la escala en y en sp+0x2C. Se lee antes de guardar nada. */
+    escala[1] = *(volatile s32 *)((u8 *)__builtin_dwarf_cfa() - 0x40 + 0x2C);
+    __asm__ volatile("" ::: "memory");
     giro[0] = 0;
     giro[1] = 0;
     giro[2] = 0;
