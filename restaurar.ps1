@@ -50,6 +50,12 @@ Write-Host '   tarea SabrinaRespaldo lista (cada 15 min; GitHub cada hora)' -For
 
 if (-not $SinCapturas) {
     Paso '5. Capturas y lote automatico (en segundo plano, sin sonido)'
+    if (-not (Test-Path (Join-Path $RAIZ 'estados\saltar.estado'))) {
+        # los estados no van a GitHub (son RAM del juego): el de partida de las capturas se rehace jugando solo
+        Write-Host '   creando estados\saltar.estado (el HUB jugando), ~1 min...'
+        Push-Location (Join-Path $RAIZ 'scripts'); python crear_estado_saltar.py; Pop-Location
+        if (-not (Test-Path (Join-Path $RAIZ 'estados\saltar.estado'))) { Falla 'no se pudo crear estados\saltar.estado' }
+    }
     Start-Process -WindowStyle Hidden $bash -ArgumentList '-lc', "`"cd '$rutaBash' && bash scripts/rondas_paralelo.sh 8 12 > notas/logs/restaurar_rondas.txt 2>&1`""
     Write-Host '   corriendo; avance en notas\logs\restaurar_rondas.txt y notas\logs\ronda*.txt' -ForegroundColor Green
 }
