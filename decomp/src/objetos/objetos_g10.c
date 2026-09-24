@@ -43,8 +43,9 @@ s32 func_800607AC(Objeto *o, s32 a, s32 *p, s32 b, s32 c);
 void *CrearParticula(s32 tipo, s32 a, s32 b, s32 x, s32 y, s32 z, s32 dx, s32 dy, s32 dz, s32 c, s32 d,
                      s32 e, s32 vida, s32 f, s32 g);
 
-/* Sube y baja la cosa con un seno y, si Sabrina esta a menos de 0xB7 (en el plano), la marca con 2. */
-void func_800479E8(Flotante *f) {
+/* Sube y baja la cosa con un seno y, si Sabrina esta a menos de 0xB7 (en el plano), la marca con 2.
+ * Devuelve la distancia a Sabrina (el llamador la recibe en v0). */
+u32 func_800479E8(Flotante *f) {
     s32 v[3];
     u32 largo;
 
@@ -60,6 +61,7 @@ void func_800479E8(Flotante *f) {
     if (largo < 0x6401 && largo < 0xB7) {
         f->estado = 2;
     }
+    return largo;
 }
 
 /* Prepara a Sabrina: reinicia su animacion con la segunda de su tabla, la deja como p_sabrina y le pone

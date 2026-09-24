@@ -8,6 +8,10 @@
 #   bash scripts/respaldo.sh              respalda si hubo cambios (lo corre la tarea programada cada 15 min)
 #   bash scripts/respaldo.sh --bundle D   ademas deja D/sabrina_respaldo.bundle (un solo archivo con todo)
 #
+# Ademas, como mucho una vez por hora, sube a GitHub (origin, rama main) lo que el .gitignore permite: el C, el
+# avance, las notas y los scripts. Nunca el juego, lo extraido, las capturas ni los estados.
+# Con SABRINA_SIN_GITHUB=1 no sube.
+#
 # Restaurar en otra PC: ver notas/RESPALDO.md
 #
 # Las capturas (decomp/capturas, ~5 GB) NO van: se regeneran con scripts/rondas_paralelo.sh en ~30 min.
@@ -58,6 +62,21 @@ if ! git diff --cached --quiet 2>/dev/null || ! git rev-parse -q --verify HEAD >
   git commit -q -m "respaldo $(date '+%Y-%m-%d %H:%M') ($hechas funciones a mano)" && \
     echo "$(date '+%F %T') respaldado: $(git log -1 --format=%s)" >> "$LOG"
 fi
+# --- copia afuera: GitHub, una vez por hora ---
+unset GIT_DIR GIT_WORK_TREE
+MARCA="$DESTINO/ultimo_push"
+if [ -z "${SABRINA_SIN_GITHUB:-}" ] && [ "$(git -C "$RAIZ" branch --show-current)" = main ] &&    { [ ! -f "$MARCA" ] || [ $(( $(date +%s) - $(cat "$MARCA") )) -ge 3600 ]; }; then
+  git -C "$RAIZ" add -A . 2>/dev/null
+  if ! git -C "$RAIZ" diff --cached --quiet; then
+    git -C "$RAIZ" -c user.name="José Manuel González Corado" -c user.email="161869532+Tunuba@users.noreply.github.com"       commit -q -m "Respaldo automatico $(date '+%Y-%m-%d %H:%M')"
+  fi
+  if timeout 300 git -C "$RAIZ" push -q origin main 2>>"$LOG"; then
+    date +%s > "$MARCA"; echo "$(date '+%F %T') subido a GitHub: $(git -C "$RAIZ" log -1 --format='%h %s')" >> "$LOG"
+  else
+    echo "$(date '+%F %T') no se pudo subir a GitHub (sin red o sin credenciales); se reintenta en 15 min" >> "$LOG"
+  fi
+fi
+export GIT_DIR="$DESTINO" GIT_WORK_TREE="$RAIZ"
 if [ "${1:-}" = "--bundle" ] && [ -n "${2:-}" ]; then
   mkdir -p "$2" && git bundle create "$2/sabrina_respaldo.bundle" --all -q 2>/dev/null && \
     echo "$(date '+%F %T') bundle en $2/sabrina_respaldo.bundle" >> "$LOG"
