@@ -17,6 +17,12 @@ elige con la variable `SABRINA_RESPALDO`.
 La tarea programada de Windows **SabrinaRespaldo** lo corre cada 15 minutos y al iniciar sesion, sin
 ventana. Solo hace un commit si hubo cambios. El registro queda en `notas\logs\respaldo.txt`.
 
+**Copia fuera de la PC: GitHub.** Una vez por hora el mismo script hace commit en `main` de lo que permite
+el `.gitignore` y lo sube a github.com/Tunuba/SABRINA: el C, el avance, las notas y los scripts. Desde
+2026-09-24 el C (`decomp\src`) ya no esta excluido. El juego, lo extraido, las capturas de RAM y los estados
+del emulador **no** se suben, porque el repositorio es publico y eso es el juego con copyright. Con
+`SABRINA_SIN_GITHUB=1` no sube.
+
 Lo que NO va, porque se regenera:
 
 | Que | Como se regenera | Tiempo |
@@ -28,7 +34,10 @@ Lo que NO va, porque se regenera:
 
 ## Llevarlo a otra PC
 
-1. En la PC vieja, un solo archivo con todo el historial:
+0. Si la PC vieja ya no existe: `git clone https://github.com/Tunuba/SABRINA` trae todo lo propio, como mucho
+   con una hora de atraso. Faltan los estados del emulador (`estados\`): `scripts\crear_estado_saltar.py`
+   rehace `saltar`, que es el unico que usan las capturas. Sigue en el paso 3.
+1. Si la PC vieja existe, un solo archivo con todo el historial, estados incluidos:
    ```
    bash scripts/respaldo.sh --bundle "E:\"        (una memoria USB, OneDrive, etc.)
    ```
@@ -51,9 +60,9 @@ YA_HECHA sin tocarlo.
 
 En PowerShell:
 ```
-$a = New-ScheduledTaskAction -Execute "C:\Program Files\Git\bin\bash.exe" -Argument "-lc `"bash '/d/<ruta>/SABRINA/scripts/respaldo.sh'`""
+$a = New-ScheduledTaskAction -Execute "C:\Windows\System32\conhost.exe" -Argument "--headless `"C:\Program Files\Git\bin\bash.exe`" -lc `"bash '/d/<ruta>/SABRINA/scripts/respaldo.sh'`""
 $t = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 15)
-$p = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType S4U
+$p = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType Interactive   # con tu sesion: usa tus credenciales de GitHub
 Register-ScheduledTask -TaskName SabrinaRespaldo -Action $a -Trigger $t -Principal $p -Force
 ```
 
