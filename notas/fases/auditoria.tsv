@@ -1,15 +1,5 @@
 funcion	bytes	estado	archivo	detalle
-func_800143E4	16	DISTINTO	src/psyq/psyq_g01.c	0 de 1 capturas y 0 de 0 variantes iguales
-func_800143F4	16	DISTINTO	src/psyq/psyq_g01.c	0 de 1 capturas y 0 de 0 variantes iguales
-func_80019374	132	DISTINTO	src/Font/letras_g03.c	0 de 9 capturas y 2 de 568 variantes iguales
-func_80027F08	68	DISTINTO	src/membank/tarjeta_g06.c	9 de 9 capturas y 904 de 905 variantes iguales
-func_8002ECFC	52	DISTINTO	src/varios/varios.c	8 de 8 capturas y 410 de 411 variantes iguales
-func_80031538	352	DISTINTO	src/sabrina/sabrina_g07.c	7 de 7 capturas y 262 de 263 variantes iguales
-func_80039A70	132	DISTINTO	src/objetos/forma.c	7 de 7 capturas y 599 de 600 variantes iguales
-func_80039B1C	132	DISTINTO	src/objetos/forma.c	7 de 7 capturas y 599 de 600 variantes iguales
 func_8003A46C	184	DISTINTO	src/colision/triangulo_g09.c	9 de 9 capturas y 598 de 601 variantes iguales
-func_800483F8	112	DISTINTO	src/objetos/objetos_g10.c	7 de 7 capturas y 631 de 632 variantes iguales
-func_8004E618	168	DISTINTO	src/varios/banco_b.c	9 de 9 capturas y 392 de 393 variantes iguales
 ArchivoCerrar	152	IGUAL	src/File/archivo_g02.c	9 de 9 capturas y 668 de 668 variantes iguales
 BitDeZona	700	IGUAL	src/SceneProcessing/zonas.c	9 de 9 capturas y 698 de 698 variantes iguales
 CeldaDePosicion	92	IGUAL	src/modelLoader/cuadricula.c	9 de 9 capturas y 1183 de 1183 variantes iguales
@@ -17,6 +7,8 @@ RecogibleNoTomado	84	IGUAL	src/WobjCode/recogibles.c	3 de 3 capturas y 397 de 39
 RegistrarTextura	200	IGUAL	src/loadtga/registrar_g03.c	9 de 9 capturas y 852 de 852 variantes iguales
 TexturaPorIndice	88	IGUAL	src/loadtga/texturas.c	9 de 9 capturas y 855 de 855 variantes iguales
 func_800140BC	24	IGUAL	src/libgpu/gpu_g01.c	9 de 9 capturas y 854 de 854 variantes iguales
+func_800143E4	16	IGUAL	src/psyq/psyq_g01.c	1 de 1 capturas y 60 de 60 variantes iguales
+func_800143F4	16	IGUAL	src/psyq/psyq_g01.c	1 de 1 capturas y 60 de 60 variantes iguales
 func_80014FF0	56	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 539 de 539 variantes iguales
 func_800150F0	52	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 503 de 503 variantes iguales
 func_800161D4	152	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 262 de 262 variantes iguales
@@ -53,14 +45,17 @@ func_800223E8	100	IGUAL	src/colision/suelo.c	7 de 7 capturas y 689 de 689 varian
 func_80024300	40	IGUAL	src/WobjCode/objetos_g06.c	9 de 9 capturas y 955 de 955 variantes iguales
 func_80024A48	316	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 268 de 268 variantes iguales
 func_80027A04	204	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 1062 de 1062 variantes iguales
+func_80027F08	68	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 916 de 916 variantes iguales
 func_8002BAD4	164	IGUAL	src/varios/tabla_nombres_g07.c	9 de 9 capturas y 1130 de 1130 variantes iguales
 func_8002C160	52	IGUAL	src/varios/tabla_nombres_g07.c	9 de 9 capturas y 1224 de 1224 variantes iguales
 func_8002EC1C	224	IGUAL	src/varios/memoria_g07.c	7 de 7 capturas y 161 de 161 variantes iguales
+func_8002ECFC	52	IGUAL	src/varios/varios.c	8 de 8 capturas y 411 de 411 variantes iguales
 func_8002ED30	28	IGUAL	src/varios/varios.c	2 de 2 capturas y 97 de 97 variantes iguales
 func_8003018C	16	IGUAL	src/sabrina/estados.c	3 de 3 capturas y 143 de 143 variantes iguales
 func_80030E64	100	IGUAL	src/sabrina/estados.c	7 de 7 capturas y 657 de 657 variantes iguales
 func_80030F18	232	IGUAL	src/sabrina/sabrina_g07.c	7 de 7 capturas y 424 de 424 variantes iguales
 func_80031494	164	IGUAL	src/sabrina/sabrina_g07.c	7 de 7 capturas y 756 de 756 variantes iguales
+func_80031538	352	IGUAL	src/sabrina/sabrina_g07.c	7 de 7 capturas y 430 de 430 variantes iguales
 func_800350A4	88	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 176 de 176 variantes iguales
 func_800350FC	148	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 252 de 252 variantes iguales
 func_80036250	188	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 227 de 227 variantes iguales
@@ -69,7 +64,9 @@ func_80036410	276	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 209 de 209 va
 func_80036524	204	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 194 de 194 variantes iguales
 func_8003795C	188	IGUAL	src/objetos/camara_g08.c	3 de 3 capturas y 69 de 69 variantes iguales
 func_8003821C	252	IGUAL	src/objetos/camara_g08.c	3 de 3 capturas y 63 de 63 variantes iguales
+func_80039A70	132	IGUAL	src/objetos/forma.c	7 de 7 capturas y 600 de 600 variantes iguales
 func_80039AF4	40	IGUAL	src/objetos/forma.c	7 de 7 capturas y 265 de 265 variantes iguales
+func_80039B1C	132	IGUAL	src/objetos/forma.c	7 de 7 capturas y 600 de 600 variantes iguales
 func_80039BA0	40	IGUAL	src/objetos/forma.c	7 de 7 capturas y 265 de 265 variantes iguales
 func_80039BC8	388	IGUAL	src/objetos/choque_formas_g09.c	9 de 9 capturas y 802 de 802 variantes iguales
 func_8003A070	268	IGUAL	src/objetos/choque_formas_g09.c	3 de 3 capturas y 177 de 177 variantes iguales
@@ -84,11 +81,13 @@ func_800433C0	288	IGUAL	src/audio/spu_g09.c	9 de 9 capturas y 1224 de 1224 varia
 func_80044BD4	104	IGUAL	src/audio/spu_g09.c	7 de 7 capturas y 952 de 952 variantes iguales
 func_800479E8	188	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 280 de 280 variantes iguales
 func_80047F24	172	IGUAL	src/objetos/objetos_g10.c	1 de 1 capturas y 47 de 47 variantes iguales
+func_800483F8	112	IGUAL	src/objetos/objetos_g10.c	7 de 7 capturas y 653 de 653 variantes iguales
 func_80048754	92	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 97 de 97 variantes iguales
 func_80048CF4	204	IGUAL	src/objetos/objetos_g10.c	2 de 2 capturas y 103 de 103 variantes iguales
 func_8004906C	164	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 173 de 173 variantes iguales
 func_80049110	264	IGUAL	src/objetos/objetos_g10.c	2 de 2 capturas y 60 de 60 variantes iguales
 func_800492B4	212	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 109 de 109 variantes iguales
+func_8004E618	168	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 393 de 393 variantes iguales
 func_8004E774	136	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 355 de 355 variantes iguales
 func_8004E86C	88	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 475 de 475 variantes iguales
 func_8004E8C4	460	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 423 de 423 variantes iguales
@@ -102,6 +101,7 @@ func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	9 de 9 capturas y 637 d
 func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	9 de 9 capturas y 643 de 643 variantes iguales
 func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 de 646 variantes iguales
 DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
+func_80019374	132	IGUAL_V0	src/Font/letras_g03.c	0 de 9 capturas y 2 de 568 variantes iguales
 func_800249CC	124	IGUAL_V0	src/WobjCode/objetos_g06.c	8 de 9 capturas y 339 de 433 variantes iguales
 func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales
 func_8003019C	108	IGUAL_V0	src/sabrina/estados.c	0 de 7 capturas y 0 de 654 variantes iguales

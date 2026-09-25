@@ -212,7 +212,8 @@ def v0_se_usa(dirc, prof=0, vistos=None):
 def es_void(c, funcion):
     import re
     m = re.search(r"^\s*(static\s+)?(\w[\w\s\*]*?)\s*\b" + funcion + r"\s*\(", open(c).read(), re.M)
-    return bool(m) and m.group(2).strip() == "void"
+    # el tipo puede venir precedido de una macro de atributo (TOCA_NULL, etc.): importa la ultima palabra
+    return bool(m) and m.group(2).split()[-1:] == ["void"]
 
 
 def v0_de_void(funcion):
@@ -261,6 +262,17 @@ _propias = []
 _propias_base = []
 
 
+def _evitar_base_c(v):
+    """Un argumento al azar que caiga justo en la zona fisica donde vive el C compilado (BASE_C) hace que la
+    version en C, al usarlo como puntero, lea su propio codigo maquina en vez de la RAM en cero que ve la
+    original ahi: no es un bug de la funcion, es un choque con el arnes de pruebas. Se aleja el valor de esa
+    ventana (64 KB, mas que de sobra para una sola funcion) conservando el resto de sus bits."""
+    fis = v & 0x1FFFFFFF
+    if (BASE_C & 0x1FFFFFFF) <= fis < (BASE_C & 0x1FFFFFFF) + 0x10000:
+        v ^= 0x00800000
+    return v & 0xFFFFFFFF
+
+
 def variantes(regs, pool, n, rnd):
     """n juegos de registros con a0-a3 cambiados por las constantes de la propia funcion (las que compara,
     como -1 o -2, y sus vecinas), valores de pool, sumas y restas de ellos o al azar."""
@@ -289,7 +301,7 @@ def variantes(regs, pool, n, rnd):
                     v = rnd.choice(pool) + rnd.choice((1, -1)) * rnd.choice(pool)
                 else:
                     v = rnd.getrandbits(32)
-                r[i] = v & 0xFFFFFFFF
+                r[i] = _evitar_base_c(v)
         res.append(r)
     return res
 
@@ -530,7 +542,11 @@ def verificar(c, funciones, n_variantes=60):
                         n = rnd.choice(pool)
                     else:
                         n = rnd.getrandbits(32)
-                    parche[d] = (n & ((1 << (8 * tam)) - 1)).to_bytes(tam, "little")
+                    n &= (1 << (8 * tam)) - 1
+                    if tam == 4:
+                        # un puntero del juego movido justo a BASE_C tendria el mismo choque que en variantes()
+                        n = _evitar_base_c(n)
+                    parche[d] = n.to_bytes(tam, "little")
                 a = ejecutar(base, sim[f], None, None, parche)
                 if a["error"]:
                     continue
