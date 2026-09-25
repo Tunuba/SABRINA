@@ -33,3 +33,5 @@ decomp/undefined_*.txt
 decomp/tmp_*/
 decomp/g[0-9][0-9]_*
 decomp/tmp_*.sh
+# zips del juego sueltos en la raiz (disco.zip, mallas_y_colisiones.zip): nunca al repo publico
+*.zip
