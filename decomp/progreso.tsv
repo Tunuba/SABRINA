@@ -19,7 +19,7 @@ CrearParticula	952	YA_HECHA
 CrearRecogible	608	NO_COMPILA	src/auto/CrearRecogible.c:75:9: error: ‘sp130’ undeclared (first use in this function); did you mean ‘sp30’?
 D_800609B0	208	SIN_CAPTURAS	
 DanoPorEnemigo	816	YA_HECHA	
-DanoPorSuelo	1864	IGUAL	DanoPorSuelo: 5 de 5 capturas y 271 de 271 variantes iguales -> IGUAL
+DanoPorSuelo	1864	DISTINTO	DanoPorSuelo: 9 de 9 capturas y 217 de 223 variantes iguales -> DISTINTO
 DibujarCeldasVisibles	508	NO_COMPILA	src/auto/DibujarCeldasVisibles.c:24:14: error: invalid type argument of unary ‘*’ (have ‘int’)
 DibujarTexto	900	NO_COMPILA	no compila: error: el C define el dato del juego D_800798BC; tiene que ser extern
 FisicaObjeto	2436	NO_COMPILA	src/auto/FisicaObjeto.c:212:51: error: ‘spB8’ undeclared (first use in this function); did you mean ‘spBC’?
@@ -214,7 +214,7 @@ func_8001A754	1668	SIN_CAPTURAS
 func_8001ADD8	348	SIN_CAPTURAS	
 func_8001B000	200	SIN_CAPTURAS	
 func_8001B0C8	972	SIN_CAPTURAS	
-func_8001B494	68	IGUAL	func_8001B494: 4 de 4 capturas y 77 de 77 variantes iguales -> IGUAL
+func_8001B494	68	IGUAL	func_8001B494: 7 de 7 capturas y 140 de 140 variantes iguales -> IGUAL
 func_8001B5F8	8	SIN_CAPTURAS	
 func_8001B600	152	SIN_CAPTURAS	
 func_8001B698	808	SIN_CAPTURAS	
@@ -500,21 +500,21 @@ func_800318D4	32	SIN_CAPTURAS
 func_800318F4	3256	IGUAL	func_800318F4: 9 de 9 capturas y 179 de 179 variantes iguales -> IGUAL
 func_800325AC	1516	NO_COMPILA	src/auto/func_800325AC.c:37:9: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80032B98	952	NO_COMPILA	no compila: error: el C define el dato del juego D_80074BC4; tiene que ser extern
-func_80032F50	64	IGUAL	func_80032F50: 5 de 5 capturas y 331 de 331 variantes iguales -> IGUAL
-func_80032F90	452	IGUAL	func_80032F90: 5 de 5 capturas y 301 de 301 variantes iguales -> IGUAL
-func_80033AD8	68	IGUAL	func_80033AD8: 5 de 5 capturas y 232 de 232 variantes iguales -> IGUAL
-func_80033B1C	940	IGUAL	func_80033B1C: 2 de 2 capturas y 79 de 79 variantes iguales -> IGUAL
-func_80033EC8	256	IGUAL	func_80033EC8: 4 de 4 capturas y 148 de 148 variantes iguales -> IGUAL
+func_80032F50	64	IGUAL	func_80032F50: 6 de 6 capturas y 169 de 169 variantes iguales -> IGUAL
+func_80032F90	452	IGUAL	func_80032F90: 6 de 6 capturas y 159 de 159 variantes iguales -> IGUAL
+func_80033AD8	68	IGUAL	func_80033AD8: 9 de 9 capturas y 159 de 159 variantes iguales -> IGUAL
+func_80033B1C	940	IGUAL	func_80033B1C: 3 de 3 capturas y 53 de 53 variantes iguales -> IGUAL
+func_80033EC8	256	IGUAL	func_80033EC8: 4 de 4 capturas y 72 de 72 variantes iguales -> IGUAL
 func_80034710	96	SIN_CAPTURAS	
 func_80034770	12	SIN_CAPTURAS	
 func_8003477C	628	SIN_CAPTURAS	
 func_800349F0	1428	SIN_CAPTURAS	
 func_80034F84	76	SIN_CAPTURAS	
-func_80034FD0	200	IGUAL	func_80034FD0: 1 de 1 capturas y 29 de 29 variantes iguales -> IGUAL
-func_80035098	12	IGUAL	func_80035098: 1 de 1 capturas y 38 de 38 variantes iguales -> IGUAL
+func_80034FD0	200	IGUAL	func_80034FD0: 1 de 1 capturas y 35 de 35 variantes iguales -> IGUAL
+func_80035098	12	IGUAL	func_80035098: 1 de 1 capturas y 32 de 32 variantes iguales -> IGUAL
 func_800350A4	88	YA_HECHA	
 func_800350FC	148	YA_HECHA	
-func_80035190	388	IGUAL_V0	func_80035190: 4 de 4 capturas y 162 de 168 variantes iguales -> IGUAL_V0
+func_80035190	388	IGUAL_V0	func_80035190: 7 de 7 capturas y 143 de 145 variantes iguales -> IGUAL_V0
 func_80035314	3900	NO_COMPILA	src/auto/func_80035314.c:49:5: error: unknown type name ‘ObjExtra’
 func_80036250	188	YA_HECHA	
 func_8003630C	260	YA_HECHA	
@@ -524,8 +524,8 @@ func_800365F0	656	NO_COMPILA	src/auto/func_800365F0.c:29:49: error: ‘p_sabrina
 func_80036880	1240	NO_COMPILA	src/auto/func_80036880.c:35:15: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80036D58	1296	NO_COMPILA	src/auto/func_80036D58.c:24:18: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80037268	16	SIN_CAPTURAS	
-func_80037278	496	DISTINTO	func_80037278: 1 de 4 capturas y 21 de 136 variantes iguales -> DISTINTO
-func_80037468	720	DISTINTO	func_80037468: 0 de 2 capturas y 10 de 91 variantes iguales -> DISTINTO
+func_80037278	496	DISTINTO	func_80037278: 3 de 7 capturas y 39 de 145 variantes iguales -> DISTINTO
+func_80037468	720	DISTINTO	func_80037468: 0 de 3 capturas y 0 de 68 variantes iguales -> DISTINTO
 func_80037738	548	NO_COMPILA	no compila: error: el C define el dato del juego D_80074BC4; tiene que ser extern
 func_8003795C	188	YA_HECHA	
 func_80037A18	932	NO_COMPILA	src/auto/func_80037A18.c:38:50: error: ‘sp58’ undeclared (first use in this function); did you mean ‘sp54’?
@@ -565,7 +565,7 @@ func_80039BC8	388	YA_HECHA
 func_80039D4C	132	SIN_CAPTURAS	
 func_80039DD0	236	SIN_CAPTURAS	
 func_80039EBC	232	SIN_CAPTURAS	
-func_80039FA4	204	IGUAL	func_80039FA4: 5 de 5 capturas y 190 de 190 variantes iguales -> IGUAL
+func_80039FA4	204	IGUAL	func_80039FA4: 9 de 9 capturas y 337 de 337 variantes iguales -> IGUAL
 func_8003A070	268	YA_HECHA	
 func_8003A17C	212	YA_HECHA	
 func_8003A250	8	YA_HECHA	
@@ -589,7 +589,7 @@ func_8003BC04	176	SIN_CAPTURAS
 func_8003BCB4	280	SIN_CAPTURAS	
 func_8003BDCC	100	SIN_CAPTURAS	
 func_8003BE38	396	SIN_CAPTURAS	
-func_8003BFC4	40	NO_COMPILA	src/auto/func_8003BFC4.c:9:17: error: ‘p_sabrina’ undeclared (first use in this function)
+func_8003BFC4	40	SIN_CAPTURAS	
 func_8003BFEC	508	IGUAL	func_8003BFEC: 2 de 2 capturas y 111 de 111 variantes iguales -> IGUAL
 func_8003C1E8	832	NO_COMPILA	src/auto/func_8003C1E8.c:56:16: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8003C528	336	SIN_CAPTURAS	

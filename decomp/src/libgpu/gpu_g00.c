@@ -42,10 +42,12 @@ s32 func_80012D74(s32 modo) {
     return D_800636C8->sincronizar(modo);
 }
 
-/* ClearImage: rellena un rectangulo de la VRAM con un color. */
-s32 func_80012DDC(RectVram *r, u8 rojo, u8 verde, u8 azul) {
+/* ClearImage: rellena un rectangulo de la VRAM con un color. El original recorta cada componente a un
+ * byte (andi 0xFF) sin fiarse de quien llama; GCC con un parametro u8 no lo haria, por eso van s32. */
+s32 func_80012DDC(RectVram *r, s32 rojo, s32 verde, s32 azul) {
     func_800112C0(D_80060C2C, r);
-    return D_800636C8->encolar(D_800636C8->limpiar, r, 8, (azul << 16) | (verde << 8) | rojo);
+    return D_800636C8->encolar(D_800636C8->limpiar, r, 8,
+                               ((azul & 0xFF) << 16) | ((verde & 0xFF) << 8) | (rojo & 0xFF));
 }
 
 /* LoadImage: copia datos de la RAM a un rectangulo de la VRAM (sube un .PIC o .TEX). */
