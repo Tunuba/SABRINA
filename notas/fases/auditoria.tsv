@@ -1,0 +1,150 @@
+funcion	bytes	estado	archivo	detalle
+func_800143E4	16	DISTINTO	src/psyq/psyq_g01.c	0 de 1 capturas y 0 de 0 variantes iguales
+func_800143F4	16	DISTINTO	src/psyq/psyq_g01.c	0 de 1 capturas y 0 de 0 variantes iguales
+func_80019374	132	DISTINTO	src/Font/letras_g03.c	0 de 9 capturas y 2 de 568 variantes iguales
+func_80027F08	68	DISTINTO	src/membank/tarjeta_g06.c	9 de 9 capturas y 904 de 905 variantes iguales
+func_8002ECFC	52	DISTINTO	src/varios/varios.c	8 de 8 capturas y 410 de 411 variantes iguales
+func_80031538	352	DISTINTO	src/sabrina/sabrina_g07.c	7 de 7 capturas y 262 de 263 variantes iguales
+func_80039A70	132	DISTINTO	src/objetos/forma.c	7 de 7 capturas y 599 de 600 variantes iguales
+func_80039B1C	132	DISTINTO	src/objetos/forma.c	7 de 7 capturas y 599 de 600 variantes iguales
+func_8003A46C	184	DISTINTO	src/colision/triangulo_g09.c	9 de 9 capturas y 598 de 601 variantes iguales
+func_800483F8	112	DISTINTO	src/objetos/objetos_g10.c	7 de 7 capturas y 631 de 632 variantes iguales
+func_8004E618	168	DISTINTO	src/varios/banco_b.c	9 de 9 capturas y 392 de 393 variantes iguales
+ArchivoCerrar	152	IGUAL	src/File/archivo_g02.c	9 de 9 capturas y 668 de 668 variantes iguales
+BitDeZona	700	IGUAL	src/SceneProcessing/zonas.c	9 de 9 capturas y 698 de 698 variantes iguales
+CeldaDePosicion	92	IGUAL	src/modelLoader/cuadricula.c	9 de 9 capturas y 1183 de 1183 variantes iguales
+RecogibleNoTomado	84	IGUAL	src/WobjCode/recogibles.c	3 de 3 capturas y 397 de 397 variantes iguales
+RegistrarTextura	200	IGUAL	src/loadtga/registrar_g03.c	9 de 9 capturas y 852 de 852 variantes iguales
+TexturaPorIndice	88	IGUAL	src/loadtga/texturas.c	9 de 9 capturas y 855 de 855 variantes iguales
+func_800140BC	24	IGUAL	src/libgpu/gpu_g01.c	9 de 9 capturas y 854 de 854 variantes iguales
+func_80014FF0	56	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 539 de 539 variantes iguales
+func_800150F0	52	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 503 de 503 variantes iguales
+func_800161D4	152	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 262 de 262 variantes iguales
+func_80016970	48	IGUAL	src/psyq/psyq_g01.c	9 de 9 capturas y 198 de 198 variantes iguales
+func_800169D4	48	IGUAL	src/psyq/libetc_g02.c	1 de 1 capturas y 28 de 28 variantes iguales
+func_80016A2C	108	IGUAL	src/psyq/libetc_g02.c	9 de 9 capturas y 323 de 323 variantes iguales
+func_80016B4C	384	IGUAL	src/psyq/libetc_g02.c	9 de 9 capturas y 311 de 311 variantes iguales
+func_80017D3C	68	IGUAL	src/varios/cadenas_g02.c	9 de 9 capturas y 1007 de 1007 variantes iguales
+func_80019234	84	IGUAL	src/Font/letras_g03.c	9 de 9 capturas y 531 de 531 variantes iguales
+func_80019C04	192	IGUAL	src/GraphicTools/reiniciar_g03.c	7 de 7 capturas y 532 de 532 variantes iguales
+func_8001BE8C	256	IGUAL	src/geometria/angulos.c	9 de 9 capturas y 1199 de 1199 variantes iguales
+func_8001BF8C	120	IGUAL	src/geometria/angulos.c	9 de 9 capturas y 642 de 642 variantes iguales
+func_8001C1D4	172	IGUAL	src/modelLoader/mundo_g03.c	3 de 3 capturas y 96 de 96 variantes iguales
+func_8001C3C4	64	IGUAL	src/geometria/vectores.c	9 de 9 capturas y 648 de 648 variantes iguales
+func_8001C404	88	IGUAL	src/geometria/vectores.c	9 de 9 capturas y 701 de 701 variantes iguales
+func_8001C794	64	IGUAL	src/modelLoader/mundo_g03.c	7 de 7 capturas y 267 de 267 variantes iguales
+func_8001D778	372	IGUAL	src/modelLoader/mando_g04.c	9 de 9 capturas y 1166 de 1166 variantes iguales
+func_8001E06C	248	IGUAL	src/modelLoader/nodos_g04.c	9 de 9 capturas y 175 de 175 variantes iguales
+func_8001E7A8	332	IGUAL	src/Object/matriz_g04.c	9 de 9 capturas y 903 de 903 variantes iguales
+func_8001ED9C	72	IGUAL	src/Object/lista_g04.c	3 de 3 capturas y 180 de 180 variantes iguales
+func_8001F23C	196	IGUAL	src/Object/lista_g04.c	7 de 7 capturas y 301 de 301 variantes iguales
+func_8001F6C8	884	IGUAL	src/objetos/particulas.c	9 de 9 capturas y 900 de 900 variantes iguales
+func_8001FA3C	544	IGUAL	src/geometria/camara.c	9 de 9 capturas y 1224 de 1224 variantes iguales
+func_8001FD50	1348	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 165 de 165 variantes iguales
+func_800204F0	496	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 212 de 212 variantes iguales
+func_800206F0	116	IGUAL	src/Particle/nodos_g04.c	7 de 7 capturas y 196 de 196 variantes iguales
+func_80020764	72	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 175 de 175 variantes iguales
+func_80021CE4	96	IGUAL	src/geometria/varios.c	9 de 9 capturas y 1069 de 1069 variantes iguales
+func_80021D44	272	IGUAL	src/StratTools/girar_g05.c	9 de 9 capturas y 738 de 738 variantes iguales
+func_80021E54	284	IGUAL	src/StratTools/girar_g05.c	9 de 9 capturas y 737 de 737 variantes iguales
+func_80021F70	236	IGUAL	src/StratTools/girar_g05.c	9 de 9 capturas y 809 de 809 variantes iguales
+func_80022104	136	IGUAL	src/geometria/angulos.c	9 de 9 capturas y 656 de 656 variantes iguales
+func_800223E8	100	IGUAL	src/colision/suelo.c	7 de 7 capturas y 689 de 689 variantes iguales
+func_80024300	40	IGUAL	src/WobjCode/objetos_g06.c	9 de 9 capturas y 955 de 955 variantes iguales
+func_80024A48	316	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 268 de 268 variantes iguales
+func_80027A04	204	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 1062 de 1062 variantes iguales
+func_8002BAD4	164	IGUAL	src/varios/tabla_nombres_g07.c	9 de 9 capturas y 1130 de 1130 variantes iguales
+func_8002C160	52	IGUAL	src/varios/tabla_nombres_g07.c	9 de 9 capturas y 1224 de 1224 variantes iguales
+func_8002EC1C	224	IGUAL	src/varios/memoria_g07.c	7 de 7 capturas y 161 de 161 variantes iguales
+func_8002ED30	28	IGUAL	src/varios/varios.c	2 de 2 capturas y 97 de 97 variantes iguales
+func_8003018C	16	IGUAL	src/sabrina/estados.c	3 de 3 capturas y 143 de 143 variantes iguales
+func_80030E64	100	IGUAL	src/sabrina/estados.c	7 de 7 capturas y 657 de 657 variantes iguales
+func_80030F18	232	IGUAL	src/sabrina/sabrina_g07.c	7 de 7 capturas y 424 de 424 variantes iguales
+func_80031494	164	IGUAL	src/sabrina/sabrina_g07.c	7 de 7 capturas y 756 de 756 variantes iguales
+func_800350A4	88	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 176 de 176 variantes iguales
+func_800350FC	148	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 252 de 252 variantes iguales
+func_80036250	188	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 227 de 227 variantes iguales
+func_8003630C	260	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 218 de 218 variantes iguales
+func_80036410	276	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 209 de 209 variantes iguales
+func_80036524	204	IGUAL	src/objetos/camara_g08.c	9 de 9 capturas y 194 de 194 variantes iguales
+func_8003795C	188	IGUAL	src/objetos/camara_g08.c	3 de 3 capturas y 69 de 69 variantes iguales
+func_8003821C	252	IGUAL	src/objetos/camara_g08.c	3 de 3 capturas y 63 de 63 variantes iguales
+func_80039AF4	40	IGUAL	src/objetos/forma.c	7 de 7 capturas y 265 de 265 variantes iguales
+func_80039BA0	40	IGUAL	src/objetos/forma.c	7 de 7 capturas y 265 de 265 variantes iguales
+func_80039BC8	388	IGUAL	src/objetos/choque_formas_g09.c	9 de 9 capturas y 802 de 802 variantes iguales
+func_8003A070	268	IGUAL	src/objetos/choque_formas_g09.c	3 de 3 capturas y 177 de 177 variantes iguales
+func_8003A17C	212	IGUAL	src/objetos/choque_formas_g09.c	3 de 3 capturas y 185 de 185 variantes iguales
+func_8003A250	8	IGUAL	src/objetos/forma.c	7 de 7 capturas y 420 de 420 variantes iguales
+func_8003A260	8	IGUAL	src/objetos/forma.c	7 de 7 capturas y 420 de 420 variantes iguales
+func_8003AE84	196	IGUAL	src/colision/suelo.c	9 de 9 capturas y 1070 de 1070 variantes iguales
+func_8003AF48	84	IGUAL	src/colision/suelo.c	9 de 9 capturas y 565 de 565 variantes iguales
+func_8003DD44	48	IGUAL	src/audio/cd.c	8 de 8 capturas y 882 de 882 variantes iguales
+func_8003E958	164	IGUAL	src/varios/bloques.c	9 de 9 capturas y 788 de 788 variantes iguales
+func_800433C0	288	IGUAL	src/audio/spu_g09.c	9 de 9 capturas y 1224 de 1224 variantes iguales
+func_80044BD4	104	IGUAL	src/audio/spu_g09.c	7 de 7 capturas y 952 de 952 variantes iguales
+func_800479E8	188	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 280 de 280 variantes iguales
+func_80047F24	172	IGUAL	src/objetos/objetos_g10.c	1 de 1 capturas y 47 de 47 variantes iguales
+func_80048754	92	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 97 de 97 variantes iguales
+func_80048CF4	204	IGUAL	src/objetos/objetos_g10.c	2 de 2 capturas y 103 de 103 variantes iguales
+func_8004906C	164	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 173 de 173 variantes iguales
+func_80049110	264	IGUAL	src/objetos/objetos_g10.c	2 de 2 capturas y 60 de 60 variantes iguales
+func_800492B4	212	IGUAL	src/objetos/objetos_g10.c	3 de 3 capturas y 109 de 109 variantes iguales
+func_8004E774	136	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 355 de 355 variantes iguales
+func_8004E86C	88	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 475 de 475 variantes iguales
+func_8004E8C4	460	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 423 de 423 variantes iguales
+func_80053F74	244	IGUAL	src/varios/texto_g11.c	3 de 3 capturas y 332 de 332 variantes iguales
+func_80055CAC	320	IGUAL	src/sabrina/objetos_g12.c	9 de 9 capturas y 696 de 696 variantes iguales
+func_80057F34	920	IGUAL	src/geometria/partir_80057F34.c	9 de 9 capturas y 632 de 632 variantes iguales
+func_800582CC	912	IGUAL	src/geometria/partir_800582CC.c	9 de 9 capturas y 633 de 633 variantes iguales
+func_8005865C	912	IGUAL	src/geometria/partir_8005865C.c	9 de 9 capturas y 636 de 636 variantes iguales
+func_800589EC	1272	IGUAL	src/geometria/partir_800589EC.c	9 de 9 capturas y 643 de 643 variantes iguales
+func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	9 de 9 capturas y 637 de 637 variantes iguales
+func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	9 de 9 capturas y 643 de 643 variantes iguales
+func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 de 646 variantes iguales
+DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
+func_800249CC	124	IGUAL_V0	src/WobjCode/objetos_g06.c	8 de 9 capturas y 339 de 433 variantes iguales
+func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales
+func_8003019C	108	IGUAL_V0	src/sabrina/estados.c	0 de 7 capturas y 0 de 654 variantes iguales
+func_8003CF60	172	IGUAL_V0	src/objetos/objeto_g09.c	0 de 3 capturas y 57 de 308 variantes iguales
+func_80044D64	196	IGUAL_V0	src/objetos/objeto_g09.c	3 de 3 capturas y 254 de 279 variantes iguales
+CrearParticula	952	NO_ESTA	src/objetos/objetos_g10.c	no esta en src/objetos/objetos_g10.c
+CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
+LeerCuadriculaINO	312	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
+LeerModelosINO	380	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
+func_8001315C	192	NO_TERMINA	src/libgpu/gpu_g01.c	la original no termina en el emulador (espera al hardware)
+func_80022D4C	268	NO_TERMINA	src/TexAnima/paletas_g06.c	la original no termina en el emulador (espera al hardware)
+func_80022E58	156	NO_TERMINA	src/TexAnima/paletas_g06.c	la original no termina en el emulador (espera al hardware)
+func_80025BA0	240	NO_TERMINA	src/membank/tarjeta_g06.c	la original no termina en el emulador (espera al hardware)
+func_8002FE64	184	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
+func_8005A1EC	372	NO_TERMINA	src/sabrina/objetos_g12.c	la original no termina en el emulador (espera al hardware)
+func_80039A34	60	SIN_CAPTURAS	src/objetos/forma.c	sin capturas
+func_8003A258	8	SIN_CAPTURAS	src/objetos/forma.c	sin capturas
+ArchivoLeer	272	TOPE_DE_TIEMPO	src/File/archivo_g03.c	la verificacion no termino a tiempo
+SubirAVRAM	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_800112C0	284	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80012D74	104	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80012DDC	144	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80012ECC	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80012FE4	172	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80013090	92	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_800130EC	112	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_800182A8	352	TOPE_DE_TIEMPO	src/nodos/reserva_g02.c	la verificacion no termino a tiempo
+func_80018408	128	TOPE_DE_TIEMPO	src/nodos/reserva_g02.c	la verificacion no termino a tiempo
+func_80018488	288	TOPE_DE_TIEMPO	src/nodos/reserva_g02.c	la verificacion no termino a tiempo
+func_800188C4	224	TOPE_DE_TIEMPO	src/File/archivo_g03.c	la verificacion no termino a tiempo
+func_80021120	112	TOPE_DE_TIEMPO	src/Screen/pantalla_g05.c	la verificacion no termino a tiempo
+func_80021B4C	240	TOPE_DE_TIEMPO	src/Screen/pantalla_g05.c	la verificacion no termino a tiempo
+func_80022528	60	TOPE_DE_TIEMPO	src/TexAnima/ciclos_g05.c	la verificacion no termino a tiempo
+func_80022564	176	TOPE_DE_TIEMPO	src/TexAnima/ciclos_g05.c	la verificacion no termino a tiempo
+func_80022BCC	384	TOPE_DE_TIEMPO	src/TexAnima/ciclos_g05.c	la verificacion no termino a tiempo
+func_8004E194	164	TOPE_DE_TIEMPO	src/varios/banco_g11.c	la verificacion no termino a tiempo
+func_8004E238	48	TOPE_DE_TIEMPO	src/varios/espera.c	la verificacion no termino a tiempo
+func_8004E268	60	TOPE_DE_TIEMPO	src/varios/espera.c	la verificacion no termino a tiempo
+func_8004E2A4	40	TOPE_DE_TIEMPO	src/varios/banco_e2xx.c	la verificacion no termino a tiempo
+func_8004E2E4	72	TOPE_DE_TIEMPO	src/varios/banco_g11.c	la verificacion no termino a tiempo
+func_8004E5D8	64	TOPE_DE_TIEMPO	src/varios/banco_e2xx.c	la verificacion no termino a tiempo
+func_8004E7FC	112	TOPE_DE_TIEMPO	src/varios/banco_g11.c	la verificacion no termino a tiempo
+func_8004EE24	208	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
+func_8004FC4C	184	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
+func_800508D4	92	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
+func_80051298	284	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
