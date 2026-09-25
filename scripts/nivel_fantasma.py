@@ -38,8 +38,14 @@ import ino
 from ino_escribir import escribir_ino
 
 NIVEL = "H1W"
-GRID = 15       # vertices por lado -> (GRID-1)^2 celdas de piso
-SPACING = 700   # unidades locales entre vertices vecinos: la mediana real de los triangulos de piso
+# La malla va ALINEADA a la cuadricula de colision del juego (celdas de 0x40000 / 256 = 1024 unidades del
+# modelo): con SPACING = 512 y el borde en -4096, cada celda tiene exactamente 2x2 cuadros y ningun
+# triangulo cruza el borde entre dos celdas. Con SPACING = 700 los triangulos cruzaban bordes, cada uno
+# quedaba solo en la celda de su centro, y donde Sabrina pisaba la mitad que caia en la celda vecina la
+# consulta de suelo no encontraba nada y se caia (visto en vivo con observar_fantasma.py: aparece en
+# (128, 0, -896), se desliza y se hunde).
+GRID = 17       # vertices por lado -> 16x16 cuadros de 512 = 8192 de lado, de -4096 a 4096
+SPACING = 512   # unidades locales entre vertices vecinos: la mediana real de los triangulos de piso
                 # del HUB es ~571 y el maximo real ~6969 (medido en H1W.INO); un triangulo de
                 # 32000 unidades (lo que se probo antes, un solo cuadrado gigante) es ~45000 de
                 # diagonal, muy por encima de eso -sospecha: cae en la rama de "triangulo demasiado
@@ -88,7 +94,7 @@ def nodo_plano(nodo_original):
                 hijos=[], tris=tris, verts=verts)
 
 
-CUBO = dict(x=2100, z=2100, lado=1400, alto=700)   # None para no ponerlo; centro en el plano, medidas en unidades del modelo
+CUBO = dict(x=1536, z=1536, lado=1024, alto=512)   # alineado: ocupa justo la celda de x, z en [1024, 2048)   # None para no ponerlo; centro en el plano, medidas en unidades del modelo
 
 
 def agregar_cubo(nodo, x, z, lado, alto):
@@ -129,10 +135,16 @@ def celdas_de_triangulos(nodo, ancho, alto):
     modelo -confirmado con las pruebas de colision en vivo de antes)."""
     # (x, z) de cada vertice (x, y, z son los 3 primeros int16; antes se leian x e y, y como el piso
     # es plano todo caia en la fila de z = 0)
-    verts_xz = [struct.unpack_from("<3h", v, 0)[0::2] for v in nodo["verts"]]
+    verts_xyz = [struct.unpack_from("<3h", v, 0) for v in nodo["verts"]]
+    verts_xz = [v[0::2] for v in verts_xyz]
     reparto = {}
     for i, t in enumerate(nodo["tris"]):
         v0, v1, v2 = t[0], t[1], t[2]
+        # Solo triangulos horizontales (piso y tapa del cubo): uno vertical (pared) en la colision de
+        # suelo hace que la altura calculada salga mal y Sabrina atraviese el piso y se caiga. Las
+        # paredes quedan solo para dibujar.
+        if len({verts_xyz[v][1] for v in (v0, v1, v2)}) != 1:
+            continue
         cx = sum(verts_xz[v][0] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         cz = sum(verts_xz[v][1] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         x, z = int(cx), int(cz)
@@ -168,6 +180,7 @@ def construir_bytes():
         for i in reparto[fc]:
             viejo_a_nuevo[i] = len(tris)
             tris.append(nodo["tris"][i])
+    tris += [t for i, t in enumerate(nodo["tris"]) if i not in viejo_a_nuevo]   # las paredes, al final
     nodo["tris"] = tris
     reparto = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto.items()}
 
