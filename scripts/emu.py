@@ -59,9 +59,8 @@ class Emu:
                     self.cerrar()
                     raise RuntimeError(f"el emulador no respondio en 30 s, ver {self.log}")
                 time.sleep(0.2)
-        if not ui:
-            # sin ventana no tiene que sonar: las rondas de capturas corren mientras se usa la PC
-            self.eval("PCSX.settings.spu.Mute = true; return 'ok'")
+        # mudo siempre, con o sin ventana: las rondas corren mientras se usa la PC para otra cosa
+        self.eval("PCSX.settings.spu.Mute = true; return 'ok'")
 
     def __enter__(self):
         return self

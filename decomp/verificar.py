@@ -28,7 +28,7 @@ import tempfile
 import time
 
 import gte
-from unicorn import Uc, UcError, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_HOOK_MEM_READ
+from unicorn import Uc, UcError, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_HOOK_MEM_READ, UC_HOOK_INTR
 from unicorn.mips_const import UC_MIPS_REG_PC, UC_MIPS_REG_RA, UC_MIPS_REG_V0, UC_MIPS_REG_V1, UC_MIPS_REG_SP, \
     UC_MIPS_REG_HI, UC_MIPS_REG_LO, UC_MIPS_REG_ZERO
 
@@ -352,8 +352,24 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         if 0x1F801000 <= dirc < 0x1F803000:
             hw.append((dirc, tam, valor))
 
+    interrupcion_mala = []
+
+    def interrupcion(u, intno, _):
+        # unico uso de "syscall" en el juego: EnterCriticalSection/ExitCriticalSection (psyq_g01.c), que
+        # apagan/prenden las interrupciones de la CPU real; Unicorn no modela eso. Al llegar aca el pc ya
+        # quedo apuntando a la instruccion siguiente al syscall (no hace falta avanzarlo), asi que solo se
+        # deja v0 en 1 (exito, como devuelve la BIOS real) para que ambas versiones sigan igual
+        d = u.reg_read(UC_MIPS_REG_PC)
+        previa = struct.unpack_from("<I", u.mem_read((d - 4) & 0x1FFFFFFF, 4))[0]
+        if (previa >> 26) == 0 and (previa & 0x3F) == 0x0C:
+            u.reg_write(UC_MIPS_REG_V0, 1)
+        else:
+            interrupcion_mala.append(f"interrupcion no manejada en {d:08x}")
+            u.emu_stop()
+
     uc.hook_add(UC_HOOK_CODE, codigo, begin=0xA0, end=0xC4)
     uc.hook_add(UC_HOOK_MEM_WRITE, escritura, begin=0x1F801000, end=0x1F803000)
+    uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
     gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))
     lecturas, escritas, propias = {}, set(), set()
@@ -379,6 +395,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         uc.emu_start(pc, FIN, count=LIMITE)
     except UcError as ex:
         error = f"{ex} en {uc.reg_read(UC_MIPS_REG_PC):08x}"
+    if error is None and interrupcion_mala:
+        error = interrupcion_mala[0]
     if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN:
         error = f"no termino en {LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1),
