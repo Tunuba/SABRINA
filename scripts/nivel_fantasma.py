@@ -88,11 +88,48 @@ def nodo_plano(nodo_original):
                 hijos=[], tris=tris, verts=verts)
 
 
+CUBO = dict(x=2100, z=2100, lado=1400, alto=700)   # None para no ponerlo; centro en el plano, medidas en unidades del modelo
+
+
+def agregar_cubo(nodo, x, z, lado, alto):
+    """Agrega al nodo del mundo un cubo apoyado en el piso: la tapa y las 4 paredes (sin fondo), cada
+    cara partida en cuadros de SPACING como el piso (un triangulo muy grande no se dibuja).
+    En la PS1 -Y es arriba. La cara que se ve es la de normal cross(b - a, c - a) (asi estan los
+    triangulos del piso: normal -Y), asi que cada cara lleva sus ejes u, v con cross(u, v) hacia afuera.
+    Las paredes van mas oscuras (color de vertice) para que se note la forma."""
+    piso = nodo["tris"][0]
+    textura, uv, cola = piso[3], tuple(piso[4:10]), tuple(piso[10:16])
+    m = lado // 2
+    X, Y, Z = (1, 0, 0), (0, 1, 0), (0, 0, 1)
+    caras = [  # origen, u, largo de u, v, largo de v, brillo
+        ((x - m, -alto, z - m), X, lado, Z, lado, 128),   # tapa: cross(X, Z) = -Y
+        ((x + m, -alto, z - m), Y, alto, Z, lado, 80),    # +X: cross(Y, Z) = +X
+        ((x - m, -alto, z - m), Z, lado, Y, alto, 80),    # -X: cross(Z, Y) = -X
+        ((x - m, -alto, z + m), X, lado, Y, alto, 100),   # +Z: cross(X, Y) = +Z
+        ((x - m, -alto, z - m), Y, alto, X, lado, 100),   # -Z: cross(Y, X) = -Z
+    ]
+    for o, u, lu, v, lv, brillo in caras:
+        nu, nv = max(1, round(lu / SPACING)), max(1, round(lv / SPACING))
+        base = len(nodo["verts"])
+        for i in range(nu + 1):
+            for j in range(nv + 1):
+                p = [o[k] + u[k] * lu * i // nu + v[k] * lv * j // nv for k in range(3)]
+                nodo["verts"].append(struct.pack("<3hh3Bx", *p, 0, brillo, brillo, brillo))
+        for i in range(nu):
+            for j in range(nv):
+                a, b = base + i * (nv + 1) + j, base + (i + 1) * (nv + 1) + j
+                c, d = b + 1, a + 1                       # p00, p10, p11, p01
+                nodo["tris"].append((a, b, c, textura) + uv + cola)
+                nodo["tris"].append((a, c, d, textura) + uv + cola)
+
+
 def celdas_de_triangulos(nodo, ancho, alto):
     """{(fila, columna): [indices de triangulo]} segun donde cae el centro de cada triangulo, con
     la posicion pasada a la escala de Sabrina (CeldaDePosicion trabaja en esa escala, no en la del
     modelo -confirmado con las pruebas de colision en vivo de antes)."""
-    verts_xz = [struct.unpack_from("<2h", v, 0) for v in nodo["verts"]]  # (x, z) de cada vertice
+    # (x, z) de cada vertice (x, y, z son los 3 primeros int16; antes se leian x e y, y como el piso
+    # es plano todo caia en la fila de z = 0)
+    verts_xz = [struct.unpack_from("<3h", v, 0)[0::2] for v in nodo["verts"]]
     reparto = {}
     for i, t in enumerate(nodo["tris"]):
         v0, v1, v2 = t[0], t[1], t[2]
@@ -115,12 +152,24 @@ def construir_bytes():
     idx_mundo = next(i for i, (nom, _nd) in enumerate(s["modelos"]) if nom.upper().endswith(NIVEL + ".BUD"))
     nombre_mundo, nodos_mundo = s["modelos"][idx_mundo]
     nodo = nodo_plano(nodos_mundo[0])
+    if CUBO:
+        agregar_cubo(nodo, **CUBO)
     s["modelos"][idx_mundo] = (nombre_mundo, [nodo])
     for i, (nom, nodos) in enumerate(s["modelos"]):
         if i != idx_mundo and i not in CONSERVAR:
             s["modelos"][i] = (nom, [])
 
+    # Los triangulos van ordenados por celda, como en un nivel real: asi cada celda puede declarar su
+    # tramo contiguo de suelo en 'celdas' (primer triangulo, cuantos).
     reparto = celdas_de_triangulos(nodo, g["ancho"], g["alto"])
+    orden = sorted(reparto, key=lambda fc: fc[0] * g["ancho"] + fc[1])
+    viejo_a_nuevo, tris = {}, []
+    for fc in orden:
+        for i in reparto[fc]:
+            viejo_a_nuevo[i] = len(tris)
+            tris.append(nodo["tris"][i])
+    nodo["tris"] = tris
+    reparto = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto.items()}
 
     # tabla de indices: cada celda con triangulos se lleva un tramo propio y contiguo
     indices = []
@@ -133,14 +182,17 @@ def construir_bytes():
                              for l in listas)
     indices_bytes = struct.pack(f"<{len(indices)}h", *indices) if indices else b""
 
-    # celdas: 'listas' (arriba) es lo que de verdad usa la colision (suelo.c, D_8007CBCC calza con
-    # ese formato exacto); el rango de triangulos de piso de 'celdas' es otro mecanismo aparte que
-    # no identificamos que lo use -lo dejamos apuntando siempre a todo el piso, simple y ya probado
-    # que no rompe nada-. Se pisa solo eso (los 2 primeros shorts); objetos/zona quedan del original.
-    n_tris = len(nodo["tris"])
+    # celdas: 'listas' (arriba) es la colision (suelo.c). El rango de suelo de 'celdas' (primer
+    # triangulo, cuantos; -1, 0 si no tiene) antes apuntaba en TODAS las 4096 celdas a todo el piso, y
+    # eso trababa el juego: medido con medir_fps.py, 4.3 cuadros por segundo contra 31 del HUB real
+    # (el juego procesa el suelo de las celdas cercanas cada cuadro, y cada una traia el piso entero).
+    # Ahora cada celda declara solo su tramo, como el HUB real (32 celdas con suelo, 3 a 13 triangulos).
+    # Se pisan solo esos 2 shorts; objetos/zona quedan del original.
     celdas = bytearray(g["celdas"])
     for i in range(g["A"]):
-        struct.pack_into("<2h", celdas, i * 12, 0, n_tris)
+        struct.pack_into("<2h", celdas, i * 12, -1, 0)
+    for (fila, columna), idxs in reparto.items():
+        struct.pack_into("<2h", celdas, (fila * g["ancho"] + columna) * 12, min(idxs), len(idxs))
 
     s["cuadricula"] = dict(
         A=g["A"], B=g["B"], ancho=g["ancho"], alto=g["alto"], C=len(indices),

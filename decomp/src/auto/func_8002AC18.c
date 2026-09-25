@@ -1,0 +1,189 @@
+#include "juego.h"
+#include "m2c_macros.h"
+#include "m2c_ajustes.h"
+
+extern u8 D_80091448;
+extern u8 D_80091450[];
+extern s32 D_80091460;
+extern s32 D_80091464;
+extern u8 D_80091468[];
+extern u8 D_80061244[];
+extern u8 D_80061250[];
+extern u8 D_8006125C[];
+extern u8 D_80061268[];
+extern u8 D_80061274[];
+extern u8 D_80061280[];
+extern u8 D_8006128C[];
+extern u8 D_80061298[];
+extern u8 D_8006129C[];
+extern u8 D_800612A8[];
+extern u8 D_800612B8[];
+extern u8 D_800612C4[];
+extern u8 D_800612CC[];
+extern u8 D_800612D8[];
+extern u8 D_800612E4[];
+extern u8 D_800612EC[];
+extern u8 D_800612F8[];
+extern u8 D_80061304[];
+extern u8 D_80061310[];
+extern u8 D_8006131C[];
+extern u8 D_80061324[];
+extern u8 D_80061330[];
+extern u8 D_80061338[];
+extern u8 D_80061340[];
+extern u8 D_8006134C[];
+extern u8 D_80061354[];
+extern u8 D_80061360[];
+extern u8 D_8006136C[];
+extern u8 D_80061378[];
+extern u8 D_80061380[];
+extern u8 D_80061390[];
+extern u8 D_8006141C[];
+extern u8 D_80061424[];
+extern u8 D_80061434[];
+extern s32 D_8006D130[];
+extern s32 D_8006D230[];
+extern u8 * D_8006D2B0;
+extern s8 * D_8006D2B4;
+extern u8 * D_8006D2B8;
+extern u8 D_8006D2C8[];
+extern s32 D_8006D30C;
+extern u8 D_8006D31C[];
+extern u8 D_8006D320;
+extern u8 D_8006D321;
+extern u8 D_8006D328[];
+extern u8 D_8006D3A8[];
+
+static M2C_UNK (*D_8006D304)(u8, u8 *) = NULL;
+static M2C_UNK (*D_8006D308)(u8, u8 *) = NULL;
+u8 D_8006D328[0x80];                                /* unable to generate initializer: cannot parse D_80061338 as integer */
+u8 D_8006D3A8[0x20];                                /* unable to generate initializer: cannot parse D_80061378 as integer */
+
+s32 func_8002AC18(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    s32 *temp_v1;
+    s32 temp_v0;
+    s32 temp_v0_2;
+    s32 temp_v1_2;
+    s32 var_a0;
+    s32 var_a0_2;
+    s32 var_a2;
+    s32 var_v0;
+    s32 var_v0_2;
+    s32 var_v0_3;
+    s32 var_v0_4;
+    s32 var_v0_5;
+    s32 var_v1;
+    s32 var_v1_2;
+    u8 *var_a0_3;
+    u8 temp_s1;
+    u8 temp_v0_3;
+
+    if (D_8006D30C >= 2) {
+        printf((s32) "%s...\n", *(D_8006D328 + ((arg0 & 0xFF) * 4)));
+    }
+    temp_v0 = arg0 & 0xFF;
+    if ((D_8006D230[temp_v0] != 0) && (arg1 == 0)) {
+        var_v0 = -2;
+        if (D_8006D30C > 0) {
+            printf((s32) "%s: no param\n", *(D_8006D328 + (temp_v0 * 4)));
+            return -2;
+        }
+        /* Duplicate return node #42. Try simplifying control flow for better match */
+        return var_v0;
+    }
+    func_8002A6D0(0, 0);
+    var_v1 = arg0 & 0xFF;
+    if (var_v1 == 2) {
+        var_a0 = 0;
+        var_v0_2 = arg1;
+        do {
+            D_8006D31C[var_a0] = *var_v0_2;
+            var_a0 += 1;
+            var_v0_2 = arg1 + var_a0;
+        } while (var_a0 < 4);
+        var_v1 = arg0 & 0xFF;
+    }
+    if (var_v1 == 0xE) {
+        D_8006D320 = *arg1;
+    }
+    M2C_FIELD(D_8006D2C8, u8 *, 0) = 0;
+    if (D_8006D130[var_v1] != 0) {
+        M2C_FIELD(D_8006D2C8, u8 *, 1) = 0U;
+    }
+    *D_8006D2B0 = 0;
+    temp_v1 = &(D_8006D130 + 0x100)[var_v1];
+    var_a0_2 = 0;
+    if (*temp_v1 > 0) {
+        var_v0_3 = arg1;
+        do {
+            *D_8006D2B8 = *var_v0_3;
+            var_a0_2 += 1;
+            var_v0_3 = arg1 + var_a0_2;
+        } while (var_a0_2 < *temp_v1);
+    }
+    D_8006D321 = (u8) arg0;
+    *D_8006D2B4 = (s8) arg0;
+    var_v0 = 0;
+    if (arg3 == 0) {
+        D_80091460 = func_8001626C(-1) + 0x3C0;
+        D_80091464 = 0;
+        *D_80091468 = "CD_cw";
+        var_a2 = arg2;
+        if (M2C_FIELD(D_8006D2C8, u8 *, 0) == 0) {
+loop_20:
+            if ((D_80091460 < func_8001626C(-1)) || (temp_v1_2 = D_80091464, D_80091464 += 1, ((temp_v1_2 > 0x3C0000) != 0))) {
+                puts((s32) "CD timeout: ");
+                printf((s32) "%s:(%s) Sync=%s, Ready=%s\n", *D_80091468, *((D_8006D321 * 4) + D_8006D328), *((M2C_FIELD(D_8006D2C8, u8 *, 0) * 4) + D_8006D3A8), *((M2C_FIELD(D_8006D2C8, u8 *, 1) * 4) + D_8006D3A8));
+                func_8002B0AC();
+                var_v0_4 = -1;
+            } else {
+                var_v0_4 = 0;
+            }
+            var_v0 = -1;
+            if (var_v0_4 == 0) {
+                if (func_80016A04() != 0) {
+                    temp_s1 = *D_8006D2B0 & 3;
+loop_27:
+                    temp_v0_2 = func_8002A09C();
+                    if (temp_v0_2 != 0) {
+                        var_v0_5 = temp_v0_2 & 2;
+                        if (temp_v0_2 & 4) {
+                            if (D_8006D308 != NULL) {
+                                D_8006D308(M2C_FIELD(D_8006D2C8, u8 *, 1), D_80091450);
+                            }
+                            var_v0_5 = temp_v0_2 & 2;
+                        }
+                        if ((var_v0_5 != 0) && (D_8006D304 != NULL)) {
+                            D_8006D304(M2C_FIELD(D_8006D2C8, u8 *, 0), &D_80091448);
+                        }
+                        goto loop_27;
+                    }
+                    *D_8006D2B0 = temp_s1;
+                }
+                var_a2 = arg2;
+                if (M2C_FIELD(D_8006D2C8, u8 *, 0) != 0) {
+                    goto block_37;
+                }
+                goto loop_20;
+            }
+        } else {
+block_37:
+            var_a0_3 = &D_80091448;
+            var_v1_2 = 7;
+            if (var_a2 != 0) {
+                do {
+                    temp_v0_3 = *var_a0_3;
+                    var_a0_3 += 1;
+                    var_v1_2 -= 1;
+                    *var_a2 = temp_v0_3;
+                    var_a2 += 1;
+                } while (var_v1_2 != -1);
+            }
+            var_v0 = 0;
+            if (M2C_FIELD(D_8006D2C8, u8 *, 0) == 5) {
+                var_v0 = -1;
+            }
+        }
+    }
+    return var_v0;
+}

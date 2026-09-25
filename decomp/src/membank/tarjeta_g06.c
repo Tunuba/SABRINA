@@ -85,8 +85,9 @@ u8 func_80027A04(void) {
 }
 
 /* Pasa las banderas un paso atras: en la ranura, las de este paso a las del anterior; en las 4 ranuras de
- * la lista, las de este paso a las del anterior y esas a las de hace dos. */
-void func_80027F08(Ranura *r) {
+ * la lista, las de este paso a las del anterior y esas a las de hace dos. Devuelve siempre 0 (en el juego
+ * v0 queda en 0 al salir del lazo; solo se la llama por puntero y no se sabe si alguien lo lee). */
+s32 func_80027F08(Ranura *r) {
     Ranura *e;
     s32 i;
 
@@ -100,4 +101,5 @@ void func_80027F08(Ranura *r) {
         e->antes2 = a;
         e->antes = b;
     }
+    return 0;
 }

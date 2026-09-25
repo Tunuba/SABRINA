@@ -1,0 +1,5 @@
+func_8004E618 42 de 42
+func_8004E774 34 de 34
+func_8004E86C 22 de 22
+func_8004E8C4 73 de 115
+FIN

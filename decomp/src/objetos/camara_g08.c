@@ -203,8 +203,9 @@ extern void func_8001E588(Objeto *o);
 #define REG(i) (D_80074BC8 + (i) * 16)
 
 /* Guarda la clase en extra+0x1F y copia de su registro: extra+0x1E (byte del u16), extra+4, extra+8 y el
- * dano. Pone extra+0 = 0x4CCC, extra+0x10 = 0, extra+0x18 = 0, extra+0x1A = 0x800 y extra+0x1C = 50. */
-void func_8003795C(Objeto *o, s32 clase) {
+ * dano. Pone extra+0 = 0x4CCC, extra+0x10 = 0, extra+0x18 = 0, extra+0x1A = 0x800 y extra+0x1C = 50.
+ * Se llega por puntero; al volver v0 queda con la direccion de la parte extra, y se devuelve igual. */
+u8 *func_8003795C(Objeto *o, s32 clase) {
     u8 *e = (u8 *)o + 0x74;
 
     CAMPO_S8(e, 0x1F) = clase;
@@ -217,6 +218,7 @@ void func_8003795C(Objeto *o, s32 clase) {
     CAMPO_S16(e, 0x18) = 0;
     CAMPO_S16(e, 0x1A) = 0x800;
     CAMPO_S16(e, 0x1C) = 0x32;
+    return e;
 }
 
 /* Si extra+0 es 0 le pone la clase. Si el modelo de su registro esta cargado, crea el nodo (hijo de

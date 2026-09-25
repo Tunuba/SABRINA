@@ -30,12 +30,15 @@ typedef struct {
 #define PONER_PIE(bl) (((PalabraSueltaG11 *)((u8 *)(bl) + (bl)->cab - 5))->v = (bl)->cab)
 
 /* Suma lo reservado en la tabla y lo imprime ("MEMORY FOOT PRINT"). Separa las reservas grandes (desde
- * 0x400 bytes; el juego anota su indice en una lista de la pila que nadie lee, aqui no se guarda) de las chicas. printf recibe tambien
- * las dos cuentas en a2 y a3, aunque el formato solo lleva el total. */
+ * 0x400 bytes) de las chicas; printf recibe tambien las dos cuentas en a2 y a3, aunque el formato solo
+ * lleva el total.
+ * El juego anota el indice de cada reserva grande en una lista de 16 palabras de la pila (sp + 0x18 de un
+ * marco de 0x58, o sea sp de entrada - 0x40) que nadie lee, sin tope: con mas de 16 grandes escribe
+ * encima del marco del llamador, y en las capturas pasa. Las 16 primeras quedan en la pila propia (no
+ * importan); las que se salen se escriben aqui igual que en el juego. */
 void func_8004E194(void) {
+    s32 *lista = (s32 *)((u8 *)__builtin_dwarf_cfa() - 0x40);
     u32 total = 0;
-    u32 suma_grandes = 0;
-    u32 suma_chicas = 0;
     s32 n_grandes = 0;
     s32 n_chicas = 0;
     u32 i;
@@ -45,15 +48,14 @@ void func_8004E194(void) {
         tam = D_800C98E0[i].tam;
         total += tam;
         if (tam >= 0x400) {
-            suma_grandes += tam;
+            if (n_grandes >= 16) {
+                lista[n_grandes] = i;
+            }
             n_grandes++;
         } else {
-            suma_chicas += tam;
             n_chicas++;
         }
     }
-    (void)suma_grandes;
-    (void)suma_chicas;
     printf(D_800758AC, total, n_grandes, n_chicas);
 }
 

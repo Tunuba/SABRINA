@@ -14,7 +14,7 @@ void func_80025064();
 
 /* Estado que solo marca el campo 0x1A del registro de WRLDDATA de Sabrina con 2. */
 void func_8003018C(Objeto *o) {
-    ((s16 *)o->datos)[13] = 2;   /* +0x1A */
+    ((s16 *)o->datos)[13] = 2;   /* el campo +1A del registro */
 }
 
 /* Pasa a Sabrina al estado func_8003018C con la animacion 21 de su tabla. */
