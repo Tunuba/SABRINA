@@ -11,3 +11,4 @@
   muerto - por + (DISTINTO)
   VIVO  sin la linea `quitar_libre(b, v);` (IGUAL)
   muerto < por <= (DISTINTO)
+  muerto 1 por 2 (DISTINTO)
