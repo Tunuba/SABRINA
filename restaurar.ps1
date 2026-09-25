@@ -23,7 +23,9 @@ if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne $null) { Falla 'arrancar.ps1 fall
 
 Paso '2. WSL con Ubuntu'
 $distros = (wsl.exe -l -q 2>$null) -replace "`0", '' | Where-Object { $_ }
-if ($distros -notcontains 'Ubuntu') {
+# la distro puede llamarse Ubuntu o Ubuntu-24.04 segun la PC
+$distro = @('Ubuntu', 'Ubuntu-24.04') | Where-Object { $distros -contains $_ } | Select-Object -First 1
+if (-not $distro) {
     Write-Host '   Instalo Ubuntu en WSL. Si Windows pide reiniciar, reinicia y vuelve a correr RESTAURAR.bat.'
     Write-Host '   Al terminar te pide crear un usuario y contrasena de Linux (la contrasena la pide despues sudo).'
     wsl.exe --install -d Ubuntu
@@ -33,7 +35,7 @@ if ($distros -notcontains 'Ubuntu') {
 Paso '3. Herramientas de descompilacion (WSL)'
 $unidad = $RAIZ.Substring(0, 1).ToLower()
 $rutaWsl = "/mnt/$unidad" + ($RAIZ.Substring(2) -replace '\\', '/')
-wsl.exe -d Ubuntu -- bash "$rutaWsl/scripts/decomp_todo.sh"
+wsl.exe -d $distro -- bash "$rutaWsl/scripts/decomp_todo.sh"
 if ($LASTEXITCODE -ne 0) { Falla 'decomp_todo.sh fallo (mira el mensaje de arriba)' }
 
 Paso '4. Respaldo automatico'

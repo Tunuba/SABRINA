@@ -7,6 +7,8 @@
 # El verificador que se detiene es mutantes.py primero, despues verificar.py (los agentes reintentan solos).
 # Uso: bash scripts/vigilar_ram.sh [tope_ram] [tope_cpu]
 export MSYS_NO_PATHCONV=1   # que Git Bash no convierta las rutas /mnt/d de WSL
+. "$(dirname "$0")/wsl.sh"
+VERIF="$(ruta_wsl "$(dirname "$0")")/verificadores.sh"   # visto desde WSL
 TOPE=${1:-92}
 TOPE_CPU=${2:-95}
 LOG="$(dirname "$0")/../notas/logs/vigilar_ram.txt"
@@ -16,17 +18,17 @@ PIDF="$(dirname "$0")/../notas/logs/vigilar_ram.pid"
 if [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF")" 2>/dev/null; then echo "ya hay un vigilante corriendo"; exit 0; fi
 echo $$ > "$PIDF"
 # si el vigilante se cierra, que no quede nada congelado
-trap 'wsl -d Ubuntu -- bash "/mnt/d/proyectos personales/Sabrina decomp/SABRINA/scripts/verificadores.sh" soltar; exit' EXIT INT TERM
+trap 'wsl -d "$SABRINA_WSL" -- bash "$VERIF" soltar; exit' EXIT INT TERM
 detener() {
-  v=$(wsl -d Ubuntu -- bash "/mnt/d/proyectos personales/Sabrina decomp/SABRINA/scripts/verificadores.sh" detener)
+  v=$(wsl -d "$SABRINA_WSL" -- bash "$VERIF" detener)
   echo "$(date +%T) $1: detenido ${v:-nada (no habia verificadores de Sabrina corriendo)}" | tee -a "$LOG"
 }
 pausar() {
-  v=$(wsl -d Ubuntu -- bash "/mnt/d/proyectos personales/Sabrina decomp/SABRINA/scripts/verificadores.sh" pausar)
+  v=$(wsl -d "$SABRINA_WSL" -- bash "$VERIF" pausar)
   echo "$(date +%T) $1: pausado ${v:-nada (no habia verificadores de Sabrina corriendo)}" | tee -a "$LOG"
 }
 reanudar() {
-  v=$(wsl -d Ubuntu -- bash "/mnt/d/proyectos personales/Sabrina decomp/SABRINA/scripts/verificadores.sh" reanudar)
+  v=$(wsl -d "$SABRINA_WSL" -- bash "$VERIF" reanudar)
   [ -n "$v" ] && echo "$(date +%T) CPU ${1}%: reanudado $v" | tee -a "$LOG"
 }
 while true; do

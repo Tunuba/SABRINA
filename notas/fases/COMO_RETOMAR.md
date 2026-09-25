@@ -1,6 +1,14 @@
 # Como retomar (actualizado 2026-09-24, antes de apagar la PC)
 
-Todo lo escrito esta en `decomp\src` (y en GitHub). Lo que estaba corriendo se paro a proposito y se retoma asi:
+Todo lo escrito esta en `decomp\src` (y en GitHub).
+
+**Hay dos PCs.** La del amigo: `D:\proyectos personales\Sabrina decomp\SABRINA`, distro WSL `Ubuntu`. La de Meme:
+`C:\Proyectos\SABRINA`, distro `Ubuntu-24.04`. Los `.sh` de `scripts\` detectan solos la distro y la ruta
+(`scripts\wsl.sh`); en los comandos de abajo cambia `-d Ubuntu` y la ruta `/mnt/d/...` por los de tu PC
+(en la de Meme: `-d Ubuntu-24.04` y `/mnt/c/Proyectos/SABRINA`). Probado en la de Meme el 2026-09-24:
+`decomp_todo.sh` da IGUAL y `verificar.py` da IGUAL en func_8001BE8C y func_8001FA3C.
+
+Lo que estaba corriendo se paro a proposito y se retoma asi:
 
 1. **Lote automatico** (m2c + verificador sobre todas las funciones con capturas). Retoma donde quedo
    (`decomp\build\hechas.txt`, 623 de ~1000 al pararlo). Desde PowerShell:
