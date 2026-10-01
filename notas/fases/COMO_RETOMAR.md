@@ -93,3 +93,29 @@ emulador), func_8002506C 7/8, func_8001C45C 4/8 (la rama de vectores muy grandes
 PuntoEnTriangulo 8/8.
 
 Lote de fondo al cerrar: 300 de 886 (empezo 19:07), sigue corriendo.
+
+### Segunda tanda (2026-09-30, noche, mismas reglas; prioridad a las grandes)
+
+**A IGUAL (11)**: func_8001D8EC (lectura de los mandos, `modelLoader/mando_g13.c`), func_8003A94C y
+func_8003AF9C (choques contra listas de triangulos, `colision/consulta_g13.c`), func_800252A0 y
+CrearObjetoMundo (crear objetos, `objetos/crear_g13.c`), func_80032B98 (hechizos, `sabrina/hechizos_g13.c`),
+func_800325AC (acciones de Sabrina, `sabrina/acciones_g13.c`), func_80036880, func_80036D58 y
+func_80037A18 (`objetos/camara_g08.c`), func_80047AA4 (`WobjCode/anotados_g13.c`).
+**A IGUAL_V0 (3)**: func_80056584 (`objetos/atraido_g13.c`), func_80045278 y func_80046428 (dos clases de
+enemigo que comparten el C, `objetos/enemigo_g13.c`). **Escrita y DISTINTO solo en v0**: func_80037738 (el
+original deja basura en v0 y el verificador cree que un llamador lo lee).
+
+En auditoria.tsv quedan 137 IGUAL y 11 IGUAL_V0 (62068 bytes escritos a mano y verificados).
+
+Trampas nuevas:
+- **GCC junta las ramas de un if que guardan en el mismo campo** y pone el valor en la pila del llamador
+  (el lugar de un argumento), que el verificador compara. Se corta con `__asm__ volatile("" ::: "memory")`
+  al final de cada rama (func_800252A0).
+- Un void que deja algo util en v0 (func_80037A18: el alcance) pasa de IGUAL_V0 a IGUAL devolviendolo.
+
+Saltadas: las del CD (func_8002A09C, func_80017D80, func_8002CF28, func_8002FF1C), DanoPorSuelo y
+func_8005C358 (switch que m2c no lee). Siguen pendientes, de mayor a menor: func_80035314 (3900),
+func_8005A360, func_80030208, func_8004D0C0, FisicaObjeto, func_80054068, func_80056CE8, func_80038318,
+func_8001321C, func_8002367C, func_8002AC18...
+
+Lote de fondo al cerrar esta tanda: 875 de 886.
