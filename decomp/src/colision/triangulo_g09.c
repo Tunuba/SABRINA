@@ -20,12 +20,16 @@ extern s32 PuntoEnTriangulo(s32 *normal, s32 *punto, TrianguloCol *t);
 /* Prueba si la posicion (x, z) de la consulta cae en el triangulo, a la altura de su primer vertice. Si
  * cae guarda el punto de contacto y la normal (pasada a 24.8). Devuelve si cayo. */
 u8 func_8003A46C(ConsultaSuelo *c, TrianguloCol *t, s32 *normal) {
-    s32 p[3];
+    s32 p[4];
     u8 dentro;
 
     p[0] = c->x;
     p[1] = t->v0[1];
     p[2] = c->z;
+    /* PuntoEnTriangulo elige los dos ejes con dos bits del byte 0x1B del triangulo; si alguno vale 3 lee
+     * p[3]. En el original p esta en sp+0x1C de un marco de 0x28, asi que p[3] es la primera palabra de la
+     * pila del llamador (__builtin_dwarf_cfa es la pila al entrar). */
+    p[3] = *(volatile s32 *)__builtin_dwarf_cfa();
     dentro = PuntoEnTriangulo(normal, p, t) != 0;
     if (dentro) {
         c->punto_x = p[0];

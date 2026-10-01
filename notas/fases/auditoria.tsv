@@ -1,5 +1,4 @@
 funcion	bytes	estado	archivo	detalle
-func_8003A46C	184	DISTINTO	src/colision/triangulo_g09.c	9 de 9 capturas y 598 de 601 variantes iguales
 ArchivoCerrar	152	IGUAL	src/File/archivo_g02.c	9 de 9 capturas y 668 de 668 variantes iguales
 BitDeZona	700	IGUAL	src/SceneProcessing/zonas.c	9 de 9 capturas y 698 de 698 variantes iguales
 CeldaDePosicion	92	IGUAL	src/modelLoader/cuadricula.c	9 de 9 capturas y 1183 de 1183 variantes iguales
@@ -148,3 +147,8 @@ func_8004EE24	208	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no ter
 func_8004FC4C	184	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
 func_800508D4	92	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
 func_80051298	284	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
+func_8003A46C	184	IGUAL	src/colision/triangulo_g09.c	8 de 8 capturas y 537 de 537 variantes iguales
+ArchivoIniciar	120	IGUAL	src/File/archivo_g03.c	8 de 8 capturas y 435 de 435 variantes iguales
+func_80047710	712	IGUAL	src/WobjCode/anotados_g13.c	8 de 8 capturas y 1024 de 1024 variantes iguales
+func_800425C8	860	IGUAL	src/audio/tocar_voz_g13.c	8 de 8 capturas y 1081 de 1081 variantes iguales
+TocarSonido	444	IGUAL	src/audio/sonido_g13.c	8 de 8 capturas y 1077 de 1077 variantes iguales

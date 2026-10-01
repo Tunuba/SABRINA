@@ -16,11 +16,13 @@ typedef struct {
     u8 *fin;                            /* 0x08, fin de lo leido en el buffer */
     u8 _0C[4];
     u32 tam;                            /* 0x10, tamano del archivo en el CD */
-    u8 _14[0x84];
+    u8 abierto;                         /* 0x14, lo pone ArchivoIniciar */
+    u8 _15[0x83];
     s32 sector;                         /* 0x98, primer sector del archivo */
     s32 ultimo;                         /* 0x9C, ultimo sector del archivo */
 } ArchivoCd;
 EN(ArchivoCd, tam, 0x10);
+EN(ArchivoCd, abierto, 0x14);
 EN(ArchivoCd, sector, 0x98);
 EN(ArchivoCd, ultimo, 0x9C);
 
@@ -32,6 +34,7 @@ extern s32 CdPosToInt(void *pos);
 extern void func_80017D3C(char *nombre);
 extern s32 Afirmar(s32 cond, char *archivo, s32 linea);
 extern s32 func_800189A4(ArchivoCd *a);  /* llena el buffer con los sectores siguientes */
+extern void *Reservar(s32 tam, char *archivo, s32 linea);
 
 extern char D_8007C790[];               /* "\\%s;1" */
 extern char D_80065468[];               /* "File.cpp" */
@@ -84,4 +87,15 @@ void ArchivoLeer(ArchivoCd *a, u8 *destino, s32 tam) {
         memcpy(destino, a->cursor, tam);
         a->cursor += tam;
     }
+}
+
+/* Prepara el archivo: reserva el buffer de lectura de 0xC800 bytes (y uno de sobra) y lo deja vacio
+ * (cursor al inicio, fin al final del buffer). Devuelve el mismo puntero, como un constructor. */
+ArchivoCd *ArchivoIniciar(ArchivoCd *a) {
+    a->abierto = 1;
+    a->buffer = Reservar(0xC801, D_80065468, 0x1B);
+    Afirmar((s32)a->buffer, D_80065468, 0x1C);
+    a->cursor = a->buffer;
+    a->fin = a->buffer + 0xC800;
+    return a;
 }
