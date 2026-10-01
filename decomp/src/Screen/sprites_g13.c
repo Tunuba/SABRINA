@@ -89,3 +89,57 @@ void func_80023FD4(u8 *ot) {
     D_8007CAD4 = r + 1;
     AddPrim(ot + 8, r);
 }
+
+extern s32 D_8007CA58;               /* botones apretados en este cuadro */
+extern s32 D_800D1604, D_800D1608;   /* sonido de moverse y de tope */
+extern s16 D_8007CC4E;               /* lo que se puede hacer con la casilla elegida */
+extern u16 D_800D5090[];             /* por casilla: distinto de 0 si tiene algo */
+extern s8 D_800D2AD0[][64];          /* por casilla: su nombre */
+extern s8 D_8007594C[16];            /* el nombre de la casilla vacia */
+extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
+extern s32 func_80019738(void);
+
+/* Mueve la casilla elegida con izquierda (0x8000) y derecha (0x2000), con su sonido (otro si ya esta en
+ * la punta), y deja en D_8007CC4E que hacer con ella: con elegir (el tercer argumento) 6 si tiene algo, 2
+ * si no y 0 si no hay casillas; si no, 1 salvo que su nombre no sea el de la vacia. Lo que devuelve (v0)
+ * es lo de func_80019738 si la casilla tiene algo, si no 0. */
+s32 func_8004F2D8(s32 a0, s32 a1, s32 elegir) {
+    u16 i;
+    s32 r;
+
+    if (D_8007CA58 & 0x8000) {
+        if (D_8007CC50 != 0) {
+            TocarSonido((s16)D_800D1604, 0, 0x2A, 0x7F);
+            D_8007CC50--;
+        } else {
+            TocarSonido((s16)D_800D1608, 0, 0x2A, 0x7F);
+        }
+    }
+    if (D_8007CA58 & 0x2000) {
+        if (D_8007CC50 != D_8007CC58 + D_8007CC5A - 1) {
+            TocarSonido((s16)D_800D1604, 0, 0x2A, 0x7F);
+            D_8007CC50++;
+        } else {
+            TocarSonido((s16)D_800D1608, 0, 0x2A, 0x7F);
+        }
+    }
+    if (elegir != 0) {
+        if (D_8007CC58 + D_8007CC5A != 0) {
+            D_8007CC4E = D_800D5090[D_8007CC50] != 0 ? 6 : 2;
+        } else {
+            D_8007CC4E = 0;
+        }
+    } else {
+        D_8007CC4E = 1;
+        for (i = 0; i != 16; i++) {
+            if (D_8007594C[i] != D_800D2AD0[D_8007CC50][i]) {
+                D_8007CC4E = 0;
+            }
+        }
+    }
+    r = D_800D5090[D_8007CC50];
+    if (r != 0) {
+        r = func_80019738();
+    }
+    return r;
+}

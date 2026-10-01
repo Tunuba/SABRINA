@@ -161,3 +161,7 @@ func_8001E588	544	IGUAL	src/geometria/arbol.c	8 de 8 capturas y 686 de 686 varia
 MatrizDesdeAngulos	548	IGUAL	src/geometria/arbol.c	8 de 8 capturas y 616 de 616 variantes iguales
 func_80023FD4	576	DISTINTO	src/Screen/sprites_g13.c	3 de 3 capturas y 327 de 330 variantes iguales; las 3 malas tienen 0xAF43 casillas y leen la tabla de sprites hasta la pila propia
 func_800447E4	1004	DISTINTO	src/audio/vab_g13.c	6 de 6 capturas y 571 de 572 variantes iguales; la mala salta a 0x00040000 (puntero de funcion al azar)
+func_80020818	560	IGUAL	src/varios/contador_g13.c	8 de 8 capturas y 608 de 608 variantes iguales
+func_80011930	560	IGUAL	src/libgpu/borrar_g13.c	6 de 6 capturas y 556 de 556 variantes iguales
+func_8004F2D8	536	IGUAL	src/Screen/sprites_g13.c	3 de 3 capturas y 408 de 408 variantes iguales
+func_8004C82C	544	IGUAL	src/varios/partida_g13.c	1 de 1 capturas y 76 de 76 variantes iguales
