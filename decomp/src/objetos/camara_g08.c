@@ -437,3 +437,76 @@ void func_80037738(Objeto *o, Objeto *a) {
     o->aviso = func_80024F6C;
     CAMPO_S32(extra, 0x0C) = CAMPO_S32(extra, 0x08);
 }
+
+/* ---- Paredes a los lados de la camara ---- */
+
+extern s32 D_800C6594[3];            /* comienzo del segmento que se prueba */
+extern s32 D_800C65A0[3];            /* y su fin */
+extern void func_8003B38C(s32 *c, s32 *desde, s32 *hasta);
+extern s32 func_8003AE84(void);      /* si el segmento de D_800C6594 choca */
+
+/* Prueba un segmento desde la camara (D_8007CAFC) hasta fin + lado: si choca devuelve 1. */
+static s32 choca_desde_camara(s32 *cam, s32 fx, s32 fz) {
+    D_800C6594[0] = cam[0];
+    D_800C6594[1] = cam[1];
+    D_800C6594[2] = cam[2];
+    D_800C65A0[0] = fx;
+    D_800C65A0[2] = fz;
+    D_800C65A0[1] = cam[1];
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    return func_8003AE84() != 0;
+}
+
+/* ¿Puede la camara moverse de lado (hacia donde apunta dir)? Toma la direccion de la camara a Sabrina en
+ * el plano, su perpendicular, y prueba tres segmentos de la camara hacia ese lado (al frente, un poco a
+ * cada costado). lado < 0 pide ir solo hacia un lado y lado > 0 solo hacia el otro. Devuelve 1 si choca o
+ * si el lado no es el pedido. */
+s32 func_80036880(s32 *dir, s32 lado) {
+    s32 v[3], n[3], p[3], cam[3];
+    s32 d, ax, az;
+
+    v[0] = p_sabrina->x - D_8007CAFC->x;
+    v[2] = p_sabrina->z - D_8007CAFC->z;
+    v[1] = p_sabrina->y - D_8007CAFC->y;
+    cam[0] = D_8007CAFC->x;
+    cam[1] = D_8007CAFC->y;
+    cam[2] = D_8007CAFC->z;
+    v[1] = 0;
+    v[0] = -v[0];
+    func_8001C45C(v);
+    n[0] = v[0];
+    n[1] = v[1];
+    n[2] = v[2];
+    v[0] = (((v[0] >> 4) * 25) >> 8) << 8;
+    v[2] = (((v[2] >> 4) * 25) >> 8) << 8;
+    p[2] = n[0];
+    p[0] = n[2];
+    p[1] = 0;
+    d = func_8001C33C(dir, p);
+    n[0] = (((n[0] >> 4) * 192) >> 8) << 8;
+    n[2] = (((n[2] >> 4) * 192) >> 8) << 8;
+    if (d >= 0) {
+        if (lado < 0) {
+            return 1;
+        }
+        ax = cam[0] + n[2];
+        az = cam[2] + n[0];
+        if (choca_desde_camara(cam, ax, az) || choca_desde_camara(cam, v[0] + ax, v[2] + az) ||
+            choca_desde_camara(cam, ax - v[0], az - v[2])) {
+            return 1;
+        }
+    }
+    if (d > 0) {
+        return 0;
+    }
+    if (lado > 0) {
+        return 1;
+    }
+    ax = cam[0] - n[2];
+    az = cam[2] - n[0];
+    if (choca_desde_camara(cam, ax, az) || choca_desde_camara(cam, v[0] + ax, v[2] + az) ||
+        choca_desde_camara(cam, ax - v[0], az - v[2])) {
+        return 1;
+    }
+    return 0;
+}

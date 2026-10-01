@@ -184,3 +184,4 @@ func_800252A0	1088	IGUAL	src/objetos/crear_g13.c	6 de 6 capturas y 647 de 647 va
 CrearObjetoMundo	792	IGUAL	src/objetos/crear_g13.c	6 de 6 capturas y 540 de 540 variantes iguales
 func_80037738	548	DISTINTO	src/objetos/camara_g08.c	0 de 2 capturas y 7 de 152 variantes iguales; todo lo distinto es v0 (el original deja basura, como la direccion de la tabla de saltos) y el verificador cree que un llamador lo lee
 func_80032B98	952	IGUAL	src/sabrina/hechizos_g13.c	8 de 8 capturas y 647 de 647 variantes iguales
+func_80036880	1240	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 654 de 654 variantes iguales
