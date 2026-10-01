@@ -63,3 +63,52 @@ void func_8002EDC8(Objeto *o) {
         *out++ = va + (((d * t) >> 12) & 0xFF);
     }
 }
+
+/* Una animacion (4 bytes, en D_8007CB64 al leerla): su primer cuadro en D_800B4C5C, cuantos cuadros tiene
+ * y cuantos huesos. */
+typedef struct {
+    u16 primero;
+    u8 cuadros;
+    u8 huesos;
+} Animacion;
+
+extern CuadroClave *D_8007CB60;      /* el siguiente cuadro libre */
+extern Animacion *D_8007CB64;        /* la siguiente animacion libre */
+extern Animacion *D_8007CB68;        /* la ultima animacion leida */
+extern u8 *D_8007CB5C;               /* donde van los angulos */
+extern void ArchivoLeer(void *a, void *destino, s32 tam);
+
+/* Lee una animacion .MAO: 4 bytes que no se usan, cuantos cuadros, cuantos huesos y, por cuadro, la
+ * posicion (tres s16) y los angulos (3 bytes por hueso). El primer cuadro queda marcado con 1 y el
+ * ultimo con 2 en su dato. */
+void LeerMAO(void *a) {
+    s32 nada;
+    u16 v;
+    s32 cuadros, tam;
+
+    ArchivoLeer(a, &nada, 4);
+    ArchivoLeer(a, &v, 2);
+    cuadros = v;
+    D_8007CB64->cuadros = v;
+    ArchivoLeer(a, &v, 2);
+    D_8007CB64->huesos = v;
+    /* division con signo de verdad: la resta de punteros de C supone que da exacta */
+    D_8007CB64->primero = (s32)((u8 *)D_8007CB60 - (u8 *)D_800B4C5C) / 12;
+    D_8007CB68 = D_8007CB64;
+    tam = v * 3;
+    for (; cuadros > 0; cuadros--) {
+        D_8007CB60->angulos = D_8007CB5C;
+        D_8007CB60->dato = 0;
+        ArchivoLeer(a, &D_8007CB60->x, 2);
+        ArchivoLeer(a, &D_8007CB60->y, 2);
+        ArchivoLeer(a, &D_8007CB60->z, 2);
+        ArchivoLeer(a, D_8007CB5C, tam);
+        D_8007CB5C += tam;
+        D_8007CB60++;
+    }
+    D_8007CB60--;
+    D_8007CB60->dato = 2;
+    D_8007CB60++;
+    D_800B4C5C[D_8007CB64->primero].dato = 1;
+    D_8007CB64++;
+}
