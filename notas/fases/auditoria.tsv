@@ -229,3 +229,4 @@ func_8002886C	1000	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 743 de 743 varia
 func_80028D40	844	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 651 de 651 variantes iguales
 func_80025EF8	820	DISTINTO	src/psyq/mando_g13.c	8 de 8 capturas y 672 de 675 variantes iguales; las 3 malas parchan D_8006CFA8 con 0x0004FE10 (un puntero de funcion al azar, que despues lee el marco del que llama)
 func_8001321C	1272	IGUAL	src/libgpu/pantalla_g13.c	8 de 8 capturas y 756 de 756 variantes iguales
+func_8001981C	1000	IGUAL	src/Screen/menu_g13.c	8 de 8 capturas y 916 de 916 variantes iguales
