@@ -217,3 +217,6 @@ func_80010920	696	IGUAL	src/libgpu/fuente_g13.c	6 de 6 capturas y 784 de 784 var
 ImprimirDepuracion	960	IGUAL	src/libgpu/fuente_g13.c	8 de 8 capturas y 832 de 832 variantes iguales
 func_800318F4	3256	IGUAL	src/sabrina/moverse_g13.c	8 de 8 capturas y 601 de 601 variantes iguales
 func_8004B320	2688	DISTINTO	src/objetos/entrar_nivel_g13.c	6 de 6 capturas y 634 de 635 variantes iguales; la mala (nivel_actual = 0x12) deja un byte distinto en 800c857b que nadie escribe a la vista: con un gancho de escritura en Unicorn las dos dan igual (rareza del emulador, sin aclarar)
+func_800509A8	64	IGUAL	src/varios/tarjeta_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_80050938	112	IGUAL	src/varios/tarjeta_g13.c	1 de 1 capturas y 23 de 23 variantes iguales
+func_8003BFC4	40	IGUAL	src/objetos/aviso_g13.c	2 de 2 capturas y 244 de 244 variantes iguales
