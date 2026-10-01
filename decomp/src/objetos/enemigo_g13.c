@@ -1,6 +1,8 @@
 #include "objeto.h"
 
-/* Un enemigo que patrulla y ataca a Sabrina cuando esta cerca (la clase de func_80045278). */
+/* Dos clases de enemigo que patrullan y atacan a Sabrina cuando esta cerca (func_80045278 y
+ * func_80046428): solo cambian el disparo de cada nivel y que la segunda olvida que ya ataco al reiniciar
+ * la animacion. */
 
 /* Su parte extra. */
 typedef struct {
@@ -32,15 +34,45 @@ extern s32 func_8002EFD0(Objeto *o);  /* si termino la animacion */
 extern u32 func_8001C180(s32 *v);
 extern void func_80048DC0(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 e);
 extern void func_8003C1E8(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 a, s32 b, s32 c, s32 d);
+extern void func_8003C678(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 a, s32 b, s32 c, s32 d);
 extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 
 /* El ataque, segun el nivel: un disparo (niveles 1 a 12, de tres clases) y su sonido. */
-static void atacar(Objeto *o, ExtraEnemigo *e, s32 *fuera) {
+static void atacar(Objeto *o, ExtraEnemigo *e, s32 *fuera, s32 clase, s32 en_11) {
     s32 p[3];
 
     p[0] = e->boca[0];
     p[1] = e->boca[1];
     p[2] = e->boca[2];
+    if (clase == 2) {
+        switch (nivel_actual) {
+        case 1: case 2: case 3:
+            func_8003C1E8(o, p, fuera, 0x1E, 0x32, 5, 0x200, -0x8C0);
+            TocarSonido(0x38, 0, 0x2A, 0x7F);
+            break;
+        case 4: case 5: case 6:
+            func_8003C1E8(o, p, fuera, 0x20, 0x32, 5, 0x200, -0x8C0);
+            TocarSonido(0x36, 0, 0x2A, 0x7F);
+            break;
+        case 7: case 8: case 9:
+            func_80048DC0(o, p, fuera, -1, 0x1000);
+            TocarSonido(0x34, 0, 0x2A, 0x7F);
+            break;
+        case 10: case 11: case 12:
+            /* en el estado 7 usa func_8003C678 y en el 11 func_8003C1E8 */
+            if (en_11) {
+                func_8003C1E8(o, p, fuera, 0x27, 0x32, 5, 0x200, -0x8C0);
+            } else {
+                func_8003C678(o, p, fuera, 0x27, 0x32, 5, 0x200, -0x8C0);
+            }
+            TocarSonido(0x37, 0, 0x2A, 0x7F);
+            break;
+        case 13: case 14:
+            TocarSonido(0x2C, 0, 0x2A, 0x7F);
+            break;
+        }
+        return;
+    }
     switch (nivel_actual) {
     case 1: case 2: case 3:
         func_80048DC0(o, p, fuera, 0x2F, 0x1000);
@@ -77,8 +109,11 @@ static s32 poner(EstadoAnim *a, u16 n) {
 
 /* La animacion de ataque: en el primer paso la pone; despues, si los enemigos pueden atacar, dispara en
  * uno de sus dos cuadros (una vez). Devuelve 1 si la animacion termino. */
-static s32 animar_ataque(Objeto *o, ExtraEnemigo *e, EstadoAnim *a, u16 *t, s32 *fuera) {
+static s32 animar_ataque(Objeto *o, ExtraEnemigo *e, EstadoAnim *a, u16 *t, s32 *fuera, s32 clase, s32 en_11) {
     if (poner(a, t[7])) {
+        if (clase == 2) {
+            e->ataco = 0;
+        }
         return 0;
     }
     if (D_8007CBA8 != 0) {
@@ -87,12 +122,12 @@ static s32 animar_ataque(Objeto *o, ExtraEnemigo *e, EstadoAnim *a, u16 *t, s32 
     a->_4E = 0x800;
     if ((a->_50 == e->cuadro2 || a->_50 == e->cuadro1) && e->ataco == 0) {
         e->ataco = 1;
-        atacar(o, e, fuera);
+        atacar(o, e, fuera, clase, en_11);
     }
     return func_8002EFD0(o) != 0;
 }
 
-void func_80045278(Objeto *o) {
+static void paso_enemigo(Objeto *o, s32 clase) {
     EstadoAnim *a = o->anim;
     u16 *t = o->animaciones;
     ExtraEnemigo *e = (ExtraEnemigo *)&o->extra;
@@ -130,10 +165,13 @@ void func_80045278(Objeto *o) {
         break;
     case 7:
         func_800487B0(o, p_sabrina, 100);
-        if (animar_ataque(o, e, a, t, fuera)) {
+        if (animar_ataque(o, e, a, t, fuera, clase, 0)) {
             a->animacion = t[0];
             a->_50 = 0;
             o->estado = e->despues;
+            if (clase == 2) {
+                e->ataco = 0;
+            }
         }
         break;
     case 8:
@@ -152,7 +190,7 @@ void func_80045278(Objeto *o) {
         v[1] = 0;
         v[2] = o->z - p_sabrina->z;
         if ((s32)func_8001C180(v) <= (e->alcance >> 8)) {
-            if (!animar_ataque(o, e, a, t, fuera2)) {
+            if (!animar_ataque(o, e, a, t, fuera2, clase, 1)) {
                 break;
             }
         } else if (func_8002EFD0(o) == 0) {
@@ -172,4 +210,12 @@ void func_80045278(Objeto *o) {
         o->estado = 0;
         break;
     }
+}
+
+void func_80045278(Objeto *o) {
+    paso_enemigo(o, 1);
+}
+
+void func_80046428(Objeto *o) {
+    paso_enemigo(o, 2);
 }
