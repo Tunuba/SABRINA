@@ -70,3 +70,54 @@ void func_8004C82C(void) {
     D_800C98B4 = 1;
     D_8007CC6C = 0;
 }
+
+extern s8 nivel_actual;
+extern u8 D_800C86C6[];              /* partida + 0x46 + nivel * 0x141: 1 si el nivel se visito */
+extern u8 D_8007CB3A;                /* recogibles del nivel (las cuatro primeras clases) */
+extern u32 D_8007CB3C;               /* cuantos registros tiene WRLDDATA */
+extern u8 *D_8007CB40;               /* los registros de WRLDDATA, 0x9C bytes cada uno */
+extern s32 D_800757DC[7];            /* con que numero empieza cada clase */
+
+/* Al entrar a un nivel: lo marca visitado, cuenta en la partida cuantos objetos hay de cada una de las
+ * siete clases que se guardan (tipos 4, 0x12, 0x13, 0x17, 0x28, 0x29 y 0x2D) y a cada uno le da su numero
+ * dentro de la clase (en +0x1C del registro). Deja en D_8007CB3A y en D_800C8538 la suma de las cuatro
+ * primeras clases. */
+void func_8004BDA0(void) {
+    static const s16 tipos[7] = { 4, 0x12, 0x13, 0x17, 0x28, 0x29, 0x2D };
+    static const s16 desp[7] = { 0x6E, 0xB6, 0xFE, 0x146, 0x19E, 0x1A6, 0x18E };
+    s32 num[7];
+    s8 *cuenta[7];
+    u8 *base, *r;
+    u32 i;
+    s32 k;
+
+    for (k = 0; k < 7; k++) {
+        num[k] = D_800757DC[k];
+    }
+    D_800C98A4 = nivel_actual;
+    D_8007CB3A = 0;
+    D_8007CB28 = 0;
+    D_800C86C6[nivel_actual * 0x141] = 1;
+    base = partida + nivel_actual * 0x141;
+    for (k = 0; k < 7; k++) {
+        cuenta[k] = (s8 *)(base + desp[k]);
+    }
+    for (k = 0; k < 7; k++) {
+        *cuenta[k] = 0;
+    }
+    for (i = 0; i < D_8007CB3C; i++) {
+        for (k = 0; k < 7; k++) {
+            r = D_8007CB40 + i * 0x9C;
+            if (*(s16 *)(r + 0xC) == tipos[k]) {
+                *(s32 *)(r + 0x1C) = num[k];
+                num[k]++;
+                (*cuenta[k])++;
+            }
+        }
+    }
+    D_8007CB3A = *cuenta[0];
+    D_8007CB3A += (u8)*cuenta[1];
+    D_8007CB3A += (u8)*cuenta[2];
+    D_8007CB3A += (u8)*cuenta[3];
+    D_800C8538[nivel_actual] = D_8007CB3A;
+}

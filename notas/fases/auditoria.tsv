@@ -167,3 +167,5 @@ func_8004F2D8	536	IGUAL	src/Screen/sprites_g13.c	3 de 3 capturas y 408 de 408 va
 func_8004C82C	544	IGUAL	src/varios/partida_g13.c	1 de 1 capturas y 76 de 76 variantes iguales
 func_80037468	720	IGUAL_V0	src/objetos/camara_g08.c	2 de 2 capturas y 133 de 148 variantes iguales (solo difiere v0, la direccion de la tabla de saltos al salir antes)
 func_80023B3C	768	IGUAL	src/Screen/sprites_g13.c	2 de 2 capturas y 184 de 184 variantes iguales
+RegistrarRecogible	928	IGUAL	src/WobjCode/anotados_g13.c	2 de 2 capturas y 204 de 204 variantes iguales
+func_8004BDA0	944	IGUAL	src/varios/partida_g13.c	6 de 6 capturas y 804 de 804 variantes iguales
