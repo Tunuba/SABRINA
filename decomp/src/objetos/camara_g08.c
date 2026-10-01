@@ -950,3 +950,47 @@ s32 func_80035314(Objeto *o) {
     D_8007CBD4 = D_8007CBC0;
     return (u16)D_8007CBC0;
 }
+
+/* ¿Hay pared a los lados entre Sabrina y la camara? Prueba un segmento de cada lado (de Sabrina, corrida
+ * a un costado, hacia la camara corrida al mismo costado). Si choca el primero deja lado = 1 y giro =
+ * -300; si choca el segundo, giro = 300 (lado queda en 0). Devuelve 1 si choco alguno. */
+s32 func_800365F0(s16 *giro, s16 *lado) {
+    s32 v[3];
+    s32 az, bz, ax, bx, cx, cz;
+
+    v[0] = D_8007CAFC->x - p_sabrina->x;
+    v[1] = 0;
+    v[2] = D_8007CAFC->z - p_sabrina->z;
+    func_8001C45C(v);
+    az = (((v[2] >> 4) * 0x33) >> 8) << 8;
+    bz = (((v[2] >> 4) << 7) >> 8) << 8;
+    ax = -(((v[0] >> 4) * 0x33) >> 8) << 8;
+    bx = -(((v[0] >> 4) << 7) >> 8) << 8;
+    cx = (((v[0] >> 4) << 7) >> 8) << 8;
+    cz = (((v[2] >> 4) << 7) >> 8) << 8;
+    D_800C6594[0] = p_sabrina->x + az - cx;
+    D_800C6594[2] = p_sabrina->z + ax - cz;
+    D_800C6594[1] = p_sabrina->y - 0x16666;
+    D_800C65A0[0] = D_8007CAFC->x + bz;
+    D_800C65A0[2] = D_8007CAFC->z + bx;
+    D_800C65A0[1] = D_8007CAFC->y;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    if (func_8003AE84() != 0) {
+        *lado = 1;
+        *giro = -300;
+        return 1;
+    }
+    *lado = 0;
+    D_800C6594[0] = p_sabrina->x - az - cx;
+    D_800C6594[2] = p_sabrina->z - ax - cz;
+    D_800C6594[1] = p_sabrina->y - 0x16666;
+    D_800C65A0[0] = D_8007CAFC->x - bz;
+    D_800C65A0[2] = D_8007CAFC->z - bx;
+    D_800C65A0[1] = D_8007CAFC->y;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    if (func_8003AE84() != 0) {
+        *giro = 300;
+        return 1;
+    }
+    return 0;
+}
