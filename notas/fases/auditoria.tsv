@@ -215,3 +215,5 @@ func_80054068	1748	DISTINTO	src/objetos/activador_g13.c	2 de 2 capturas y 181 de
 DibujarCeldasVisibles	508	IGUAL	src/geometria/celdas_g13.c	8 de 8 capturas y 574 de 574 variantes iguales
 func_80010920	696	IGUAL	src/libgpu/fuente_g13.c	6 de 6 capturas y 784 de 784 variantes iguales
 ImprimirDepuracion	960	IGUAL	src/libgpu/fuente_g13.c	8 de 8 capturas y 832 de 832 variantes iguales
+func_800318F4	3256	IGUAL	src/sabrina/moverse_g13.c	8 de 8 capturas y 601 de 601 variantes iguales
+func_8004B320	2688	DISTINTO	src/objetos/entrar_nivel_g13.c	6 de 6 capturas y 634 de 635 variantes iguales; la mala (nivel_actual = 0x12) deja un byte distinto en 800c857b que nadie escribe a la vista: con un gancho de escritura en Unicorn las dos dan igual (rareza del emulador, sin aclarar)
