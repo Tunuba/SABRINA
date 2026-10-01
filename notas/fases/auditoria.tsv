@@ -181,3 +181,4 @@ func_8001D8EC	1664	IGUAL	src/modelLoader/mando_g13.c	8 de 8 capturas y 698 de 69
 func_8003A94C	1244	IGUAL	src/colision/consulta_g13.c	8 de 8 capturas y 439 de 439 variantes iguales
 func_8003AF9C	1008	IGUAL	src/colision/consulta_g13.c	8 de 8 capturas y 419 de 419 variantes iguales
 func_800252A0	1088	IGUAL	src/objetos/crear_g13.c	6 de 6 capturas y 647 de 647 variantes iguales
+CrearObjetoMundo	792	IGUAL	src/objetos/crear_g13.c	6 de 6 capturas y 540 de 540 variantes iguales
