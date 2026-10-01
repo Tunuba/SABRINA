@@ -126,3 +126,9 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   func_80036250, que lee una escala sin valor de la pila (0x14 bytes debajo de la del llamador); en el
   original ahi queda el s1 que guardo func_80047710 (el propio objeto camara). El C deja `o` en ese lugar
   con `__builtin_frame_address(0)[-5]` antes de llamarla.
+- func_80038318 (1536, carga de hechizo) a IGUAL_V0; ActivarObjetosCercanos (544) y func_800489C4 (816, avanzar
+  por la ruta) a IGUAL. func_80030208 (3164, el paso de Sabrina) escrita en `sabrina/paso_g13.c`: 475 de 476
+  (la mala pasa por FisicaObjeto, que lee pila sin valor; depende del tamano del marco del C).
+  func_8005A360 (3168) da NO_TERMINA (espera la musica del CD); no se escribio.
+- Atajo util: probar el borrador de `src/auto` cambiando `juego.h` por `objeto.h` (los que fallaban por
+  p_sabrina) y, si queda cerca, reescribirlo con tipos (func_80038318 y ActivarObjetosCercanos salieron asi).

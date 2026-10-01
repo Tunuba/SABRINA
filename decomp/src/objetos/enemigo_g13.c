@@ -219,3 +219,70 @@ void func_80045278(Objeto *o) {
 void func_80046428(Objeto *o) {
     paso_enemigo(o, 2);
 }
+
+/* Un punto de ruta (0x18 bytes, en D_800D588C). */
+typedef struct {
+    s32 x, y, z;                     /* 0x00 */
+    u8 _0C[2];
+    s16 siguiente;                   /* 0x0E, 0: usar el de 0x10 */
+    s16 anterior;                    /* 0x10 */
+    u8 _12[6];
+} PuntoRuta;
+
+extern PuntoRuta D_800D588C[];
+extern s32 func_8001C1D4(s32 *a, s32 *b);  /* producto de dos vectores */
+
+/* Avanza al enemigo por su ruta (el punto de extra+0) hacia donde esta Sabrina: elige ir hacia el punto
+ * actual o hacia el siguiente (o el anterior) segun de que lado quede Sabrina, avanza 8 veces ese
+ * vector (en 24.8 / 256) y, si se paso de Sabrina, vuelve atras. */
+void func_800489C4(Objeto *o) {
+    PuntoRuta *p, *q;
+    s32 a[3], b[3], c[3];
+
+    func_800487B0(o, p_sabrina, 0x96);
+    c[0] = o->x >> 8;
+    c[1] = o->y >> 8;
+    c[2] = o->z >> 8;
+    p = *(PuntoRuta **)&o->extra;
+    a[0] = p->x >> 8;
+    a[1] = p->y >> 8;
+    a[2] = p->z >> 8;
+    q = &D_800D588C[p->siguiente != 0 ? p->siguiente : p->anterior];
+    b[0] = q->x >> 8;
+    b[1] = q->y >> 8;
+    b[2] = q->z >> 8;
+    a[0] -= c[0];
+    a[1] -= c[1];
+    a[2] -= c[2];
+    b[0] -= c[0];
+    b[1] -= c[1];
+    b[2] -= c[2];
+    c[0] = (p_sabrina->x - o->x) >> 8;
+    c[1] = (p_sabrina->y - o->y) >> 8;
+    c[2] = (p_sabrina->z - o->z) >> 8;
+    if (a[1] + (a[0] + a[2]) != 0) {
+        if (func_8001C1D4(c, a) < 0) {
+            a[0] = b[0];
+            a[1] = b[1];
+            a[2] = b[2];
+        }
+    } else if (func_8001C1D4(c, b) > 0) {
+        a[0] = b[0];
+        a[1] = b[1];
+        a[2] = b[2];
+    }
+    a[0] <<= 3;
+    a[1] <<= 3;
+    a[2] <<= 3;
+    o->x += a[0];
+    o->y += a[1];
+    o->z += a[2];
+    b[0] = (p_sabrina->x - o->x) >> 8;
+    b[1] = (p_sabrina->y - o->y) >> 8;
+    b[2] = (p_sabrina->z - o->z) >> 8;
+    if (func_8001C1D4(a, b) < 0) {
+        o->x -= a[0];
+        o->y -= a[1];
+        o->z -= a[2];
+    }
+}
