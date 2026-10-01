@@ -510,3 +510,64 @@ s32 func_80036880(s32 *dir, s32 lado) {
     }
     return 0;
 }
+
+extern s16 D_8007CBD4;               /* tipos de triangulo que no chocan */
+extern s32 func_80021CE4(s32 n);     /* al azar, de 0 a n */
+extern s32 func_800350FC(s32 valor);
+
+/* Prueba un segmento que sale de Sabrina (corrido por d) a la altura y, hacia fin; devuelve 1 si choca. */
+static s32 choca_desde_sabrina(s32 dx, s32 dz, s32 y) {
+    D_800C6594[0] = p_sabrina->x;
+    D_800C6594[1] = p_sabrina->y;
+    D_800C6594[2] = p_sabrina->z;
+    D_800C6594[0] += dx;
+    D_800C6594[2] += dz;
+    D_800C6594[1] = y;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    return func_8003AE84() != 0;
+}
+
+/* Pone la camara detras de Sabrina segun dir (x en dir[0], z en dir[2]) a la altura y: prueba un segmento
+ * desde Sabrina hacia atras y otros tres con un poco de azar; si alguno choca devuelve 0 sin moverla. Si
+ * ninguno choca, la deja 3 veces dir detras de Sabrina y a la altura media de Sabrina menos 0x13333.
+ * Mientras, ningun tipo de triangulo se ignora (D_8007CBD4 en 0) y al terminar se ignoran casi todos. */
+s32 func_80036D58(s32 dx, s32 a1, s32 dz, s32 y) {
+    s32 tx = (((dx >> 4) * 0x300) >> 8) << 8;
+    s32 tz = (((dz >> 4) * 0x300) >> 8) << 8;
+    s32 cx = (((dx >> 4) * 0xCC) >> 8) << 8;
+    s32 cz = (((dz >> 4) * 0xCC) >> 8) << 8;
+    s32 i;
+
+    D_8007CBD4 = 0;
+    D_800C6594[0] = p_sabrina->x;
+    D_800C6594[1] = p_sabrina->y;
+    D_800C6594[2] = p_sabrina->z;
+    D_800C6594[1] = y;
+    D_800C65A0[0] = D_800C6594[0] - tx;
+    D_800C65A0[2] = D_800C6594[2] - tz;
+    D_800C65A0[1] = y;
+    D_800C6594[0] += cx;
+    D_800C6594[2] += cz;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    if (func_8003AE84() != 0) {
+        D_8007CBD4 = -17;
+        return 0;
+    }
+    for (i = 0; i < 3; i++) {
+        D_800C65A0[0] = D_800C6594[0] - tx + (func_80021CE4(0x4000) - 0x2000);
+        D_800C65A0[2] = D_800C6594[2] - tz + (func_80021CE4(0x4000) - 0x2000);
+        D_800C65A0[1] = y;
+        if (choca_desde_sabrina(cx, cz, y)) {
+            D_8007CBD4 = -17;
+            return 0;
+        }
+    }
+    D_800C65A0[0] = D_800C6594[0] - tx;
+    D_800C65A0[2] = D_800C6594[2] - tz;
+    D_800C65A0[1] = func_800350FC(CAMPO_S32(p_sabrina, 0x50)) - 0x13333;
+    D_8007CAFC->x = D_800C65A0[0];
+    D_8007CAFC->y = D_800C65A0[1];
+    D_8007CAFC->z = D_800C65A0[2];
+    D_8007CBD4 = -17;
+    return 1;
+}
