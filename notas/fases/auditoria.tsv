@@ -199,3 +199,4 @@ ActivarObjetosCercanos	544	IGUAL	src/objetos/crear_g13.c	8 de 8 capturas y 1039 
 func_800489C4	816	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
 func_8004D0C0	2564	IGUAL_V0	src/objetos/portal_g13.c	8 de 8 capturas y 540 de 613 variantes iguales (solo difiere v0)
 FisicaObjeto	2436	IGUAL	src/colision/fisica_g13.c	8 de 8 capturas y 716 de 716 variantes iguales
+func_80056CE8	1684	NO_TERMINA	src/objetos/tienda_g13.c	la original no termina en el emulador (espera la musica del CD); escrita sin verificar
