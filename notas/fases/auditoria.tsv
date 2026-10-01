@@ -236,3 +236,25 @@ func_8002805C	636	IGUAL_V0	src/psyq/mando_g13.c	8 de 8 capturas iguales salvo v0
 Reservar	584	IGUAL	src/varios/reservar_g13.c	8 de 8 capturas y 702 de 702 variantes iguales
 func_800460CC	860	IGUAL_V0	src/objetos/enemigo_iniciar_g13.c	2 de 2 capturas iguales salvo v0 (void)
 func_8004EEF4	968	IGUAL_V0	src/varios/tarjeta_lista_g13.c	2 de 2 capturas iguales salvo v0 (void)
+func_80012B0C	372	IGUAL	src/libgpu/reset_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
+func_80012CDC	152	IGUAL	src/libgpu/reset_g13.c	2 de 2 capturas y 171 de 171 variantes iguales
+func_80012C80	92	IGUAL	src/libgpu/reset_g13.c	1 de 1 capturas y 102 de 102 variantes iguales
+func_80012AE4	36	IGUAL	src/libgpu/reset_g13.c	2 de 2 capturas y 56 de 56 variantes iguales
+func_8001668C	328	IGUAL	src/psyq/libetc_g13.c	2 de 2 capturas y 198 de 198 variantes iguales
+func_800168EC	36	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 28 de 28 variantes iguales
+func_80016910	48	IGUAL	src/psyq/libetc_g13.c	2 de 2 capturas y 155 de 155 variantes iguales
+func_80016940	48	IGUAL	src/psyq/libetc_g13.c	2 de 2 capturas y 125 de 125 variantes iguales
+func_800169A0	52	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 76 de 76 variantes iguales
+func_80016AC4	36	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 29 de 29 variantes iguales
+func_80016D78	36	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 29 de 29 variantes iguales
+func_80016AF4	88	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 85 de 85 variantes iguales
+func_80016DA0	76	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 72 de 72 variantes iguales
+func_800190C0	280	IGUAL	src/Font/textos_g13.c	1 de 1 capturas y 93 de 93 variantes iguales
+func_800193F8	108	IGUAL	src/Font/textos_g13.c	2 de 2 capturas y 158 de 158 variantes iguales
+func_800163E4	216	DISTINTO	src/psyq/libetc_g13.c	1 de 2 capturas y 152 de 251 variantes iguales; difieren 2 palabras en 80063950: el setjmp (func_80016170) guarda la direccion de vuelta y la pila del que llama, que en el C son otras
+ReproducirSTR	184	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
+PantallasLegales	456	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
+func_800144C4	156	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 58 de 58 variantes iguales
+func_80014598	52	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 56 de 56 variantes iguales
+func_80016F38	544	IGUAL	src/psyq/libgs_g13.c	1 de 1 capturas y 52 de 52 variantes iguales
+func_80010000	48	IGUAL	src/varios/arranque_g13.c	1 de 1 capturas y 84 de 84 variantes iguales

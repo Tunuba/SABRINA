@@ -3,8 +3,8 @@
 /* libgs: el arranque de las matrices y la pantalla (GsInitGraph / GsInit3D). */
 
 extern s32 D_80084C48, D_80084C4C;   /* ancho y alto */
-extern s16 D_80084C90[16];           /* la matriz identidad (0x20 bytes) */
 extern s32 D_80084CB0[8];            /* la de la camara */
+#define D_80084C90 ((s16 *)((u8 *)D_80084CB0 - 0x20))  /* la matriz identidad (0x20 bytes), sin nombre */
 extern s32 D_80084C50[8];            /* la de las luces */
 extern s32 D_80084C70[8];            /* la del color de las luces */
 extern s16 D_80084C30[2], D_80084C34[2], D_80084C38[2], D_80084C3C[4];

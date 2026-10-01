@@ -215,3 +215,10 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   `varios/arranque_g13.c` (func_800106C8, func_80010000). Correr vfull/verificar sobre cada una y anotar.
   Ojo: al estar en src, auto.py las marca YA_HECHA aunque no esten verificadas.
 - Sin tocar por ser asm puro: func_80016170 (setjmp) y func_80017BC0 (parche de la BIOS).
+- Verificadas despues (01-10, tarde): IGUAL ResetGraph, SetDispMask, SetGraphDebug, func_80012AE4,
+  func_800144C4 y func_80014598 (D_80063824 es la base, no un puntero a puntero), func_8001668C,
+  func_800168EC, func_80016910, func_80016940, func_800169A0, func_80016AC4, func_80016D78, func_80016AF4,
+  func_80016DA0, func_80016F38 (D_80084C90 no tiene simbolo: se toma como D_80084CB0 - 0x20),
+  func_800190C0, func_800193F8 y func_80010000. DISTINTO func_800163E4 (el setjmp guarda la vuelta y la pila
+  del C). NO_TERMINA ReproducirSTR y PantallasLegales. Sin resultado func_800106C8 (llama al bucle
+  principal; la original da error de lectura sin alinear en su captura y el verificador tarda demasiado).

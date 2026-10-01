@@ -1,8 +1,8 @@
 #include "juego.h"
 
-/* libgpu: el modo de un canal (de a 0x10 bytes desde *D_80063824). */
+/* libgpu: el modo de un canal (de a 0x10 bytes desde D_80063824). */
 
-extern u8 **D_80063824;
+extern u8 *D_80063824;            /* la base de los canales */
 
 /* Arma el modo del canal (0 a 2) con su valor y las banderas: 0x10 y 1 en los canales 0 y 1, 1 en el 2, y
  * 0x1000 en todos. Devuelve 1, o 0 si el canal no existe. */
@@ -13,8 +13,8 @@ s32 func_800144C4(s32 canal, s32 valor, s32 banderas) {
     if ((s32)c >= 3) {
         return 0;
     }
-    *(s16 *)(*D_80063824 + c * 0x10 + 4) = 0;
-    *(s16 *)(*D_80063824 + c * 0x10 + 8) = valor;
+    *(s16 *)(D_80063824 + c * 0x10 + 4) = 0;
+    *(s16 *)(D_80063824 + c * 0x10 + 8) = valor;
     if (c < 2) {
         if (banderas & 0x10) {
             modo = 0x49;
@@ -28,7 +28,7 @@ s32 func_800144C4(s32 canal, s32 valor, s32 banderas) {
     if (banderas & 0x1000) {
         modo |= 0x10;
     }
-    *(s16 *)(*D_80063824 + c * 0x10 + 4) = modo;
+    *(s16 *)(D_80063824 + c * 0x10 + 4) = modo;
     return 1;
 }
 
@@ -39,6 +39,6 @@ s32 func_80014598(s32 canal) {
     if ((s32)c >= 3) {
         return 0;
     }
-    *(s16 *)(*D_80063824 + c * 0x10) = 0;
+    *(s16 *)(D_80063824 + c * 0x10) = 0;
     return 1;
 }
