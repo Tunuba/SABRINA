@@ -98,3 +98,110 @@ void func_80056584(Objeto *o) {
         break;
     }
 }
+
+extern s32 func_80021CE4(s32 n);     /* al azar, de 0 a n */
+extern s8 hechizos[];
+extern s32 func_80022EF4(s32 paso);
+
+/* Una carga de hechizo que flota (su numero en extra+0, su chispa en extra+1): sube y baja soltando
+ * chispas; cuando Sabrina se acerca vuela hacia ella como func_80056584 y al alcanzarla suena segun el
+ * hechizo, suelta una lluvia de particulas, deja 5 cargas de ese hechizo (si no habia ninguno elegido, lo
+ * elige) y se marca para borrar. */
+void func_80038318(Objeto *o) {
+    s8 *e = (s8 *)&o->extra;
+    s32 a, b, s, c, i, d;
+    s16 j;
+    u8 *p;
+
+    switch (o->estado) {
+    case 0:
+        o->estado = 1;
+        return;
+    case 1:
+        o->rot[1] = o->rot[1] + 0x28;
+        o->y += rsin(o->rot[1] * 4) >> 1;
+        if (p_sabrina != NULL) {
+            d = func_8002225C(o, p_sabrina->x, p_sabrina->y, p_sabrina->z);
+            if (d >= 0x140001) {
+                o->estado = 0;
+            } else if (d < 0x18000) {
+                o->estado = 2;
+            }
+        }
+        a = func_80021CE4(0x1000);
+        b = func_80021CE4(0x1000);
+        s = (rsin(a) * 0xC000) >> 12;
+        c = (rcos(a) * 0xC000) >> 12;
+        p = CrearParticula(e[1], o, (s16)b, 0, s - 0x5999, c, 0, -s >> 5, -c >> 5, 0, 0, 0, 0xF, 0x202, 0);
+        *(s32 *)(p + 0x3C) = 0x51E;
+        return;
+    case 2:
+        break;
+    default:
+        o->estado = 0;
+        return;
+    }
+    o->empuje_x = (p_sabrina->x - o->x) >> 3;
+    o->empuje_z = (p_sabrina->z - o->z) >> 3;
+    o->vel_y = (p_sabrina->y - 0x4001 - 0x7FFF - o->y) >> 3;
+    o->empuje_x = (((o->empuje_x >> 8) * 0x2E6) >> 8) << 8;
+    o->vel_y = (((o->vel_y >> 8) * 0x2E6) >> 8) << 8;
+    o->empuje_z = (((o->empuje_z >> 8) * 0x2E6) >> 8) << 8;
+    o->x += o->empuje_x;
+    o->y += o->vel_y;
+    o->z += o->empuje_z;
+    o->escala[0] -= o->escala[0] >> 4;
+    /* el original copia y y z sobre si mismas (no las achica) */
+    o->escala[1] = *(volatile s32 *)&o->escala[1];
+    o->escala[2] = *(volatile s32 *)&o->escala[2];
+    func_80014F10();
+    s = ((func_80014F10() & 0x3F) - 0x20) << 8;
+    c = ((func_80014F10() & 0x3F) - 0x20) << 8;
+    p = CrearParticula(e[1], o, 0, 0, s - 0x5999, c, 0, -s >> 5, -c >> 5, 0, 0, 0, 0xF, 0x202, 0);
+    *(s32 *)(p + 0x3C) = 0x51E;
+    o->rot[0] = o->rot[0] + 0xF;
+    o->rot[1] = o->rot[1] + 0x17;
+    if (p_sabrina == NULL ||
+        func_8002225C(o, p_sabrina->x, p_sabrina->y - 0x4001 - 0x7FFF, p_sabrina->z) >= 0x6666) {
+        return;
+    }
+    switch (e[0]) {
+    case 0:
+    case 8:
+        TocarSonido(0x16, 0, 0x2A, 0x7F);
+        break;
+    case 1:
+        TocarSonido(0x18, 0, 0x2A, 0x7F);
+        break;
+    case 2:
+        TocarSonido(0x14, 0, 0x2A, 0x7F);
+        break;
+    case 3:
+        TocarSonido(0x13, 0, 0x2A, 0x7F);
+        break;
+    case 4:
+        TocarSonido(0x15, 0, 0x2A, 0x7F);
+        break;
+    case 5:
+        TocarSonido(0x17, 0, 0x2A, 0x7F);
+        break;
+    }
+    for (i = 0; i < 0x1000; i += 0x384) {
+        for (j = 0; j < 0x1000; j += 0x3E8) {
+            s = (rsin(i) * 0xCCC) >> 12;
+            c = (rcos(i) * 0xCCC) >> 12;
+            p = CrearParticula(e[1], o, j, 0, 0, 0x28F, 0, s, c, 0, 0, 0, 5, 0x202, 0);
+            if (p != NULL) {
+                *(s32 *)(p + 0x3C) = 0x4E;
+            }
+        }
+    }
+    if (func_80022EF4(1) == -1) {
+        hechizos[e[0]] = 5;
+        ((s8 *)&p_sabrina->extra)[0x24] = func_80022EF4(1);
+    } else {
+        func_80022EF4(0xFF);
+    }
+    hechizos[e[0]] = 5;
+    *((u8 *)o + 0x20) |= 0x80;
+}

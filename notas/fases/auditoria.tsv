@@ -194,3 +194,4 @@ func_80045278	1788	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 154 de 1
 func_80046428	1796	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 149 de 161 variantes iguales (solo difiere v0)
 func_80035314	3900	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 505 de 505 variantes iguales
 func_80030208	3164	DISTINTO	src/sabrina/paso_g13.c	8 de 8 capturas y 475 de 476 variantes iguales; la mala tiene o = 0x74 y pasa por FisicaObjeto, que lee de la pila sin darle valor (cambia con el tamano del marco del C)
+func_80038318	1536	IGUAL_V0	src/objetos/atraido_g13.c	1 de 2 capturas y 143 de 211 variantes iguales (solo difiere v0)
