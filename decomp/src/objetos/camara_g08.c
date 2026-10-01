@@ -369,3 +369,71 @@ void func_80037468(Objeto *o, Objeto *a) {
     o->forma.banderas = 0x3000;
     o->aviso = func_80037738;
 }
+
+extern s32 func_80021CE4(s32 n);     /* al azar, de 0 a n */
+extern void *CrearParticula(s32 tipo, Objeto *o, s32 b, s32 x, s32 y, s32 z, s32 dx, s32 dy, s32 dz, s32 c,
+                            s32 d, s32 e, s32 vida, s32 f, s32 g);
+extern void func_80024F6C(Objeto *o, Objeto *a);
+typedef struct {
+    void (*al_recoger)(Objeto *a);
+    u8 _04[0xC];
+} Recompensa;
+extern Recompensa D_80074BC4[];      /* por fuerza (extra+0x1F): que hacer con lo recogido */
+
+/* El aviso que deja func_80037468: a toca a o, con el mismo filtro de tipos. Si a tiene el bit 0x100 lo
+ * rebota (una sola vez por objeto: lo guarda en extra+0x14) girandolo un poco al azar. Si no, crea una
+ * particula; si a tiene alguno de los bits 0-1, le aplica la recompensa de la fuerza de o y le avisa; y o
+ * vuelve al aviso normal (func_80024F6C). */
+void func_80037738(Objeto *o, Objeto *a) {
+    u8 *extra = (u8 *)o + 0x74;
+    void (*f)(Objeto *);
+
+    if (a->forma.banderas & 0x100) {
+        return;
+    }
+    if (a->tipo < 0x35) {
+        switch (a->tipo) {
+        case 2: case 14: case 15: case 16: case 17: case 22: case 30: case 32:
+        case 47: case 48: case 49: case 50: case 51:
+            break;
+        case 28:
+            if (CAMPO_S8(extra, 0x1F) < 8) {
+                return;
+            }
+            if (nivel_actual != 6 && nivel_actual != 12 && nivel_actual != 3 && nivel_actual != 9) {
+                return;
+            }
+            break;
+        case 40: case 41:
+            if (CAMPO_S8(extra, 0x1F) < 8) {
+                return;
+            }
+            break;
+        default:
+            return;
+        }
+    }
+    if (a->forma.banderas & 0x100) {
+        if (CAMPO_PTR(extra, 0x14) == a) {
+            return;
+        }
+        CAMPO_S32(extra, 0x10) = 0;
+        o->forma.banderas = 0x3800;
+        CAMPO_S16(o, 0x114) = 0x27;
+        o->rot[1] = o->rot[1] + (s16)(func_80021CE4(200) + 0x79C);
+        o->rot[0] = o->rot[0] + (s16)(func_80021CE4(200) - 100);
+        CAMPO_S32(extra, 0x0C) = 0;
+        CAMPO_PTR(extra, 0x14) = a;
+        return;
+    }
+    CrearParticula(0x13, o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x19, 0x202, 0);
+    if (a->forma.banderas & 3) {
+        f = D_80074BC4[CAMPO_S8(extra, 0x1F)].al_recoger;
+        if (f != NULL) {
+            f(a);
+        }
+        a->aviso(a, o);
+    }
+    o->aviso = func_80024F6C;
+    CAMPO_S32(extra, 0x0C) = CAMPO_S32(extra, 0x08);
+}
