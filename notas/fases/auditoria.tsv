@@ -190,3 +190,4 @@ func_80056584	1156	IGUAL_V0	src/objetos/atraido_g13.c	1 de 2 capturas y 50 de 13
 func_800325AC	1516	IGUAL	src/sabrina/acciones_g13.c	8 de 8 capturas y 505 de 505 variantes iguales
 func_80047AA4	932	IGUAL	src/WobjCode/anotados_g13.c	2 de 2 capturas y 190 de 190 variantes iguales
 func_80037A18	932	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 635 de 635 variantes iguales
+func_80045278	1788	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 154 de 168 variantes iguales (solo difiere v0)
