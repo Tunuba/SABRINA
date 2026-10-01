@@ -194,3 +194,24 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   antes del primer guardado: progreso.tsv y build/hechas.txt quedaron sin tocar. FALTA correrlo: la lista
   de las 137 es la diferencia entre las SIN_CAPTURAS de progreso.tsv y las que hoy tienen .regs en
   `decomp/capturas`.
+
+### Cierre del 2026-10-01 (por pedido de Meme)
+
+- El lote `auto.py --solo <las 137> --procesos 1` termino (con un corte a las 2 h, retomado con `--seguir`).
+  De las 137: 26 IGUAL (2444 bytes), 1 IGUAL_V0, 7 DISTINTO, 16 NO_COMPILA, 7 NO_TERMINA, 3 GTE,
+  3 M2C_FALLA, 10 YA_HECHA y **64 ERROR** ("process pool terminated abruptly": el trabajador se murio, casi
+  seguro por memoria; no son resultados reales). Resumen del lote: 382 funciones verificadas, 24.2 %
+  (progreso.tsv + lo escrito a mano).
+- Listas en `notas/fases/tanda137/`: `las_137.txt`, `error_rehacer.txt` (las 64 a volver a pasar) y
+  `hechas_antes_de_la_tanda.txt` (copia de build/hechas.txt antes de esta tanda; el lote con --solo lo
+  reescribe con las de su tanda). Para retomar: `python3 auto.py --solo $(paste -sd, error_rehacer.txt)
+  --procesos 1`, con la RAM vigilada (bajo 2 GB pausar con `pkill -STOP -f auto.py`, seguir con -CONT).
+- **Escrito a mano y SIN VERIFICAR** (no esta en auditoria.tsv, no cuenta): `libgpu/reset_g13.c`
+  (ResetGraph func_80012B0C, SetDispMask func_80012CDC, SetGraphDebug func_80012C80, func_80012AE4),
+  `libgpu/canal_g13.c` (func_800144C4, func_80014598), `psyq/libetc_g13.c` (func_8001668C, func_800168EC,
+  func_80016910, func_80016940, func_800169A0, func_80016AC4, func_80016D78, func_80016AF4, func_80016DA0,
+  func_800163E4), `psyq/libgs_g13.c` (func_80016F38), `Font/textos_g13.c` (func_800190C0 con el v0 de
+  entrada leido por asm, func_800193F8), `Screen/video_g13.c` (ReproducirSTR, PantallasLegales),
+  `varios/arranque_g13.c` (func_800106C8, func_80010000). Correr vfull/verificar sobre cada una y anotar.
+  Ojo: al estar en src, auto.py las marca YA_HECHA aunque no esten verificadas.
+- Sin tocar por ser asm puro: func_80016170 (setjmp) y func_80017BC0 (parche de la BIOS).
