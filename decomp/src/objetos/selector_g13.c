@@ -24,8 +24,49 @@ extern s32 func_8002225C(Objeto *o, s32 x, s32 y, s32 z);
 extern void func_8002205C(s32 *hacia, s32 ang_x, s32 ang_y);
 extern s32 func_8002EFD0(Objeto *o);  /* si termino la animacion */
 extern s32 func_8005B994(Objeto *o);  /* quita lo que se muestra */
-extern void func_8005BA10(Objeto *o); /* muestra los hechizos */
+extern s32 func_8005BA10(Objeto *o);  /* muestra los hechizos */
 extern void func_80030F18(s32 n);
+
+extern s8 D_800C8561[];              /* partida: el hechizo que se gano en cada mundo (1 a 4) */
+extern s8 D_800C8566;                /* el hechizo que tiene puesto */
+extern Objeto *func_8005B8D4(Objeto *o);  /* crea el objeto que muestra un hechizo */
+extern void func_800249CC(Objeto *o, s32 hechizo);
+extern s32 thunk_FUN_8001e588(Objeto *o);  /* rehace la matriz del modelo */
+
+/* Arma la lista de hechizos que se pueden elegir (los ganados que no son el puesto; el 21 si hay alguno
+ * puesto) con su objeto, y los muestra. Devuelve (v0) lo que queda del ultimo. */
+s32 func_8005BA10(Objeto *o) {
+    ExtraSelector *e = (ExtraSelector *)&o->extra;
+    s8 *activo = (s8 *)e + 0x14;
+    s32 i, si, r;
+
+    e->cuantos = 0;
+    for (i = 0; i < 5; i++) {
+        e->hechizo[i] = -1;
+        if (i == 0) {
+            si = D_800C8566 != 0;
+        } else {
+            si = D_800C8561[i] == i && D_800C8566 != i;
+        }
+        if (si) {
+            e->hechizo[e->cuantos] = i == 0 ? 0x15 : i == 1 ? 0x16 : i == 2 ? 0x18 : i == 3 ? 0x19 : 0x17;
+            activo[e->cuantos] = 1;
+            e->muestra[e->cuantos] = func_8005B8D4(o);
+            e->cuantos++;
+        } else {
+            e->hechizo[e->cuantos] = -1;
+            activo[e->cuantos] = 0;
+        }
+    }
+    for (i = 0; i < 5; i++) {
+        r = e->hechizo[i];
+        if (r != -1) {
+            func_800249CC(e->muestra[i], r);
+            r = thunk_FUN_8001e588(e->muestra[i]);
+        }
+    }
+    return r;
+}
 
 /* Vuelve a mostrar los hechizos dejando el elegido y espera 10 pasos. */
 static void mostrar(Objeto *o, ExtraSelector *e) {

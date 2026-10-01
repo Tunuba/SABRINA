@@ -220,3 +220,5 @@ func_8004B320	2688	DISTINTO	src/objetos/entrar_nivel_g13.c	6 de 6 capturas y 634
 func_800509A8	64	IGUAL	src/varios/tarjeta_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
 func_80050938	112	IGUAL	src/varios/tarjeta_g13.c	1 de 1 capturas y 23 de 23 variantes iguales
 func_8003BFC4	40	IGUAL	src/objetos/aviso_g13.c	2 de 2 capturas y 244 de 244 variantes iguales
+func_8003477C	628	IGUAL	src/objetos/ruta_g13.c	8 de 8 capturas y 575 de 575 variantes iguales
+func_8005BA10	1216	IGUAL	src/objetos/selector_g13.c	8 de 8 capturas y 561 de 561 variantes iguales
