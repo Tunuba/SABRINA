@@ -8,7 +8,7 @@ import sys
 import time
 import urllib.error
 
-sys.path.insert(0, r"C:\Proyectos\SABRINA\scripts")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from emu import RAIZ, Emu
 from explorar import CUE, estado, recorrer
 
