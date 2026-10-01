@@ -227,3 +227,4 @@ func_8005ED8C	5092	IGUAL	src/objetos/jefe_g13.c	3 de 3 capturas y 258 de 258 var
 func_8004E32C	684	IGUAL	src/varios/banco_g13.c	8 de 8 capturas y 630 de 630 variantes iguales
 func_8002886C	1000	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 743 de 743 variantes iguales
 func_80028D40	844	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 651 de 651 variantes iguales
+func_80025EF8	820	DISTINTO	src/psyq/mando_g13.c	8 de 8 capturas y 672 de 675 variantes iguales; las 3 malas parchan D_8006CFA8 con 0x0004FE10 (un puntero de funcion al azar, que despues lee el marco del que llama)

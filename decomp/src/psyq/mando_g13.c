@@ -243,3 +243,106 @@ marcar:
     p->_4A = 1;
     return 1;
 }
+
+/* Los registros del puerto serie de los mandos (SIO0). */
+typedef struct {
+    u8 dato;                         /* 0x00 */
+    u8 _01[3];
+    u16 estado;                      /* 0x04 */
+    u16 _06;
+    u16 modo;                        /* 0x08 */
+    u16 control;                     /* 0x0A */
+    u16 _0C;
+    u16 baudios;                     /* 0x0E */
+} PuertoSerie;
+
+extern volatile PuertoSerie *D_8006CF70;
+extern volatile s32 *D_8006CF6C;     /* las interrupciones pendientes */
+extern s32 D_8006CFC4;               /* el puerto (0 o 1) */
+extern s32 D_8006CFDC[];             /* por puerto: cuantos del multitap faltan cerrar */
+extern void (*D_8006CFA4)(Puerto *p);
+extern void (*D_8006CFA8)(Puerto *p);
+extern void func_8002908C(s32 espera);
+extern s32 func_800290AC(void);
+extern s32 func_800266B4(void);
+extern void func_80026744(void);
+
+/* Manda un byte y espera el acuse (bit 0x80 de las interrupciones); 0 si no llega. */
+static s32 enviar(s32 byte) {
+    D_8006CF70->dato = byte;
+    func_8002908C(0x3C);
+    if (func_800266B4() == 0) {
+        return 0;
+    }
+    func_80026744();
+    (void)D_8006CF70->dato;
+    func_8002908C(0x1AE);
+    while (!(*D_8006CF6C & 0x80)) {
+        if (func_800290AC() != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* Reinicia el puerto serie del mando p, cierra los del multitap que quedaron y, si el puerto sigue
+ * ocupado, le manda 01 42 01 esperando cada acuse. Devuelve 1 si se puede seguir con el mando. */
+s32 func_80025EF8(Puerto *p) {
+    volatile PuertoSerie *s = D_8006CF70;
+    s32 n;
+
+    s->control = 0x40;
+    s->control = 0;
+    s->modo = 0xD;
+    s->baudios = 0x88;
+    func_8002908C(p->tipo == 8 ? 0x50 : 0x91);
+    D_8006CF70->control = D_8006CFC4 != 0 ? 0x3003 : 0x1003;
+    if (D_8006CFDC[D_8006CFC4] >= 0) {
+        while (D_8006CFDC[D_8006CFC4] > 0) {
+            n = --D_8006CFDC[D_8006CFC4];
+            D_8006CFA4((Puerto *)((u8 *)p->multitap + n * 0xF0));
+        }
+        if (D_8006CFDC[D_8006CFC4] == 0) {
+            D_8006CFDC[D_8006CFC4] = -1;
+            D_8006CFA4(p);
+            D_8006CFA8(p);
+        }
+    }
+    s = D_8006CF70;
+    if (s->estado & 0x200) {
+        s->control |= 0x10;
+        if (!(s->estado & 0x200)) {
+            *D_8006CF6C = -0x81;
+        } else {
+            while (func_800290AC() == 0) {
+            }
+            D_8006CF70->dato = 1;
+            func_8002908C(0x7D0);
+            if (func_800266B4() == 0) {
+                return 0;
+            }
+            func_80026744();
+            (void)D_8006CF70->dato;
+            func_8002908C(0x1AE);
+            while (!(*D_8006CF6C & 0x80)) {
+                if (func_800290AC() != 0) {
+                    return 0;
+                }
+            }
+            if (!enviar(0x42)) {
+                return 0;
+            }
+            D_8006CF70->dato = 1;
+            func_8002908C(0x3C);
+            if (func_800266B4() != 0) {
+                func_80026744();
+                (void)D_8006CF70->dato;
+            }
+            return 0;
+        }
+    }
+    if (p->_50 == 0) {
+        return 1;
+    }
+    return p->activo_a == 0;
+}
