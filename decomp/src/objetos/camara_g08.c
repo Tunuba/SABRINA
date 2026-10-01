@@ -571,3 +571,75 @@ s32 func_80036D58(s32 dx, s32 a1, s32 dz, s32 y) {
     D_8007CBD4 = -17;
     return 1;
 }
+
+/* ---- Proyectil que persigue a un objeto ---- */
+
+typedef struct {
+    s32 rapidez;                     /* 0x00 */
+    u8 _04[4];
+    s32 alcance;                     /* 0x08, distancia maxima */
+    s32 recorrido;                   /* 0x0C */
+    Objeto *blanco;                  /* 0x10 */
+    u8 _14[4];
+    s16 giro1, giro2;                /* 0x18, angulos de las dos estelas */
+    s16 estela;                      /* 0x1C, pasos que quedan con estela */
+    s8 particula;                    /* 0x1E */
+} ExtraProyectil;
+
+extern s32 func_80021C3C(Objeto *o);           /* alto del objeto */
+extern s32 func_800221A8(Objeto *o, s32 x, s32 y, s32 z);  /* angulo vertical hacia un punto */
+extern s32 func_8002218C(Objeto *o, s32 x, s32 z);         /* angulo horizontal hacia un punto */
+extern void func_80021D44(s16 *ang, s32 meta, s32 paso);   /* acerca un angulo a otro */
+
+/* Un paso del proyectil: crece hasta escala 0x400, gira hacia el centro de su blanco (si tiene) y acelera
+ * un poco, avanza segun sus giros, deja estelas y su particula, y se marca para borrar (bit 0x80 de
+ * +0x20) al pasar su alcance. En v0 queda el alcance, o ese byte si se marco. */
+s32 func_80037A18(Objeto *o) {
+    ExtraProyectil *e = (ExtraProyectil *)&o->extra;
+    Objeto *b = e->blanco;
+    s32 esc = o->escala[0];
+    s32 h, v[3], s, c, n;
+
+    if (esc < 0x400) {
+        o->escala[0] = esc + ((0x400 - esc) >> 2);
+        if (o->escala[0] >= 0x400) {
+            o->escala[0] = 0x400;
+        }
+        o->escala[1] = o->escala[0];
+        o->escala[2] = o->escala[0];
+    }
+    if (b != NULL) {
+        h = func_80021C3C(b) >> 1;
+        func_80021D44(&o->rot[0], (s16)func_800221A8(o, b->x, b->y + h, b->z), 0x32);
+        func_80021D44(&o->rot[1], (s16)func_8002218C(o, b->x, b->z), 0x32);
+        e->rapidez += 0x28F;
+        e->rapidez -= e->rapidez >> 8;
+    }
+    func_8002205C(v, o->rot[0], o->rot[1]);
+    o->empuje_x = (v[0] * e->rapidez) >> 12;
+    o->vel_y = (v[1] * e->rapidez) >> 12;
+    o->empuje_z = (v[2] * e->rapidez) >> 12;
+    o->x += o->empuje_x;
+    o->y += o->vel_y;
+    o->z += o->empuje_z;
+    if (e->estela > 0) {
+        s = (rsin(e->giro1) * 0xCCC) >> 12;
+        c = (rcos(e->giro1) * 0xCCC) >> 12;
+        n = e->estela;
+        CrearParticula(0x12, o, 0, 0, 0, 0, c, s, 0, n, n, 0, 0xF, 2, 0);
+        s = (rsin(e->giro2) * 0xCCC) >> 12;
+        c = (rcos(e->giro2) * 0xCCC) >> 12;
+        n = e->estela;
+        CrearParticula(0x12, o, 0, 0, 0, 0, c, s, 0, n, n, 0, 0xF, 2, 0);
+    }
+    CrearParticula(e->particula, o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x14, 2, e->giro1);
+    e->giro1 = (e->giro1 + 0xF0) & 0xFFF;
+    e->giro2 = (e->giro2 + 0xF0) & 0xFFF;
+    e->estela--;
+    e->recorrido += e->rapidez;
+    if (e->alcance < e->recorrido) {
+        *((u8 *)o + 0x20) |= 0x80;
+        return *((u8 *)o + 0x20);
+    }
+    return e->alcance;
+}
