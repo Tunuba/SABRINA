@@ -175,3 +175,5 @@ func_80014670	256	IGUAL	src/psyq/dispositivos_g13.c	1 de 1 capturas y 0 de 0 var
 func_80014774	412	IGUAL	src/psyq/firstfile_g13.c	1 de 1 capturas y 14 de 14 variantes iguales
 LeerMAO	432	IGUAL	src/varios/mezcla_g13.c	8 de 8 capturas y 504 de 504 variantes iguales
 PuntoEnTriangulo	516	IGUAL	src/colision/punto_triangulo_g13.c	8 de 8 capturas y 485 de 485 variantes iguales
+Liberar	716	IGUAL	src/varios/reservar_g13.c	8 de 8 capturas y 1088 de 1088 variantes iguales
+Reservar	584	DISTINTO	src/varios/reservar_g13.c	8 de 8 capturas y 629 de 702 variantes iguales; las malas son con D_8007C8E0 distinto de 0: func_800161BC es malloc de la BIOS (A0 0x33) y el emulador vuelve sin tocar v0, asi que devuelve lo que habia en v0
