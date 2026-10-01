@@ -211,3 +211,6 @@ func_800607AC	516	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 122 de 122 v
 func_80053C74	612	IGUAL	src/objetos/marca_g13.c	2 de 2 capturas y 182 de 182 variantes iguales
 func_800113DC	624	IGUAL	src/libgpu/entorno_g13.c	8 de 8 capturas y 689 de 689 variantes iguales
 func_8005C358	1416	IGUAL	src/objetos/selector_g13.c	2 de 2 capturas y 154 de 154 variantes iguales
+func_80054068	1748	DISTINTO	src/objetos/activador_g13.c	2 de 2 capturas y 181 de 182 variantes iguales; la mala parcha la tabla de saltos del original (jtbl_80062550, entrada 6) con 0x100
+DibujarCeldasVisibles	508	IGUAL	src/geometria/celdas_g13.c	8 de 8 capturas y 574 de 574 variantes iguales
+func_80010920	696	IGUAL	src/libgpu/fuente_g13.c	6 de 6 capturas y 784 de 784 variantes iguales
