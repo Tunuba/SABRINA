@@ -169,3 +169,9 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   escribe a la vista; con un gancho de escritura en Unicorn las dos dan igual) y func_80025EF8 (un puntero
   de funcion al azar). func_80021A30 (cuadro sin camara, `Screen/cuadro_g13.c`) es lenta: sin resultado.
 - Saltadas por el CD: func_8002A6D0 (CD_sync), func_8002A950, func_8002BE88 (CdSearchFile).
+- Final de la noche: PutDispEnv (func_8001321C), DanoPorSuelo (1864), func_8001981C (menu), func_80021A30 y
+  Reservar (con el mismo truco del v0 del malloc de la BIOS que func_8004E32C) a IGUAL; func_8001EDE4
+  (particula), func_8002805C (motores del mando), func_800460CC (iniciar enemigo) y func_8004EEF4
+  (directorio de la tarjeta) pasaron de borrador de `src/auto` a archivo escrito, IGUAL_V0.
+- Lo que queda sin IGUAL: las del CD (NO_TERMINA), func_80030208 (basura de pila que dejan los registros
+  guardados por las llamadas), y las de artefactos (tablas de saltos parchadas, punteros de funcion al azar).

@@ -346,3 +346,55 @@ s32 func_80025EF8(Puerto *p) {
     }
     return p->activo_a == 0;
 }
+
+extern s32 D_8006CFCC;               /* lo que piden los motores de vibracion de todos los mandos (tope 60) */
+extern void bzero(void *p, s32 n);
+
+#define B(p, d) (((u8 *)(p))[d])
+
+/* Arma los seis bytes de los motores del mando (0x57 a 0x5C): con la tabla de actuadores (0xE6, 0x28)
+ * enciende los que piden su motor si alcanza la corriente; sin ella, segun el tipo de mando. */
+void func_8002805C(Puerto *p) {
+    s32 n, m, i, mascara, usar, k;
+    u8 *a;
+
+    bzero((u8 *)p + 0x57, 6);
+    if (p->_E6 != 0 && *(u8 **)((u8 *)p + 0x28) != NULL) {
+        n = B(p, 0x34) < 7 ? B(p, 0x34) : 6;
+        for (m = 0; m < B(p, 0xE9); m++) {
+            a = *(u8 **)((u8 *)p + 4) + m * 5;
+            usar = 0;
+            mascara = a[2] != 0 ? 0xFF : 1;
+            for (i = 0; i < n; i++) {
+                if (B(p, 0x5D + i) == m && ((*(u8 **)((u8 *)p + 0x28))[i] & mascara)) {
+                    usar = 1;
+                    break;
+                }
+            }
+            if (usar) {
+                k = D_8006CFCC + a[3];
+                if (k < 0x3D) {
+                    D_8006CFCC = k;
+                    for (i = 0; i < n; i++) {
+                        if (B(p, 0x5E + i) == m) {
+                            B(p, 0x57 + i) = 1;
+                        }
+                    }
+                }
+            }
+        }
+    } else if (((u8)(p->tipo - 4) < 2 || p->tipo == 7) && p->_E6 == 0 && B(p, 0x34) >= 2) {
+        a = *(u8 **)((u8 *)p + 0x28);
+        if ((a[0] & 0xC0) == 0x40 && (a[1] & 1) && D_8006CFCC + 0xA < 0x3D) {
+            B(p, 0x58) = 1;
+            B(p, 0x57) = 1;
+            D_8006CFCC += 0xA;
+        }
+    } else if (p->tipo == 3) {
+        B(p, 0x57) = 1;
+    } else if (p->_E6 == 0) {
+        for (i = 5; i >= 0; i--) {
+            B(p, 0x57 + i) = 1;
+        }
+    }
+}

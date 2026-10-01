@@ -42,6 +42,20 @@ extern void *func_800161BC(s32 tam);
 extern char *strcpy(char *d, const char *s);
 extern void func_800161C8(void *p);
 
+/* func_800161BC va al malloc de la BIOS, que en el emulador vuelve enseguida con el v0 que traia: se llama
+ * con el v0 que deja el original en cada lugar. */
+static void *malloc_bios(s32 tam, s32 v0) {
+    void *p;
+
+    __asm__ volatile(".set noreorder\n\tmove $2, %1\n\tjal func_800161BC\n\tmove $4, %2\n\t.set reorder\n\t"
+                     "move %0, $2"
+                     : "=&r"(p)
+                     : "r"(v0), "r"(tam)
+                     : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13",
+                       "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory");
+    return p;
+}
+
 void *Reservar(s32 tam, char *archivo) {
     void *p;
 
@@ -50,7 +64,7 @@ void *Reservar(s32 tam, char *archivo) {
         if (D_8007C8E0 == 0) {
             return D_8007C9DC->metodos->reservar(D_8007C9DC, tam);
         }
-        return func_800161BC(tam);
+        return malloc_bios(tam, D_8007C8E0);
     }
     if (D_800C98D4[D_8007CC20].archivo != NULL) {
         printf(D_80075844);
@@ -60,7 +74,8 @@ void *Reservar(s32 tam, char *archivo) {
     }
     if (archivo != NULL) {
         if (D_8007C8E0 != 0) {
-            p = func_800161BC(func_800150F0(archivo) + 1);
+            p = func_800150F0(archivo);
+            p = malloc_bios((s32)p + 1, (s32)p);
             D_800C98D4[D_8007CC20].archivo = p;
         }
         strcpy(D_800C98D4[D_8007CC20].archivo, archivo);
@@ -71,7 +86,7 @@ void *Reservar(s32 tam, char *archivo) {
     if (D_8007C8E0 == 0) {
         p = D_8007C9DC->metodos->reservar(D_8007C9DC, tam);
     } else {
-        p = func_800161BC(tam);
+        p = malloc_bios(tam, D_8007C8E0);
     }
     D_800C98D4[D_8007CC20].p = p;
     D_8007CC20++;
