@@ -143,3 +143,69 @@ s32 func_8004F2D8(s32 a0, s32 a1, s32 elegir) {
     }
     return r;
 }
+
+extern u16 D_8007C874[4], D_8007C87C[4];  /* x e y de las cuatro piezas del marcador */
+extern u16 D_8007C884[4];            /* el sprite de cada pieza */
+extern Sprite *D_8007CB24;           /* la tabla de sprites del marcador */
+extern s16 D_8007CB1E, D_8007CB22;   /* el largo de las dos barras (hasta 0x80) */
+extern s32 D_8007CB30;
+extern void *D_8007CADC;             /* lo ultimo que se agrega en ot + 8 */
+
+/* Pone en ot el marcador: sus cuatro piezas (en ot + 0xC) y dos barras semitransparentes de 12 de alto (en
+ * ot + 8), rojas con mas verde cuanto mas largas; la primera crece hacia la derecha desde la pieza 1
+ * y la segunda hacia la izquierda hasta 0x80 despues de la pieza 3. */
+void func_80023B3C(u8 *ot) {
+    u16 i;
+    Sprite *sp;
+    PrimSprt *s;
+    u8 *t;
+    PrimTile *r;
+    u32 v;
+
+    D_8007CB30 = 0;
+    for (i = 0; i != 4; i++) {
+        sp = &D_8007CB24[D_8007C884[i]];
+        D_8007CACC->x = D_8007C874[i];
+        D_8007CACC->y = D_8007C87C[i];
+        D_8007CACC->w = sp->w;
+        D_8007CACC->h = sp->h;
+        D_8007CACC->r = 0xFF;
+        D_8007CACC->g = 0xFF;
+        D_8007CACC->b = 0xFF;
+        D_8007CACC->v = sp->v;
+        D_8007CACC->u = sp->u;
+        D_8007CACC->clut = sp->clut;
+        s = D_8007CACC;
+        D_8007CACC = s + 1;
+        AddPrim(ot + 0xC, s);
+        SetDrawTPage(D_8007CAD0, 1, 0, sp->tpage);
+        t = D_8007CAD0;
+        D_8007CAD0 = t + 8;
+        AddPrim(ot + 0xC, t);
+    }
+    v = (u16)D_8007CB1E;
+    D_8007CAD4->r = (s32)((((0x100 - v) & 0xFFFF) << 7) + (v << 7)) >> 8;
+    D_8007CAD4->g = (s32)(v << 7) >> 8;
+    D_8007CAD4->b = 0;
+    D_8007CAD4->x = D_8007C874[1];
+    D_8007CAD4->y = D_8007C87C[1] + 2;
+    D_8007CAD4->w = D_8007CB1E;
+    D_8007CAD4->h = 12;
+    D_8007CAD4->code |= 2;
+    r = D_8007CAD4;
+    D_8007CAD4 = r + 1;
+    AddPrim(ot + 8, r);
+    v = (u16)D_8007CB22;
+    D_8007CAD4->r = (s32)((((0x100 - v) & 0xFFFF) << 7) + (v << 7)) >> 8;
+    D_8007CAD4->g = (s32)(v << 7) >> 8;
+    D_8007CAD4->b = 0;
+    D_8007CAD4->x = D_8007C874[3] + (0x80 - D_8007CB22);
+    D_8007CAD4->y = D_8007C87C[3] + 2;
+    D_8007CAD4->w = D_8007CB22;
+    D_8007CAD4->h = 12;
+    D_8007CAD4->code |= 2;
+    r = D_8007CAD4;
+    D_8007CAD4 = r + 1;
+    AddPrim(ot + 8, r);
+    AddPrim(ot + 8, D_8007CADC);
+}

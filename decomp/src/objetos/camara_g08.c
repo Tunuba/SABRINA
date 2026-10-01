@@ -285,3 +285,87 @@ void func_8003821C(Objeto *o, s32 clase) {
     o->rot[1] = ((o->x + o->z) >> 8) & 0xFFF;
     e[1] = *(s8 *)(REG(e[0]) + 7);
 }
+
+/* ---- Aviso de que algo toca a un objeto que se puede recoger ---- */
+
+extern s8 nivel_actual;
+extern u8 D_8007C8AC;                /* 1: recoger solo si lo mira o esta cerca */
+extern s32 func_800221FC(s32 ax, s32 ay, s32 az, s32 bx, s32 by, s32 bz);  /* distancia */
+extern s32 func_8001C33C(s32 *a, s32 *b);  /* producto escalar */
+extern void func_80039BA0(Forma *f, s32 banderas);
+extern void func_80037738(Objeto *o, Objeto *a);
+
+/* a toca a o. Segun el tipo de a (la tabla de 53 tipos del juego) no pasa nada, o pasa siempre, o solo si
+ * o tiene 8 o mas en extra+0x1F (algunos tipos, ademas, solo en los niveles 3, 6, 9 y 12). Con
+ * D_8007C8AC en 1 lo toma si a esta a menos de 0x24000 (con 0x8000 de alto de mas) o si o lo mira de
+ * frente; entonces guarda a y el producto en su parte extra, cambia su forma y pasa su aviso a
+ * func_80037738. */
+void func_80037468(Objeto *o, Objeto *a) {
+    u8 *extra = (u8 *)o + 0x74;
+    s32 fuerza = CAMPO_S8(extra, 0x1F);
+    s32 v[3], mira[3];
+    s32 cerca, d;
+    u16 tipo;
+
+    if (fuerza < 8 && (a->forma.banderas & 0x8000)) {
+        return;
+    }
+    if (a->forma.banderas & 0x100) {
+        return;
+    }
+    tipo = a->tipo;
+    if (tipo < 0x35) {
+        switch (tipo) {
+        case 2: case 14: case 15: case 16: case 17: case 22: case 30: case 32:
+        case 47: case 48: case 49: case 50: case 51:
+            break;
+        case 28:
+            if (fuerza < 8) {
+                return;
+            }
+            if (nivel_actual != 6 && nivel_actual != 12 && nivel_actual != 3 && nivel_actual != 9) {
+                return;
+            }
+            break;
+        case 40: case 41:
+            if (fuerza < 8) {
+                return;
+            }
+            break;
+        default:
+            return;
+        }
+    }
+    v[0] = a->x - o->x;
+    v[1] = a->y - o->y - 0x8000;
+    v[2] = a->z - o->z;
+    cerca = func_800221FC(0, 0, 0, v[0], v[1], v[2]) < 0x24000;
+    if (D_8007C8AC != 1) {
+        CAMPO_S32(extra, 0x04) = 0x80;
+        CAMPO_S32(extra, 0x08) = 0x140000;
+        o->aviso = func_80037738;
+        return;
+    }
+    v[0] = a->x - o->x;
+    v[1] = a->y - o->y - 0x8000;
+    v[2] = a->z - o->z;
+    func_8002205C(mira, o->rot[0], o->rot[1]);
+    func_8001C45C(mira);
+    func_8001C45C(v);
+    v[0] >>= 4;
+    v[1] >>= 4;
+    v[2] >>= 4;
+    mira[0] >>= 4;
+    mira[1] >>= 4;
+    mira[2] >>= 4;
+    d = func_8001C33C(v, mira);
+    if (d < 0xBE && !cerca) {
+        return;
+    }
+    CAMPO_PTR(extra, 0x10) = a;
+    CAMPO_S32(extra, 0x04) = d;
+    func_80039BA0(&o->forma, 0xC000);
+    CAMPO_S16(o, 0x114) = 0x26;
+    o->forma.banderas = 0x3000;
+    o->aviso = func_80037738;
+}
