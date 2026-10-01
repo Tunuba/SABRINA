@@ -187,6 +187,46 @@ void func_80036524(Objeto *o, s32 x, s32 y, s32 z) {
     D_8007CAE4 = o->rot[0];
 }
 
+/* Coloca la camara o respecto de a (la diferencia girada con el giro y de a, por 3 / 16, y 0x14CCC mas
+ * arriba) y la deja 100 pasos acercandose y mirando a la posicion de a, para que llegue ya asentada. En
+ * la parte extra de la camara quedan el punto que sigue (+0x28) y donde esta (+0x34). */
+void func_80037278(Objeto *o, Objeto *a) {
+    u8 *extra = (u8 *)o + 0x74;
+    s32 v[3];
+    s32 i;
+
+    if (o == NULL) {
+        return;
+    }
+    func_800350A4(&a->x);
+    v[0] = (o->x - a->x) >> 8;
+    v[1] = (o->y - a->y) >> 8;
+    v[2] = (o->z - a->z) >> 8;
+    func_8002205C(v, 0, a->rot[1]);
+    v[0] = a->x - (v[0] >> 4) * 0x300;
+    v[2] = a->z - (v[2] >> 4) * 0x300;
+    v[1] = a->y - 0x14CCC;
+    o->x = v[0];
+    o->y = v[1];
+    o->z = v[2];
+    CAMPO_S32(extra, 0x34) = o->x;
+    CAMPO_S32(extra, 0x38) = o->y;
+    CAMPO_S32(extra, 0x3C) = o->z;
+    CAMPO_S32(extra, 0x28) = a->x;
+    CAMPO_S32(extra, 0x2C) = a->y;
+    CAMPO_S32(extra, 0x30) = a->z;
+    for (i = 0; i < 100; i++) {
+        func_80036410(o, CAMPO_S32(extra, 0x34), CAMPO_S32(extra, 0x38), CAMPO_S32(extra, 0x3C),
+                      CAMPO_S32(extra, 0x28), CAMPO_S32(extra, 0x2C), CAMPO_S32(extra, 0x30), 3);
+        func_80036524(o, CAMPO_S32(extra, 0x28), CAMPO_S32(extra, 0x2C), CAMPO_S32(extra, 0x30));
+        D_8007CAE2 = o->rot[1];
+        D_8007CAE4 = o->rot[0];
+        D_8006C444[0] = o->x >> 8;
+        D_8006C444[1] = o->y >> 8;
+        D_8006C444[2] = o->z >> 8;
+    }
+}
+
 /* ---- Arranque de objetos con registro de 16 bytes ---- */
 
 /* Registros de 16 bytes desde D_80074BC8: +0 s32, +4 s16, +6 modelo (indice de modelos_cargados), +7 un

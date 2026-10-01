@@ -34,7 +34,9 @@ EN(Svm, voz, 0x18);
 typedef struct {
     u16 vag;                         /* 0x00 */
     s16 _02;                         /* 0x02 */
-    u8 _04[0x0A];
+    u8 _04[2];
+    u16 envolvente;                  /* 0x06, la escribe SpuGetVoiceEnvelope */
+    u8 _08[6];
     u16 nota;                        /* 0x0E */
     s16 marca;                       /* 0x10 */
     s16 prog;                        /* 0x12 */
@@ -43,12 +45,18 @@ typedef struct {
     u16 vab;                         /* 0x18 */
     u8 _1A[3];
     u8 activa;                       /* 0x1D */
-    u8 _1E[0x18];
+    s16 llamar1;                     /* 0x1E, distinto de 0: llamar a D_800C7508 */
+    u8 _20[0x0A];
+    s16 llamar2;                     /* 0x2A, distinto de 0: llamar a D_800C750C */
+    u8 _2C[0x0A];
     s16 vol;                         /* 0x36 */
 } VozSnd;
 EN(VozSnd, nota, 0x0E);
 EN(VozSnd, vab, 0x18);
 EN(VozSnd, activa, 0x1D);
+EN(VozSnd, envolvente, 0x06);
+EN(VozSnd, llamar1, 0x1E);
+EN(VozSnd, llamar2, 0x2A);
 EN(VozSnd, vol, 0x36);
 
 extern u8 D_800C76EE[];              /* el _svm empieza 0x0A bytes antes (0x800C76E4, sin simbolo) */
@@ -130,4 +138,125 @@ s16 func_800425C8(s32 voz, s32 vab, s32 prog, s32 tono, s32 nota, s32 fina, s32 
     }
     D_800C6E60 = 0;
     return (s16)voz;
+}
+
+/* SpuVoiceAttr de la biblioteca: solo los campos que se usan aqui. */
+typedef struct {
+    s32 voz;                         /* 0x00, mascara de la voz */
+    s32 mascara;                     /* 0x04, que campos tomar */
+    s16 vol_izq, vol_der;            /* 0x08 */
+    u8 _0C[8];
+    u16 tono;                        /* 0x14 */
+    u8 _16[6];
+    u32 direccion;                   /* 0x1C */
+    u8 _20[0x1A];
+    u16 adsr1, adsr2;                /* 0x3A */
+    u8 _3E[2];
+} AtribVoz;
+EN(AtribVoz, tono, 0x14);
+EN(AtribVoz, direccion, 0x1C);
+EN(AtribVoz, adsr1, 0x3A);
+
+extern s32 D_800C6F7C;               /* cuadro actual de los ultimos 16 */
+extern s32 D_800C6F80[16];           /* por cuadro: voces con la envolvente en cero */
+extern s8 D_800C76DC;                /* cuantas voces usa libsnd */
+extern s8 D_800C7700;                /* distinto de 0: no apagar las voces calladas */
+extern u16 D_800C7500, D_800C7502, D_800C7504, D_800C7506;  /* voces a prender y apagar (0-15, 16-23) */
+extern void (*D_800C7508)(s32 voz);
+extern void (*D_800C750C)(s32 voz);
+extern u8 D_800C7510[24];            /* por voz: que atributos cambiaron */
+extern u16 D_800C7528[];             /* por voz, 8 u16: volumenes, tono, direccion y adsr */
+extern u8 D_800C76A8;
+extern u16 D_800C76AA;
+extern u16 D_800C76AC;
+extern u16 D_800C76AE;
+
+extern void SpuGetVoiceEnvelope(s32 voz, u16 *env);
+extern void SpuSetVoiceAttr(AtribVoz *a);
+extern void SpuSetKey(s32 prender, u32 voces);
+extern void func_8003F728(s32 a, s32 voces);
+extern void func_8003F7A8(s32 a, s32 voces);
+
+/* Lo de cada cuadro de libsnd: anota que voces tienen la envolvente en cero; las que estuvieron asi 15
+ * cuadros seguidos se dan por terminadas; llama a los avisos de cada voz, pasa al SPU los atributos que
+ * cambiaron y prende y apaga las voces pedidas. */
+void func_80042B78(void) {
+    AtribVoz a;
+    s32 i, quietas;
+    u16 *p;
+
+    D_800C6F7C = (D_800C6F7C + 1) & 0xF;
+    D_800C6F80[D_800C6F7C] = 0;
+    for (i = 0; i < D_800C76DC; i++) {
+        SpuGetVoiceEnvelope(i, &D_800C6FC0[i].envolvente);
+        if (D_800C6FC0[i].envolvente == 0) {
+            D_800C6F80[D_800C6F7C] |= 1 << i;
+        }
+    }
+    if (D_800C7700 == 0) {
+        quietas = -1;
+        for (i = 0; i < 15; i++) {
+            quietas &= D_800C6F80[i];
+        }
+        for (i = 0; i < D_800C76DC; i++) {
+            if (quietas & (1 << i)) {
+                if ((s8)D_800C6FC0[i].activa == 2) {
+                    s32 bajo = 1 << i, alto = 0;
+                    if (i >= 16) {
+                        bajo = 0;
+                        alto = 1 << (i - 16);
+                    }
+                    func_8003F728(0, ((alto & 0xFF) << 16) | (s16)bajo);
+                }
+                D_800C6FC0[i].activa = 0;
+            }
+        }
+    }
+    D_800C7502 &= ~D_800C7500;
+    D_800C7506 &= ~D_800C7504;
+    for (i = 0; i < 24; i++) {
+        if (D_800C6FC0[i].llamar1 != 0) {
+            D_800C7508(i);
+        }
+        if (D_800C6FC0[i].llamar2 != 0) {
+            D_800C750C(i);
+        }
+    }
+    for (i = 0; i < 24; i++) {
+        p = &D_800C7528[i * 8];
+        a.mascara = 0;
+        a.voz = 1 << i;
+        if (D_800C7510[i] & 1) {
+            a.mascara = 3;
+            a.vol_izq = p[0];
+            a.vol_der = p[1];
+        }
+        if (D_800C7510[i] & 4) {
+            a.mascara |= 0x10;
+            a.tono = p[2];
+        }
+        if (D_800C7510[i] & 8) {
+            a.mascara |= 0x80;
+            a.direccion = p[3] << 3;
+        }
+        if (D_800C7510[i] & 0x10) {
+            a.mascara |= 0x60000;
+            a.adsr1 = p[4];
+            a.adsr2 = p[5];
+        }
+        if (a.mascara != 0) {
+            SpuSetVoiceAttr(&a);
+        }
+        D_800C7510[i] = 0;
+    }
+    SpuSetKey(0, ((u8)D_800C7504 << 16) | D_800C7500);
+    SpuSetKey(1, ((u8)D_800C7506 << 16) | D_800C7502);
+    func_8003F7A8(8, (D_800C76A8 << 16) | D_800C76AA);
+    func_8003F728(8, ((u8)D_800C76AC << 16) | D_800C76AE);
+    D_800C7500 = 0;
+    D_800C7504 = 0;
+    D_800C7502 = 0;
+    D_800C7506 = 0;
+    D_800C76AE = 0;
+    D_800C76AC = 0;
 }

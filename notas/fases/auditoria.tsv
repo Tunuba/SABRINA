@@ -152,3 +152,6 @@ ArchivoIniciar	120	IGUAL	src/File/archivo_g03.c	8 de 8 capturas y 435 de 435 var
 func_80047710	712	IGUAL	src/WobjCode/anotados_g13.c	8 de 8 capturas y 1024 de 1024 variantes iguales
 func_800425C8	860	IGUAL	src/audio/tocar_voz_g13.c	8 de 8 capturas y 1081 de 1081 variantes iguales
 TocarSonido	444	IGUAL	src/audio/sonido_g13.c	8 de 8 capturas y 1077 de 1077 variantes iguales
+func_80042B78	1156	IGUAL	src/audio/tocar_voz_g13.c	8 de 8 capturas y 848 de 848 variantes iguales
+func_8003A524	556	IGUAL	src/colision/triangulo_g09.c	8 de 8 capturas y 639 de 639 variantes iguales
+func_80037278	496	IGUAL	src/objetos/camara_g08.c	6 de 6 capturas y 508 de 508 variantes iguales
