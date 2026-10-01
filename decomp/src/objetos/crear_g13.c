@@ -137,6 +137,7 @@ extern s32 RecogibleNoTomado(RegistroMundo *r);
 extern s32 CrearRecogible(RegistroMundo *r);
 extern void func_80024A48(Objeto *o);
 extern void *memcpy(void *d, const void *s, u32 n);
+extern void *memset(void *p, s32 c, u32 n);
 typedef s32 (*IniciarClaseV)(Objeto *o, s32 a, s32 b);
 
 /* Crea el objeto de un registro de WRLDDATA. Los recogibles (tipos 4, 0x12, 0x13 y 0x17) van por
@@ -256,4 +257,64 @@ void ActivarObjetosCercanos(void) {
             }
         }
     } while (*d != 0x7F);
+}
+
+/* Un recogible no es un objeto del mundo: se arma un objeto de paso en la pila (como CrearObjetoMundo,
+ * todo en cero salvo lo del registro y la clase) y se le pasa al iniciar de la clase, que lo anota. */
+/* El cuerpo de CrearRecogible: arma el objeto en o (0x120 bytes en la pila de CrearRecogible). */
+__attribute__((noinline, used)) static s32 crear_recogible(RegistroMundo *r, Objeto *o) {
+    ClaseObjeto *c;
+    s32 i;
+
+    memset(o, 0, 0x120);
+    o->tipo = r->tipo;
+    c = &tabla_clases_niveles[nivel_actual][r->tipo];
+    o->datos = r;
+    o->x = r->x;
+    o->y = r->y;
+    o->z = r->z;
+    o->rot[0] = r->rot[0];
+    o->rot[1] = r->rot[1];
+    o->rot[2] = r->rot[2];
+    o->escala[0] = (c->escala[0] * r->escala[0]) >> 12;
+    o->escala[1] = (c->escala[1] * r->escala[1]) >> 12;
+    o->escala[2] = (c->escala[2] * r->escala[2]) >> 12;
+    func_8001E588(o);
+    func_80024A48(o);
+    for (i = 0; i < 7; i++) {
+        ((u32 *)o)[i] = c->cabeza[i];
+    }
+    for (i = 0; i < 9; i++) {
+        ((u32 *)&o->forma)[i] = c->forma[i];
+    }
+    o->forma.centro = &o->x;
+    switch (o->forma.tipo) {
+    case 3:
+        func_80039A34(&o->forma, func_8003A258(&o->forma), o->forma._20, o->forma.banderas);
+        break;
+    case 2:
+        func_80039A70(&o->forma, func_8003A250(&o->forma), o->forma._20, o->forma.banderas);
+        break;
+    case 1:
+        func_80039B1C(&o->forma, func_8003A260(&o->forma), o->forma._20, o->forma.banderas);
+        break;
+    }
+    memcpy(&o->extra, r->extra, 0x7F);
+    return ((IniciarClaseV)c->iniciar)(o, 0, 0);
+}
+
+/* Crea un recogible en un objeto temporal de la pila y llama al iniciar de su clase, que lo copia a donde
+ * va. El objeto tiene que quedar en la misma direccion que en el juego (0x20 desde el sp de un marco de
+ * 0x140): el iniciar de algunas clases guarda esa direccion (la camara en D_8007CAFC), y GCC pone los
+ * registros guardados arriba del marco, donde el juego tiene el objeto. Por eso el marco va a mano. */
+__attribute__((naked)) s32 CrearRecogible(RegistroMundo *r) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x140\n"
+            "\tsw $ra, 0x1C($sp)\n"
+            "\tjal crear_recogible\n"
+            "\taddiu $a1, $sp, 0x20\n"
+            "\tlw $ra, 0x1C($sp)\n"
+            "\tjr $ra\n"
+            "\taddiu $sp, $sp, 0x140\n"
+            ".set reorder");
 }

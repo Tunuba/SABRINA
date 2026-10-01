@@ -288,3 +288,46 @@ void func_8002367C(u8 *ot) {
                     ot + D_8006CEE0[i] * 4);
     }
 }
+
+typedef void (*FuncAccion)(s32 a, s32 b, s32 c, s32 d);
+extern FuncAccion *D_80075AA4[];     /* por lista: la funcion de cada accion */
+extern u16 D_80075AC0[], D_80075AD0[];  /* por lista: su numero y su ultima accion */
+extern s32 D_800D160C;               /* sonido de elegir */
+extern s32 D_8007CC44;               /* 1: no se puede elegir */
+extern s16 D_8007CC4A;
+extern u16 D_8007CC52;               /* la accion marcada */
+extern u16 D_8007CC54;               /* la lista que se mostro la ultima vez */
+
+/* Las acciones de la casilla elegida (la lista D_8007CC4E): al cambiar de lista marca la ultima; arriba y
+ * abajo (0x4000 y 0x1000) la mueven, 0x40 la hace. */
+void func_8004FA54(s32 a, s32 b) {
+    u16 n = D_8007CC4E;
+
+    if (D_8007CC54 != D_80075AC0[n]) {
+        D_8007CC52 = D_80075AD0[n];
+        D_8007CC54 = D_80075AC0[n];
+    }
+    if (D_8007CC44 == 1) {
+        return;
+    }
+    if (D_8007CA58 & 0x4000) {
+        if (D_8007CC52 != D_80075AD0[n]) {
+            TocarSonido((s16)D_800D1604, 0, 0x2A, 0x7F);
+            D_8007CC52++;
+        } else {
+            TocarSonido((s16)D_800D1608, 0, 0x2A, 0x7F);
+        }
+    }
+    if (D_8007CA58 & 0x1000) {
+        if (D_8007CC52 != 0) {
+            TocarSonido((s16)D_800D1604, 0, 0x2A, 0x7F);
+            D_8007CC52--;
+        } else {
+            TocarSonido((s16)D_800D1608, 0, 0x2A, 0x7F);
+        }
+    }
+    if (D_8007CA58 & 0x40) {
+        TocarSonido((s16)D_800D160C, 0, 0x2A, 0x7F);
+        D_80075AA4[(u16)D_8007CC4E][D_8007CC52](a, b, (u16)D_8007CC4A, (u16)D_8007CC4E * 4);
+    }
+}

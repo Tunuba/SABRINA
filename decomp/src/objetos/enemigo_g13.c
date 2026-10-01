@@ -370,3 +370,54 @@ void func_8003C1E8(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 a, s32 b, s3
         *((u8 *)t + 0x20) |= 0x80;
     }
 }
+
+extern s32 func_8001C0D0(s32 x, s32 y, s32 z);  /* largo de un vector */
+extern s32 func_80021D44(s16 *ang, s32 meta, s32 paso);  /* acerca un angulo; devuelve lo que falta */
+extern s32 func_8002218C(Objeto *o, s32 x, s32 z);      /* angulo hacia un punto */
+extern PuntoRuta *func_80060558(PuntoRuta *p);  /* el punto siguiente */
+extern PuntoRuta *func_80060590(PuntoRuta *p);  /* el anterior */
+extern void func_80022298(Objeto *o, s32 ang, s32 paso);  /* avanza en el plano */
+
+/* Sigue la ruta: si el objeto llego a menos de 0x8000 del punto *pp pasa al siguiente (o al anterior si
+ * el byte 5 de mov es negativo) y devuelve 8 si no hay mas. Si no, pone la animacion anim (acelerandola
+ * de a 0x80 hasta 0x1000), gira hacia el punto y, si ya mira mas o menos hacia el, avanza (mas rapido
+ * cuanto mejor mira; sube o baja con el punto). */
+s32 func_800607AC(Objeto *o, s32 *mov, PuntoRuta **pp, s32 a3, u16 anim) {
+    PuntoRuta *p = *pp;
+    s32 rapidez = mov[0];
+    EstadoAnim *a = o->anim;
+    s32 v[3];
+    s16 dif;
+
+    v[0] = p->x - o->x;
+    v[1] = p->y - o->y;
+    v[2] = p->z - o->z;
+    if (func_8001C0D0(v[0], v[1], v[2]) < 0x8000) {
+        if (((s8 *)mov)[5] >= 0) {
+            *pp = func_80060558(*pp);
+        } else {
+            *pp = func_80060590(*pp);
+        }
+        return *pp == NULL ? 8 : 0;
+    }
+    if (a != NULL) {
+        if (a->animacion == anim) {
+            if (a->_4E < 0x1000) {
+                a->_4E = a->_4E + 0x80;
+                rapidez = (rapidez * a->_4E) >> 12;
+            }
+        } else {
+            a->animacion = anim;
+            a->_50 = 0;
+            a->_4E = 0;
+        }
+    }
+    dif = func_80021D44(&o->rot[1], (s16)func_8002218C(o, p->x, p->z), 0x96);
+    if (dif < 0x400) {
+        func_8001C45C(v);
+        rapidez = (rapidez * (s16)(0x400 - dif)) >> 10;
+        func_80022298(o, o->rot[1], rapidez);
+        o->y += (((v[1] >> 8) * (rapidez >> 4)) >> 8) << 8;
+    }
+    return 0;
+}
