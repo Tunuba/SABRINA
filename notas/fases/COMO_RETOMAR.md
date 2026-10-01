@@ -119,3 +119,10 @@ func_8005A360, func_80030208, func_8004D0C0, FisicaObjeto, func_80054068, func_8
 func_8001321C, func_8002367C, func_8002AC18...
 
 Lote de fondo al cerrar esta tanda: 875 de 886.
+
+### Tercera tanda (noche del 2026-09-30 al 10-01; el lote de fondo ya termino)
+
+- func_80035314 (3900 bytes, la camara del juego) a IGUAL, en `objetos/camara_g08.c`. Trampa: llama a
+  func_80036250, que lee una escala sin valor de la pila (0x14 bytes debajo de la del llamador); en el
+  original ahi queda el s1 que guardo func_80047710 (el propio objeto camara). El C deja `o` en ese lugar
+  con `__builtin_frame_address(0)[-5]` antes de llamarla.

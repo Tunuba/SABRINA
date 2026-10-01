@@ -643,3 +643,310 @@ s32 func_80037A18(Objeto *o) {
     }
     return e->alcance;
 }
+
+/* ---- La camara del juego ---- */
+
+/* La parte extra del objeto camara. */
+typedef struct {
+    s32 *seguir;                     /* 0x00, un punto que se mira en el estado 1 */
+    s32 guardada[3];                 /* 0x04, donde estaba antes de acercarse (estado 2) */
+    s32 punto[3];                    /* 0x10, a donde va en el estado 3 */
+    s32 lejos;                       /* 0x1C, cuanto se aparta en el estado 1 (hasta 0x1999) */
+    u8 _20;
+    s8 lado;                         /* 0x21 */
+    u8 _22[2];
+    s8 invertir;                     /* 0x24 */
+    s8 espera;                       /* 0x25, pasos sin girar sola */
+    u8 _26[2];
+    s32 mira[3];                     /* 0x28 */
+    s32 ojo[3];                      /* 0x34 */
+    s16 giro;                        /* 0x40, cuanto girar alrededor de Sabrina */
+    u8 _42[2];
+    s32 _44;                         /* 0x44 */
+    u8 _48[0x14];
+    s8 cuenta;                       /* 0x5C */
+} ExtraCamara;
+
+extern s16 D_8007CBC0;               /* D_8007CBD4 guardado */
+extern s32 D_8007CA50;               /* botones apretados: 1 y 2 giran la camara */
+extern s32 D_8007CBBC;
+extern Objeto *D_8007CBAC, *D_8007CBB0;
+extern s16 D_8007C872;
+extern s32 D_800C64FC[3], D_800C6508[3];  /* mira y ojo fijos (estados 5 y 6) */
+extern void func_80047710(void);
+extern s32 func_8001BF8C(s32 ax, s32 az, s32 bx, s32 bz);  /* distancia en el plano */
+extern s32 func_8001BE8C(s32 ax, s32 az, s32 bx, s32 bz);  /* angulo en el plano */
+extern s32 func_8001C2D0(s32 x, s32 y, s32 z, s32 ax, s32 ay, s32 az);
+extern s32 func_8002225C(Objeto *o, s32 x, s32 y, s32 z);
+extern void func_80034FD0(s32 *a, s32 *b);
+extern s32 func_800365F0(s16 *giro, s16 *lado);
+extern s32 func_800605C8(Objeto *o, void *a, void *b);
+extern s32 func_80014AEC(s32 v);
+
+/* Deja el ojo de la camara en D_8006C444 (su posicion / 256). */
+static void ojo_camara(Objeto *o) {
+    D_8006C444[0] = o->x >> 8;
+    D_8006C444[1] = o->y >> 8;
+    D_8006C444[2] = o->z >> 8;
+}
+
+/* Mira segun sus giros y los copia en D_8007CAE2/E4. */
+static void mirar(Objeto *o) {
+    func_8002205C(D_8006C450, o->rot[0], o->rot[1]);
+    D_8007CAE2 = o->rot[1];
+    D_8007CAE4 = o->rot[0];
+}
+
+/* El paso de la camara. Mientras corre no ignora ningun tipo de triangulo. Estados: 0 sigue a Sabrina
+ * desde atras (girando con los botones 1 y 2 o sola), 1 se aparta mirando a Sabrina, 2 se acerca a la
+ * nuca de Sabrina, 3 vuelve atras, 4 y 5 una escena entre D_8007CBAC y D_8007CBB0, 6 y 8 se mueve hacia
+ * un punto fijo. Devuelve (v0) el D_8007CBD4 que restaura. */
+s32 func_80035314(Objeto *o) {
+    ExtraCamara *e = (ExtraCamara *)&o->extra;
+    u8 *ps;
+    s32 v[3], w[3], a[3], b[3], d, r, uno, n;
+    s16 g, h, ang;
+
+    D_8007CBC0 = D_8007CBD4;
+    D_8007CBD4 = -17;
+    func_80047710();
+    ((s16 *)o->datos)[13] = 2;
+    if (p_sabrina == NULL) {
+        D_8007CBD4 = D_8007CBC0;
+        return (u16)D_8007CBC0;
+    }
+    /* func_80036250 lee una escala sin valor: lo que quedo 0x14 bytes debajo de la pila del llamador, que
+     * en el original es el s1 que guardo func_80047710 (este objeto). Se deja ahi lo mismo. */
+    ((Objeto *volatile *)__builtin_frame_address(0))[-5] = o;
+    func_80036250();
+    func_8003630C();
+    ps = (u8 *)&p_sabrina->extra;
+    v[0] = p_sabrina->x - o->x;
+    v[1] = p_sabrina->y - o->y;
+    v[2] = p_sabrina->z - o->z;
+    d = func_8001BF8C(0, 0, v[0], v[2]);
+    func_8001C45C(v);
+    d = (d - 0x40000) >> 4;
+    switch ((u16)o->estado) {
+    case 6:
+        func_80036410(o, D_800C6508[0], D_800C6508[1], D_800C6508[2], D_800C64FC[0], D_800C64FC[1],
+                      D_800C64FC[2], 3);
+        func_80036524(o, D_800C64FC[0], D_800C64FC[1], D_800C64FC[2]);
+        break;
+    case 4:
+        if (D_8007CBAC != NULL && D_8007CBB0 != NULL) {
+            a[0] = D_8007CBB0->x;
+            a[1] = D_8007CBB0->y;
+            a[2] = D_8007CBB0->z;
+            e->_44 = func_8002225C(D_8007CBAC, a[0], D_8007CBAC->y, a[2]);
+            D_8007C872 = 1;
+            func_80034FD0(&D_8007CBB0->x, &D_8007CBAC->x);
+            o->estado = 5;
+        }
+        break;
+    case 5:
+        func_80036524(o, D_800C64FC[0], D_800C64FC[1], D_800C64FC[2]);
+        func_80036410(o, D_800C6508[0], D_800C6508[1], D_800C6508[2], D_800C64FC[0], D_800C64FC[1],
+                      D_800C64FC[2], 3);
+        ojo_camara(o);
+        break;
+    case 0:
+        if (e->espera >= 0) {
+            e->espera--;
+            if (e->espera < 0) {
+                e->espera = 0;
+            }
+        }
+        if (D_8007CA50 & 3) {
+            if (D_8007CBBC == 0 && e->espera == 0) {
+                e->cuenta = -50;
+                if (D_8007CA50 & 2) {
+                    e->giro = -300;
+                }
+                if (D_8007CA50 & 1) {
+                    e->giro = 300;
+                }
+            }
+        } else {
+            uno = 0;
+            if ((s8)ps[0x1D] == 0) {
+                func_8002205C(a, 0, p_sabrina->rot[1]);
+                func_8002205C(b, 0, o->rot[1]);
+                a[0] >>= 4;
+                a[1] >>= 4;
+                a[2] >>= 4;
+                b[0] >>= 4;
+                b[1] >>= 4;
+                b[2] >>= 4;
+                func_8001C33C(a, b);
+                uno = 1;
+                e->cuenta = 0;
+            } else {
+                e->cuenta++;
+                if (e->cuenta >= 3) {
+                    e->cuenta = -126;
+                    uno = 1;
+                }
+            }
+            if (uno == 1 && e->espera == 0) {
+                ang = o->rot[1];
+                func_80021E54(&ang, p_sabrina->rot[1], 2, 3);
+                e->giro = ang - o->rot[1];
+            }
+        }
+        e->mira[0] = p_sabrina->x;
+        e->mira[1] = func_800350FC(CAMPO_S32(p_sabrina, 0x50)) - 0x11999;
+        e->mira[2] = p_sabrina->z;
+        v[0] = -(e->mira[0] - o->x);
+        v[1] = 0;
+        v[2] = -(e->mira[2] - o->z);
+        w[0] = v[0];
+        w[1] = v[1];
+        w[2] = v[2];
+        if (func_800365F0(&g, &h) == 1) {
+            if ((s8)ps[0x1D] == 0) {
+                if (h == 0) {
+                    h = -1;
+                }
+            } else {
+                e->giro = g;
+                h = 0;
+            }
+        }
+        if (e->giro != 0) {
+            n = func_8001BE8C(0, 0, v[0], v[2]) + e->giro;
+            while (n < 0) {
+                n += 0xFFF;
+            }
+            while (n >= 0x1001) {
+                n -= 0xFFF;
+            }
+            func_8002205C(b, 0, (s16)n);
+            if (func_80036880(b, h) == 0) {
+                v[0] = b[0];
+                v[1] = b[1];
+                v[2] = b[2];
+            } else {
+                func_8001C45C(v);
+            }
+        } else {
+            func_8001C45C(v);
+        }
+        v[0] >>= 4;
+        v[2] >>= 4;
+        e->ojo[0] = e->mira[0] + ((v[0] * 3) << 8);
+        e->ojo[2] = e->mira[2] + ((v[2] * 3) << 8);
+        e->ojo[1] = e->mira[1] + 0x11999 - 0x23333;
+        w[0] = (e->mira[0] - e->ojo[0]) >> 8;
+        w[1] = 0;
+        w[2] = (e->mira[2] - e->ojo[2]) >> 8;
+        r = func_8001C33C(w, w) - 0x900;
+        if (r <= 0) {
+            e->ojo[1] += r * 64;
+        }
+        func_80036410(o, e->ojo[0], e->ojo[1], e->ojo[2], e->mira[0], e->mira[1], e->mira[2], 3);
+        func_80036524(o, e->mira[0], e->mira[1], e->mira[2]);
+        if ((s8)ps[0x1D] == 13) {
+            func_80022104(&o->rot[0], &o->rot[1], D_8006C450);
+            e->guardada[0] = o->x;
+            e->guardada[1] = o->y;
+            e->guardada[2] = o->z;
+            o->estado = 2;
+            func_8002205C(w, 0, p_sabrina->rot[1]);
+            w[0] <<= 5;
+            w[2] <<= 5;
+            o->x = p_sabrina->x - w[0];
+            o->y = p_sabrina->y - 0x13333;
+            o->z = p_sabrina->z - w[2];
+            ojo_camara(o);
+            mirar(o);
+        }
+        e->giro = 0;
+        break;
+    case 1:
+        if (d >= 0x101 || d < -0x80) {
+            e->lejos = func_80014AEC(d);
+            if (e->lejos >= 0x199A) {
+                e->lejos = 0x1999;
+            }
+            n = d > 0 ? 1 : -1;
+            e->lado = e->invertir != 0 ? -n : n;
+            if (e->seguir == NULL) {
+                o->estado = 0;
+            } else {
+                v[0] = e->seguir[0] - o->x;
+                v[1] = e->seguir[1] - o->y;
+                v[2] = e->seguir[2] - o->z;
+                func_8001C45C(v);
+                if (func_80014AEC(func_8001C2D0(v[0], v[1], v[2], D_8006C450[0], D_8006C450[1],
+                                                D_8006C450[2])) >= 0x801 &&
+                    (s16)func_800605C8(o, &e->lejos, e) == 8) {
+                    o->estado = 0;
+                }
+            }
+        }
+        ojo_camara(o);
+        v[0] = p_sabrina->x - o->x;
+        v[1] = p_sabrina->y - 0x11999 - o->y;
+        v[2] = p_sabrina->z - o->z;
+        func_8001C45C(v);
+        func_80022104(&g, &h, v);
+        func_80021E54(&o->rot[0], g, 3, 3);
+        func_80021E54(&o->rot[1], h, 3, 3);
+        mirar(o);
+        if (p_sabrina->estado == 2) {
+            o->estado = 0;
+        }
+        break;
+    case 2:
+        ps = (u8 *)&p_sabrina->extra;
+        h = p_sabrina->rot[1] - (s8)ps[0x20] * 16;
+        g = -((s8)ps[0x1F] * 16);
+        a[0] = p_sabrina->x - ((((rsin(h) * rcos(g)) >> 12) << 17) >> 12);
+        a[2] = p_sabrina->z - ((((rcos(h) * rcos(g)) >> 12) << 17) >> 12);
+        a[1] = p_sabrina->y - ((rsin(g) << 17) >> 12);
+        o->x += (a[0] - o->x) >> 3;
+        o->y += (a[1] - 0x13333 - o->y) >> 3;
+        o->z += (a[2] - o->z) >> 3;
+        func_80021E54(&o->rot[0], g, 3, 3);
+        func_80021E54(&o->rot[1], h, 3, 3);
+        mirar(o);
+        if ((s8)ps[0x1D] != 13) {
+            h = p_sabrina->rot[1];
+            e->punto[0] = p_sabrina->x - ((rsin(h) << 18) >> 12);
+            e->punto[2] = p_sabrina->y - ((rcos(h) << 18) >> 12);
+            e->punto[1] = p_sabrina->z - 0x38000;
+            o->estado = 3;
+        }
+        ojo_camara(o);
+        break;
+    case 3:
+        v[0] = (e->punto[0] - o->x) >> 4;
+        v[1] = (e->punto[1] - o->y) >> 4;
+        v[2] = (e->punto[2] - o->z) >> 4;
+        e->ojo[0] = v[0] + o->x;
+        e->ojo[1] = v[1] + o->y;
+        e->ojo[2] = v[2] + o->z;
+        if (p_sabrina->extra._1D == 13) {
+            break;
+        }
+        o->estado = 0;
+        func_8002205C(a, 0, p_sabrina->rot[1]);
+        if (func_80036D58(a[0], a[1], a[2], p_sabrina->y - 0x23333) == 0) {
+            o->x = e->guardada[0];
+            o->y = e->guardada[1];
+            o->z = e->guardada[2];
+            ojo_camara(o);
+        }
+        break;
+    case 8:
+        func_80036410(o, e->ojo[0], e->ojo[1], e->ojo[2], e->mira[0], e->mira[1], e->mira[2], 3);
+        func_80036524(o, e->mira[0], e->mira[1], e->mira[2]);
+        D_8007CAE2 = o->rot[1];
+        D_8007CAE4 = o->rot[0];
+        ojo_camara(o);
+        break;
+    }
+    D_8007CBD4 = D_8007CBC0;
+    return (u16)D_8007CBC0;
+}

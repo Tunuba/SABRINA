@@ -192,3 +192,4 @@ func_80047AA4	932	IGUAL	src/WobjCode/anotados_g13.c	2 de 2 capturas y 190 de 190
 func_80037A18	932	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 635 de 635 variantes iguales
 func_80045278	1788	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 154 de 168 variantes iguales (solo difiere v0)
 func_80046428	1796	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 149 de 161 variantes iguales (solo difiere v0)
+func_80035314	3900	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 505 de 505 variantes iguales
