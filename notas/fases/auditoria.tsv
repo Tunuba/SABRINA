@@ -202,3 +202,4 @@ FisicaObjeto	2436	IGUAL	src/colision/fisica_g13.c	8 de 8 capturas y 716 de 716 v
 func_80056CE8	1684	NO_TERMINA	src/objetos/tienda_g13.c	la original no termina en el emulador (espera la musica del CD); escrita sin verificar
 DibujarTexto	900	IGUAL	src/Font/texto_g13.c	8 de 8 capturas y 716 de 716 variantes iguales
 func_8002367C	1136	DISTINTO	src/Screen/sprites_g13.c	8 de 8 capturas y 628 de 630 variantes iguales; las 2 malas parchan la tabla de saltos del original (jtbl_80061198)
+func_8003C1E8	832	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 173 de 173 variantes iguales

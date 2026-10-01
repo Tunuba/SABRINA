@@ -286,3 +286,87 @@ void func_800489C4(Objeto *o) {
         o->z -= a[2];
     }
 }
+
+extern Objeto *func_800252A0(s32 clase, Objeto *padre, s32 x, s32 y, s32 z, s32 vx, s32 vy, s32 vz, s32 rx,
+                             s32 ry, s32 rz, s32 a, s32 b);
+extern void func_800249CC(Objeto *o, s32 n);
+extern void func_80048CF4(Objeto *o, s32 *hacia, s32 rapidez, s32 *vel);  /* velocidad hacia un punto */
+extern void func_8001C45C(s32 *v);
+extern void func_8003B38C(s32 *c, s32 *desde, s32 *hasta);
+extern s32 func_8003AE84(void);
+extern s32 D_800C6594[3], D_800C65A0[3];
+extern void func_8003BFEC(Objeto *o);
+extern void func_80024DF4(Objeto *o);
+extern void func_8003BFC4(Objeto *o, Objeto *a);
+extern void func_80024F74(void);
+extern void func_80024F84(void);
+extern void thunk_FUN_8001e588(Objeto *o);
+extern void thunk_FUN_8004866c(Objeto *o);
+
+/* Los primeros campos de un objeto: sus funciones. */
+typedef struct {
+    void (*actualizar)(Objeto *o);
+    void (*f04)(Objeto *o);
+    void (*aviso)(Objeto *o, Objeto *a);
+    void (*f0C)(void);
+    void (*f10)(void);
+    void (*f14)(Objeto *o);
+    void (*f18)(Objeto *o);
+} FuncionesObjeto;
+
+/* Crea un disparo (objeto 12) en desde, apuntado al pecho de Sabrina a 0x4000 de rapidez, con su modelo
+ * (tipo) y sus datos (a, b, c, d en la parte extra). Si nace dentro de una pared se marca para borrar. */
+void func_8003C1E8(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 a, s32 b, s32 c, s32 d) {
+    Objeto *t;
+    FuncionesObjeto *f;
+    u8 *e;
+    s32 v[3], p[3];
+    s16 sa = a, sb = b, sc = c, sd = d;
+
+    t = func_800252A0(12, o, desde[0], desde[1], desde[2], 0, 0, 0, 0, 0, 0, 1, 1);
+    if (t == NULL) {
+        return;
+    }
+    e = (u8 *)&t->extra;
+    *(s16 *)(e + 0x24) = sb;
+    *(s16 *)(e + 0x20) = sc;
+    e[0x12] = tipo;
+    *(s16 *)(e + 0x22) = sa;
+    *(s16 *)(e + 0x26) = sd;
+    func_800249CC(t, -1);
+    f = (FuncionesObjeto *)t;
+    f->actualizar = func_8003BFEC;
+    f->f04 = func_80024DF4;
+    f->aviso = func_8003BFC4;
+    f->f0C = func_80024F74;
+    f->f10 = func_80024F84;
+    f->f14 = thunk_FUN_8001e588;
+    f->f18 = thunk_FUN_8004866c;
+    t->forma.banderas = 0x801;
+    t->forma._20 = 1;
+    t->dano = 1;
+    p[0] = p_sabrina->x;
+    p[1] = p_sabrina->y - 0xCCD - 0x7FFF;
+    p[2] = p_sabrina->z;
+    func_80048CF4(t, p, 0x4000, v);
+    t->empuje_x = v[0];
+    t->vel_y = v[1];
+    t->empuje_z = v[2];
+    func_8001C45C(v);
+    p[0] = (((v[0] >> 4) * 0xCC) >> 8) << 8;
+    p[1] = (((v[1] >> 4) * 0xCC) >> 8) << 8;
+    p[2] = (((v[2] >> 4) * 0xCC) >> 8) << 8;
+    D_800C6594[0] = t->x;
+    D_800C6594[1] = t->y;
+    D_800C6594[2] = t->z;
+    D_800C6594[0] -= p[0];
+    D_800C6594[1] -= p[1];
+    D_800C6594[2] -= p[2];
+    D_800C65A0[0] = t->x + t->empuje_x;
+    D_800C65A0[1] = t->y + t->vel_y;
+    D_800C65A0[2] = t->z + t->empuje_z;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    if (func_8003AE84() != 0) {
+        *((u8 *)t + 0x20) |= 0x80;
+    }
+}
