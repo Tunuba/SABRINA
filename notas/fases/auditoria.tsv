@@ -225,3 +225,5 @@ func_8005BA10	1216	IGUAL	src/objetos/selector_g13.c	8 de 8 capturas y 561 de 561
 func_800349F0	1428	IGUAL	src/objetos/reaparicion_g13.c	8 de 8 capturas y 584 de 584 variantes iguales
 func_8005ED8C	5092	IGUAL	src/objetos/jefe_g13.c	3 de 3 capturas y 258 de 258 variantes iguales
 func_8004E32C	684	IGUAL	src/varios/banco_g13.c	8 de 8 capturas y 630 de 630 variantes iguales
+func_8002886C	1000	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 743 de 743 variantes iguales
+func_80028D40	844	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 651 de 651 variantes iguales
