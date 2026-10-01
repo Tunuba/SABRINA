@@ -4,13 +4,15 @@
  * recogibles.c llama recogidos). Cada cuadro se mueve cada una segun su forma y se quitan las que se
  * fueron lejos o pidieron salir. */
 
-/* Lo que mueve una entrada: solo se usan su posicion (+4) y un contador en +0x40. */
+/* Lo que mueve una entrada (tambien las particulas): posicion en +4, velocidad y en +0x3C, un contador en
+ * +0x40. */
 typedef struct {
     u8 _00[4];
     s32 x, y, z;                     /* 0x04 */
     u8 _10[0x14];
     s32 _24;                         /* 0x24 */
-    u8 _28[0x18];
+    u8 _28[0x14];
+    s32 vel_y;                       /* 0x3C */
     s16 vida;                        /* 0x40 */
     u16 banderas;                    /* 0x42 */
 } ObjAnotado;
@@ -19,7 +21,9 @@ EN(ObjAnotado, vida, 0x40);
 
 /* El objeto que se recogio: en +0x1A queda como termino (0 o 2). */
 typedef struct {
-    u8 _00[0x1A];
+    u8 _00[0xC];
+    s16 tipo;                        /* 0x0C, el de WRLDDATA */
+    u8 _0E[0xC];
     s16 fin;                         /* 0x1A */
 } ObjRecogido;
 EN(ObjRecogido, fin, 0x1A);
@@ -154,4 +158,80 @@ s32 RegistrarRecogible(Objeto *o) {
     D_800C7960[D_8007CC0C].recogido = o->datos;
     D_8007CC0C++;
     return D_8007CC0C;
+}
+
+extern s32 func_80014F10(void);      /* al azar */
+extern u32 func_8001C180(s32 *v);    /* largo de un vector */
+extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
+extern void func_8004C480(s32 n);
+extern void func_8004C514(s32 n);
+extern void func_8004C5A8(s32 n);
+extern void func_8004C63C(s32 n);
+
+/* Forma 2: la cosa vuela hacia el pecho de Sabrina (la mitad del camino en cada paso), se achica y deja
+ * chispas. Al llegar a menos de 0x40 en el plano da lo suyo segun el tipo del recogido, suelta una lluvia
+ * de particulas que caen, y queda marcada como tomada (fin 4). Devuelve la distancia, o -1 al tomarla. */
+s32 func_80047AA4(Anotado *a) {
+    s32 x, y, z, v[3], s, c;
+    u32 d, i;
+    s16 j;
+    ObjAnotado *p;
+
+    a->vel[0] = p_sabrina->x - a->x;
+    a->vel[2] = p_sabrina->z - a->z;
+    a->vel[1] = p_sabrina->y - 0x4001 - 0x7FFF - a->y;
+    a->vel[0] >>= 1;
+    a->vel[1] >>= 1;
+    a->vel[2] >>= 1;
+    a->x += a->vel[0];
+    a->y += a->vel[1];
+    a->z += a->vel[2];
+    a->escala[0] -= a->escala[0] >> 4;
+    a->escala[1] = a->escala[0];
+    a->escala[2] = a->escala[0];
+    x = ((func_80014F10() & 0x3F) - 0x20) << 8;
+    x += a->x;
+    y = ((func_80014F10() & 0x3F) - 0x20) << 8;
+    y += a->y;
+    z = ((func_80014F10() & 0x3F) - 0x20) << 8;
+    z += a->z;
+    CrearParticula((s8)a->extra4, NULL, 0, x, y, z, 0, 0, 0, 0, 0, 0, 7, 2, 0);
+    a->giro_y += 0x17;
+    v[0] = p_sabrina->x - a->x;
+    v[1] = 0;
+    v[2] = p_sabrina->z - a->z;
+    d = func_8001C180(v);
+    if (d >= 0x40) {
+        return d;
+    }
+    switch (a->recogido->tipo) {
+    case 4:
+        func_8004C480(a->extra0);
+        break;
+    case 0x12:
+        func_8004C514(a->extra0);
+        break;
+    case 0x13:
+        func_8004C5A8(a->extra0);
+        break;
+    case 0x17:
+        func_8004C63C(a->extra0);
+        break;
+    default:
+        TocarSonido(0x28, 0, 0x2A, 0x7F);
+        break;
+    }
+    for (i = 0; i < 0x1000; i += 0x384) {
+        for (j = 0; j < 0x1000; j += 0x3E8) {
+            s = (rsin(i) * 0xCCC) >> 12;
+            c = (rcos(i) * 0xCCC) >> 12;
+            p = CrearParticula((s8)a->extra4, NULL, j, a->x, a->y, a->z, 0, s, c, 0, 0, 0, 0xF, 0x202, 0);
+            if (p != NULL) {
+                p->vel_y = -0x51E;
+            }
+        }
+    }
+    a->forma = 100;
+    a->recogido->fin = 4;
+    return -1;
 }
