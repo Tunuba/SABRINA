@@ -141,3 +141,6 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   la usa, asi que esas nunca pueden dar igual). func_80056CE8 (1684) escrita pero NO_TERMINA (CD).
 - Antes de escribir una, probar si termina: `scratchpad/termina.sh` corre la original en la primera captura
   (estaba en el scratchpad de la sesion; es un `verificar.ejecutar` sobre capturas/F/00).
+- func_8003C1E8 (832, disparo de enemigo), func_800365F0 (656) y func_80031698 (572, reaparecer) a IGUAL.
+  Trampa de func_80031698: func_80031494 (ya verificada) usa lo que trae en v1; el C lo llama con un
+  `__asm__` que pone v1 = D_8007CAFC y hace el jal.

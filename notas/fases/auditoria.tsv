@@ -204,3 +204,4 @@ DibujarTexto	900	IGUAL	src/Font/texto_g13.c	8 de 8 capturas y 716 de 716 variant
 func_8002367C	1136	DISTINTO	src/Screen/sprites_g13.c	8 de 8 capturas y 628 de 630 variantes iguales; las 2 malas parchan la tabla de saltos del original (jtbl_80061198)
 func_8003C1E8	832	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 173 de 173 variantes iguales
 func_800365F0	656	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 650 de 650 variantes iguales
+func_80031698	572	IGUAL	src/sabrina/revivir_g13.c	6 de 6 capturas y 310 de 310 variantes iguales
