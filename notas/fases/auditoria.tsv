@@ -187,3 +187,4 @@ func_80032B98	952	IGUAL	src/sabrina/hechizos_g13.c	8 de 8 capturas y 647 de 647 
 func_80036880	1240	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 654 de 654 variantes iguales
 func_80036D58	1296	IGUAL	src/objetos/camara_g08.c	4 de 4 capturas y 349 de 349 variantes iguales
 func_80056584	1156	IGUAL_V0	src/objetos/atraido_g13.c	1 de 2 capturas y 50 de 137 variantes iguales (solo difiere v0)
+func_800325AC	1516	IGUAL	src/sabrina/acciones_g13.c	8 de 8 capturas y 505 de 505 variantes iguales
