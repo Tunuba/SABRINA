@@ -84,3 +84,152 @@ s32 func_80010920(s32 x, s32 y, s32 w, s32 h, s32 fondo, s32 n) {
     D_80063500 = *(volatile s32 *)&D_80063500 + n;
     return D_80062AF8++;
 }
+
+extern s32 D_80062AFC;               /* el flujo por omision */
+extern char *D_80063504;             /* "0123456789ABCDEF" */
+extern s32 func_800150F0(char *s);   /* strlen */
+
+/* Pone una letra al final del texto del flujo; 1 si se paso de las que caben. */
+static s32 poner(FlujoTexto *f, s32 c) {
+    f->texto[f->largo] = c;
+    f->largo++;
+    return f->n < f->largo;
+}
+
+/* El cuerpo de FntPrint. m es el sp del marco que arma ImprimirDepuracion igual que el juego (0x238
+ * bytes): en m + 0x210 va el puntero a los argumentos y debajo se arman los numeros; en m + 0x238 empiezan
+ * los argumentos. k es lo que traia a1: con una letra de formato que no entiende, el juego copia k letras
+ * desde m + 0x210 (lo que haya en su marco), y por eso el marco tiene que ser el mismo. */
+__attribute__((noinline, used)) static s32 imprimir(u8 *m, s32 k) {
+    char **ap = (char **)(m + 0x210);
+    FlujoTexto *f;
+    char *fmt, *p;
+    s32 id = *(s32 *)(m + 0x238);
+    s32 c, ancho, cero, signo;
+    u32 v;
+
+    *ap = (char *)(m + 0x23C);
+    if (id < 0 || id >= D_80062AF8) {
+        fmt = (char *)id;
+        id = D_80062AFC;
+        *(s32 *)(m + 0x238) = id;
+        if (FLUJOS[id].texto == NULL) {
+            return -1;
+        }
+    } else {
+        fmt = *(char **)(m + 0x23C);
+        *ap = (char *)(m + 0x240);
+    }
+    f = &FLUJOS[*(s32 *)(m + 0x238)];
+    if (f->n < f->largo) {
+        return -1;
+    }
+    for (c = *fmt; c != 0; c = *++fmt) {
+        if (c != '%' || (c = *++fmt) == '%') {
+            if (poner(f, c)) {
+                return -1;
+            }
+            continue;
+        }
+        ancho = 0;
+        cero = c == '0';
+        while ((u32)(c - '0') < 10) {
+            ancho = ancho * 10 - '0' + c;
+            c = *++fmt;
+        }
+        if (ancho <= 0) {
+            ancho = 1;
+        }
+        p = (char *)ap;
+        switch (c) {
+        case 'd': {
+            s32 n = *(s32 *)*ap;
+
+            *ap += 4;
+            if (n < 0) {
+                n = -n;
+                signo = '-';
+            } else {
+                signo = 0;
+            }
+            v = n;
+            k = 0;
+            do {
+                *--p = v % 10 + '0';
+                k++;
+                v /= 10;
+            } while (v != 0);
+            if (signo != 0) {
+                *--p = signo;
+                k++;
+            }
+            break;
+        }
+        case 'x':
+        case 'X':
+            k = 0;
+            v = *(u32 *)*ap;
+            *ap += 4;
+            do {
+                *--p = D_80063504[v & 0xF];
+                v >>= 4;
+                k++;
+            } while (v != 0);
+            if (cero) {
+                while (k < ancho) {
+                    *--p = '0';
+                    k++;
+                }
+            }
+            break;
+        case 'c':
+            *--p = *(u8 *)*ap;
+            *ap += 4;
+            k = 1;
+            break;
+        case 's':
+            p = *(char **)*ap;
+            *ap += 4;
+            k = func_800150F0(p);
+            break;
+        }
+        for (; k < ancho; ancho--) {
+            if (poner(f, ' ')) {
+                return -1;
+            }
+        }
+        for (k--; k != -1; k--) {
+            if (poner(f, *p++)) {
+                return -1;
+            }
+        }
+    }
+    f->texto[f->largo] = 0;
+    return f->largo;
+}
+
+/* FntPrint: escribe con formato en el flujo id (si id no es un flujo abierto, es el formato y va al flujo
+ * por omision). Entiende %d, %x, %X, %c, %s y %%, con ancho (rellena con espacios; con '0' delante, los
+ * %x rellenan con ceros). Devuelve el largo del texto, o -1 si no cabe o el flujo no tiene texto. El marco
+ * va a mano, igual al del juego (ver imprimir). */
+__attribute__((naked)) s32 ImprimirDepuracion(s32 id, ...) {
+    __asm__(".set noreorder\n"
+            "\tsw $4, 0x0($sp)\n"
+            "\tsw $5, 0x4($sp)\n"
+            "\tsw $6, 0x8($sp)\n"
+            "\tsw $7, 0xC($sp)\n"
+            "\taddiu $sp, $sp, -0x238\n"
+            "\tsw $31, 0x230($sp)\n"
+            "\tsw $21, 0x22C($sp)\n"
+            "\tsw $20, 0x228($sp)\n"
+            "\tsw $19, 0x224($sp)\n"
+            "\tsw $18, 0x220($sp)\n"
+            "\tsw $17, 0x21C($sp)\n"
+            "\tsw $16, 0x218($sp)\n"
+            "\tjal imprimir\n"
+            "\tmove $4, $sp\n"
+            "\tlw $31, 0x230($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x238\n"
+            ".set reorder");
+}

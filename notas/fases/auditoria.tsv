@@ -214,3 +214,4 @@ func_8005C358	1416	IGUAL	src/objetos/selector_g13.c	2 de 2 capturas y 154 de 154
 func_80054068	1748	DISTINTO	src/objetos/activador_g13.c	2 de 2 capturas y 181 de 182 variantes iguales; la mala parcha la tabla de saltos del original (jtbl_80062550, entrada 6) con 0x100
 DibujarCeldasVisibles	508	IGUAL	src/geometria/celdas_g13.c	8 de 8 capturas y 574 de 574 variantes iguales
 func_80010920	696	IGUAL	src/libgpu/fuente_g13.c	6 de 6 capturas y 784 de 784 variantes iguales
+ImprimirDepuracion	960	IGUAL	src/libgpu/fuente_g13.c	8 de 8 capturas y 832 de 832 variantes iguales

@@ -144,3 +144,17 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - func_8003C1E8 (832, disparo de enemigo), func_800365F0 (656) y func_80031698 (572, reaparecer) a IGUAL.
   Trampa de func_80031698: func_80031494 (ya verificada) usa lo que trae en v1; el C lo llama con un
   `__asm__` que pone v1 = D_8007CAFC y hace el jal.
+- CrearRecogible (544), func_8004FA54 (acciones del inventario), func_800607AC (seguir una ruta),
+  func_80053C74 (marca de lugar), func_800113DC (SetDrawEnv), func_8005C358 (1416, el selector de hechizos),
+  DibujarCeldasVisibles (508), func_80010920 (FntOpen) e ImprimirDepuracion (960, FntPrint) a IGUAL.
+- Trampa nueva, el marco a mano: CrearRecogible arma el objeto en su pila y el iniciar de la clase guarda esa
+  direccion (la camara); ImprimirDepuracion, con una letra de formato que no entiende, copia bytes de su
+  propio marco. GCC pone los registros guardados arriba del marco, asi que no se puede igualar en C: la
+  funcion es `__attribute__((naked))` con el prologo del juego en `__asm__` y llama a un cuerpo en C
+  (`static`, `noinline, used`) que recibe el sp del marco.
+- Para pasar de IGUAL_V0 a IGUAL en un switch con tabla: el v0 de los casos que saltan derecho al final es la
+  direccion del final (la que esta en la tabla), y ojo con los delay slots que oculta el filtro de nop.
+- func_80054068 (1748, el activador) queda DISTINTO solo por una variante que parcha jtbl_80062550.
+- FntOpen: con el flujo -1 el campo largo cae sobre D_80063500 (se relee al final con volatile).
+- Lentos: func_8001981C (menu, `Screen/menu_g13.c`) paso los 30 min de fondo sin terminar; func_8004E32C
+  (el asignador, `varios/banco_g13.c`) igual de lento. Correrlos solos con mucho tiempo.
