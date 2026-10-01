@@ -171,3 +171,5 @@ RegistrarRecogible	928	IGUAL	src/WobjCode/anotados_g13.c	2 de 2 capturas y 204 d
 func_8004BDA0	944	IGUAL	src/varios/partida_g13.c	6 de 6 capturas y 804 de 804 variantes iguales
 func_8001C45C	824	IGUAL	src/geometria/vectores.c	8 de 8 capturas y 821 de 821 variantes iguales
 func_8002303C	1600	IGUAL	src/Screen/marcador_g13.c	8 de 8 capturas y 1080 de 1080 variantes iguales
+func_80014670	256	IGUAL	src/psyq/dispositivos_g13.c	1 de 1 capturas y 0 de 0 variantes iguales (las variantes fallan tambien en la original; prueba debil)
+func_80014774	412	IGUAL	src/psyq/firstfile_g13.c	1 de 1 capturas y 14 de 14 variantes iguales
