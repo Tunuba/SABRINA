@@ -169,3 +169,5 @@ func_80037468	720	IGUAL_V0	src/objetos/camara_g08.c	2 de 2 capturas y 133 de 148
 func_80023B3C	768	IGUAL	src/Screen/sprites_g13.c	2 de 2 capturas y 184 de 184 variantes iguales
 RegistrarRecogible	928	IGUAL	src/WobjCode/anotados_g13.c	2 de 2 capturas y 204 de 204 variantes iguales
 func_8004BDA0	944	IGUAL	src/varios/partida_g13.c	6 de 6 capturas y 804 de 804 variantes iguales
+func_8001C45C	824	IGUAL	src/geometria/vectores.c	8 de 8 capturas y 821 de 821 variantes iguales
+func_8002303C	1600	IGUAL	src/Screen/marcador_g13.c	8 de 8 capturas y 1080 de 1080 variantes iguales
