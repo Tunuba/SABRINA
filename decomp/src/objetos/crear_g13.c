@@ -201,3 +201,59 @@ s32 CrearObjetoMundo(RegistroMundo *r) {
     memcpy(&o->extra, r->extra, 0x7F);
     return ((IniciarClaseV)c->iniciar)(o, 0, 0);
 }
+
+/* Una celda de la cuadricula del nivel (12 bytes, en D_8007CA48): sus objetos de WRLDDATA y en que zonas
+ * se ve. */
+typedef struct {
+    u8 _00[4];
+    s16 cuantos;                     /* 0x04 */
+    s16 primero;                     /* 0x06, indice en D_8007CB40 */
+    u32 zona;                        /* 0x08 */
+} CeldaMundo;
+
+extern CeldaMundo *D_8007CA48;
+extern RegistroMundo *D_8007CB40;    /* los registros de WRLDDATA, 0x9C bytes */
+extern s16 D_8006C250[];             /* corrimientos (z, x) de las celdas cercanas, termina en 0x7F */
+extern s32 D_8006C444[3];            /* el ojo de la camara */
+extern s32 BitDeZona(s32 celda);
+
+/* Crea los objetos de las celdas cercanas a la camara que esten en la zona de Sabrina (o la siguiente) y
+ * marca con 2 los registros que no esten en 4 (los que estaban en 0 se crean). */
+void ActivarObjetosCercanos(void) {
+    s16 *d = D_8006C250;
+    u32 zona, zona_baja, cx, cz, celda;
+    CeldaMundo *c;
+    u8 *r;
+    u16 i;
+
+    cx = ((p_sabrina->x >> 16) + 0x80) >> 2 & 0xFFFF;
+    cz = ((~((p_sabrina->z >> 16) + 0x80) & 0xFF) >> 2) & 0xFFFF;
+    zona = BitDeZona(((cz << 6) + cx) & 0xFFFF) & 0xFFFF;
+    zona_baja = (zona >> 1) & 0xFFFF;
+    if (zona < 0x8000) {
+        zona = (zona * 2) & 0xFFFF;
+    }
+    cx = (((D_8006C444[0] >> 8) + 0x80) >> 2) & 0xFFFF;
+    cz = ((~((D_8006C444[2] >> 8) + 0x80) & 0xFF) >> 2) & 0xFFFF;
+    do {
+        celda = (u16)d[0];
+        celda = (((cz + celda) << 6) + (cx + (u16)d[1])) & 0xFFFF;
+        d += 2;
+        if (celda >= 0x1000) {
+            continue;
+        }
+        c = &D_8007CA48[celda];
+        if (zona < c->zona || c->zona < zona_baja || c->cuantos < 0) {
+            continue;
+        }
+        r = (u8 *)&D_8007CB40[c->primero];
+        for (i = 0; i != c->cuantos; i++, r += 0x9C) {
+            if (*(s16 *)(r + 0x1A) != 4 && *(s16 *)(r + 0x1A) == 0) {
+                CrearObjetoMundo((RegistroMundo *)r);
+            }
+            if (*(s16 *)(r + 0x1A) != 4) {
+                *(s16 *)(r + 0x1A) = 2;
+            }
+        }
+    } while (*d != 0x7F);
+}
