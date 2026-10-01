@@ -155,3 +155,9 @@ TocarSonido	444	IGUAL	src/audio/sonido_g13.c	8 de 8 capturas y 1077 de 1077 vari
 func_80042B78	1156	IGUAL	src/audio/tocar_voz_g13.c	8 de 8 capturas y 848 de 848 variantes iguales
 func_8003A524	556	IGUAL	src/colision/triangulo_g09.c	8 de 8 capturas y 639 de 639 variantes iguales
 func_80037278	496	IGUAL	src/objetos/camara_g08.c	6 de 6 capturas y 508 de 508 variantes iguales
+func_8002506C	492	IGUAL	src/WobjCode/objetos_g06.c	1 de 1 capturas y 93 de 93 variantes iguales
+func_8002EDC8	452	IGUAL	src/varios/mezcla_g13.c	8 de 8 capturas y 791 de 791 variantes iguales
+func_8001E588	544	IGUAL	src/geometria/arbol.c	8 de 8 capturas y 686 de 686 variantes iguales
+MatrizDesdeAngulos	548	IGUAL	src/geometria/arbol.c	8 de 8 capturas y 616 de 616 variantes iguales
+func_80023FD4	576	DISTINTO	src/Screen/sprites_g13.c	3 de 3 capturas y 327 de 330 variantes iguales; las 3 malas tienen 0xAF43 casillas y leen la tabla de sprites hasta la pila propia
+func_800447E4	1004	DISTINTO	src/audio/vab_g13.c	6 de 6 capturas y 571 de 572 variantes iguales; la mala salta a 0x00040000 (puntero de funcion al azar)

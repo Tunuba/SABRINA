@@ -70,3 +70,32 @@ void func_80024DFC(Objeto *o) {
         aviso(o, mejor);
     }
 }
+
+/* El objeto del mundo en uso mas cercano a pos (x, y, z en 24.8), sin contar a fuera. Si tipo es menor
+ * que 0x38 solo cuentan los de ese tipo; si no, todos. NULL si no hay ninguno. */
+Objeto *func_8002506C(s32 *pos, u32 tipo, Objeto *fuera) {
+    s32 menor = 0x0FFFFFFF;
+    s32 x = pos[0] >> 8, y = pos[1] >> 8, z = pos[2] >> 8;
+    Objeto *cerca = NULL;
+    Objeto *p = (Objeto *)D_8008AFD8;
+    s32 v[3];
+    s32 d, i;
+
+    for (i = 0; i < 0x50; i++, p = (Objeto *)((u8 *)p + 0x120)) {
+        if (D_8008AF88[i] == 0 || p == fuera) {
+            continue;
+        }
+        if (tipo < 0x38 && p->tipo != tipo) {
+            continue;
+        }
+        v[0] = (p->x >> 8) - x;
+        v[1] = (p->y >> 8) - y;
+        v[2] = (p->z >> 8) - z;
+        d = func_8001C33C(v, v);
+        if (d < menor) {
+            menor = d;
+            cerca = p;
+        }
+    }
+    return cerca;
+}

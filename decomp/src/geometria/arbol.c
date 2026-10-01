@@ -224,3 +224,137 @@ void func_80020764(s32 i) {
         i = (i + 1) & 0xFFFF;
     }
 }
+
+extern s32 rsin(s32 a);
+extern s32 rcos(s32 a);
+
+/* Rehace la matriz local del modelo del objeto con su giro (x, luego y, luego z), su escala (la que este
+ * en 0 pasa a 0x1000) y su posicion / 256. */
+void func_8001E588(Objeto *o) {
+    Nodo *n = o->modelo;
+    Matriz m;
+    s32 ax, ay, az;
+
+    if (n == NULL) {
+        return;
+    }
+    if (o->escala[0] == 0) {
+        o->escala[0] = 0x1000;
+    }
+    if (o->escala[1] == 0) {
+        o->escala[1] = 0x1000;
+    }
+    if (o->escala[2] == 0) {
+        o->escala[2] = 0x1000;
+    }
+    ax = o->rot[0];
+    ay = o->rot[1];
+    az = o->rot[2];
+    n->local.m[0][0] = 0x1000;
+    n->local.m[0][1] = 0;
+    n->local.m[0][2] = 0;
+    n->local.m[1][0] = 0;
+    n->local.m[1][1] = rcos(ax);
+    n->local.m[1][2] = -rsin(ax);
+    n->local.m[2][0] = 0;
+    n->local.m[2][1] = rsin(ax);
+    n->local.m[2][2] = rcos(ax);
+    m.m[0][0] = rcos(ay);
+    m.m[0][1] = 0;
+    m.m[0][2] = rsin(ay);
+    m.m[1][0] = 0;
+    m.m[1][1] = 0x1000;
+    m.m[1][2] = 0;
+    m.m[2][0] = -rsin(ay);
+    m.m[2][1] = 0;
+    m.m[2][2] = rcos(ay);
+    MulMatrix0(&n->local, &m, &n->local);
+    m.m[0][0] = rcos(az);
+    m.m[0][1] = -rsin(az);
+    m.m[0][2] = 0;
+    m.m[1][0] = rsin(az);
+    m.m[1][1] = rcos(az);
+    m.m[1][2] = 0;
+    m.m[2][0] = 0;
+    m.m[2][1] = 0;
+    m.m[2][2] = 0x1000;
+    MulMatrix0(&n->local, &m, &n->local);
+    m.m[0][0] = o->escala[0];
+    m.m[0][1] = 0;
+    m.m[0][2] = 0;
+    m.m[1][0] = 0;
+    m.m[1][1] = o->escala[1];
+    m.m[1][2] = 0;
+    m.m[2][0] = 0;
+    m.m[2][1] = 0;
+    m.m[2][2] = o->escala[2];
+    MulMatrix0(&n->local, &m, &n->local);
+    n->local.t[0] = o->x >> 8;
+    n->local.t[1] = o->y >> 8;
+    n->local.t[2] = o->z >> 8;
+}
+
+/* Lo mismo que func_8001E588 con los datos sueltos: arma la matriz local del nodo con el giro (x, y, z,
+ * en s32), la escala (la que este en 0 pasa a 0x1000) y la posicion / 256. */
+void MatrizDesdeAngulos(Nodo *n, s32 *escala, s32 *pos, s32 *giro) {
+    Matriz m;
+    s32 ax, ay, az;
+
+    if (n == NULL) {
+        return;
+    }
+    if (escala[0] == 0) {
+        escala[0] = 0x1000;
+    }
+    if (escala[1] == 0) {
+        escala[1] = 0x1000;
+    }
+    if (escala[2] == 0) {
+        escala[2] = 0x1000;
+    }
+    ax = giro[0];
+    ay = giro[1];
+    az = giro[2];
+    n->local.m[0][0] = 0x1000;
+    n->local.m[0][1] = 0;
+    n->local.m[0][2] = 0;
+    n->local.m[1][0] = 0;
+    n->local.m[1][1] = rcos(ax);
+    n->local.m[1][2] = -rsin(ax);
+    n->local.m[2][0] = 0;
+    n->local.m[2][1] = rsin(ax);
+    n->local.m[2][2] = rcos(ax);
+    m.m[0][0] = rcos(ay);
+    m.m[0][1] = 0;
+    m.m[0][2] = rsin(ay);
+    m.m[1][0] = 0;
+    m.m[1][1] = 0x1000;
+    m.m[1][2] = 0;
+    m.m[2][0] = -rsin(ay);
+    m.m[2][1] = 0;
+    m.m[2][2] = rcos(ay);
+    MulMatrix0(&n->local, &m, &n->local);
+    m.m[0][0] = rcos(az);
+    m.m[0][1] = -rsin(az);
+    m.m[0][2] = 0;
+    m.m[1][0] = rsin(az);
+    m.m[1][1] = rcos(az);
+    m.m[1][2] = 0;
+    m.m[2][0] = 0;
+    m.m[2][1] = 0;
+    m.m[2][2] = 0x1000;
+    MulMatrix0(&n->local, &m, &n->local);
+    m.m[0][0] = escala[0];
+    m.m[0][1] = 0;
+    m.m[0][2] = 0;
+    m.m[1][0] = 0;
+    m.m[1][1] = escala[1];
+    m.m[1][2] = 0;
+    m.m[2][0] = 0;
+    m.m[2][1] = 0;
+    m.m[2][2] = escala[2];
+    MulMatrix0(&n->local, &m, &n->local);
+    n->local.t[0] = pos[0] >> 8;
+    n->local.t[1] = pos[1] >> 8;
+    n->local.t[2] = pos[2] >> 8;
+}
