@@ -175,3 +175,22 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   (directorio de la tarjeta) pasaron de borrador de `src/auto` a archivo escrito, IGUAL_V0.
 - Lo que queda sin IGUAL: las del CD (NO_TERMINA), func_80030208 (basura de pila que dejan los registros
   guardados por las llamadas), y las de artefactos (tablas de saltos parchadas, punteros de funcion al azar).
+
+### Capturas nuevas para las SIN_CAPTURAS (2026-10-01)
+
+- Capturar funciona en esta PC: `py` (Python 3.13 de Windows, `python` es el alias de la tienda) y
+  PCSX-Redux con `-no-ui` y CREATE_NO_WINDOW (emu.py), sin ventanas. Un solo emulador a la vez.
+- `capturar_mas.py 3 0..14 --solo <las 525>` (22 min, todos los niveles desde `saltar`) solo saco 4: el
+  recorrido de siempre no llega a lo que falta. Lo que si sirvio: partir del ARRANQUE del disco (sin
+  estado) y pasar por las pantallas legales, el video, el titulo y los menus: 121 de una vez. Desde
+  `titulo`, `nuevo`, `final_hub`, `nivel_S3` y `saltar` con recorridos largos salieron 12 mas.
+  Total: 137 funciones con capturas nuevas; quedan 388 sin capturas (codigo que no se ejecuta en esos
+  recorridos: clases de objetos que no aparecen, la tarjeta de memoria, el CD, herramientas).
+- El script de esta ronda (`capt_sin.py`: estado o `arranque`, lista, recorrido) estaba en el scratchpad
+  de la sesion; es capturar_mas con --solo leido de un archivo y la opcion de partir del arranque.
+- El lote sobre esas 137: `auto.py --solo <lista> --procesos 2` (mezcla en progreso.tsv sin borrar lo
+  anterior; ojo, cada 25 reescribe build/hechas.txt con las de esta tanda: se guardo una copia antes).
+- El lote `auto.py --solo` sobre las 137 lo corto Claude Code por memoria baja de la PC (no por el lote)
+  antes del primer guardado: progreso.tsv y build/hechas.txt quedaron sin tocar. FALTA correrlo: la lista
+  de las 137 es la diferencia entre las SIN_CAPTURAS de progreso.tsv y las que hoy tienen .regs en
+  `decomp/capturas`.
