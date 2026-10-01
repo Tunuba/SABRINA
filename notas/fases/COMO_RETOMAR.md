@@ -89,6 +89,7 @@ No es un error del C. Su verificacion tarda unas 2 horas.
 (func_8002FF1C, func_80017D80, func_8002CF28: van a dar NO_TERMINA).
 
 Mutantes: func_8003A46C 6/8 (los 2 vivos en comentarios), TocarSonido 6/8 (SpuGetKeyStatus no cambia en el
-emulador), func_8002506C 7/8, func_8001C45C 4/8 (la rama de vectores muy grandes casi no se prueba).
+emulador), func_8002506C 7/8, func_8001C45C 4/8 (la rama de vectores muy grandes casi no se prueba),
+PuntoEnTriangulo 8/8.
 
 Lote de fondo al cerrar: 300 de 886 (empezo 19:07), sigue corriendo.
