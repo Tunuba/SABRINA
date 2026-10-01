@@ -209,3 +209,82 @@ void func_80023B3C(u8 *ot) {
     AddPrim(ot + 8, r);
     AddPrim(ot + 8, D_8007CADC);
 }
+
+extern u8 D_8007CA38;                /* distinto de 0: la pantalla de numeros (16 piezas) */
+extern s32 D_8007CB34;               /* distinto de 0: no se dibujan */
+extern s8 nivel_actual;
+extern Sprite *D_8006CE10[7];        /* las piezas del marcador (las arma func_8002303C) */
+extern u16 D_8006CE30[8], D_8006CE40[8];  /* sus x e y */
+extern u8 D_8006CEF0[16];            /* las 16 piezas de la otra pantalla: sprite, x, y, brillo y capa */
+extern u16 D_8006CE90[16], D_8006CEB0[16];
+extern u8 D_8006CED0[16], D_8006CEE0[16];
+
+/* Pone una pieza: el sprite s en (x, y) con brillo c, en la capa ot. */
+static void poner_pieza(Sprite *s, u16 x, u16 y, u8 *c, u8 *ot) {
+    PrimSprt *p;
+    u8 *t;
+
+    D_8007CACC->x = x;
+    D_8007CACC->y = y;
+    D_8007CACC->w = s->w;
+    D_8007CACC->h = s->h;
+    D_8007CACC->r = c[0];
+    D_8007CACC->g = c[0];
+    D_8007CACC->b = c[0];
+    D_8007CACC->v = s->v;
+    D_8007CACC->u = s->u;
+    D_8007CACC->clut = s->clut;
+    p = D_8007CACC;
+    D_8007CACC = p + 1;
+    AddPrim(ot, p);
+    SetDrawTPage(D_8007CAD0, 1, 0, s->tpage);
+    t = D_8007CAD0;
+    D_8007CAD0 = t + 8;
+    AddPrim(ot, t);
+}
+
+/* Dibuja el marcador del nivel: sus 7 piezas (en los niveles 13 y 14 solo la 2, 4, 5 y 6; con
+ * D_8007CB30 sin las dos primeras) y la barra de vida; o, con D_8007CA38, las 16 piezas de la otra
+ * pantalla (en los niveles 13 y 14 solo las 3 ultimas). */
+void func_8002367C(u8 *ot) {
+    static u8 blanco = 0xFF;
+    u16 i;
+    u32 v;
+    PrimTile *r;
+
+    if (D_8007CA38 == 0) {
+        for (i = 0; i != 7; i++) {
+            if ((nivel_actual == 14 || nivel_actual == 13) && (i == 0 || i == 1 || i == 3)) {
+                continue;
+            }
+            if (D_8007CB30 != 0 && i < 2) {
+                continue;
+            }
+            poner_pieza(D_8006CE10[i], D_8006CE30[i], D_8006CE40[i], &blanco, ot + 0xC);
+        }
+        v = (u16)D_8007CB1E;
+        D_8007CAD4->r = (s32)((((0x100 - v) & 0xFFFF) << 7) + (v << 7)) >> 8;
+        D_8007CAD4->g = (s32)(v << 7) >> 8;
+        D_8007CAD4->b = 0;
+        D_8007CAD4->x = 0x20;
+        D_8007CAD4->y = 0x16;
+        D_8007CAD4->w = D_8007CB1E;
+        D_8007CAD4->h = 12;
+        D_8007CAD4->code |= 2;
+        r = D_8007CAD4;
+        D_8007CAD4 = r + 1;
+        AddPrim(ot + 8, r);
+        AddPrim(ot + 8, D_8007CADC);
+        return;
+    }
+    for (i = 0; i != 16; i++) {
+        if (D_8007CB34 != 0) {
+            return;
+        }
+        if ((nivel_actual == 14 || nivel_actual == 13) && i < 13) {
+            continue;
+        }
+        poner_pieza(&D_8007CB24[D_8006CEF0[i]], D_8006CE90[i], D_8006CEB0[i], &D_8006CED0[i],
+                    ot + D_8006CEE0[i] * 4);
+    }
+}

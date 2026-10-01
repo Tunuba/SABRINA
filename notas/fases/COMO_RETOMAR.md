@@ -136,3 +136,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   a la consulta compartida D_800C6594 campos de su consulta local que nunca llena (basura de su pila); el C
   la toma al entrar del mismo lugar con `__builtin_dwarf_cfa() - 0xC0 + 0x40`. Lo que le falta a
   func_80030208 es esa misma basura vista desde el llamador (depende del tamano de su marco).
+- DibujarTexto (900) a IGUAL (`Font/texto_g13.c`). func_8002367C (1136, el marcador) escrita: solo fallan 2
+  variantes que parchan su tabla de saltos (las variantes de memoria tambien tocan jtbl_*; un switch en C no
+  la usa, asi que esas nunca pueden dar igual). func_80056CE8 (1684) escrita pero NO_TERMINA (CD).
+- Antes de escribir una, probar si termina: `scratchpad/termina.sh` corre la original en la primera captura
+  (estaba en el scratchpad de la sesion; es un `verificar.ejecutar` sobre capturas/F/00).
