@@ -208,3 +208,6 @@ func_80031698	572	IGUAL	src/sabrina/revivir_g13.c	6 de 6 capturas y 310 de 310 v
 CrearRecogible	608	IGUAL	src/objetos/crear_g13.c	2 de 2 capturas y 166 de 166 variantes iguales
 func_8004FA54	504	IGUAL	src/Screen/sprites_g13.c	3 de 3 capturas y 406 de 406 variantes iguales
 func_800607AC	516	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 122 de 122 variantes iguales
+func_80053C74	612	IGUAL	src/objetos/marca_g13.c	2 de 2 capturas y 182 de 182 variantes iguales
+func_800113DC	624	IGUAL	src/libgpu/entorno_g13.c	8 de 8 capturas y 689 de 689 variantes iguales
+func_8005C358	1416	IGUAL	src/objetos/selector_g13.c	2 de 2 capturas y 154 de 154 variantes iguales
