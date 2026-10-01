@@ -81,7 +81,16 @@ s32 FisicaObjeto(Objeto *o, s32 con_paredes) {
     Consulta l;
     s32 arriba[3], v[3], lado[3], sal[3], alto;
     s32 x0, y0, z0, r, choco, n, vy;
+    s32 *viejo;
 
+    /* El original no llena todos los campos de su consulta local antes de copiarla a la compartida: lo que
+     * no llena es lo que habia en su pila (sp+0x40 de un marco de 0xC0). Se toma lo mismo, antes de llamar
+     * a nada. */
+    viejo = (s32 *)((u8 *)__builtin_dwarf_cfa() - 0xC0 + 0x40);
+    for (r = 0; r < 19; r++) {
+        ((s32 *)&l)[r] = ((volatile s32 *)viejo)[r];
+    }
+    __asm__ volatile("" ::: "memory");
     if (e->golpe > 0) {
         e->golpe--;
     }

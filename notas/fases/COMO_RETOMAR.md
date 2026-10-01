@@ -132,7 +132,7 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   func_8005A360 (3168) da NO_TERMINA (espera la musica del CD); no se escribio.
 - Atajo util: probar el borrador de `src/auto` cambiando `juego.h` por `objeto.h` (los que fallaban por
   p_sabrina) y, si queda cerca, reescribirlo con tipos (func_80038318 y ActivarObjetosCercanos salieron asi).
-- func_8004D0C0 (2564, el portal) a IGUAL_V0. FisicaObjeto (2436) escrita en `colision/fisica_g13.c`: 686 de
-  716; lo que falla es que copia a la consulta compartida D_800C6594 campos de su consulta local que nunca
-  llena (punto, normal y tipo antes del primer choque): basura de la pila que cambia con el marco del C.
-  Es la misma causa de lo que le falta a func_80030208.
+- func_8004D0C0 (2564, el portal) a IGUAL_V0. FisicaObjeto (2436) a IGUAL en `colision/fisica_g13.c`. Trampa: copia
+  a la consulta compartida D_800C6594 campos de su consulta local que nunca llena (basura de su pila); el C
+  la toma al entrar del mismo lugar con `__builtin_dwarf_cfa() - 0xC0 + 0x40`. Lo que le falta a
+  func_80030208 es esa misma basura vista desde el llamador (depende del tamano de su marco).
