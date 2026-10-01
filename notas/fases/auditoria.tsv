@@ -177,3 +177,4 @@ LeerMAO	432	IGUAL	src/varios/mezcla_g13.c	8 de 8 capturas y 504 de 504 variantes
 PuntoEnTriangulo	516	IGUAL	src/colision/punto_triangulo_g13.c	8 de 8 capturas y 485 de 485 variantes iguales
 Liberar	716	IGUAL	src/varios/reservar_g13.c	8 de 8 capturas y 1088 de 1088 variantes iguales
 Reservar	584	DISTINTO	src/varios/reservar_g13.c	8 de 8 capturas y 629 de 702 variantes iguales; las malas son con D_8007C8E0 distinto de 0: func_800161BC es malloc de la BIOS (A0 0x33) y el emulador vuelve sin tocar v0, asi que devuelve lo que habia en v0
+func_8001D8EC	1664	IGUAL	src/modelLoader/mando_g13.c	8 de 8 capturas y 698 de 698 variantes iguales
