@@ -299,3 +299,4 @@ func_80054894	452	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 154 de 154 
 func_80048DC0	684	IGUAL	src/objetos/enemigo_g13.c	1 de 1 capturas y 73 de 73 variantes iguales
 func_80054C5C	1440	IGUAL_V0	src/objetos/gema_hechizo_g13.c	2 de 2 capturas y 154 de 187 variantes iguales (resto solo v0)
 func_800573C0	592	IGUAL	src/objetos/ruta_g13.c	1 de 1 capturas y 62 de 62 variantes iguales
+func_80057800	332	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 153 de 153 variantes iguales

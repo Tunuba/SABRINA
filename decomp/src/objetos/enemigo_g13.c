@@ -593,3 +593,36 @@ void func_80048DC0(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 escala) {
         *(u8 *)&t->_20 |= 0x80;
     }
 }
+
+extern void func_80048900(Objeto *o, s32 a);
+
+/* Un objeto que va y viene por su ruta: si Sabrina anda cerca de su centro lo mantiene vivo; al terminar la
+ * ruta (8) vuelve a su punto de partida (dando la vuelta si va y viene, o volviendo a su lugar). */
+void func_80057800(Objeto *o) {
+    u16 *t = o->animaciones;
+    u8 *e = (u8 *)&o->extra;
+    s32 dx, dz, a, d;
+
+    func_80048900(o, 0x280000);
+    dx = p_sabrina->x - *(s32 *)(e + 0x28);
+    dz = p_sabrina->z - *(s32 *)(e + 0x30);
+    a = dx >> 8;
+    d = ((a * a) >> 8) << 8;
+    a = dz >> 8;
+    d += ((a * a) >> 8) << 8;
+    if (d < *(s32 *)(e + 0x34)) {
+        *(s16 *)((u8 *)o->datos + 0x1A) = 2;
+    }
+    if (func_800607AC(o, (s32 *)(e + 0x1C), (PuntoRuta **)e, t[0], t[0]) != 8) {
+        return;
+    }
+    if ((s8)e[4] != 0) {
+        e[0x21] = -(s8)e[0x21];
+        *(s32 *)e = *(s32 *)(e + 0xC);
+        return;
+    }
+    *(s32 *)e = *(s32 *)(e + 0xC);
+    o->x = *(s32 *)(e + 0x10);
+    o->y = *(s32 *)(e + 0x14);
+    o->z = *(s32 *)(e + 0x18);
+}
