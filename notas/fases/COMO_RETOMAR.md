@@ -274,3 +274,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   m2c ponia el vector en variables sueltas, va en un arreglo; las comparaciones son con signo),
   func_800528AC (remolino) y func_80054C5C (pieza de hechizo). Ojo con m2c: en un switch sin default puede
   cortar donde el original sigue (func_80054C5C, nivel sin jefe).
+- 02-10 tarde: IGUAL func_800573C0 (caja de una ruta), func_80057800, func_80020294 (triangulos con el
+  GTE; el struct del triangulo mide 0x1C, ojo con el relleno), SetGeomOffset y SetGeomScreen. Lo que queda
+  sin IGUAL del lote es casi todo del CD (8002A-8002F, 80017D80, 8005D50C), asm puro (setjmp, parche de la
+  BIOS, InitGeom 800177B4), BuclePrincipal (no termina) y las NO_TERMINA. Siguiente: mas capturas (hay 322
+  sin capturas; el paseo ya rinde poco, probar a jugar de verdad con recorridos por nivel).

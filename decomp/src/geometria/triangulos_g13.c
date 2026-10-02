@@ -82,3 +82,14 @@ u8 *func_80020294(u8 *prim, TrianguloTex *t, u32 *ot, s32 n) {
     } while (--n != 0);
     return prim;
 }
+
+/* SetGeomOffset: el centro de la pantalla para el GTE (OFX y OFY, en 16.16). */
+void func_80017B5C(s32 x, s32 y) {
+    __asm__ volatile("ctc2 %0, $24" :: "r"(x << 16));
+    __asm__ volatile("ctc2 %0, $25" :: "r"(y << 16));
+}
+
+/* SetGeomScreen: la distancia a la pantalla (H). */
+void func_80017B7C(s32 h) {
+    __asm__ volatile("ctc2 %0, $26" :: "r"(h));
+}

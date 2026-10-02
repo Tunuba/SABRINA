@@ -301,3 +301,5 @@ func_80054C5C	1440	IGUAL_V0	src/objetos/gema_hechizo_g13.c	2 de 2 capturas y 154
 func_800573C0	592	IGUAL	src/objetos/ruta_g13.c	1 de 1 capturas y 62 de 62 variantes iguales
 func_80057800	332	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 153 de 153 variantes iguales
 func_80020294	604	IGUAL	src/geometria/triangulos_g13.c	8 de 8 capturas y 411 de 411 variantes iguales
+func_80017B5C	24	IGUAL	src/geometria/triangulos_g13.c	1 de 1 capturas y 68 de 68 variantes iguales
+func_80017B7C	12	IGUAL	src/geometria/triangulos_g13.c	1 de 1 capturas y 64 de 64 variantes iguales
