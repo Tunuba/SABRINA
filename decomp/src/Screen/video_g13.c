@@ -195,3 +195,17 @@ s32 func_8005D1D0(void) {
     D_800D5842 = D_800D5832[D_800D584C * 4];
     return D_800D5842;
 }
+
+extern volatile u32 *D_80075CB0, *D_80075CB4, *D_80075CB8;   /* DMA del MDEC de salida */
+extern void func_8005DB70(void);
+
+/* Recibe del MDEC n palabras en dst (DMA 1, de a bloques de 32). Devuelve D_80075CB8 (queda en v0). */
+s32 func_8005DA50(u32 dst, u32 n) {
+    func_8005DB70();
+    *D_80075CC4 |= 0x88;
+    *D_80075CB8 = 0;
+    *D_80075CB0 = dst;
+    *D_80075CB4 = ((n >> 5) << 16) | 0x20;
+    *D_80075CB8 = 0x01000200;
+    return (s32)D_80075CB8;
+}

@@ -359,3 +359,11 @@ func_8001201C	36	IGUAL	src/libgpu/canal_g13.c	8 de 8 capturas y 680 de 680 varia
 func_8004F9C8	48	IGUAL	src/varios/sueltas_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
 func_8003DD74	16	IGUAL	src/varios/sueltas_g13.c	6 de 6 capturas y 384 de 384 variantes iguales
 func_8005655C	40	IGUAL	src/objetos/listas_g13.c	1 de 1 capturas y 67 de 67 variantes iguales
+func_800471F8	60	IGUAL	src/varios/sueltas_g13.c	1 de 1 capturas y 47 de 47 variantes iguales
+func_800191D8	92	IGUAL	src/varios/sueltas_g13.c	2 de 2 capturas y 181 de 181 variantes iguales
+func_8004866C	76	IGUAL	src/objetos/listas_g13.c	4 de 4 capturas y 438 de 438 variantes iguales
+func_80048024	112	IGUAL	src/Screen/menu_cambios_g13.c	1 de 1 capturas y 62 de 62 variantes iguales
+func_80050828	172	IGUAL	src/varios/tarjeta_eventos_g13.c	8 de 8 capturas y 1046 de 1046 variantes iguales
+func_80045EE0	196	IGUAL	src/objetos/listas_g13.c	2 de 2 capturas y 180 de 180 variantes iguales
+func_8003C8F8	228	IGUAL	src/objetos/listas_g13.c	2 de 2 capturas y 80 de 80 variantes iguales
+func_80056B18	248	IGUAL	src/objetos/listas_g13.c	1 de 1 capturas y 47 de 47 variantes iguales

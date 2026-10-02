@@ -451,7 +451,9 @@ extern u8 D_80090A08[], D_80090A50[];  /* lo que contestan y lo que se les manda
 extern s32 D_8006D018[2];
 extern s32 D_8006CFBC, D_8006CFD0;
 extern void *D_8006CF84, *D_8006CF8C, *D_8006CF90, *D_8006CF94, *D_8006CFB8;
-extern void func_80027DF0(void), func_80027D7C(void), func_80027F4C(void), func_800282D8(void);
+extern void func_80027F4C(void), func_800282D8(void);
+s32 func_80027DF0(s32 r);
+s32 func_80027D7C(Puerto *p);
 extern void func_80028354(void), func_80027F08(void);
 extern void func_80025DA8(void);
 
@@ -642,4 +644,38 @@ s32 func_80027D7C(Puerto *p) {
         *q++ = 0xFF;
     } while (--n >= 0);
     return n;
+}
+
+extern s32 D_8006CFC8, D_8006CFD8;
+extern u8 *D_8006D014;
+
+/* Fin del intercambio con un puerto: anota el resultado r, cierra lo del puerto (r == 0: si contesto un
+   multitap, 4 que cerrar; r != -9: func_80028D40) y pasa al siguiente hasta que uno empiece o se acaben.
+   Devuelve lo que queda en v0 (1 o lo que dio func_80025EF8). */
+s32 func_80027DF0(s32 r) {
+    s32 i, v;
+    Puerto *p;
+    do {
+        i = D_8006CFC4;
+        *(s16 *)(D_8006D014 + 0xA) = 0;
+        D_8006D018[i] = r;
+        p = (Puerto *)(D_80090A98 + i * 0xF0);
+        if (r != -9) {
+            if (r == 0) {
+                D_8006CFDC[i] = ((**(u8 **)((u8 *)p + 0x3C) >> 4) == 8) * 4;
+            } else {
+                func_80028D40(p, r);
+            }
+        }
+        D_8006CFC8 = 0;
+        i = D_8006CFC4 + 1;
+        D_8006CFC4 = i;
+        if (D_8006CFD8 < i) {
+            v = 1;
+        } else {
+            v = func_80025EF8((Puerto *)(D_80090A98 + i * 0xF0));
+        }
+        r = 0xFFFF;
+    } while (v == 0);
+    return v;
 }
