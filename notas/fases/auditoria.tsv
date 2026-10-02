@@ -258,3 +258,8 @@ func_800144C4	156	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 58 de 58 varian
 func_80014598	52	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 56 de 56 variantes iguales
 func_80016F38	544	IGUAL	src/psyq/libgs_g13.c	1 de 1 capturas y 52 de 52 variantes iguales
 func_80010000	48	IGUAL	src/varios/arranque_g13.c	1 de 1 capturas y 84 de 84 variantes iguales
+func_80021C48	156	IGUAL	src/geometria/azar_g13.c	1 de 1 capturas y 13 de 13 variantes iguales
+func_80028D0C	52	IGUAL	src/psyq/mando_g13.c	1 de 1 capturas y 50 de 50 variantes iguales
+func_80029ED4	36	IGUAL	src/psyq/mando_g13.c	1 de 1 capturas y 51 de 51 variantes iguales
+func_800283C4	568	IGUAL	src/psyq/mando_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_80027AD0	248	DISTINTO	src/psyq/mando_g13.c	1 de 1 capturas y 50 de 51 variantes iguales; la mala parcha D_8006CF98 con un puntero de funcion al azar
