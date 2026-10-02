@@ -46,7 +46,7 @@ func_80026E04	32	IGUAL_SINT	func_80026E04: 1 de 1 capturas y 22 de 22 variantes 
 func_80026E24	20	IGUAL_SINT	func_80026E24: 1 de 1 capturas y 17 de 17 variantes iguales -> IGUAL
 func_80026E3C	12	IGUAL_SINT	func_80026E3C: 1 de 1 capturas y 14 de 14 variantes iguales -> IGUAL
 func_8002713C	56	IGUAL_SINT	func_8002713C: 1 de 1 capturas y 65 de 65 variantes iguales -> IGUAL
-func_80027174	212	DISTINTO	func_80027174: 0 de 1 capturas y 19 de 42 variantes iguales -> DISTINTO
+func_80027174	212	IGUAL_SINT	func_80027174: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80027248	104	DISTINTO	func_80027248: 0 de 1 capturas y 0 de 35 variantes iguales -> DISTINTO
 func_800272B0	152	DISTINTO	func_800272B0: 0 de 1 capturas y 0 de 32 variantes iguales -> DISTINTO
 func_80027BC8	212	NO_COMPILA	      |     ^~~~~~~
@@ -60,7 +60,7 @@ func_800299E8	52	NO_COMPILA	no compila: error: el C define el dato del juego D_8
 func_80029A1C	52	DISTINTO	func_80029A1C: 1 de 1 capturas y 61 de 76 variantes iguales -> DISTINTO
 func_80029EB4	32	NO_TERMINA	func_80029EB4: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_80029EF8	32	IGUAL_SINT	func_80029EF8: 1 de 1 capturas y 52 de 52 variantes iguales -> IGUAL
-func_8002B270	76	DISTINTO	func_8002B270: 0 de 1 capturas y 0 de 52 variantes iguales -> DISTINTO
+func_8002B270	76	IGUAL_SINT	func_8002B270: 1 de 1 capturas y 52 de 52 variantes iguales -> IGUAL
 func_8002D540	44	NO_COMPILA	      |             ^~~~~~~
 func_8002E0F4	8	IGUAL_SINT	func_8002E0F4: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
 func_800300C4	104	DISTINTO	func_800300C4: 1 de 1 capturas y 55 de 69 variantes iguales -> DISTINTO
@@ -135,12 +135,12 @@ func_8004F2BC	28	IGUAL_V0_SINT	func_8004F2BC: 0 de 1 capturas y 0 de 34 variante
 func_8004F4F0	28	IGUAL_V0_SINT	func_8004F4F0: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
 func_8004F918	52	IGUAL_SINT	func_8004F918: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_8004F94C	28	IGUAL_V0_SINT	func_8004F94C: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
-func_8004F968	52	DISTINTO	func_8004F968: 0 de 1 capturas y 0 de 46 variantes iguales -> DISTINTO
-func_8004F99C	44	DISTINTO	func_8004F99C: 0 de 1 capturas y 0 de 42 variantes iguales -> DISTINTO
+func_8004F968	52	IGUAL_V0_SINT	func_8004F968: 0 de 1 capturas y 0 de 46 variantes iguales -> IGUAL_V0
+func_8004F99C	44	IGUAL_V0_SINT	func_8004F99C: 0 de 1 capturas y 0 de 42 variantes iguales -> IGUAL_V0
 func_8004F9F8	24	IGUAL_V0_SINT	func_8004F9F8: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
 func_80050C40	68	IGUAL_SINT	func_80050C40: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
-func_80050C84	184	DISTINTO	func_80050C84: 1 de 1 capturas y 69 de 76 variantes iguales -> DISTINTO
-func_80050D3C	184	DISTINTO	func_80050D3C: 1 de 1 capturas y 71 de 76 variantes iguales -> DISTINTO
+func_80050C84	184	IGUAL_SINT	func_80050C84: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
+func_80050D3C	184	IGUAL_SINT	func_80050D3C: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
 func_80051284	20	IGUAL_SINT	func_80051284: 1 de 1 capturas y 68 de 68 variantes iguales -> IGUAL
 func_800519F8	20	IGUAL_SINT	func_800519F8: 1 de 1 capturas y 38 de 38 variantes iguales -> IGUAL
 func_80051A0C	20	IGUAL_SINT	func_80051A0C: 1 de 1 capturas y 38 de 38 variantes iguales -> IGUAL
@@ -195,7 +195,7 @@ func_8005C92C	20	IGUAL_SINT	func_8005C92C: 1 de 1 capturas y 68 de 68 variantes 
 func_8005C940	36	DISTINTO	func_8005C940: 0 de 1 capturas y 0 de 51 variantes iguales -> DISTINTO
 func_8005D504	8	IGUAL_SINT	func_8005D504: 1 de 1 capturas y 30 de 30 variantes iguales -> IGUAL
 func_8005DC04	24	IGUAL_SINT	func_8005DC04: 1 de 1 capturas y 41 de 41 variantes iguales -> IGUAL
-func_8005DC1C	124	DISTINTO	func_8005DC1C: 1 de 1 capturas y 54 de 63 variantes iguales -> DISTINTO
+func_8005DC1C	124	IGUAL_SINT	func_8005DC1C: 1 de 1 capturas y 63 de 63 variantes iguales -> IGUAL
 func_8005DD70	60	IGUAL_SINT	func_8005DD70: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_8005DDAC	60	IGUAL_SINT	func_8005DDAC: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_8005E290	16	IGUAL_SINT	func_8005E290: 1 de 1 capturas y 14 de 14 variantes iguales -> IGUAL

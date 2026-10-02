@@ -61,3 +61,48 @@ char *func_80029A1C(s32 n) {
     }
     return D_80061234;
 }
+
+extern char *D_8006D328[];
+
+/* El nombre de otro tipo (0 a 27), o "none". */
+char *func_800299E8(s32 n) {
+    u32 i = n & 0xFF;
+    if (i < 0x1C) {
+        return D_8006D328[i];
+    }
+    return D_80061234;
+}
+
+/* Copia n palabras de s a d. */
+s32 func_8002D540(u32 *d, u32 *s, u32 n) {
+    u32 i;
+    for (i = 0; i < n; i++) {
+        *d++ = *s++;
+    }
+    return 0;
+}
+
+extern s16 D_8007CA20, D_8007CC4E, D_8007CC58, D_8007CC5A;
+extern s8 D_8007CC3C;
+
+/* Dos arranques de un modo (0x103/0xFF y 0x105/0x101 segun c); devuelven el valor puesto (queda en v0). */
+s32 func_8004F968(s32 a, s32 b, s32 c) {
+    s32 v;
+    D_8007CC5A = 0;
+    D_8007CC58 = 0;
+    D_8007CC4E = 0;
+    D_8007CC3C = 1;
+    v = c != 0 ? 0x103 : 0xFF;
+    D_8007CA20 = v;
+    return v;
+}
+
+s32 func_8004F99C(s32 a, s32 b, s32 c) {
+    s32 v;
+    D_8007CC5A = 0;
+    D_8007CC58 = 0;
+    D_8007CC4E = 0;
+    v = c != 0 ? 0x105 : 0x101;
+    D_8007CA20 = v;
+    return v;
+}

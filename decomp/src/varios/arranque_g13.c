@@ -7,7 +7,7 @@ typedef void (*Constructor)(void);
 extern Constructor D_800609B0[];     /* los constructores globales, terminan en NULL */
 extern void *D_8007C9D8;
 extern u8 D_80060A58[], D_800758CC[], D_8007CCB0[];
-extern void func_80010670(void);
+extern void *func_80010670(void **p, s32 liberar);
 extern s32 func_80017C6C(void **p, void (*f)(void), void *q);
 extern void BuclePrincipal(void);
 
@@ -25,7 +25,7 @@ void func_800106C8(void) {
 s32 func_80010000(void) {
     D_8007C9D8 = D_80060A58;
     *(void * volatile *)&D_8007C9D8 = D_800758CC;
-    return func_80017C6C(&D_8007C9D8, func_80010670, D_8007CCB0);
+    return func_80017C6C(&D_8007C9D8, (void (*)(void))func_80010670, D_8007CCB0);
 }
 
 extern void func_80017CE4(void *p);  /* delete */
@@ -34,6 +34,40 @@ extern void func_80017CE4(void *p);  /* delete */
 void *func_8001062C(void **p, s32 liberar) {
     if (p != NULL) {
         *p = D_80060A58;
+        if (liberar > 0) {
+            func_80017CE4(p);
+        }
+    }
+    return p;
+}
+
+extern u8 D_800758CC[];
+
+/* Igual que func_8001062C pero de una clase hija: pone primero su tabla (D_800758CC) y despues la de la
+   base, como un destructor de C++. */
+void *func_80010670(void **p, s32 liberar) {
+    if (p != NULL) {
+        *p = D_800758CC;
+        if (p != NULL) {
+            *p = D_80060A58;
+        }
+        if (liberar > 0) {
+            func_80017CE4(p);
+        }
+    }
+    return p;
+}
+
+extern u8 D_800758F8[], D_80075900[];
+
+/* Destructor de un objeto con dos tablas (en +8 y en +4); la de +4 vuelve a la base al final. */
+void *func_8004E6C0(u8 *p, s32 liberar) {
+    if (p != NULL) {
+        *(void **)(p + 8) = D_800758F8;
+        *(void **)(p + 4) = D_80075900;
+        if (p + 4 != NULL) {
+            *(void **)(p + 4) = D_80060A58;
+        }
         if (liberar > 0) {
             func_80017CE4(p);
         }

@@ -285,3 +285,18 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   RAM de otra funcion del mismo momento y variar los argumentos; el verificador compara original y C igual.
 - 02-10: CAPTURAS SINTETICAS aprobadas: ver `notas/fases/2026-10-02_capturas_sinteticas.md`. Herramienta
   `decomp/sint.py`, resultados en `decomp/progreso_sint.tsv` (IGUAL_SINT), capturas en `capturas_sint/`.
+- 02-10 noche: mutantes de las 5 sinteticas mas grandes: func_80060170 12/12, func_8003C528 11/12,
+  func_80039EBC 8/12, func_80039DD0 7/12, func_80053038 4/12 (la captura sintetica ejercita un solo camino;
+  en esas el IGUAL_SINT vale poco). Antes: func_80026DB0 8/8.
+- 02-10 noche: arreglos de fondo en el borrador. (1) m2c definia los punteros a funcion del juego como
+  `static ... = NULL` y el C saltaba a 0: ahora van extern (auto.limpiar) y verificar rechaza cualquier
+  D_XXXXXXXX definido en el C. (2) Prototipo corto con `f(s32 arg2)`: se agregan arg0/arg1 delante
+  (auto.rellenar_parametros). (3) Las cadenas de los datos van a m2c como bytes: antes salia "texto" y el C
+  pasaba otra direccion. (4) aridad.py tenia un \b convertido en caracter de retroceso y no respetaba
+  tipos_conocidos.h; arreglado. Los trampolines (func_80016970 y otros que llaman por puntero sin tocar
+  a0-a3) toman la aridad de lo que escriben sus llamadores. (5) juego.h trae SUMA_TRAMPA/RESTA_TRAMPA para
+  el add/sub con desborde que el original usa a mano.
+- 02-10 noche: 15 a mano IGUAL_SINT/IGUAL_V0_SINT en auditoria.tsv (archivos nuevos src/varios/sueltas_g13.c,
+  src/objetos/listas_g13.c, src/sabrina/vida_g13.c). func_8003E9FC: la captura sintetica es invalida (la
+  original tambien revienta); func_80012F2C (MoveImage) no termina en el emulador. func_80052114 es un trozo
+  de codigo que se copia a 0xDF80 (no es funcion de C).

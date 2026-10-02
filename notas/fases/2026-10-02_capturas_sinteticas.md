@@ -21,3 +21,17 @@ mato 8 de 8 mutantes.
 Uso: ver el encabezado de `decomp/sint.py` (candidatas, crear, lote, verificar, mutantes). Candidatas:
 SIN_CAPTURAS de hasta 0x180 bytes, con 2 llamadas como mucho, 6 accesos a globales como mucho y sin
 coprocesador ni syscall.
+
+## Resultados de mutantes (02-10 noche)
+
+Sobre las 5 IGUAL_SINT mas grandes (`--max 12`): func_80060170 12/12, func_8003C528 11/12,
+func_80039EBC 8/12, func_80039DD0 7/12, func_80053038 4/12. En las chicas el metodo detecta casi todo; en
+las que tienen varios caminos la captura sintetica suele recorrer uno solo y los mutantes de los otros
+sobreviven. Un IGUAL_SINT de una funcion con muchas ramas vale menos que uno de capturas reales.
+
+## Ampliacion
+
+`sint.py candidatas --tope 0x400 --llamadas 4 --globales 10 --nuevas` (y despues 0x800/8/20): las
+opciones `--llamadas` y `--globales` sueltan los limites y `--nuevas` salta las que ya estan en
+progreso_sint.tsv. Al 02-10 quedan 326 SIN_CAPTURAS; con los limites mas sueltos entran 114 (las demas usan
+el GTE, mtc0 o syscall).

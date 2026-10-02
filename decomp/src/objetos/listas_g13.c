@@ -91,8 +91,9 @@ extern s32 func_800223E8(s32 *pos);
 
 /* Arranque de un objeto que se apoya en el suelo: busca el suelo bajo su posicion (un poco arriba) y lo
    baja hasta ahi si no estaba. */
-void func_800551FC(u8 *o) {
+s32 func_800551FC(u8 *o) {
     s32 v[3];
+    s32 bajo;
     u8 *b = o + 0x74;
     *(s32 *)(b + 0xC) = 0;
     *(s32 *)(b + 8) = 0;
@@ -102,10 +103,12 @@ void func_800551FC(u8 *o) {
     v[1] = SUMA_TRAMPA(SUMA_TRAMPA(*(s32 *)(o + 0x28), -0x6667), -0x7FFF);
     v[2] = *(s32 *)(o + 0x2C);
     v[1] = func_800223E8(v);
-    if (v[1] != SUMA_TRAMPA(SUMA_TRAMPA(*(s32 *)(o + 0x28), -0x6667), -0x7FFF)) {
+    bajo = SUMA_TRAMPA(SUMA_TRAMPA(*(s32 *)(o + 0x28), -0x6667), -0x7FFF);
+    if (v[1] != bajo) {
         *(s32 *)(o + 0x28) = v[1];
     }
     *(s16 *)(o + 0x70) = 0;
+    return bajo;   /* lo que queda en v0 */
 }
 
 extern u32 func_8001C180(s32 *v);
@@ -133,4 +136,52 @@ s32 func_8005794C(u8 *o) {
         return dist;
     }
     return (*(s32 (**)(u8 *, Objeto *))(o + 0x10))(o, p_sabrina);
+}
+
+/* Si s (con bandera 1 o 2) esta mas de 0x10000 por encima de o, lo anota en la lista de o (bloque 0x74,
+   hasta 5, cuenta en +0x14). Devuelve lo que queda en v0 en cada camino. */
+s32 func_8003B4DC(u8 *o, u8 *s) {
+    u8 *b = o + 0x74;
+    s32 m = *(s16 *)(s + 0x112) & 3;
+    s16 n;
+    s32 y;
+    if (m == 0) {
+        return 0;
+    }
+    n = *(s16 *)(b + 0x14);
+    if (n >= 5) {
+        return m;
+    }
+    y = SUMA_TRAMPA(*(s32 *)(o + 0x28), 0x10000);
+    if (!(y < *(s32 *)(s + 0x28))) {
+        return y;
+    }
+    *(s16 *)(b + 0x14) = SUMA_TRAMPA(n, 1);
+    ((u8 **)b)[n] = s;
+    return (s32)(b + n * 4);
+}
+
+extern u8 D_800D588C[];
+extern void func_8002205C(s32 *v, s32 a, s32 b);
+
+/* Arranque: el bloque 0x74 pasa de indice a puntero a su ficha (D_800D588C, 0x18 bytes cada una), la
+   direccion sale de los angulos 0x30/0x32, y si la ficha no tiene velocidad (+0x10) queda marcado. */
+s32 func_8003BC04(u8 *o) {
+    u8 *b = o + 0x74;
+    s32 v[3];
+    s32 i;
+    s16 r;
+    *(s16 *)(o + 0x70) = 0;
+    i = (s16)*(s32 *)b;
+    *(u8 **)b = D_800D588C + SUMA_TRAMPA(i * 2, i) * 8;
+    func_8002205C(v, *(s16 *)(o + 0x30), *(s16 *)(o + 0x32));
+    *(s32 *)(o + 0x38) = v[0];
+    *(s32 *)(o + 0x3C) = v[1];
+    *(s32 *)(o + 0x40) = v[2];
+    r = *(s16 *)(*(u8 **)b + 0x10);
+    if (r != 0) {
+        return r;
+    }
+    b[4] = 1;
+    return 1;
 }

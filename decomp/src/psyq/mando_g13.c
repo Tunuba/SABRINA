@@ -565,3 +565,49 @@ s32 func_800272B0(Puerto *p, s32 a, s32 c) {
 s32 func_80027D44(s32 a, s32 dato, s32 c) {
     return func_80027248(D_8006CF98(a, dato, c), dato);
 }
+
+/* PadInfoAct: con act < 0 cuantos actuadores hay; si no, el dato que (1 a 5) del actuador act. */
+s32 func_80027BC8(s32 puerto, s32 act, s32 que) {
+    u8 *b = (u8 *)D_8006CF98(puerto, act, que);
+    u8 *a;
+    if (act < 0) {
+        return b[0xE9];
+    }
+    if (act >= b[0xE9]) {
+        return 0;
+    }
+    a = *(u8 **)(b + 4) + act * 5;
+    switch (que) {
+    case 1:
+        return a[0];
+    case 2:
+        return a[1];
+    case 3:
+        return a[2];
+    case 4:
+        return a[3];
+    case 5:
+        return a[4];
+    }
+    return 0;
+}
+
+/* PadInfoMode: con modo < 0 cuantos modos hay; con i < 0 cuantos datos tiene el modo; si no, el dato i. */
+s32 func_80027C9C(s32 puerto, s32 modo, s32 i) {
+    u8 *b = (u8 *)D_8006CF98(puerto, modo, i);
+    u8 *m;
+    if (modo < 0) {
+        return b[0xEA];
+    }
+    if (modo >= b[0xEA]) {
+        return 0;
+    }
+    m = *(u8 **)(b + 8) + modo * 8;
+    if (i < 0) {
+        return m[0];
+    }
+    if (i >= m[0]) {
+        return 0;
+    }
+    return (*(u8 **)(m + 4))[i];
+}

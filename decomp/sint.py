@@ -49,7 +49,7 @@ def asm_de(nom):
     return ""
 
 
-def candidatas(tope):
+def candidatas(tope, max_llamadas=2, max_globales=6, hechas=()):
     progreso = {}
     for l in list(open(os.path.join(AQUI, "progreso.tsv")))[1:]:
         p = l.rstrip("\n").split("\t")
@@ -62,7 +62,7 @@ def candidatas(tope):
         llamadas = len(re.findall(r"\bjal\b|\bjalr\b", a))
         globales = len(re.findall(r"%hi\(|%gp_rel\(", a))
         hw = bool(re.search(r"cop2|lwc2|swc2|mtc0|mfc0|syscall|break", a))
-        if llamadas <= 2 and globales <= 6 and not hw:
+        if llamadas <= max_llamadas and globales <= max_globales and not hw and nom not in hechas:
             res.append((tam, nom, llamadas, globales))
     return sorted(res)
 
@@ -149,7 +149,11 @@ def main():
     a = sys.argv[1:]
     if a[0] == "candidatas":
         tope = int(a[a.index("--tope") + 1], 0) if "--tope" in a else 0x200
-        for t, n, ll, g in candidatas(tope):
+        ll = int(a[a.index("--llamadas") + 1]) if "--llamadas" in a else 2
+        gl = int(a[a.index("--globales") + 1]) if "--globales" in a else 6
+        # --nuevas: salta las que ya estan en progreso_sint.tsv
+        hechas = {l.split("\t")[0] for l in open(TSV)} if "--nuevas" in a and os.path.exists(TSV) else set()
+        for t, n, ll, g in candidatas(tope, ll, gl, hechas):
             print(f"{t}\t{n}\t{ll}\t{g}")
     elif a[0] == "crear":
         for n in a[1].split(","):
