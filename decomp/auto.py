@@ -218,7 +218,9 @@ def limpiar(texto, externas):
     definidas = set(re.findall(r"^\w[\w\s\*]*?\b(\w+)\s*\([^;]*$", t, re.M))
     como_valor = {n for n in re.findall(r"\b([A-Za-z_]\w*)\b(?!\s*\()", t) if n in funciones_elf()}
     cab += "".join(f"\nextern s32 {n}();" for n in sorted(como_valor - definidas))
-    return ('#include "juego.h"\n#include "m2c_macros.h"\n#include "m2c_ajustes.h"\n\n' + cab + "\n\n" + t + "\n")
+    # p_sabrina (y el tipo Objeto que m2c usa al leer sus campos) estan en objeto.h, que incluye juego.h
+    cabecera = "objeto.h" if "p_sabrina" in t else "juego.h"
+    return (f'#include "{cabecera}"\n#include "m2c_macros.h"\n#include "m2c_ajustes.h"\n\n' + cab + "\n\n" + t + "\n")
 
 
 def procesar(funcion, tam):
