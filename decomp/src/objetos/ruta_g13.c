@@ -141,3 +141,49 @@ s32 func_80052784(Objeto *o) {
     D_8007CC5C = 1;
     return 1;
 }
+
+/* La caja que encierra la ruta del punto p (siguiendo los anteriores si tiene, si no los siguientes, hasta
+ * volver a p o terminar): deja en c el centro (y 0) y en r el radio al cuadrado en el plano. */
+void func_800573C0(PuntoRutaI *p, s32 *c, s32 *r) {
+    s32 x0 = p->x, y0 = p->y, z0 = p->z;
+    s32 x1 = x0, y1 = y0, z1 = z0;
+    PuntoRutaI *q;
+    s32 n, a;
+    s32 por_anterior = *(s16 *)((u8 *)p + 0x10) != 0;
+
+    n = por_anterior ? *(s16 *)((u8 *)p + 0x10) : p->siguiente;
+    while (n != 0) {
+        q = &D_800D588C[n];
+        if (q == p) {
+            break;
+        }
+        if (q->x < x0) {
+            x0 = q->x;
+        }
+        if (q->y < y0) {
+            y0 = q->y;
+        }
+        if (q->z < z0) {
+            z0 = q->z;
+        }
+        if (x1 < q->x) {
+            x1 = q->x;
+        }
+        if (y1 < q->y) {
+            y1 = q->y;
+        }
+        if (z1 < q->z) {
+            z1 = q->z;
+        }
+        n = por_anterior ? *(s16 *)((u8 *)q + 0x10) : q->siguiente;
+    }
+    c[0] = (x1 - x0) >> 1;
+    c[1] = 0;
+    c[2] = (z1 - z0) >> 1;
+    a = c[0] >> 8;
+    *r = ((a * a) >> 8) << 8;
+    a = c[2] >> 8;
+    *r += ((a * a) >> 8) << 8;
+    c[0] += x0;
+    c[2] += z0;
+}
