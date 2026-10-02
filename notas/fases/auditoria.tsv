@@ -294,3 +294,5 @@ func_80049A28	424	IGUAL_V0	src/objetos/enemigo2_g13.c	las 2 capturas iguales sal
 func_80049BD0	528	IGUAL_V0	src/objetos/enemigo2_g13.c	las 2 capturas iguales salvo v0
 func_800496E4	528	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 113 de 127 variantes iguales (resto solo v0)
 func_8004951C	456	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 120 de 122 variantes iguales (resto solo v0)
+func_800528AC	1452	IGUAL_V0	src/objetos/teleporte_g13.c	las 2 capturas iguales salvo v0
+func_80054894	452	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 154 de 154 variantes iguales

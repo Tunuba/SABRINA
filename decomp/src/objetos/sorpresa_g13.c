@@ -63,3 +63,58 @@ s32 func_80055A38(Objeto *o) {
         return s;
     }
 }
+
+extern void func_8004C700(s32 a);
+
+/* Otra caja como la de arriba: el objeto que suelta lleva 1 en 0x79. */
+s32 func_80054894(Objeto *o) {
+    u8 *e = (u8 *)&o->extra;
+    Objeto *p;
+    s32 s;
+
+    switch (o->estado) {
+    case 0:
+        o->estado = 1;
+        return 1;
+    case 1:
+        return 0x80054A48;
+    case 2:
+        func_8004C700(*(s32 *)e);
+        p = func_800252A0(0x18, o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        ((u8 *)p)[0x79] = 1;
+        func_8004A3B4(p, 0, 0);
+        switch (func_80021CE4(3)) {
+        case 0:
+            s = 0xB;
+            break;
+        case 1:
+            s = 0x11;
+            break;
+        case 2:
+            s = 0xD;
+            break;
+        default:
+            s = 0x10;
+            break;
+        }
+        TocarSonido(s, 0, 0x2A, 0x7F);
+        o->estado = 4;
+        return func_8004C81C(o);
+    case 3:
+        if (o->anim->_50 != (s8)e[5]) {
+            return (s8)e[5];
+        }
+        o->estado = 2;
+        return 2;
+    case 4:
+        if (!func_8002EFD0(o)) {
+            return 0;
+        }
+        *(u8 *)&o->_20 |= 0x80;
+        return *(u8 *)&o->_20;
+    default:
+        s = o->estado;
+        o->estado = 0;
+        return s;
+    }
+}
