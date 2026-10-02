@@ -222,3 +222,10 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   func_800190C0, func_800193F8 y func_80010000. DISTINTO func_800163E4 (el setjmp guarda la vuelta y la pila
   del C). NO_TERMINA ReproducirSTR y PantallasLegales. Sin resultado func_800106C8 (llama al bucle
   principal; la original da error de lectura sin alinear en su captura y el verificador tarda demasiado).
+- Las 64 de error_rehacer volvieron a dar ERROR ("process pool terminated abruptly") aunque el lote
+  termino: no es la memoria (func_8002D170 sola da IGUAL en 15 min con 167 MB). Se pasan ahora DE A UNA
+  (`auto.py --solo F --procesos 1` por funcion, script de_a_una.sh del scratchpad, log en
+  build/auto_de_a_una_log.txt), asi un trabajador que se muere no arrastra a las demas.
+- Escrito a mano y SIN VERIFICAR todavia (el lote ocupa los dos procesos): `geometria/azar_g13.c`
+  (func_80021C48), `Screen/primitivas_g13.c` (func_8002153C), y en `psyq/mando_g13.c` func_80028D0C,
+  func_80029ED4, func_80027AD0 (PadInfo) y func_800283C4 (PadInitDirect).

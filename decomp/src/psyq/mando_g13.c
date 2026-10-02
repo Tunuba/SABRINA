@@ -398,3 +398,117 @@ void func_8002805C(Puerto *p) {
         }
     }
 }
+
+extern void *D_8006CF9C, *D_8006CFA0;
+extern void func_800285FC(void), func_80028C54(void);
+
+/* Pone las funciones del mando de siempre. Devuelve la ultima. */
+void *func_80028D0C(void) {
+    D_8006CF9C = func_800285FC;
+    D_8006CFA0 = func_80028C54;
+    *(void **)&D_8006CFA4 = func_8002886C;
+    return func_8002886C;
+}
+
+extern s32 func_80016970(s32 canal, s32 f);
+
+/* Pone f en el canal 3 de interrupciones. */
+s32 func_80029ED4(s32 f) {
+    return func_80016970(3, f);
+}
+
+extern Puerto *(*D_8006CF98)(s32 a, s32 b, s32 c);  /* busca el puerto */
+
+/* PadInfo: un dato del mando (1 tipo, 2 actuadores, 3 modo, 4 cada actuador, 100 desconexiones). */
+s32 func_80027AD0(s32 puerto, s32 que, s32 n) {
+    Puerto *p = D_8006CF98(puerto, que, n);
+
+    switch (que) {
+    case 1:
+        return p->tipo;
+    case 2:
+        return p->_E6;
+    case 3:
+        return B(p, 0xE4);
+    case 4:
+        if (n < 0) {
+            return B(p, 0xE3);
+        }
+        if (n < B(p, 0xE3)) {
+            return (*(u16 **)p)[n];
+        }
+        return 0;
+    case 100:
+        return p->_4C;
+    default:
+        return 0;
+    }
+}
+
+extern u8 D_80090A98[0x1E0];         /* los dos puertos */
+extern u8 D_80090C78[0x780];         /* los cuatro del multitap de cada uno */
+extern u8 D_80090A08[], D_80090A50[];  /* lo que contestan y lo que se les manda (0x23 por puerto) */
+extern s32 D_8006D018[2];
+extern s32 D_8006CFBC, D_8006CFD0;
+extern void *D_8006CF84, *D_8006CF8C, *D_8006CF90, *D_8006CF94, *D_8006CFB8;
+extern void func_80027DF0(void), func_80027D7C(void), func_80027F4C(void), func_800282D8(void);
+extern void func_80028354(void), func_80027F08(void);
+extern void func_80025DA8(void);
+
+/* Arma un puerto (o uno del multitap) vacio: sin mando y con los motores apagados. */
+static void vaciar(u8 *p, u8 *resp, u8 *envio) {
+    s32 i;
+
+    *(u8 **)(p + 0x3C) = resp;
+    *(u8 **)(p + 0x40) = envio;
+    for (i = 5; i >= 0; i--) {
+        p[0x5D + 5 - i] = 0xFF;
+    }
+}
+
+/* PadInitDirect: pone las funciones de libpad, limpia los dos puertos y los de sus multitap y los deja
+ * escribiendo en los buferes del juego. Devuelve 1. */
+s32 func_800283C4(u8 *buf1, u8 *buf2) {
+    u8 *p, *mt, *c;
+    s32 i, j;
+
+    D_8006CFBC = 0;
+    D_8006CFD0 = 1;
+    func_80028D0C();
+    D_8006CF84 = func_80027DF0;
+    *(void **)&D_8006CF88 = func_80027D7C;
+    D_8006CF8C = func_80027F4C;
+    D_8006CF90 = func_8002805C;
+    D_8006CF94 = func_800282D8;
+    *(void **)&D_8006CF98 = func_80028354;
+    D_8006CFB8 = D_80090A98;
+    *(void **)&D_8006CFA8 = func_80027F08;
+    bzero(D_80090A98, 0x1E0);
+    bzero(D_80090C78, 0x780);
+    *(u8 **)(D_80090A98 + 0x30) = buf1;
+    *(u8 **)(D_80090A98 + 0x120) = buf2;
+    for (i = 0; i < 2; i++) {
+        p = D_80090A98 + i * 0xF0;
+        mt = D_80090C78 + i * 0x3C0;
+        *(u8 **)(p + 0xC) = mt;
+        *(u8 **)(p + 0x10) = p;
+        (*(u8 **)(p + 0x30))[0] = 0xFF;
+        (*(u8 **)(p + 0x30))[1] = 0;
+        D_8006D018[i] = 0;
+        vaciar(p, D_80090A08 + i * 0x23, D_80090A50 + i * 0x23);
+        for (j = 0; j < 4; j++) {
+            c = mt + j * 0xF0;
+            *(u8 **)(c + 0x10) = p;
+            *(u8 **)(c + 0x30) = *(u8 **)(p + 0x30) + 2 + j * 8;
+            c[0x38] = 0xFF;
+            c[0x36] = 0;
+            c[0x34] = 0;
+            (*(u8 **)(c + 0x30))[0] = 0xFF;
+            (*(u8 **)(c + 0x30))[1] = 0;
+            vaciar(c, D_80090A08 + i * 0x23 + 2 + j * 8, D_80090A50 + i * 0x23 + 3 + j * 8);
+        }
+    }
+    func_80025DA8();
+    D_8006CFBC = 1;
+    return 1;
+}
