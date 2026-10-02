@@ -91,3 +91,71 @@ s32 PantallasLegales(void) {
     }
     return func_80021120(D_8007C9E0);
 }
+
+extern s32 func_80016970(s32 canal, s32 f);
+extern void SsSetSerialVol(s32 s, s32 izq, s32 der);
+extern s32 func_8005D9C0(u32 *p, s32 v);
+extern s32 D_8007CC98, D_8007CC9C, D_8007CCA0, D_8007CCA4;
+
+typedef struct {
+    s16 left, right;
+} VolumenV;
+
+typedef struct {
+    u32 mask;
+    VolumenV mvol, mvolmode, mvolx;
+    VolumenV cd_volume;
+    s32 cd_reverb, cd_mix;
+    VolumenV ext_volume;
+    s32 ext_reverb, ext_mix;
+} AtributosSpuV;
+
+extern s32 SpuSetCommonAttr(AtributosSpuV *a);
+
+/* Pone f en el canal 1 de interrupciones (el del video). */
+s32 func_8005DDE8(s32 f) {
+    return func_80016970(1, f);
+}
+
+/* Baja el volumen del video de a 8 (sin pasar de 0). Devuelve 2 cuando llega a 0. */
+s32 func_8005D164(s16 *vol) {
+    *vol -= 8;
+    if (*vol < 0) {
+        *vol = 0;
+    }
+    SsSetSerialVol(0, *vol, *vol);
+    return *vol == 0 ? 2 : 0;
+}
+
+/* Prende o apaga los bits 0x08000000 (al reves, con flags & 1) y 0x02000000 (flags & 2) de la palabra y la
+ * manda con func_8005D9C0. */
+s32 func_8005DCD4(u32 *p, s32 flags) {
+    if (flags & 1) {
+        *p &= 0xF7FFFFFF;
+    } else {
+        *p |= 0x08000000;
+    }
+    if (flags & 2) {
+        *p |= 0x02000000;
+    } else {
+        *p &= 0xFDFFFFFF;
+    }
+    return func_8005D9C0(p, *(u16 *)p);
+}
+
+/* El sonido del video: volumen general y del CD al maximo, mezcla del CD prendida, y las cuentas en 0. */
+s32 func_8005D844(void) {
+    AtributosSpuV c;
+
+    c.mask = 0x2C3;
+    c.mvol.left = 0x3FFF;
+    c.mvol.right = 0x3FFF;
+    c.cd_volume.left = 0x3FFF;
+    c.cd_volume.right = 0x3FFF;
+    D_8007CC9C = 0;
+    D_8007CC98 = 0;
+    D_8007CCA4 = 0;
+    D_8007CCA0 = 0;
+    c.cd_mix = 1;
+    return SpuSetCommonAttr(&c);
+}

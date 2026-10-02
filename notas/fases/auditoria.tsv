@@ -273,3 +273,7 @@ func_8003EAF8	36	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 63 de 63 variante
 func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 116 de 116 variantes iguales
 func_80055A38	448	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
 func_8003E914	68	DISTINTO	src/audio/tempo_g13.c	43 de 43 variantes iguales pero la captura 00 da error en la original (lee 0x00000000) y no en el C; sin aclarar
+func_8005DDE8	36	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 69 de 69 variantes iguales
+func_8005D164	108	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 198 de 198 variantes iguales
+func_8005DCD4	124	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 189 de 189 variantes iguales
+func_8005D844	92	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 89 de 89 variantes iguales
