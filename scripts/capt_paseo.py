@@ -24,6 +24,14 @@ funcs = [(int(d, 16), nom) for d, tam, nom in (l.split() for l in open(os.path.j
          if nom in solo]
 
 
+def esperar(e, n, tope=20):
+    """Como e.esperar, pero si el emulador deja de avanzar (el juego se colgo) sigue a los tope segundos."""
+    meta = e.frames() + n
+    limite = time.time() + tope
+    while e.frames() < meta and time.time() < limite:
+        time.sleep(0.01)
+
+
 def cuantas(nom):
     c = os.path.join(CAPT, nom)
     return len([f for f in os.listdir(c) if f.endswith(".regs")]) if os.path.isdir(c) else 0
@@ -43,7 +51,7 @@ with Emu(iso=CUE, log="capt_paseo.log", extra=("-fastboot",), depurar=True) as e
                 pass
     for nivel in niveles:
         e.eval(f"wr8(0x8007CA00, {nivel}); wr16(0x8007C9FC, 0); return 'ok'")
-        e.esperar(1300)
+        esperar(e, 1300, 60)
         # la celda es ((x >> 16) + 0x80) >> 2: de -0x80 a 0x7F en la parte alta de x y de z
         for cz in range(0, 64, paso):
             for cx in range(0, 64, paso):
@@ -51,7 +59,7 @@ with Emu(iso=CUE, log="capt_paseo.log", extra=("-fastboot",), depurar=True) as e
                 z = (0x7F - (cz * 4) - 0x80 + 2) << 16
                 e.eval(f"local s = rd32(0x8007CAF8); if s ~= 0 then wr32(s + 0x24, {x & 0xFFFFFFFF}); "
                        f"wr32(s + 0x2C, {z & 0xFFFFFFFF}) end; return 'ok'")
-                e.esperar(cuadros)
+                esperar(e, cuadros)
         print(f"nivel {nivel} listo, {time.time() - t0:.0f} s", flush=True)
 nuevas = [nom for _, nom in funcs if antes[nom] == 0 and cuantas(nom) > 0]
 print(f"{len(nuevas)} funciones capturadas por primera vez ({time.time() - t0:.0f} s): {' '.join(nuevas)}")

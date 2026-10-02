@@ -244,3 +244,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   de antes: la PC se queda sin memoria (otras sesiones) y se lleva al trabajador. Al cortar habia 1.8 GB
   libres: no se lanzo nada mas. Pendiente: func_8002D170 sola cuando haya memoria, y mas capturas con
   `scripts/capt_sin.py` (lo que mas rindio: partir del `arranque`).
+- 02-10 madrugada: func_8002D170 queda PENDIENTE (en el lote se muere por memoria; sola da IGUAL).
+  Capturas: el arranque y los menus ya no dan mas (2 y 2). Lo que rinde ahora es `scripts/capt_paseo.py`:
+  pone a Sabrina en una cuadricula de puntos de cada nivel (escribe x y z) y espera, asi se activan los
+  objetos de todo el nivel. Niveles 0 a 5: 56 funciones nuevas. Se colgo una vez en el nivel 6 (el juego
+  deja de avanzar): ahora la espera tiene tope y se corre de a un nivel.
