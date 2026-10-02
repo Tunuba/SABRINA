@@ -94,7 +94,7 @@ s32 PantallasLegales(void) {
 
 extern s32 func_80016970(s32 canal, s32 f);
 extern void SsSetSerialVol(s32 s, s32 izq, s32 der);
-extern s32 func_8005D9C0(u32 *p, s32 v);
+s32 func_8005D9C0(u32 *p, u32 v);
 extern s32 D_8007CC98, D_8007CC9C, D_8007CCA0, D_8007CCA4;
 
 typedef struct {
@@ -158,4 +158,40 @@ s32 func_8005D844(void) {
     D_8007CCA0 = 0;
     c.cd_mix = 1;
     return SpuSetCommonAttr(&c);
+}
+
+extern volatile u32 *D_80075CA4, *D_80075CA8, *D_80075CAC, *D_80075CBC, *D_80075CC4;  /* DMA y MDEC */
+extern void func_8005DADC(void);
+
+/* Manda al MDEC la palabra de mando y el bloque que sigue por DMA (v/32 palabras de a 32). Devuelve la
+ * direccion del registro de control del DMA. */
+s32 func_8005D9C0(u32 *p, u32 v) {
+    func_8005DADC();
+    *D_80075CC4 |= 0x88;
+    *D_80075CA4 = (u32)(p + 1);
+    *D_80075CA8 = ((v >> 5) << 16) | 0x20;
+    *D_80075CBC = *p;
+    *D_80075CAC = 0x01000201;
+    return (s32)D_80075CAC;
+}
+
+extern volatile s16 D_800D584A;      /* 1 cuando el cuadro esta listo */
+extern volatile s16 D_800D584C;      /* el bufer en uso */
+extern s16 D_800D5830[], D_800D5832[];  /* donde va cada bufer (de a 4) */
+extern s16 D_800D5840, D_800D5842;
+
+/* Espera (con tope) a que el cuadro del video este listo y cambia de bufer. Devuelve la y del nuevo. */
+s32 func_8005D1D0(void) {
+    s32 n = 0x800000;
+
+    while (D_800D584A == 0) {
+        if (--n == 0) {
+            break;
+        }
+    }
+    D_800D584A = 0;
+    D_800D584C ^= 1;
+    D_800D5840 = D_800D5830[D_800D584C * 4];
+    D_800D5842 = D_800D5832[D_800D584C * 4];
+    return D_800D5842;
 }

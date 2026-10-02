@@ -277,3 +277,6 @@ func_8005DDE8	36	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 69 de 69 variant
 func_8005D164	108	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 198 de 198 variantes iguales
 func_8005DCD4	124	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 189 de 189 variantes iguales
 func_8005D844	92	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 89 de 89 variantes iguales
+func_8005D9C0	144	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 106 de 106 variantes iguales
+func_8005D1D0	156	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 258 de 258 variantes iguales
+func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
