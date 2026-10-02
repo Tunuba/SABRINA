@@ -95,3 +95,56 @@ s32 func_8003E914(s32 n, u32 valor, s32 convertir) {
     }
     return (s32)(D_80074EBC + n * 2);
 }
+
+extern u16 D_80074EC0;               /* la direccion de destino en la RAM de sonido (/8) */
+extern char D_80061D10[];            /* "SPU:T/O [%s]\n" */
+extern char D_80061D30[], D_80061D44[];  /* "wait (wrdy H -> L)", "wait (dmaf clear/W)" */
+extern void func_8003EA90(void);     /* una espera corta */
+extern s32 printf(const char *f, ...);
+
+#define SPU16(d) (*(volatile u16 *)(D_80074EBC + (d)))
+
+/* Escribe n bytes en la RAM de sonido por el FIFO de la SPU, de a 64 (sin DMA), esperando a la SPU entre
+ * tandas y al final; si tarda demasiado, avisa. Devuelve lo que quedo en v0 en el original. */
+s32 func_8003E0C4(u16 *datos, u32 n) {
+    u32 estado, tanda, i;
+    s32 j;
+
+    SPU16(0x1A6) = D_80074EC0;
+    estado = SPU16(0x1AE) & 0x7FF;
+    func_8003EA90();
+    while (n != 0) {
+        tanda = n < 0x41 ? n : 0x40;
+        for (j = 0; j < (s32)tanda; j += 2) {
+            SPU16(0x1A8) = *datos++;
+        }
+        SPU16(0x1AA) = (SPU16(0x1AA) & 0xFFCF) | 0x10;
+        func_8003EA90();
+        if (SPU16(0x1AE) & 0x400) {
+            for (i = 1;; i++) {
+                if (i >= 0xF01) {
+                    printf(D_80061D10, D_80061D30);
+                    break;
+                }
+                if (!(SPU16(0x1AE) & 0x400)) {
+                    break;
+                }
+            }
+        }
+        n -= tanda;
+        func_8003EA90();
+        func_8003EA90();
+    }
+    SPU16(0x1AA) &= 0xFFCF;
+    if ((SPU16(0x1AE) & 0x7FF) == (estado & 0xFFFF)) {
+        return estado & 0xFFFF;
+    }
+    for (i = 1;; i++) {
+        if (i >= 0xF01) {
+            return printf(D_80061D10, D_80061D44);
+        }
+        if ((SPU16(0x1AE) & 0x7FF) == (estado & 0xFFFF)) {
+            return estado & 0xFFFF;
+        }
+    }
+}

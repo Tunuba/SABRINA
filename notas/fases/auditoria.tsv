@@ -280,3 +280,4 @@ func_8005D844	92	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 89 de 89 variant
 func_8005D9C0	144	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 106 de 106 variantes iguales
 func_8005D1D0	156	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 258 de 258 variantes iguales
 func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
+func_8003E0C4	448	DISTINTO	src/audio/tempo_g13.c	3 de 3 variantes iguales pero la captura 00 da error en la original (salta a 0x00000000) y no en el C; igual que func_8003E914, sin aclarar

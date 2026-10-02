@@ -229,3 +229,13 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - Escrito a mano y SIN VERIFICAR todavia (el lote ocupa los dos procesos): `geometria/azar_g13.c`
   (func_80021C48), `Screen/primitivas_g13.c` (func_8002153C), y en `psyq/mando_g13.c` func_80028D0C,
   func_80029ED4, func_80027AD0 (PadInfo) y func_800283C4 (PadInitDirect).
+- Noche del 01-10: de las 64 y de las 137, a mano IGUAL: func_8004CB48, func_8005BED0, func_80047064
+  (creditos), func_8004DAC4, func_8003DC48, func_80041CD8, func_8004EB04, func_8003EAF8, func_8004DC10,
+  func_80055A38, func_8005DDE8, func_8005D164, func_8005DCD4, func_8005D844, func_8005D9C0, func_8005D1D0,
+  func_80021C48, func_80028D0C, func_80029ED4, func_800283C4. DISTINTO por artefacto: func_80027AD0
+  (puntero de funcion al azar), func_8003E914 y func_8003E0C4 (la captura 00 hace saltar a la ORIGINAL a 0
+  y al C no; raro, mirar si la captura de esas dos de la SPU es buena). func_8002153C escrita: la original da
+  error de lectura en su captura (Reservar con el malloc de la BIOS) y el C no termina; sin anotar.
+- func_8002D170 dio IGUAL sola (15 min) pero en el lote quedo ERROR otra vez: repetirla sola.
+- Saltadas por el CD: func_8002D714, func_8002D56C, func_8002FF1C, func_8002B810, func_8002B2BC,
+  func_8005D50C (el reproductor de video).
