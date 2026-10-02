@@ -82,3 +82,16 @@ extern s32 func_80016970(s32 canal, s32 f);
 s32 func_8003EAF8(s32 f) {
     return func_80016970(4, f);
 }
+
+extern u8 *D_80074EBC;               /* los registros de la SPU */
+extern s32 D_80074ED0;               /* corrimiento de las direcciones */
+
+/* Escribe un registro de la SPU (n en medias palabras); con convertir, el valor es una direccion. */
+s32 func_8003E914(s32 n, u32 valor, s32 convertir) {
+    if (convertir == 0) {
+        *(u16 *)(D_80074EBC + n * 2) = valor;
+    } else {
+        *(u16 *)(D_80074EBC + n * 2) = valor >> D_80074ED0;
+    }
+    return (s32)(D_80074EBC + n * 2);
+}

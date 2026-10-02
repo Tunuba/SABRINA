@@ -271,3 +271,5 @@ func_8003DC48	252	IGUAL	src/audio/iniciar_sonido_g13.c	1 de 1 capturas (sin vari
 func_8004EB04	204	IGUAL	src/varios/tarjeta_lista_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
 func_8003EAF8	36	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 63 de 63 variantes iguales
 func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 116 de 116 variantes iguales
+func_80055A38	448	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
+func_8003E914	68	DISTINTO	src/audio/tempo_g13.c	43 de 43 variantes iguales pero la captura 00 da error en la original (lee 0x00000000) y no en el C; sin aclarar
