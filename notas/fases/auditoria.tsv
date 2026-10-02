@@ -282,7 +282,6 @@ func_8005D1D0	156	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 258 de 258 vari
 func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
 func_8003E0C4	448	DISTINTO	src/audio/tempo_g13.c	3 de 3 variantes iguales pero la captura 00 da error en la original (salta a 0x00000000) y no en el C; igual que func_8003E914, sin aclarar
 func_80034710	96	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 131 de 131 variantes iguales
-func_8002E030	196	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 161 de 178 variantes iguales (solo v0)
 func_8003D5F4	500	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 149 de 158 variantes iguales (solo v0)
 func_80045CF4	492	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 121 de 148 variantes iguales (solo v0)
 func_8002E51C	1792	DISTINTO	src/objetos/enemigo_g13.c	146 de 159 variantes iguales; las demas solo v0 salvo una que parcha 0x80061848 (tabla de saltos) con 0
@@ -290,10 +289,6 @@ func_8001C390	52	IGUAL	src/geometria/azar_g13.c	2 de 2 capturas y 212 de 212 var
 func_8004DB6C	164	IGUAL	src/objetos/puerta_mundo_g13.c	2 de 2 capturas y 227 de 227 variantes iguales
 func_80048104	96	IGUAL	src/objetos/ruta_g13.c	1 de 1 capturas y 69 de 69 variantes iguales
 func_80052784	296	IGUAL	src/objetos/ruta_g13.c	2 de 2 capturas y 197 de 197 variantes iguales
-func_80049A28	424	IGUAL_V0	src/objetos/enemigo2_g13.c	las 2 capturas iguales salvo v0
-func_80049BD0	528	IGUAL_V0	src/objetos/enemigo2_g13.c	las 2 capturas iguales salvo v0
-func_800496E4	528	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 113 de 127 variantes iguales (resto solo v0)
-func_8004951C	456	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 120 de 122 variantes iguales (resto solo v0)
 func_800528AC	1452	IGUAL_V0	src/objetos/teleporte_g13.c	las 2 capturas iguales salvo v0
 func_80054894	452	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 154 de 154 variantes iguales
 func_80048DC0	684	IGUAL	src/objetos/enemigo_g13.c	1 de 1 capturas y 73 de 73 variantes iguales
@@ -378,3 +373,12 @@ func_8003D478	380	IGUAL	src/objetos/listas_g13.c	2 de 2 capturas y 84 de 84 vari
 func_80035190	388	IGUAL	src/objetos/listas_g13.c	6 de 6 capturas y 438 de 438 variantes iguales
 func_80045B60	404	IGUAL	src/objetos/listas_g13.c	2 de 2 capturas y 128 de 128 variantes iguales
 func_800563C4	408	IGUAL	src/objetos/listas_g13.c	1 de 1 capturas y 45 de 45 variantes iguales
+func_80023E3C	408	IGUAL	src/Screen/fondo_g13.c	3 de 3 capturas y 259 de 259 variantes iguales
+func_80057CA0	492	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 106 de 106 variantes iguales
+func_8002E030	196	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 178 de 178 variantes iguales
+func_800496E4	528	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 114 de 114 variantes iguales
+func_8004951C	456	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 111 de 111 variantes iguales
+func_80049A28	424	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 126 de 126 variantes iguales
+func_80049BD0	528	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 89 de 89 variantes iguales
+func_80049388	404	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 79 de 79 variantes iguales
+func_80054A58	508	IGUAL	src/objetos/listas_g13.c	2 de 2 capturas y 135 de 135 variantes iguales

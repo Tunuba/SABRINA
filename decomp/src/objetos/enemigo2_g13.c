@@ -72,9 +72,11 @@ static s32 paso(Objeto *o, void *tabla, s32 marca, s32 sin_estado) {
     case 9:
         o->estado = 0;
         return sin_estado;
-    default:
+    default: {
+        s32 v = o->estado;    /* fuera de la tabla: v0 queda con el estado */
         o->estado = 0;
-        return 0;
+        return v;
+    }
     }
 }
 
@@ -365,4 +367,37 @@ s32 func_80049388(Objeto *o, u8 *e, u16 *t, void *tabla) {
     a->_50 = 0;
     E16(e, 0x42) = 0;
     return t[0];
+}
+
+extern s32 func_80048710(EstadoAnim *a, s32 anim);
+
+/* Al terminar la animacion anim, decide segun la distancia a Sabrina: cerca ataca (7); lejos vuelve a
+ * patrullar (0, o 2 si el modo tiene la bandera 1 y no la 2). Devuelve lo que queda en v0. */
+s32 func_80048804(Objeto *o, s32 modo, EstadoAnim *a, s32 anim) {
+    s32 d;
+
+    if (func_8002EFD0(o) == 0) {
+        return 0;
+    }
+    if (func_80048710(a, anim) == 0) {
+        return 0;
+    }
+    d = func_8002225C(o, p_sabrina->x, p_sabrina->y, p_sabrina->z);
+    if (d < 0x58001) {
+        o->estado = 7;
+        return 7;
+    }
+    if (d < 0xF0001) {
+        return d;
+    }
+    if (modo & 2) {
+        o->estado = 0;
+        return modo & 2;
+    }
+    if (modo & 1) {
+        o->estado = 2;
+        return 2;
+    }
+    o->estado = 0;
+    return 0;
 }

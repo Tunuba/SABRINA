@@ -611,3 +611,162 @@ s32 func_80054A58(u8 *o) {
     }
     return 0;
 }
+
+extern s32 D_8007CC70;
+
+/* Pone el tipo (1 a 4) en el bloque 0x74 y su modelo (0x16, 0x18, 0x19, 0x17). Devuelve 1 (queda en v0). */
+s32 func_80055F34(u8 *o, s32 tipo) {
+    *(s32 *)(o + 0x74) = tipo;
+    switch (tipo) {
+    case 2:
+        func_800249CC(o, 0x18);
+        break;
+    case 1:
+        func_800249CC(o, 0x16);
+        break;
+    case 3:
+        func_800249CC(o, 0x19);
+        break;
+    case 4:
+        func_800249CC(o, 0x17);
+        break;
+    }
+    D_8007CC70 = 1;
+    return 1;
+}
+
+extern void func_800206E8(u8 *o);
+extern void func_8001E230(void *modelo);
+extern void func_800399E8(u8 *o, u8 *a);
+
+/* Le pone a a el modelo guardado por o (bloque +0x40) en lugar del suyo, lo suelta (0x11C) y sigue con
+   func_800399E8. Devuelve 0x80 (queda en v0). */
+s32 func_80038FAC(u8 *o, u8 *a) {
+    u8 *b = o + 0x74;
+    *(s16 *)(a + 0x112) &= 0x7FFF;
+    if (*(void **)(a + 0x60) != NULL) {
+        func_800206E8(a);
+        func_8001E230(*(void **)(a + 0x60));
+    }
+    *(s32 *)(a + 0x60) = *(s32 *)(b + 0x40);
+    *(s32 *)(a + 0x11C) = 0;
+    func_800399E8(o, a);
+    o[0x20] = 0x80;
+    return 0x80;
+}
+
+extern s32 func_80021D44(s16 *ang, s32 objetivo, s32 paso);
+extern s32 func_80022310(u8 *o, s32 ang, s32 a, s32 b, s32 anim);
+extern void func_800484CC(s32 *desde, s32 *hasta, s32 dist, s32 *fuera);
+extern s32 func_8002218C(Objeto *o, s32 a, s32 b);
+
+/* Un objeto que se acerca a Sabrina: (1) toma un punto hacia ella, (2) gira hacia ese punto y, ya de frente,
+   avanza con la animacion t[1]. Devuelve lo que queda en v0. */
+s32 func_80052EA4(u8 *o) {
+    u16 *t = *(u16 **)(o + 0x64);
+    u8 *b = o + 0x74;
+    s16 est = *(s16 *)(o + 0x70);
+    s32 r;
+    if (est == 2) {
+        r = func_80021D44((s16 *)(o + 0x32), (s16)func_8002218C((Objeto *)o, *(s32 *)(b + 8), *(s32 *)(b + 0x10)), 0x96);
+        if (r != 0) {
+            return r;
+        }
+        return func_80022310(o, *(s16 *)(o + 0x32), 0x3333, 0x1000, t[1]);
+    }
+    if (est == 1) {
+        func_800484CC((s32 *)(o + 0x24), (s32 *)((u8 *)p_sabrina + 0x24), 0x40000, (s32 *)(b + 8));
+        *(s16 *)(o + 0x70) = 2;
+        return 2;
+    }
+    if (est != 0) {
+        return est;
+    }
+    *(s16 *)(o + 0x70) = 1;
+    return 1;
+}
+
+extern void Afirmar(void *p, char *archivo, s32 linea);
+extern char D_80074C64[];
+
+/* Si lo que toca (a) es de la clase 6 y con 0x93 >= 7, le resta 1 de vida al objeto que vigila o (el de
+   o+0x11C, bloque +0xC); si se le acabo, avisa (bloque +0x10), lo marca y le pasa a ese objeto su aviso de
+   +8 con a. Devuelve lo que queda en v0. */
+s32 func_80039670(u8 *o, u8 *a) {
+    u8 *g, *b, *v;
+    s8 n;
+    if (*(u16 *)(a + 0x22) != 6) {
+        return *(u16 *)(a + 0x22);
+    }
+    n = a[0x93];
+    if (n < 7) {
+        return n;
+    }
+    g = *(u8 **)(o + 0x11C);
+    Afirmar(g, D_80074C64, 0x21);
+    b = g + 0x74;
+    v = *(u8 **)(b + 0xC);
+    v[0x118] = SUMA_TRAMPA((s8)v[0x118], -1);
+    n = v[0x118];
+    if (n >= 0) {
+        return n;
+    }
+    (*(void (**)(u8 *, u8 *))(b + 0x10))(g, v);
+    g[0x20] = 0x80;
+    *(void **)(b + 0x10) = NULL;
+    return (*(s32 (**)(u8 *, u8 *))(v + 8))(v, a);
+}
+
+/* Suelta 20 particulas (del tipo de su bloque +4) hacia abajo y al azar, y queda marcado. Devuelve lo que
+   queda en v0. */
+s32 func_80037DE0(u8 *o) {
+    u8 *b = o + 0x74;
+    s32 base = RESTA_TRAMPA(0, *(s32 *)(o + 0x3C)) >> 1;
+    s32 i, j, dy;
+    u8 f;
+    for (i = 0; i < 0x14; i = (s16)SUMA_TRAMPA(i, 1)) {
+        j = (s16)SUMA_TRAMPA(func_80021CE4(0x190), -0xC8);
+        dy = RESTA_TRAMPA(base, func_80021CE4(0xCCC));
+        CrearParticula((s8)b[4], (Objeto *)o, j, 0, 0, 0x28F, 0, dy, func_80021CE4(0xCCC), 0, 0x51E, 0, 0x32,
+                       0x10, 0);
+    }
+    f = o[0x20] | 0x80;
+    o[0x20] = f;
+    return f;
+}
+
+extern s32 func_8001BF8C(s32 a, s32 b, s32 x, s32 z);
+extern s32 func_8001C2D0(s32 x, ...);
+extern s32 D_8006C450, D_8006C454, D_8006C458;
+
+/* Si el objeto de la camara (D_8007CAFC) esta libre y o queda a menos de 2 unidades en el piso y de
+   frente a la camara, lo engancha (estado 1, con la ficha de o y su tipo). Devuelve lo que queda en v0. */
+s32 func_8003BCB4(u8 *o) {
+    u8 *b = o + 0x74;
+    u8 *c = D_8007CAFC;
+    s32 v[3];
+    s32 r;
+    if (c == NULL) {
+        return 0;
+    }
+    if (*(s16 *)(c + 0x70) != 0) {
+        return *(s16 *)(c + 0x70);
+    }
+    v[0] = RESTA_TRAMPA(*(s32 *)(c + 0x24), *(s32 *)(o + 0x24));
+    v[1] = RESTA_TRAMPA(*(s32 *)(c + 0x28), *(s32 *)(o + 0x28));
+    v[2] = RESTA_TRAMPA(*(s32 *)(c + 0x2C), *(s32 *)(o + 0x2C));
+    r = func_8001BF8C(0, 0, v[0], v[2]);
+    if (r >= 0x20000) {
+        return r;
+    }
+    func_8001C45C(v);
+    r = func_8001C2D0(v[0], v[1], v[2], D_8006C450, D_8006C454, D_8006C458);
+    if (r < 0xBB9) {
+        return r;
+    }
+    c = D_8007CAFC;
+    *(s16 *)(c + 0x70) = 1;
+    *(s32 *)(c + 0x74) = *(s32 *)b;
+    c[0x74 + 0x24] = b[4];
+    return (s8)b[4];
+}

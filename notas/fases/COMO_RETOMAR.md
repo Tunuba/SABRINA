@@ -300,3 +300,13 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   src/objetos/listas_g13.c, src/sabrina/vida_g13.c). func_8003E9FC: la captura sintetica es invalida (la
   original tambien revienta); func_80012F2C (MoveImage) no termina en el emulador. func_80052114 es un trozo
   de codigo que se copia a 0xDF80 (no es funcion de C).
+- 02-10 noche: IGUAL_V0 del lote pasadas a IGUAL a mano (el C devuelve el v0 de cada camino; si el
+  original deja en v0 la direccion de su tabla de casos, se devuelve esa constante). Hechas ~30 (menus,
+  orden de GPU, camara, mando, arranques por grupo de niveles, maquina de estados de enemigos con `paso`).
+  Quedan del lote: func_8004A4A8 (1596 bytes) y func_80046EAC (v0 de entrada, no se puede en C).
+  func_800211D4 (barra) tarda mas de 15 min en verificarse: probar sola con mas tiempo.
+- Lote sintetico ampliado (`sint_lote2.sh`, de a una con tope de 10 min cada una; log
+  build/sint_lote_b1.txt). Las de copiar codigo a la BIOS (func_800521AC, func_80052240, func_800523B4) son
+  asm puro: no van.
+- WSL: lanzar con `scratchpad/fondo.sh script salida` (setsid nohup + confirma que arranco) y vigilar
+  con `wsl.exe` (si nadie llama a wsl.exe la VM se apaga y mata lo suelto).

@@ -679,3 +679,31 @@ s32 func_80027DF0(s32 r) {
     } while (v == 0);
     return v;
 }
+
+extern s32 func_80026DC4(Puerto *p, s32 a);
+extern s32 func_80026DE4(Puerto *p, s32 a);
+extern s32 func_80026E04(Puerto *p, s32 a);
+extern s32 func_80026E24(Puerto *p, s32 a);
+
+/* Un paso de la orden al mando segun su estado (0x46): 2, 3 o 4 (con 0x48 la variante). Devuelve lo que
+   queda en v0. */
+s32 func_80026778(Puerto *p, s32 a) {
+    u8 *b = (u8 *)p;
+    u32 e = b[0x46];
+    if (e == 3) {
+        return func_80026DE4(p, b[0x47]);
+    }
+    if (e < 4) {
+        if (e == 2) {
+            return func_80026DC4(p, b[0x47]);
+        }
+        return 2;
+    }
+    if (e != 4) {
+        return 4;
+    }
+    if (b[0x48] != 0) {
+        return func_80026E24(p, a);
+    }
+    return func_80026E04(p, b[0x47]);
+}
