@@ -184,3 +184,24 @@ s32 func_8004DAC4(Objeto *o) {
     D_8007CC1C--;
     return thunk_FUN_8004866c(o);
 }
+
+extern s32 func_8001C33C(s32 *a, s32 *b);  /* producto escalar */
+
+/* Si el punto (x, y, z) esta dentro del alcance de la puerta o (en el plano, al cuadrado), deja en *y_salida
+ * la altura de la puerta y devuelve 1. El vector se arma sobre los mismos argumentos. */
+s32 func_8004DB6C(s32 *y_salida, s32 x, ...) {
+    __builtin_va_list ap;
+    s32 *v = &x;
+    Objeto *o;
+
+    __builtin_va_start(ap, x);
+    o = (Objeto *)v[3];
+    v[0] = (v[0] - o->x) >> 8;
+    v[1] = 0;
+    v[2] = (v[2] - o->z) >> 8;
+    if (func_8001C33C(v, v) >= *(s32 *)((u8 *)o + 0x7C)) {
+        return 0;
+    }
+    *y_salida = o->y - 0x199A - 0x7FFF;
+    return 1;
+}

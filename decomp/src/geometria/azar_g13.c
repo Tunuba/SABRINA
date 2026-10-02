@@ -25,3 +25,15 @@ s32 func_80021C48(s32 n) {
     }
     return -1;
 }
+
+extern s32 func_8001C33C(s32 *a, s32 *b);  /* producto escalar de dos vectores */
+
+/* Producto escalar de (ax, ay, az) y (bx, by, bz): los argumentos quedan seguidos en la pila del que llama
+ * y se pasan como dos vectores. */
+s32 func_8001C390(s32 ax, ...) {
+    /* variadica: GCC deja los argumentos en su lugar de la pila del que llama, seguidos */
+    __builtin_va_list ap;
+
+    __builtin_va_start(ap, ax);
+    return func_8001C33C(&ax, &ax + 3);
+}

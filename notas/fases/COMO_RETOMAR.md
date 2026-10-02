@@ -266,3 +266,6 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   func_8002E51C DISTINTO por la tabla de saltos. Paseo 6 a 14: casi nada nuevo (5 funciones; el nivel 9 con
   paso 4 dio 2). Las 327 que siguen sin capturas no aparecen paseando: hara falta jugar de verdad o
   provocar los objetos de otra forma.
+- Truco: una funcion que toma la direccion de sus argumentos para usarlos como vector (func_8001C390,
+  func_8004DB6C) se escribe variadica (`s32 f(s32 x, ...)` + `__builtin_va_start`): asi GCC deja los
+  argumentos seguidos en su lugar de la pila del que llama, como el original.

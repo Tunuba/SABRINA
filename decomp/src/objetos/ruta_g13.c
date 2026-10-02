@@ -95,3 +95,49 @@ s32 func_8003477C(Objeto *o) {
     o->estado = 0;
     return r;
 }
+
+/* Lleva *pp al ultimo punto de su ruta (siguiendo los siguientes); si la ruta da la vuelta, al anterior del
+ * de partida. Devuelve (v0) 0, o el desplazamiento del anterior en la tabla. */
+s32 func_80048104(PuntoRutaI **pp) {
+    PuntoRutaI *p = *pp;
+    PuntoRutaI *inicio = p;
+    s32 n;
+
+    while ((n = p->siguiente) != 0) {
+        p = &D_800D588C[n];
+        if (p == inicio) {
+            n = *(s16 *)((u8 *)p + 0x10);
+            p = &D_800D588C[n];
+            *pp = p;
+            return n * 0x18;
+        }
+    }
+    *pp = p;
+    return 0;
+}
+
+extern s32 D_8007CC5C;
+
+/* Inicia un objeto que va por su ruta: su punto, el siguiente (destino), el de partida, el alcance al
+ * cuadrado, y avisa que hay uno (D_8007CC5C). Devuelve 1. */
+s32 func_80052784(Objeto *o) {
+    u8 *e = (u8 *)&o->extra;
+    PuntoRutaI *p, *q;
+    s32 a;
+
+    e[0x24] = 1;
+    *(PuntoRutaI **)e = &D_800D588C[*(s32 *)e];
+    p = *(PuntoRutaI **)e;
+    q = &D_800D588C[p->siguiente];
+    *(s32 *)(e + 0xC) = q->x;
+    *(s32 *)(e + 0x10) = D_800D588C[(*(PuntoRutaI **)e)->siguiente].y;
+    *(s32 *)(e + 0x14) = D_800D588C[(*(PuntoRutaI **)e)->siguiente].z;
+    *(s32 *)(e + 0x18) = (*(PuntoRutaI **)e)->x;
+    *(s32 *)(e + 0x1C) = (*(PuntoRutaI **)e)->y;
+    *(s32 *)(e + 0x20) = (*(PuntoRutaI **)e)->z;
+    o->estado = 0;
+    a = *(s32 *)(e + 8) >> 8;
+    *(s32 *)(e + 8) = ((a * a) >> 8) << 8;
+    D_8007CC5C = 1;
+    return 1;
+}

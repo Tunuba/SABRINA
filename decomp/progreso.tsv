@@ -492,7 +492,7 @@ func_80030E64	100	YA_HECHA
 func_80030EC8	80	SIN_CAPTURAS	
 func_80030F18	232	YA_HECHA	
 func_80031000	180	SIN_CAPTURAS	
-func_800313E4	176	SIN_CAPTURAS	
+func_800313E4	176	IGUAL	func_800313E4: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
 func_80031494	164	YA_HECHA	
 func_80031538	352	YA_HECHA	
 func_80031698	572	YA_HECHA	
@@ -662,7 +662,7 @@ func_80045A40	280	SIN_CAPTURAS
 func_80045B60	404	IGUAL_V0	func_80045B60: 2 de 2 capturas y 79 de 102 variantes iguales -> IGUAL_V0
 func_80045CF4	492	YA_HECHA	
 func_80045EE0	196	IGUAL_V0	func_80045EE0: 0 de 2 capturas y 0 de 113 variantes iguales -> IGUAL_V0
-func_80045FA4	8	SIN_CAPTURAS	
+func_80045FA4	8	IGUAL	func_80045FA4: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
 func_80045FAC	280	IGUAL	func_80045FAC: 2 de 2 capturas y 88 de 88 variantes iguales -> IGUAL
 func_800460CC	860	IGUAL_V0	func_800460CC: 0 de 2 capturas y 3 de 100 variantes iguales -> IGUAL_V0
 func_80046428	1796	YA_HECHA	
@@ -707,8 +707,8 @@ func_80048094	112	IGUAL	func_80048094: 2 de 2 capturas y 97 de 97 variantes igua
 func_80048104	96	NO_COMPILA	src/auto/func_80048104.c:12:14: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
 func_80048164	196	IGUAL	func_80048164: 2 de 2 capturas y 100 de 100 variantes iguales -> IGUAL
 func_80048228	332	IGUAL	func_80048228: 2 de 2 capturas y 106 de 106 variantes iguales -> IGUAL
-func_80048374	116	SIN_CAPTURAS	
-func_800483E8	16	SIN_CAPTURAS	
+func_80048374	116	IGUAL	func_80048374: 1 de 1 capturas y 36 de 36 variantes iguales -> IGUAL
+func_800483E8	16	IGUAL	func_800483E8: 1 de 1 capturas y 22 de 22 variantes iguales -> IGUAL
 func_800483F8	112	YA_HECHA	
 func_80048468	100	IGUAL	func_80048468: 2 de 2 capturas y 90 de 90 variantes iguales -> IGUAL
 func_800484CC	416	SIN_CAPTURAS	
@@ -952,7 +952,7 @@ func_800593E0	1276	YA_HECHA
 func_800598DC	1616	YA_HECHA	
 func_80059F2C	136	SIN_CAPTURAS	
 func_80059FB4	8	SIN_CAPTURAS	
-func_80059FBC	560	SIN_CAPTURAS	
+func_80059FBC	560	IGUAL_V0	func_80059FBC: 0 de 2 capturas y 12 de 107 variantes iguales -> IGUAL_V0
 func_8005A1EC	372	YA_HECHA	
 func_8005A360	3168	NO_TERMINA	func_8005A360: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_8005AFC0	72	SIN_CAPTURAS	
