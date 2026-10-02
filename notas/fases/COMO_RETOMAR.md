@@ -269,3 +269,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - Truco: una funcion que toma la direccion de sus argumentos para usarlos como vector (func_8001C390,
   func_8004DB6C) se escribe variadica (`s32 f(s32 x, ...)` + `__builtin_va_start`): asi GCC deja los
   argumentos seguidos en su lugar de la pila del que llama, como el original.
+- 02-10 mediodia: a mano IGUAL func_80054894, func_80048DC0, func_8001C390, func_8004DB6C, func_80048104,
+  func_80052784; IGUAL_V0 func_80049A28, func_80049BD0, func_800496E4, func_8004951C (estados de enemigo:
+  m2c ponia el vector en variables sueltas, va en un arreglo; las comparaciones son con signo),
+  func_800528AC (remolino) y func_80054C5C (pieza de hechizo). Ojo con m2c: en un switch sin default puede
+  cortar donde el original sigue (func_80054C5C, nivel sin jefe).
