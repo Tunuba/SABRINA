@@ -116,3 +116,179 @@ s32 func_80034710(Objeto *o) {
     *(Objeto **)((u8 *)&o->extra + 0x10) = p_sabrina;
     return (s32)p_sabrina;
 }
+
+extern void func_8001C45C(s32 *v);   /* dejar el vector de largo 1 */
+
+/* Enemigo huyendo (estado 12): si Sabrina esta a su alcance pasa a atacar (7); si no, se aleja de ella con
+ * su rapidez (extra 0x20) mientras no se salga de su zona (extra 4 alrededor de su casa); si se saldria,
+ * vuelve (6). */
+void func_80049A28(Objeto *o, u8 *e, u16 *t) {
+    EstadoAnim *a = o->anim;
+    s32 v[3];
+    s32 nx, nz;
+
+    func_800487B0(o, p_sabrina, 0x96);
+    v[0] = o->x - p_sabrina->x;
+    v[1] = 0;
+    v[2] = o->z - p_sabrina->z;
+    if ((*(s32 *)(e + 8) >> 8) >= (s32)func_8001C180(v)) {
+        o->estado = 7;
+        E8(e, 0x29) = 0xC;
+        E16(e, 0x44) = 0;
+        return;
+    }
+    if (a->animacion != t[1]) {
+        a->animacion = t[1];
+        a->_50 = 0;
+        a->_4E = 0x800;
+    }
+    func_8001C45C(v);
+    v[0] = (((v[0] >> 4) * (*(s32 *)(e + 0x20) >> 8)) >> 8) << 8;
+    v[2] = (((v[2] >> 4) * (*(s32 *)(e + 0x20) >> 8)) >> 8) << 8;
+    nx = o->x - v[0];
+    nz = o->z - v[2];
+    v[0] = *(s32 *)(e + 0x38) - nx;
+    v[2] = *(s32 *)(e + 0x40) - nz;
+    if ((s32)func_8001C180(v) < (*(s32 *)(e + 4) >> 8)) {
+        o->x = nx;
+        o->z = nz;
+        return;
+    }
+    o->estado = 6;
+    E8(e, 0x29) = 0xC;
+}
+
+/* Enemigo volviendo a su casa (estado 6): mira hacia la casa (poniendo a Sabrina ahi un momento), camina
+ * hacia ella con su rapidez y, al llegar, vuelve a quieto (12) con la primera animacion. */
+void func_80049BD0(Objeto *o, u8 *e, u16 *t) {
+    EstadoAnim *a = o->anim;
+    s32 v[3], sx, sy, sz;
+
+    if (o->x != *(s32 *)(e + 0x38) && o->z != *(s32 *)(e + 0x40)) {
+        sx = p_sabrina->x;
+        sy = p_sabrina->y;
+        sz = p_sabrina->z;
+        p_sabrina->x = *(s32 *)(e + 0x38);
+        p_sabrina->z = *(s32 *)(e + 0x40);
+        func_800487B0(o, p_sabrina, 0x96);
+        p_sabrina->x = sx;
+        p_sabrina->y = sy;
+        p_sabrina->z = sz;
+        if (a->animacion != t[1]) {
+            a->animacion = t[1];
+            a->_50 = 0;
+            a->_4E = 0x800;
+        }
+        v[0] = o->x - *(s32 *)(e + 0x38);
+        v[2] = o->z - *(s32 *)(e + 0x40);
+        v[1] = 0;
+        if ((s32)func_8001C180(v) < 0x4C) {
+            o->x = *(s32 *)(e + 0x38);
+            o->z = *(s32 *)(e + 0x40);
+            return;
+        }
+        func_8001C45C(v);
+        v[0] = (((v[0] >> 4) * (*(s32 *)(e + 0x20) >> 8)) >> 8) << 8;
+        v[2] = (((v[2] >> 4) * (*(s32 *)(e + 0x20) >> 8)) >> 8) << 8;
+        o->x -= v[0];
+        o->z -= v[2];
+        return;
+    }
+    if (a->_53 != t[0]) {
+        if (a->animacion != t[0]) {
+            a->animacion = t[0];
+            a->_50 = 0;
+            a->_4E = 0x800;
+            o->estado = 0xC;
+        }
+    } else {
+        o->estado = 0xC;
+    }
+}
+
+/* Lo mismo para la otra clase de enemigo (casa en extra 0x34, rapidez en 0x1C): volver a casa. */
+void func_800496E4(Objeto *o, u8 *e, u16 *t) {
+    EstadoAnim *a = o->anim;
+    s32 v[3], sx, sy, sz;
+
+    if (o->x != *(s32 *)(e + 0x34) && o->z != *(s32 *)(e + 0x3C)) {
+        sx = p_sabrina->x;
+        sy = p_sabrina->y;
+        sz = p_sabrina->z;
+        p_sabrina->x = *(s32 *)(e + 0x34);
+        p_sabrina->z = *(s32 *)(e + 0x3C);
+        func_800487B0(o, p_sabrina, 0x96);
+        p_sabrina->x = sx;
+        p_sabrina->y = sy;
+        p_sabrina->z = sz;
+        if (a->animacion != t[1]) {
+            a->animacion = t[1];
+            a->_50 = 0;
+            a->_4E = 0x800;
+        }
+        v[0] = o->x - *(s32 *)(e + 0x34);
+        v[2] = o->z - *(s32 *)(e + 0x3C);
+        v[1] = 0;
+        if ((s32)func_8001C180(v) < 0x17) {
+            o->x = *(s32 *)(e + 0x34);
+            o->z = *(s32 *)(e + 0x3C);
+            return;
+        }
+        func_8001C45C(v);
+        v[0] = (((v[0] >> 4) * (*(s32 *)(e + 0x1C) >> 8)) >> 8) << 8;
+        v[2] = (((v[2] >> 4) * (*(s32 *)(e + 0x1C) >> 8)) >> 8) << 8;
+        o->x -= v[0];
+        o->z -= v[2];
+        return;
+    }
+    if (a->_53 != t[0]) {
+        if (a->animacion != t[0]) {
+            a->animacion = t[0];
+            a->_50 = 0;
+            a->_4E = 0x800;
+            o->estado = 0xC;
+        }
+    } else {
+        o->estado = 0xC;
+    }
+}
+
+/* Y quieta mirando a Sabrina (estado 12): muy cerca ataca (7); dentro de su alcance la persigue sin salir
+ * de su zona; si no, vuelve a casa (6). */
+void func_8004951C(Objeto *o, u8 *e, u16 *t) {
+    EstadoAnim *a = o->anim;
+    s32 v[3], d, nx, nz;
+
+    func_800487B0(o, p_sabrina, 0x96);
+    v[0] = o->x - p_sabrina->x;
+    v[1] = 0;
+    v[2] = o->z - p_sabrina->z;
+    d = func_8001C180(v);
+    if (d < 0x80) {
+        o->estado = 7;
+        E8(e, 0x24) = 0xC;
+        E16(e, 0x42) = 0;
+        return;
+    }
+    if (d < (*(s32 *)(e + 8) >> 8)) {
+        if (a->animacion != t[1]) {
+            a->animacion = t[1];
+            a->_50 = 0;
+            a->_4E = 0x800;
+        }
+        func_8001C45C(v);
+        v[0] = (((v[0] >> 4) * (*(s32 *)(e + 0x1C) >> 8)) >> 8) << 8;
+        v[2] = (((v[2] >> 4) * (*(s32 *)(e + 0x1C) >> 8)) >> 8) << 8;
+        nx = o->x - v[0];
+        nz = o->z - v[2];
+        v[0] = *(s32 *)(e + 0x34) - nx;
+        v[2] = *(s32 *)(e + 0x3C) - nz;
+        if ((s32)func_8001C180(v) < (*(s32 *)(e + 8) >> 8)) {
+            o->x = nx;
+            o->z = nz;
+            return;
+        }
+    }
+    o->estado = 6;
+    E8(e, 0x24) = 0xC;
+}
