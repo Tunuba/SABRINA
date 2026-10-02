@@ -264,3 +264,4 @@ func_80029ED4	36	IGUAL	src/psyq/mando_g13.c	1 de 1 capturas y 51 de 51 variantes
 func_800283C4	568	IGUAL	src/psyq/mando_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
 func_80027AD0	248	DISTINTO	src/psyq/mando_g13.c	1 de 1 capturas y 50 de 51 variantes iguales; la mala parcha D_8006CF98 con un puntero de funcion al azar
 func_8004CB48	1400	IGUAL	src/objetos/puerta_mundo_g13.c	2 de 2 capturas y 152 de 152 variantes iguales
+func_8005BED0	1160	IGUAL	src/objetos/selector_g13.c	1 de 1 capturas y 37 de 37 variantes iguales

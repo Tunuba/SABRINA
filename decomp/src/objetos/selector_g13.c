@@ -207,3 +207,54 @@ s32 func_8005C358(Objeto *o) {
     }
     return o->estado;
 }
+
+extern s32 func_8002ECFC(Objeto *o);  /* 1 si tiene animacion */
+extern s32 func_80030068(s32 a);
+
+/* Inicia el selector: vacio, la lista de hechizos que se pueden elegir (sin crear sus objetos) y la
+ * animacion quieta. Devuelve (v0) lo de func_80030068, o 0 si no tiene animacion. */
+s32 func_8005BED0(Objeto *o) {
+    ExtraSelector *e = (ExtraSelector *)&o->extra;
+    s8 *activo = (s8 *)e + 0x14;
+    EstadoAnim *a;
+    s32 i, si, r;
+
+    D_8007CC78 = 0;
+    e->sel = 0;
+    *(s32 *)((u8 *)e + 0x30) = 0x1999;
+    e->cuantos = 0;
+    for (i = 0; i < 5; i++) {
+        e->muestra[i] = NULL;
+        *(s16 *)((u8 *)e + 0x20 + i * 2) = 0;
+        activo[i] = 0;
+    }
+    for (i = 0; i < 5; i++) {
+        e->hechizo[i] = -1;
+        if (i == 0) {
+            si = D_800C8566 != 0;
+        } else {
+            si = D_800C8561[i] == i && D_800C8566 != i;
+        }
+        if (si) {
+            e->hechizo[e->cuantos] = i == 0 ? 0x15 : i == 1 ? 0x16 : i == 2 ? 0x18 : i == 3 ? 0x19 : 0x17;
+            activo[e->cuantos] = 1;
+            e->cuantos++;
+        } else {
+            e->hechizo[e->cuantos] = -1;
+            activo[e->cuantos] = 0;
+        }
+    }
+    if (!func_8002ECFC(o)) {
+        return 0;
+    }
+    a = o->anim;
+    a->velocidad = 0;
+    a->_4E = 0;
+    a->animacion = o->animaciones[0];
+    a->_50 = 0;
+    a->_53 = a->animacion;
+    a->_52 = a->_50;
+    r = func_80030068(((s32 *)o->modelo)[1]);
+    *((s8 *)a + 8) = r;
+    return r;
+}
