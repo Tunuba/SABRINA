@@ -345,3 +345,7 @@ func_8003B4DC	96	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas 
 func_8003BC04	176	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 98 de 98 variantes iguales
 func_8004E6C0	108	IGUAL_SINT	src/varios/arranque_g13.c	sintetica: 1 de 1 capturas y 37 de 37 variantes iguales
 func_800551FC	148	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 89 de 89 variantes iguales
+func_80010670	88	IGUAL_SINT	src/varios/arranque_g13.c	sintetica: 1 de 1 capturas y 43 de 43 variantes iguales
+func_8004F968	52	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 62 de 62 variantes iguales
+func_8004F99C	44	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 60 de 60 variantes iguales
+func_80041FC8	384	IGUAL_SINT	src/audio/secuencia_g13.c	sintetica: 1 de 1 capturas y 82 de 82 variantes iguales

@@ -74,3 +74,8 @@ void *func_8004E6C0(u8 *p, s32 liberar) {
     }
     return p;
 }
+
+/* Llamada virtual de C++: la entrada 0x30 de la tabla de p (en p+8), con los mismos argumentos. */
+s32 func_8004E2CC(u8 *p, s32 a, s32 b, s32 c) {
+    return (*(s32 (**)(u8 *, s32, s32, s32))(*(u8 **)(p + 8) + 0x30))(p, a, b, c);
+}
