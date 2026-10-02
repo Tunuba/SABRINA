@@ -83,7 +83,7 @@ s32 func_8002D540(u32 *d, u32 *s, u32 n) {
 }
 
 extern s16 D_8007CA20, D_8007CC4E, D_8007CC58, D_8007CC5A;
-extern s8 D_8007CC3C;
+extern u8 D_8007CC3C;
 
 /* Dos arranques de un modo (0x103/0xFF y 0x105/0x101 segun c); devuelven el valor puesto (queda en v0). */
 s32 func_8004F968(s32 a, s32 b, s32 c) {
@@ -105,4 +105,65 @@ s32 func_8004F99C(s32 a, s32 b, s32 c) {
     v = c != 0 ? 0x105 : 0x101;
     D_8007CA20 = v;
     return v;
+}
+
+extern s16 jugando, D_8007CC4C;
+extern s32 D_8007CA58;
+extern s8 D_8007CC18, D_8007CA38;
+
+/* Sale del modo de func_8004F968: si estaba puesto (D_8007CC3C == 1) tambien corta el juego. */
+s32 func_8004F9C8(void) {
+    u8 m = D_8007CC3C;
+    D_8007CC4C = 0;
+    D_8007CA58 = 0;
+    D_8007CA20 = 0;
+    if (m == 1) {
+        jugando = 0;
+        D_8007CC18 = 1;
+        D_8007CA38 = 0;
+    }
+    return m;
+}
+
+extern u16 D_8007C8C0, D_8007C8C2;
+
+s32 func_8003DD74(s32 v) {
+    D_8007C8C0 = v;
+    D_8007C8C2 = v;
+    return v & 0xFFFF;
+}
+
+extern s8 nivel_actual, D_8007CA01;
+extern s32 D_8007CC04;
+extern void func_8004C82C(void);
+
+/* Corta el juego y pasa al nivel 13. */
+s32 func_800471F8(void) {
+    jugando = 0;
+    D_8007CA38 = 0;
+    D_8007CA01 = 0;
+    nivel_actual = 0xD;
+    func_8004C82C();
+    D_8007CC04 = 2;
+    return 2;
+}
+
+extern s8 D_8006553C[];
+
+/* Largo de un texto terminado en 0x7F (cuenta la marca); uno vacio se rellena con D_8006553C[0] y cuenta
+   como de 1. Lo deja en t+0x16 y pone 0 en t+0x18. */
+s32 func_800191D8(s8 *s, u8 *t) {
+    u32 n = 0;
+    u32 c = 0x45;
+    while (c != 0x7F) {
+        c = s[n] & 0xFFFF;
+        n = (n + 1) & 0xFFFF;
+    }
+    if (n == 1) {
+        n = 2;
+        s[0] = D_8006553C[0];
+    }
+    *(s16 *)(t + 0x16) = SUMA_TRAMPA(n, -1);
+    *(s16 *)(t + 0x18) = 0;
+    return SUMA_TRAMPA(n, -1);
 }

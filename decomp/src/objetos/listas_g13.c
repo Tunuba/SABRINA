@@ -185,3 +185,127 @@ s32 func_8003BC04(u8 *o) {
     b[4] = 1;
     return 1;
 }
+
+/* Suelta lo que o tenia agarrado (bloque 0x74, +0xC): le pone 1 en +0x40 y lo borra. */
+s32 func_8005655C(u8 *o) {
+    u8 *b = o + 0x74;
+    u8 *a = *(u8 **)(b + 0xC);
+    if (a == NULL) {
+        return 0;
+    }
+    *(s16 *)(a + 0x40) = 1;
+    *(u8 **)(b + 0xC) = NULL;
+    return 1;
+}
+
+/* Si o tiene la bandera 0x8000 y algo enganchado en 0x11C, llama al aviso (0x18) de eso. */
+s32 func_8004866C(u8 *o) {
+    u8 *e;
+    if (!(*(s16 *)(o + 0x112) & 0x8000)) {
+        return 0;
+    }
+    e = *(u8 **)(o + 0x11C);
+    if (e == NULL) {
+        return 0;
+    }
+    return (*(s32 (**)(u8 *))(e + 0x18))(e);
+}
+
+/* Igual que func_8005794C pero borra 0x2C del bloque (otra clase de objeto). */
+s32 func_80045EE0(u8 *o) {
+    u8 *b = o + 0x74;
+    Objeto *s;
+    s32 d[3];
+    u32 dist;
+    *(s32 *)(b + 0x2C) = 0;
+    s = p_sabrina;
+    if (s == NULL) {
+        return 0;
+    }
+    if (!(s->forma.banderas & 1)) {
+        return 0;
+    }
+    d[0] = RESTA_TRAMPA(*(s32 *)(o + 0x24), s->x);
+    d[1] = RESTA_TRAMPA(*(s32 *)(o + 0x28), s->y);
+    d[2] = RESTA_TRAMPA(*(s32 *)(o + 0x2C), s->z);
+    dist = func_8001C180(d);
+    if ((u32)(*(s32 *)(b + 8) >> 8) < dist) {
+        return dist;
+    }
+    return (*(s32 (**)(u8 *, Objeto *))(o + 0x10))(o, p_sabrina);
+}
+
+/* Arranque de un objeto que rebota: 0x32 de vida al bloque, el tipo en 0x119 (1 si no viene), velocidad
+   hacia abajo y empuje minimo 0x4000; con la bandera 0x100 queda sin colision. Con c != 0 solo lo
+   primero. Devuelve lo que queda en v0. */
+s32 func_8003C8F8(u8 *o, s32 a, s32 c) {
+    u8 *b = o + 0x74;
+    s32 v;
+    *(s16 *)(b + 0x24) = 0x32;
+    *(s16 *)(b + 0x20) = 0;
+    *(s16 *)(b + 0x26) = 0;
+    if (c != 0) {
+        return (s32)b;
+    }
+    o[0x119] = a != 0 ? a : 1;
+    v = *(s32 *)(b + 4);
+    if (v > 0) {
+        *(s32 *)(b + 4) = -v;
+    }
+    if (*(s32 *)b <= 0) {
+        *(s32 *)b = 0x4000;
+    }
+    if (*(s16 *)(b + 0xC) & 0x100) {
+        u8 *m = *(u8 **)(o + 0x60);
+        m[0x64] |= 1;
+        *(s32 *)(o + 0x54) = 1;
+        *(s32 *)(o + 0x58) = 1;
+        *(s32 *)(o + 0x5C) = 1;
+        *(s16 *)(o + 0x112) = 0;
+    }
+    *(s32 *)(b + 0x14) = *(s32 *)(o + 0x24);
+    *(s32 *)(b + 0x18) = *(s32 *)(o + 0x28);
+    *(s32 *)(b + 0x1C) = *(s32 *)(o + 0x2C);
+    *(s16 *)(b + 0x20) = *(s16 *)(o + 0x32);
+    *(s16 *)(o + 0x70) = 1;
+    return 1;
+}
+
+extern s32 func_80056A08(u8 *o);
+extern s32 func_8002ECFC(u8 *o);
+extern s32 func_80030068(s32 x);
+extern s32 D_800C98B0;
+extern s8 D_800C855F;
+
+/* Arranque de un objeto con animacion: la pone en su primer cuadro (el de o+0x64) y lo deja quieto en el
+   modo 6 si D_800C98B0 == 1; marca 0x38 del bloque si D_800C855F >= 4. Devuelve lo que queda en v0. */
+s32 func_80056B18(u8 *o) {
+    u8 *b = o + 0x74;
+    u8 *e;
+    s8 n;
+    *(s32 *)(b + 0x28) = 0;
+    *(s32 *)(b + 0x30) = 0;
+    *(s32 *)(b + 0x2C) = func_80056A08(o);
+    if (func_8002ECFC(o) != 0) {
+        e = *(u8 **)(o + 0x1C);
+        *(s16 *)(e + 0x4C) = 0;
+        e[0x51] = **(u16 **)(o + 0x64);
+        e[0x50] = 0;
+        e[0x53] = e[0x51];
+        e[0x52] = e[0x50];
+        e[8] = func_80030068(*(s32 *)(*(u8 **)(o + 0x60) + 4));
+        *(s16 *)(e + 0x4E) = 0x800;
+    }
+    *(s32 *)(b + 0x34) = 0;
+    func_800483F8(o);
+    if (D_800C98B0 == 1) {
+        *(s16 *)(o + 0x70) = 6;
+    }
+    *(s32 *)(b + 0x38) = 0;
+    n = D_800C855F;
+    if (n < 4) {
+        return n;
+    }
+    *(s32 *)(b + 0x38) = 1;
+    return 1;
+}

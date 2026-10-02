@@ -349,3 +349,13 @@ func_80010670	88	IGUAL_SINT	src/varios/arranque_g13.c	sintetica: 1 de 1 capturas
 func_8004F968	52	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 62 de 62 variantes iguales
 func_8004F99C	44	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 60 de 60 variantes iguales
 func_80041FC8	384	IGUAL_SINT	src/audio/secuencia_g13.c	sintetica: 1 de 1 capturas y 82 de 82 variantes iguales
+func_80046B2C	36	IGUAL	src/Screen/menu_cambios_g13.c	2 de 2 capturas y 256 de 256 variantes iguales
+func_80046B6C	36	IGUAL	src/Screen/menu_cambios_g13.c	1 de 1 capturas y 128 de 128 variantes iguales
+func_800471A8	36	IGUAL	src/Screen/menu_cambios_g13.c	1 de 1 capturas y 128 de 128 variantes iguales
+func_80046BAC	24	IGUAL	src/Screen/menu_cambios_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
+func_80046EC0	24	IGUAL	src/Screen/menu_cambios_g13.c	2 de 2 capturas y 248 de 248 variantes iguales
+func_80046D54	24	IGUAL	src/Screen/menu_cambios_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
+func_8001201C	36	IGUAL	src/libgpu/canal_g13.c	8 de 8 capturas y 680 de 680 variantes iguales
+func_8004F9C8	48	IGUAL	src/varios/sueltas_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
+func_8003DD74	16	IGUAL	src/varios/sueltas_g13.c	6 de 6 capturas y 384 de 384 variantes iguales
+func_8005655C	40	IGUAL	src/objetos/listas_g13.c	1 de 1 capturas y 67 de 67 variantes iguales

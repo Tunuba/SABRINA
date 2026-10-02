@@ -52,3 +52,13 @@ s32 func_80014560(s32 canal) {
     }
     return *(u16 *)(D_80063824 + c * 0x10);
 }
+
+extern volatile u32 *D_80063754;     /* el registro de ordenes de la GPU */
+extern u8 D_800831F8[];              /* el ultimo valor mandado por cada orden (byte alto) */
+
+/* Manda una orden a la GPU y anota su byte bajo por orden. Devuelve la orden (queda en v0). */
+u32 func_8001201C(u32 orden) {
+    *D_80063754 = orden;
+    D_800831F8[orden >> 24] = orden;
+    return orden >> 24;
+}

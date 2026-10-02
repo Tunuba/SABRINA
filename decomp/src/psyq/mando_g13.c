@@ -611,3 +611,35 @@ s32 func_80027C9C(s32 puerto, s32 modo, s32 i) {
     }
     return (*(u8 **)(m + 4))[i];
 }
+
+/* Cierra un puerto que estaba abierto (0x49): borra su estado y llena con 0xFF los 6 bytes desde 0x5D. */
+s32 func_80027D7C(Puerto *p) {
+    u8 *b = (u8 *)p;
+    u8 *q;
+    s32 n;
+    if (b[0x49] == 0) {
+        return 0;
+    }
+    q = b + 0x5D;
+    b[0x49] = 0;
+    b[0x46] = 0;
+    *(s16 *)(b + 0xE6) = 0;
+    *(s32 *)(b + 0x14) = 0;
+    *(s32 *)(b + 0x18) = 0;
+    b[0xE3] = 0;
+    b[0xE4] = 0;
+    *(s16 *)(b + 0xE6) = 0;
+    b[0xE9] = 0;
+    b[0xEA] = 0;
+    *(s32 *)(b + 0) = 0;
+    *(s32 *)(b + 4) = 0;
+    *(s32 *)(b + 8) = 0;
+    b[0x37] = 0;
+    b[0x38] = 0;
+    b[0x39] = 0;
+    n = 5;
+    do {
+        *q++ = 0xFF;
+    } while (--n >= 0);
+    return n;
+}
