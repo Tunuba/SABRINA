@@ -421,3 +421,137 @@ s32 func_800607AC(Objeto *o, s32 *mov, PuntoRuta **pp, s32 a3, u16 anim) {
     }
     return 0;
 }
+
+/* El disparo de la tercera clase de enemigo, segun el nivel. */
+static void atacar3(Objeto *o, ExtraEnemigo *e, s32 *fuera) {
+    s32 p[3];
+
+    p[0] = e->boca[0];
+    p[1] = e->boca[1];
+    p[2] = e->boca[2];
+    switch (nivel_actual) {
+    case 1: case 2: case 3:
+        func_8003C1E8(o, p, fuera, 0x1F, 0x32, 5, 0x200, -0x8C0);
+        TocarSonido(0x37, 0, 0x2A, 0x7F);
+        break;
+    case 4: case 5: case 6:
+        func_80048DC0(o, p, fuera, 0x2E, 0x1000);
+        TocarSonido(0x33, 0, 0x2A, 0x7F);
+        break;
+    case 7: case 8: case 9:
+        func_8003C1E8(o, p, fuera, 0x23, 0x32, 5, 0x200, -0x8C0);
+        TocarSonido(0x2C, 0, 0x2A, 0x7F);
+        break;
+    case 10: case 11: case 12:
+        func_8003C1E8(o, p, fuera, 0x25, 0x32, 5, 0x200, -0x8C0);
+        TocarSonido(0x33, 0, 0x2A, 0x7F);
+        break;
+    case 13: case 14:
+        TocarSonido(0x2C, 0, 0x2A, 0x7F);
+        break;
+    }
+}
+
+/* Dispara en uno de los dos cuadros de la animacion de ataque (una vez); 1 si la animacion termino. */
+static s32 disparo3(Objeto *o, ExtraEnemigo *e, EstadoAnim *a, s32 *fuera) {
+    if (D_8007CBA8 != 0) {
+        return 0;
+    }
+    a->_4E = 0x800;
+    if ((a->_50 == e->cuadro2 || a->_50 == e->cuadro1) && e->ataco == 0) {
+        e->ataco = 1;
+        atacar3(o, e, fuera);
+    }
+    return func_8002EFD0(o) != 0;
+}
+
+/* La tercera clase de enemigo: como las otras dos, con su disparo. */
+void func_8002E51C(Objeto *o) {
+    EstadoAnim *a = o->anim;
+    u16 *t = o->animaciones;
+    ExtraEnemigo *e = (ExtraEnemigo *)&o->extra;
+    s32 fuera[3], fuera2[3], v[3];
+
+    switch ((u16)o->estado) {
+    case 0:
+        e->patrulla = 5;
+        o->estado = 1;
+        break;
+    case 1:
+        if (a->animacion != t[0]) {
+            a->velocidad = 0;
+            a->_4E = 0x800;
+            a->animacion = t[0];
+            a->_50 = 0;
+        }
+        func_80048908(o, &e->patrulla, &e->_2C, e->modo);
+        break;
+    case 2:
+        func_800492B4(o, e, t);
+        break;
+    case 3:
+    case 4:
+        if (func_800487B0(o, p_sabrina, 100) >= 0x200) {
+            break;
+        }
+        if (o->estado != 4 && a->animacion != t[4]) {
+            a->animacion = t[4];
+            a->_50 = 0;
+            a->_4E = 0x800;
+            o->estado = 4;
+        }
+        func_80048804(o, e->modo, a, (s8)t[0]);
+        break;
+    case 7:
+        func_800487B0(o, p_sabrina, 100);
+        if (poner(a, t[7])) {
+            break;
+        }
+        if (disparo3(o, e, a, fuera)) {
+            a->animacion = t[0];
+            a->_50 = 0;
+            o->estado = e->despues;
+            e->ataco = 0;
+        }
+        break;
+    case 8:
+        func_800487B0(o, p_sabrina, 100);
+        if (func_8002EFD0(o) != 0) {
+            o->estado = (e->modo & 4) ? 11 : 4;
+        }
+        break;
+    case 10:
+        func_80048228(o, &e->patrulla);
+        break;
+    case 11:
+        func_800489C4(o);
+        func_800487B0(o, p_sabrina, 100);
+        v[0] = o->x - p_sabrina->x;
+        v[1] = 0;
+        v[2] = o->z - p_sabrina->z;
+        if ((s32)func_8001C180(v) <= (e->alcance >> 8)) {
+            if (poner(a, t[7])) {
+                e->ataco = 0;
+                break;
+            }
+            if (!disparo3(o, e, a, fuera2)) {
+                break;
+            }
+        } else if (func_8002EFD0(o) == 0) {
+            break;
+        }
+        a->animacion = t[0];
+        a->_50 = 0;
+        e->ataco = 0;
+        break;
+    case 12:
+        func_80049A28(o, e, t);
+        break;
+    case 6:
+        func_80049BD0(o, e, t);
+        break;
+    default:
+        o->estado = 0;
+        break;
+    }
+}

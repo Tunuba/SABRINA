@@ -249,3 +249,15 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   pone a Sabrina en una cuadricula de puntos de cada nivel (escribe x y z) y espera, asi se activan los
   objetos de todo el nivel. Niveles 0 a 5: 56 funciones nuevas. Se colgo una vez en el nivel 6 (el juego
   deja de avanzar): ahora la espera tiene tope y se corre de a un nivel.
+
+### Cierre del 02-10 madrugada (Meme apaga la PC)
+
+- El lote de a una sobre las 57 del paseo (`notas/fases/tanda137/las_del_paseo.txt`) TERMINO: resultados en
+  progreso.tsv. Muchas dieron NO_COMPILA solo porque el borrador no conocia p_sabrina: auto.py ahora pone
+  `#include "objeto.h"` cuando el borrador usa p_sabrina (03199d9). PENDIENTE: repetir de a una las 36 de
+  `notas/fases/tanda137/psabrina_repetir.txt` (las ya escritas a mano saldran YA_HECHA).
+- Escrito a mano y SIN VERIFICAR (no estan en auditoria.tsv): `objetos/enemigo_g13.c` func_8002E51C (tercera
+  clase de enemigo), `objetos/enemigo2_g13.c` func_8003D5F4, func_80045CF4, func_8002E030, func_80034710.
+- Paseo (`scripts/capt_paseo.py`): niveles 0 a 6 hechos; FALTAN los niveles 7 a 14 (de a uno:
+  `py capt_paseo.py lista.txt 7 8 40`, la lista = SIN_CAPTURAS de progreso.tsv sin .regs).
+- func_8002D170 sigue pendiente (se muere por memoria en el lote; sola da IGUAL).

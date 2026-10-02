@@ -229,7 +229,7 @@ func_8001C280	80	SIN_CAPTURAS
 func_8001C2D0	52	SIN_CAPTURAS	
 func_8001C304	56	IGUAL	func_8001C304: 8 de 8 capturas y 304 de 304 variantes iguales -> IGUAL
 func_8001C33C	84	IGUAL	func_8001C33C: 8 de 8 capturas y 371 de 371 variantes iguales -> IGUAL
-func_8001C390	52	SIN_CAPTURAS	
+func_8001C390	52	DISTINTO	func_8001C390: 0 de 2 capturas y 0 de 152 variantes iguales -> DISTINTO
 func_8001C3C4	64	YA_HECHA	
 func_8001C404	88	YA_HECHA	
 func_8001C45C	824	DISTINTO	func_8001C45C: 0 de 8 capturas y 21 de 455 variantes iguales -> DISTINTO
@@ -461,11 +461,11 @@ func_8002D520	28	IGUAL	func_8002D520: 1 de 1 capturas y 38 de 38 variantes igual
 func_8002D540	44	SIN_CAPTURAS	
 func_8002D56C	424	NO_COMPILA	src/auto/func_8002D56C.c:43:5: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
 func_8002D714	2332	NO_COMPILA	src/auto/func_8002D714.c:62:26: error: ‘sp31’ undeclared (first use in this function); did you mean ‘sp30’?
-func_8002E030	196	SIN_CAPTURAS	
+func_8002E030	196	NO_COMPILA	src/auto/func_8002E030.c:16:10: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8002E0F4	8	SIN_CAPTURAS	
 func_8002E0FC	280	SIN_CAPTURAS	
-func_8002E21C	768	SIN_CAPTURAS	
-func_8002E51C	1792	SIN_CAPTURAS	
+func_8002E21C	768	IGUAL	func_8002E21C: 2 de 2 capturas y 89 de 89 variantes iguales -> IGUAL
+func_8002E51C	1792	NO_COMPILA	src/auto/func_8002E51C.c:54:45: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8002EC1C	224	YA_HECHA	
 func_8002ECFC	52	YA_HECHA	
 func_8002ED30	28	YA_HECHA	
@@ -505,8 +505,8 @@ func_80032F90	452	IGUAL	func_80032F90: 8 de 8 capturas y 479 de 479 variantes ig
 func_80033AD8	68	IGUAL	func_80033AD8: 8 de 8 capturas y 320 de 320 variantes iguales -> IGUAL
 func_80033B1C	940	IGUAL	func_80033B1C: 2 de 2 capturas y 79 de 79 variantes iguales -> IGUAL
 func_80033EC8	256	IGUAL	func_80033EC8: 6 de 6 capturas y 232 de 232 variantes iguales -> IGUAL
-func_80034710	96	SIN_CAPTURAS	
-func_80034770	12	SIN_CAPTURAS	
+func_80034710	96	NO_COMPILA	src/auto/func_80034710.c:9:29: error: ‘p_sabrina’ undeclared (first use in this function)
+func_80034770	12	IGUAL	func_80034770: 1 de 1 capturas y 26 de 26 variantes iguales -> IGUAL
 func_8003477C	628	DISTINTO	func_8003477C: 0 de 8 capturas y 11 de 315 variantes iguales -> DISTINTO
 func_800349F0	1428	NO_COMPILA	include/m2c_macros.h:20:44: error: too few arguments to function ‘*((M2C_UNK (**)(void *))arg0 + 12)’
 func_80034F84	76	SIN_CAPTURAS	
@@ -531,8 +531,8 @@ func_8003795C	188	YA_HECHA
 func_80037A18	932	NO_COMPILA	src/auto/func_80037A18.c:38:50: error: ‘sp58’ undeclared (first use in this function); did you mean ‘sp54’?
 func_80037DBC	36	SIN_CAPTURAS	
 func_80037DE0	256	SIN_CAPTURAS	
-func_80037EE0	68	SIN_CAPTURAS	
-func_80037F24	560	SIN_CAPTURAS	
+func_80037EE0	68	IGUAL	func_80037EE0: 1 de 1 capturas y 41 de 41 variantes iguales -> IGUAL
+func_80037F24	560	IGUAL	func_80037F24: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80038154	200	SIN_CAPTURAS	
 func_8003821C	252	YA_HECHA	
 func_80038318	1536	NO_COMPILA	src/auto/func_80038318.c:9:5: error: unknown type name ‘ObjExtra’
@@ -603,9 +603,9 @@ func_8003D00C	136	IGUAL	func_8003D00C: 2 de 2 capturas y 108 de 108 variantes ig
 func_8003D094	196	SIN_CAPTURAS	
 func_8003D158	8	SIN_CAPTURAS	
 func_8003D160	280	SIN_CAPTURAS	
-func_8003D278	504	SIN_CAPTURAS	
-func_8003D478	380	SIN_CAPTURAS	
-func_8003D5F4	500	SIN_CAPTURAS	
+func_8003D278	504	IGUAL	func_8003D278: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
+func_8003D478	380	IGUAL_V0	func_8003D478: 2 de 2 capturas y 78 de 99 variantes iguales -> IGUAL_V0
+func_8003D5F4	500	NO_COMPILA	src/auto/func_8003D5F4.c:32:45: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8003D7E8	20	IGUAL	func_8003D7E8: 8 de 8 capturas y 336 de 336 variantes iguales -> IGUAL
 func_8003D9D0	116	IGUAL	func_8003D9D0: 6 de 6 capturas y 447 de 447 variantes iguales -> IGUAL
 func_8003DC08	64	IGUAL	func_8003DC08: 6 de 6 capturas y 456 de 456 variantes iguales -> IGUAL
@@ -659,9 +659,9 @@ func_80045278	1788	NO_COMPILA	src/auto/func_80045278.c:55:45: error: ‘p_sabrin
 func_80045974	196	SIN_CAPTURAS	
 func_80045A38	8	SIN_CAPTURAS	
 func_80045A40	280	SIN_CAPTURAS	
-func_80045B60	404	SIN_CAPTURAS	
-func_80045CF4	492	SIN_CAPTURAS	
-func_80045EE0	196	SIN_CAPTURAS	
+func_80045B60	404	IGUAL_V0	func_80045B60: 2 de 2 capturas y 79 de 102 variantes iguales -> IGUAL_V0
+func_80045CF4	492	NO_COMPILA	src/auto/func_80045CF4.c:32:45: error: ‘p_sabrina’ undeclared (first use in this function)
+func_80045EE0	196	NO_COMPILA	src/auto/func_80045EE0.c:16:10: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80045FA4	8	SIN_CAPTURAS	
 func_80045FAC	280	IGUAL	func_80045FAC: 2 de 2 capturas y 88 de 88 variantes iguales -> IGUAL
 func_800460CC	860	IGUAL_V0	func_800460CC: 0 de 2 capturas y 3 de 100 variantes iguales -> IGUAL_V0
@@ -670,14 +670,14 @@ func_80046B2C	36	IGUAL_V0	func_80046B2C: 0 de 2 capturas y 0 de 136 variantes ig
 func_80046B50	28	SIN_CAPTURAS	
 func_80046B6C	36	IGUAL_V0	func_80046B6C: 0 de 1 capturas y 0 de 68 variantes iguales -> IGUAL_V0
 func_80046B90	28	NO_TERMINA	func_80046B90: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
-func_80046BAC	24	SIN_CAPTURAS	
-func_80046BC4	84	SIN_CAPTURAS	
+func_80046BAC	24	IGUAL_V0	func_80046BAC: 0 de 1 capturas y 0 de 64 variantes iguales -> IGUAL_V0
+func_80046BC4	84	IGUAL	func_80046BC4: 1 de 1 capturas y 75 de 75 variantes iguales -> IGUAL
 func_80046C18	316	IGUAL	func_80046C18: 6 de 6 capturas y 456 de 456 variantes iguales -> IGUAL
 func_80046D54	24	IGUAL_V0	func_80046D54: 0 de 1 capturas y 0 de 58 variantes iguales -> IGUAL_V0
 func_80046D6C	160	IGUAL	func_80046D6C: 2 de 2 capturas y 115 de 115 variantes iguales -> IGUAL
-func_80046E0C	152	SIN_CAPTURAS	
+func_80046E0C	152	IGUAL	func_80046E0C: 3 de 3 capturas y 227 de 227 variantes iguales -> IGUAL
 func_80046EA4	8	IGUAL	func_80046EA4: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
-func_80046EAC	20	SIN_CAPTURAS	
+func_80046EAC	20	IGUAL_V0	func_80046EAC: 0 de 1 capturas y 0 de 30 variantes iguales -> IGUAL_V0
 func_80046EC0	24	IGUAL_V0	func_80046EC0: 0 de 2 capturas y 0 de 40 variantes iguales -> IGUAL_V0
 func_80046ED8	156	SIN_CAPTURAS	
 func_80046F74	156	SIN_CAPTURAS	
@@ -704,7 +704,7 @@ func_80047FD0	16	IGUAL	func_80047FD0: 2 de 2 capturas y 49 de 49 variantes igual
 func_80047FE0	68	IGUAL	func_80047FE0: 2 de 2 capturas y 94 de 94 variantes iguales -> IGUAL
 func_80048024	112	IGUAL_V0	func_80048024: 0 de 1 capturas y 0 de 46 variantes iguales -> IGUAL_V0
 func_80048094	112	IGUAL	func_80048094: 2 de 2 capturas y 97 de 97 variantes iguales -> IGUAL
-func_80048104	96	SIN_CAPTURAS	
+func_80048104	96	NO_COMPILA	src/auto/func_80048104.c:12:14: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
 func_80048164	196	IGUAL	func_80048164: 2 de 2 capturas y 100 de 100 variantes iguales -> IGUAL
 func_80048228	332	IGUAL	func_80048228: 2 de 2 capturas y 106 de 106 variantes iguales -> IGUAL
 func_80048374	116	SIN_CAPTURAS	
@@ -713,35 +713,35 @@ func_800483F8	112	YA_HECHA
 func_80048468	100	IGUAL	func_80048468: 2 de 2 capturas y 90 de 90 variantes iguales -> IGUAL
 func_800484CC	416	SIN_CAPTURAS	
 func_8004866C	76	IGUAL_V0	func_8004866C: 0 de 4 capturas y 39 de 252 variantes iguales -> IGUAL_V0
-func_800486B8	88	SIN_CAPTURAS	
+func_800486B8	88	NO_COMPILA	src/auto/func_800486B8.c:9:29: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80048710	68	SIN_CAPTURAS	
 func_80048754	92	YA_HECHA	
 func_800487B0	84	IGUAL	func_800487B0: 8 de 8 capturas y 402 de 402 variantes iguales -> IGUAL
 func_80048804	252	SIN_CAPTURAS	
-func_80048900	8	SIN_CAPTURAS	
+func_80048900	8	IGUAL	func_80048900: 2 de 2 capturas y 68 de 68 variantes iguales -> IGUAL
 func_80048908	188	SIN_CAPTURAS	
 func_800489C4	816	NO_COMPILA	src/auto/func_800489C4.c:30:31: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80048CF4	204	YA_HECHA	
-func_80048DC0	684	SIN_CAPTURAS	
+func_80048DC0	684	NO_COMPILA	src/auto/func_80048DC0.c:28:39: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8004906C	164	YA_HECHA	
 func_80049110	264	YA_HECHA	
-func_80049218	156	SIN_CAPTURAS	
+func_80049218	156	NO_COMPILA	src/auto/func_80049218.c:11:57: error: ‘p_sabrina’ undeclared (first use in this function)
 func_800492B4	212	YA_HECHA	
-func_80049388	404	SIN_CAPTURAS	
-func_8004951C	456	SIN_CAPTURAS	
-func_800496E4	528	SIN_CAPTURAS	
+func_80049388	404	NO_COMPILA	src/auto/func_80049388.c:18:37: error: ‘p_sabrina’ undeclared (first use in this function)
+func_8004951C	456	NO_COMPILA	src/auto/func_8004951C.c:21:37: error: ‘p_sabrina’ undeclared (first use in this function)
+func_800496E4	528	NO_COMPILA	src/auto/func_800496E4.c:24:19: error: ‘p_sabrina’ undeclared (first use in this function)
 func_800498F4	308	SIN_CAPTURAS	
-func_80049A28	424	SIN_CAPTURAS	
-func_80049BD0	528	SIN_CAPTURAS	
+func_80049A28	424	NO_COMPILA	src/auto/func_80049A28.c:20:37: error: ‘p_sabrina’ undeclared (first use in this function)
+func_80049BD0	528	NO_COMPILA	src/auto/func_80049BD0.c:24:19: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80049DE0	196	SIN_CAPTURAS	
 func_80049EA4	8	SIN_CAPTURAS	
 func_80049EAC	280	SIN_CAPTURAS	
-func_80049FCC	372	SIN_CAPTURAS	
-func_8004A140	492	SIN_CAPTURAS	
+func_80049FCC	372	IGUAL_V0	func_80049FCC: 0 de 1 capturas y 0 de 46 variantes iguales -> IGUAL_V0
+func_8004A140	492	NO_COMPILA	src/auto/func_8004A140.c:32:45: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8004A39C	8	SIN_CAPTURAS	
 func_8004A3A4	16	SIN_CAPTURAS	
-func_8004A3B4	244	SIN_CAPTURAS	
-func_8004A4A8	1596	SIN_CAPTURAS	
+func_8004A3B4	244	IGUAL	func_8004A3B4: 2 de 2 capturas y 98 de 98 variantes iguales -> IGUAL
+func_8004A4A8	1596	NO_COMPILA	src/auto/func_8004A4A8.c:44:22: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8004AAE4	64	SIN_CAPTURAS	
 func_8004AB24	652	SIN_CAPTURAS	
 func_8004ADB0	244	SIN_CAPTURAS	
@@ -760,7 +760,7 @@ func_8004C3A0	224	IGUAL	func_8004C3A0: 2 de 2 capturas y 140 de 140 variantes ig
 func_8004C480	148	IGUAL	func_8004C480: 1 de 1 capturas y 66 de 66 variantes iguales -> IGUAL
 func_8004C514	148	IGUAL	func_8004C514: 1 de 1 capturas y 65 de 65 variantes iguales -> IGUAL
 func_8004C5A8	148	IGUAL	func_8004C5A8: 1 de 1 capturas y 67 de 67 variantes iguales -> IGUAL
-func_8004C63C	148	SIN_CAPTURAS	
+func_8004C63C	148	IGUAL	func_8004C63C: 1 de 1 capturas y 65 de 65 variantes iguales -> IGUAL
 func_8004C6D0	48	SIN_CAPTURAS	
 func_8004C700	48	SIN_CAPTURAS	
 func_8004C730	236	SIN_CAPTURAS	
@@ -773,7 +773,7 @@ func_8004CAB8	144	IGUAL	func_8004CAB8: 6 de 6 capturas y 456 de 456 variantes ig
 func_8004CB48	1400	DISTINTO	func_8004CB48: 0 de 2 capturas y 1 de 87 variantes iguales -> DISTINTO
 func_8004D0C0	2564	NO_COMPILA	src/auto/func_8004D0C0.c:76:23: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8004DAC4	168	DISTINTO	func_8004DAC4: 1 de 2 capturas y 44 de 112 variantes iguales -> DISTINTO
-func_8004DB6C	164	SIN_CAPTURAS	
+func_8004DB6C	164	NO_COMPILA	src/auto/func_8004DB6C.c:15:9: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
 func_8004DC10	104	DISTINTO	func_8004DC10: 0 de 1 capturas y 0 de 64 variantes iguales -> DISTINTO
 func_8004DC78	8	IGUAL	func_8004DC78: 1 de 1 capturas y 30 de 30 variantes iguales -> IGUAL
 func_8004E194	164	YA_HECHA	
@@ -870,8 +870,8 @@ func_80052388	40	SIN_CAPTURAS
 func_800523B4	112	SIN_CAPTURAS	
 func_80052434	324	SIN_CAPTURAS	
 func_80052578	524	SIN_CAPTURAS	
-func_80052784	296	SIN_CAPTURAS	
-func_800528AC	1452	SIN_CAPTURAS	
+func_80052784	296	DISTINTO	func_80052784: 0 de 2 capturas y 0 de 113 variantes iguales -> DISTINTO
+func_800528AC	1452	NO_COMPILA	src/auto/func_800528AC.c:63:127: error: ‘p_sabrina’ undeclared (first use in this function)
 func_80052E58	68	SIN_CAPTURAS	
 func_80052E9C	8	SIN_CAPTURAS	
 func_80052EA4	200	SIN_CAPTURAS	
@@ -899,10 +899,10 @@ func_80053ED8	156	IGUAL	func_80053ED8: 1 de 1 capturas y 53 de 53 variantes igua
 func_80053F74	244	YA_HECHA	
 func_80054068	1748	NO_COMPILA	src/auto/func_80054068.c:69:58: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8005473C	176	SIN_CAPTURAS	
-func_800547EC	168	SIN_CAPTURAS	
-func_80054894	452	SIN_CAPTURAS	
-func_80054A58	508	SIN_CAPTURAS	
-func_80054C5C	1440	SIN_CAPTURAS	
+func_800547EC	168	IGUAL	func_800547EC: 2 de 2 capturas y 79 de 79 variantes iguales -> IGUAL
+func_80054894	452	DISTINTO	func_80054894: 1 de 2 capturas y 31 de 85 variantes iguales -> DISTINTO
+func_80054A58	508	IGUAL_V0	func_80054A58: 2 de 2 capturas y 96 de 102 variantes iguales -> IGUAL_V0
+func_80054C5C	1440	NO_COMPILA	src/auto/func_80054C5C.c:103:21: error: ‘p_sabrina’ undeclared (first use in this function)
 func_800551FC	148	SIN_CAPTURAS	
 func_80055290	48	SIN_CAPTURAS	
 func_800552C0	712	SIN_CAPTURAS	
@@ -932,15 +932,15 @@ func_80056A08	272	IGUAL	func_80056A08: 2 de 2 capturas y 135 de 135 variantes ig
 func_80056B18	248	IGUAL_V0	func_80056B18: 1 de 1 capturas y 35 de 37 variantes iguales -> IGUAL_V0
 func_80056C18	208	IGUAL_V0	func_80056C18: 0 de 2 capturas y 11 de 99 variantes iguales -> IGUAL_V0
 func_80056CE8	1684	NO_COMPILA	src/auto/func_80056CE8.c:24:5: error: unknown type name ‘ObjExtra’
-func_8005737C	68	SIN_CAPTURAS	
-func_800573C0	592	SIN_CAPTURAS	
-func_80057610	496	SIN_CAPTURAS	
-func_80057800	332	SIN_CAPTURAS	
+func_8005737C	68	IGUAL	func_8005737C: 1 de 1 capturas y 59 de 59 variantes iguales -> IGUAL
+func_800573C0	592	NO_COMPILA	src/auto/func_800573C0.c:112:5: error: invalid type argument of unary ‘*’ (have ‘s32’ {aka ‘int’})
+func_80057610	496	IGUAL	func_80057610: 1 de 1 capturas y 41 de 41 variantes iguales -> IGUAL
+func_80057800	332	DISTINTO	func_80057800: 0 de 2 capturas y 9 de 97 variantes iguales -> DISTINTO
 func_8005794C	196	SIN_CAPTURAS	
 func_80057A10	8	SIN_CAPTURAS	
 func_80057A18	280	SIN_CAPTURAS	
-func_80057B38	360	SIN_CAPTURAS	
-func_80057CA0	492	SIN_CAPTURAS	
+func_80057B38	360	IGUAL_V0	func_80057B38: 0 de 1 capturas y 1 de 56 variantes iguales -> IGUAL_V0
+func_80057CA0	492	IGUAL_V0	func_80057CA0: 2 de 2 capturas y 90 de 95 variantes iguales -> IGUAL_V0
 func_80057E8C	8	SIN_CAPTURAS	
 func_80057E94	160	SIN_CAPTURAS	
 func_80057F34	920	YA_HECHA	
@@ -956,8 +956,8 @@ func_80059FBC	560	SIN_CAPTURAS
 func_8005A1EC	372	YA_HECHA	
 func_8005A360	3168	NO_COMPILA	src/auto/func_8005A360.c:72:21: error: ‘p_sabrina’ undeclared (first use in this function)
 func_8005AFC0	72	SIN_CAPTURAS	
-func_8005B008	328	SIN_CAPTURAS	
-func_8005B150	580	SIN_CAPTURAS	
+func_8005B008	328	IGUAL	func_8005B008: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
+func_8005B150	580	IGUAL_V0	func_8005B150: 0 de 2 capturas y 16 de 110 variantes iguales -> IGUAL_V0
 func_8005B394	204	SIN_CAPTURAS	
 func_8005B460	12	SIN_CAPTURAS	
 func_8005B46C	192	SIN_CAPTURAS	
@@ -1008,9 +1008,9 @@ func_8005E290	16	SIN_CAPTURAS
 func_8005E2A0	764	IGUAL	func_8005E2A0: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_8005E59C	764	IGUAL	func_8005E59C: 2 de 2 capturas y 92 de 92 variantes iguales -> IGUAL
 func_8005E898	356	SIN_CAPTURAS	
-func_8005E9FC	216	SIN_CAPTURAS	
-func_8005EAD4	684	SIN_CAPTURAS	
-func_8005ED80	12	SIN_CAPTURAS	
+func_8005E9FC	216	IGUAL	func_8005E9FC: 2 de 2 capturas y 100 de 100 variantes iguales -> IGUAL
+func_8005EAD4	684	IGUAL_V0	func_8005EAD4: 1 de 1 capturas y 29 de 30 variantes iguales -> IGUAL_V0
+func_8005ED80	12	IGUAL	func_8005ED80: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
 func_8005ED8C	5092	NO_COMPILA	src/auto/func_8005ED8C.c:60:14: error: ‘saved_reg_s0’ undeclared (first use in this function)
 func_80060170	260	SIN_CAPTURAS	
 func_80060274	244	SIN_CAPTURAS	
@@ -1024,13 +1024,13 @@ thunk_FUN_8003be38	8	SIN_CAPTURAS
 thunk_FUN_80042924	8	IGUAL	thunk_FUN_80042924: 8 de 8 capturas y 512 de 512 variantes iguales -> IGUAL
 thunk_FUN_80047234	8	SIN_CAPTURAS	
 thunk_FUN_8004866c	8	IGUAL	thunk_FUN_8004866c: 4 de 4 capturas y 190 de 190 variantes iguales -> IGUAL
-thunk_FUN_8004866c_8002E214	8	SIN_CAPTURAS	
-thunk_FUN_8004866c_8003D470	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_8002E214	8	IGUAL	thunk_FUN_8004866c_8002E214: 2 de 2 capturas y 90 de 90 variantes iguales -> IGUAL
+thunk_FUN_8004866c_8003D470	8	IGUAL	thunk_FUN_8004866c_8003D470: 2 de 2 capturas y 90 de 90 variantes iguales -> IGUAL
 thunk_FUN_8004866c_80044F48	8	IGUAL	thunk_FUN_8004866c_80044F48: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
-thunk_FUN_8004866c_80045B58	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80045B58	8	IGUAL	thunk_FUN_8004866c_80045B58: 2 de 2 capturas y 90 de 90 variantes iguales -> IGUAL
 thunk_FUN_8004866c_800460C4	8	IGUAL	thunk_FUN_8004866c_800460C4: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
-thunk_FUN_8004866c_80049FC4	8	SIN_CAPTURAS	
-thunk_FUN_8004866c_80054C54	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80049FC4	8	IGUAL	thunk_FUN_8004866c_80049FC4: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
+thunk_FUN_8004866c_80054C54	8	IGUAL	thunk_FUN_8004866c_80054C54: 2 de 2 capturas y 90 de 90 variantes iguales -> IGUAL
 thunk_FUN_8004866c_80056C10	8	IGUAL	thunk_FUN_8004866c_80056C10: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
-thunk_FUN_8004866c_80057B30	8	SIN_CAPTURAS	
+thunk_FUN_8004866c_80057B30	8	IGUAL	thunk_FUN_8004866c_80057B30: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
 thunk_FUN_8004aea4	8	IGUAL	thunk_FUN_8004aea4: 6 de 6 capturas y 204 de 204 variantes iguales -> IGUAL
