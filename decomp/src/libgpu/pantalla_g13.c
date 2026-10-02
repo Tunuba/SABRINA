@@ -119,3 +119,15 @@ EntornoPantalla *func_8001321C(EntornoPantalla *env) {
     memcpy(&D_80063804, env, 0x14);
     return env;
 }
+
+extern void SetDefDispEnv(EntornoPantalla *e, s32 x, s32 y, s32 w, s32 h);
+
+/* Pone la pantalla de 512x480 en (0x1FF, 0) y la marca entrelazada (despues de ponerla). Devuelve 1. */
+s32 func_80021190(void) {
+    EntornoPantalla e;
+
+    SetDefDispEnv(&e, 0x1FF, 0, 0x200, 0x1E0);
+    func_8001321C(&e);
+    *(volatile u8 *)&e.isinter = 1;
+    return 1;
+}

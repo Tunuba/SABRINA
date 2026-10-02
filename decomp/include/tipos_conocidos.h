@@ -19,4 +19,7 @@ s32 func_8004E2A4(u32 tam);
 void func_8004E86C(Banco *b, Bloque *bl, s32 clase);
 Bloque *func_8004E774(Banco *b, s32 clase);
 
+/* trampolin de libetc: pasa sus dos argumentos a la funcion de la tabla D_800649A0 (aridad.py no lo ve) */
+s32 func_80016970(s32 canal, s32 f);
+
 #endif

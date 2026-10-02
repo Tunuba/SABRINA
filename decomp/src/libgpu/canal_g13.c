@@ -42,3 +42,13 @@ s32 func_80014598(s32 canal) {
     *(s16 *)(D_80063824 + c * 0x10) = 0;
     return 1;
 }
+
+/* El modo del canal (0 a 2), o 0 si no existe. */
+s32 func_80014560(s32 canal) {
+    u32 c = canal & 0xFFFF;
+
+    if ((s32)c >= 3) {
+        return 0;
+    }
+    return *(u16 *)(D_80063824 + c * 0x10);
+}

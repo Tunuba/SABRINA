@@ -63,6 +63,13 @@ def armar_datos_m2c():
             if m:
                 destinos.add(m.group(1))
                 l = l.replace(m.group(0), f".word .L{m.group(1)}")
+        # las cadenas van como bytes: con .asciz m2c escribe un literal ("%s timeout:\n") y el C compilado
+        # pasaria su propia copia en otra direccion; asi queda el simbolo del juego (D_800628A4)
+        m = re.match(r'(\s*(?:/\*.*?\*/)?\s*)\.(asciz|ascii)\s+"(.*)"\s*$', l)
+        if m:
+            import codecs
+            b = codecs.escape_decode(m.group(3).encode("latin-1"))[0] + (b"\0" if m.group(2) == "asciz" else b"")
+            l = m.group(1) + ".byte " + ", ".join(str(x) for x in b) + "\n"
         salida.append(l)
     open(DATOS_M2C, "w").writelines(salida)
     codigo, puestas, final = [], set(), False
@@ -167,6 +174,25 @@ def funciones_elf():
 DEFINICION = re.compile(r"^(static\s+)?[\w\s\*]+?\b\w+\s*(\[[^\]]*\])?\s*(=.*)?;?$")
 
 
+def rellenar_parametros(t):
+    """m2c nombra cada parametro por su registro (arg2 = a2) pero con un prototipo corto deja solo los que
+    usa: `f(s32 arg2)` recibiria a2 en a0. Se agregan los que faltan delante para que cada uno llegue en
+    su registro."""
+    m = re.search(r"^(\w[\w\s\*]*?\b\w+)\(([^)]*)\)\s*\{\n", t, re.M)
+    if not m or m.group(2).strip() in ("", "void"):
+        return t
+    params = [p.strip() for p in m.group(2).split(",")]
+    idx = [re.search(r"\barg(\d+)(?:_reg)?\s*$", p) for p in params]
+    if not all(idx) or "..." in m.group(2):
+        return t
+    nums = [int(i.group(1)) for i in idx]
+    if nums == list(range(len(nums))) or nums != sorted(nums):
+        return t
+    por_num = dict(zip(nums, params))
+    nuevos = [por_num.get(k, f"s32 arg{k}") for k in range(max(nums) + 1)]
+    return t[:m.start()] + f"{m.group(1)}({', '.join(nuevos)}) {{\n" + t[m.end():]
+
+
 def ensanchar_parametros(t):
     """Un parametro s8/u8/s16/u16 llega en un registro entero. GCC da por hecho que quien llama ya lo
     recorto; el codigo del juego lo recorta el mismo. Para hacer lo mismo con cualquier valor del registro,
@@ -187,6 +213,9 @@ def ensanchar_parametros(t):
     return t[:m.start()] + f"{m.group(1)}({', '.join(params)}) {{\n" + "".join(recortes) + t[m.end():]
 
 
+PUNTERO_FUNCION = re.compile(r"^(?:static\s+)?([\w\s\*]+\(\s*\*+\s*D_[0-9A-F]{8}\s*\)\s*\([^)]*\))\s*(?:=[^;]*)?;$")
+
+
 def limpiar(texto, externas):
     lineas = []
     profundidad, en_dato = 0, False
@@ -205,12 +234,19 @@ def limpiar(texto, externas):
         profundidad += l.count("{") - l.count("}")
         if afuera and DECL.match(s) and "(" not in s.split("=")[0]:
             continue                                   # datos: van en el encabezado como extern
+        q = PUNTERO_FUNCION.match(s) if afuera else None
+        if q:
+            # puntero a funcion del juego (`static s32 (*D_8006CFA0)() = NULL;`): definido asi seria una
+            # copia en NULL y la llamada saltaria a 0; es la variable del juego
+            externas = list(externas) + [f"extern {q.group(1)};"]
+            continue
         if afuera and re.match(r"^[\w\s\*]+\b\w+\s*\([^;{]*\)\s*;\s*(/\*.*\*/)?$", s):
             continue                                   # prototipos que inventa m2c (dentro de una funcion
                                                        # la misma forma es `return f(x);`)
         lineas.append(l)
     t = "\n".join(lineas)
     t = re.sub(r"(?<![\w?])\?(?![\w?])", "s32", t)             # tipos desconocidos
+    t = rellenar_parametros(t)
     t = ensanchar_parametros(t)
     cab = "\n".join(e.replace("M2C_UNK", "u8") for e in externas)
     # funciones que se usan como valor (punteros a funcion): sin declaracion no compila; se declaran sin
@@ -286,6 +322,14 @@ def guardar_progreso(res, antes):
             f.write("\t".join(str(x) for x in r) + "\n")
 
 
+def armar_tipos():
+    """Los tipos que ya se entienden (objeto.h) y los prototipos escritos a mano van al contexto de m2c."""
+    os.makedirs(os.path.join(AQUI, "build"), exist_ok=True)
+    tipos = subprocess.run(["mipsel-linux-gnu-cpp", "-P", "-DSIN_COMPROBACIONES", "-I", os.path.join(AQUI, "include"),
+                            os.path.join(AQUI, "include", "tipos_conocidos.h")], capture_output=True, text=True).stdout
+    open(SOLO_TIPOS, "w").write(tipos)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--solo", default="")
@@ -295,11 +339,7 @@ def main():
     ap.add_argument("--seguir", action="store_true")
     a = ap.parse_args()
     armar_datos_m2c()
-    os.makedirs(os.path.join(AQUI, "build"), exist_ok=True)
-    # los tipos que ya se entienden (objeto.h) y los prototipos escritos a mano van al contexto de m2c
-    tipos = subprocess.run(["mipsel-linux-gnu-cpp", "-P", "-DSIN_COMPROBACIONES", "-I", os.path.join(AQUI, "include"),
-                            os.path.join(AQUI, "include", "tipos_conocidos.h")], capture_output=True, text=True).stdout
-    open(SOLO_TIPOS, "w").write(tipos)
+    armar_tipos()
     hechas = set()
     for c in glob.glob(os.path.join(AQUI, "src", "*", "*.c")):
         if os.sep + "auto" + os.sep not in c:

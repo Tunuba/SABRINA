@@ -21,6 +21,7 @@ Uso: python3 verificar.py src/Archivo.c Funcion [Funcion...]
 import functools
 import glob
 import os
+import re
 import struct
 import subprocess
 import sys
@@ -76,7 +77,7 @@ def compilar(c, excluir):
     # escribiria esa copia y podria pasar la verificacion sin tocar lo que toca la original
     for l in subprocess.run(["mipsel-linux-gnu-nm", obj], capture_output=True, text=True).stdout.splitlines():
         p = l.split()
-        if len(p) == 3 and p[1] in "dDbBgGsSCrR" and p[2] in sim:
+        if len(p) == 3 and p[1] in "dDbBgGsSCrR" and (p[2] in sim or re.fullmatch(r"D_[0-9A-F]{8}", p[2])):
             raise SystemExit(f"no compila: error: el C define el dato del juego {p[2]}; tiene que ser extern")
     # las funciones del juego que el C define: el nombre sigue apuntando a la original (asi un puntero a
     # funcion o una llamada desde el C van a la del juego, como en el original) y la version en C queda

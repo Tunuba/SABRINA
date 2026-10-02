@@ -10,7 +10,7 @@ s32 func_8001061C(void); /* ? */
 s32 func_80010624(void); /* ? */
 s32 func_8001062C(s32, s32); /* ? */
 s32 func_80010670(s32, s32); /* ? */
-s32 func_800106C8(void); /* ? */
+s32 func_800106C8(s32, s32); /* ? */
 s32 start(void); /* ? */
 void func_80010880(s32, s32);
 void func_80010920(s32, s32, s32, s32);
@@ -236,11 +236,10 @@ s32 func_8001668C(s32, s32); /* ? */
 s32 func_800167D4(void); /* ? */
 s32 func_80016874(void); /* ? */
 void func_800168EC(s32, s32);
-void func_80016910(void);
-s32 func_80016940(void);
-s32 func_80016970(void);
+void func_80016910(s32, s32, s32);
+s32 func_80016940(s32, s32);
 void func_800169A0(s32);
-s32 func_800169D4(void); /* ? */
+s32 func_800169D4(s32, s32); /* ? */
 s32 func_80016A04(void);
 s32 func_80016A14(s32);
 s32 func_80016A2C(void); /* ? */
@@ -408,7 +407,7 @@ void ActivarObjetosCercanos(void);
 void func_80021120(s32, s32);
 void func_80021190(void);
 s32 func_800211D4(void); /* ? */
-void func_800212D4(void);
+void func_800212D4(s32, s32, s32);
 void func_800213A0(void);
 void func_8002153C(void);
 void func_800217D0(void);
@@ -426,7 +425,6 @@ void func_80021E54(s32, s32, s32, s32);
 void func_80021F70(s32, s32, s32);
 void func_8002205C(s32, s32, s32);
 void func_80022104(s32, s32, s32);
-s32 func_8002218C(s32, s32, s32);
 s32 func_800221A8(s32, s32, s32, s32);
 s32 func_800221FC(s32, s32, s32, s32);
 s32 func_8002225C(s32, s32, s32, s32);
@@ -524,7 +522,7 @@ s32 func_80027534(s32); /* ? */
 s32 func_800275F8(s32); /* ? */
 void func_80027998(void);
 s32 func_800279B8(s32);
-s32 func_80027A04(void);
+s32 func_80027A04(s32);
 s32 func_80027AD0(s32, s32, s32);
 s32 func_80027BC8(s32, s32, s32); /* ? */
 s32 func_80027C9C(s32, s32, s32); /* ? */
@@ -561,7 +559,7 @@ void func_8002988C(void);
 s32 func_8002991C(void);
 s32 func_8002992C(void);
 s32 func_8002993C(void);
-s32 func_80029948(s32); /* ? */
+s32 func_80029948(s32, s32, s32); /* ? */
 void func_800299B4(void);
 void func_800299D4(s32);
 s32 func_800299E8(s32); /* ? */
@@ -588,7 +586,7 @@ s32 func_8002AC18(s32, s32, s32, s32);
 void func_8002B024(s32);
 void func_8002B0AC(void);
 s32 func_8002B180(void);
-void func_8002B270(void);
+void func_8002B270(s32, s32, s32);
 s32 func_8002B2BC(void);
 void func_8002B49C(s32);
 s32 CD_getsector(s32, s32);
@@ -641,8 +639,6 @@ s32 thunk_FUN_8004866c_8002E214(s32); /* ? */
 s32 func_8002E21C(s32); /* ? */
 s32 func_8002E51C(s32); /* ? */
 void func_8002EC1C(void);
-s32 func_8002ECFC(s32);
-void func_8002ED30(s32);
 void func_8002ED4C(s32);
 void func_8002EDC8(s32);
 void func_8002EF8C(s32);
@@ -661,14 +657,12 @@ s32 func_80030068(s32);
 void func_800300C4(void);
 void func_8003012C(void);
 s32 func_8003015C(void);
-s32 func_8003018C(s32); /* ? */
 s32 func_8003019C(void); /* ? */
 s32 func_80030208(s32); /* ? */
 void func_80030E64(void);
 void func_80030EC8(void);
 void func_80030F18(s32);
 s32 func_80031000(void); /* ? */
-s32 DanoPorEnemigo(s32, s32); /* ? */
 void func_800313E4(void);
 void func_80031494(void);
 s32 func_80031538(s32); /* ? */
@@ -795,7 +789,7 @@ void func_8003D9D0(void);
 void thunk_FUN_80042924(s32);
 s32 TocarSonido(s32, s32, s32, s32);
 void func_8003DC08(void);
-void func_8003DC48(void);
+void func_8003DC48(s32, s32, s32);
 s32 func_8003DD44(s32); /* ? */
 s32 func_8003DD74(s32); /* ? */
 s32 func_8003DD84(void); /* ? */
@@ -819,9 +813,9 @@ s32 func_8003E9FC(s32, s32); /* ? */
 s32 func_8003EA38(s32); /* ? */
 void func_8003EA90(void);
 void func_8003EAF8(s32);
-void _SpuInit(s32);
+void _SpuInit(s32, s32, s32);
 void SpuStart(void);
-void SsUtReverbOff(void);
+void SsUtReverbOff(s32, s32, s32);
 s32 _spu_gcSPU(void); /* ? */
 s32 S_M_INT_OBJ_54(s32, s32, s32, s32); /* ? */
 s32 S_M_INT_OBJ_C4(void); /* ? */
@@ -954,7 +948,7 @@ s32 SsSeqCalledTbyT(void); /* ? */
 void SsGetSerialVol(s32, s32);
 s32 SSGSV_OBJ_A4(s32); /* ? */
 void _SsInit(void);
-void func_80041C48(void);
+void func_80041C48(s32, s32, s32);
 void SsSetMVol(s32, s32);
 void func_80041CD8(s32);
 s32 func_80041F08(void); /* ? */
@@ -1161,7 +1155,6 @@ void Liberar(s32);
 void func_8004E194(void);
 void func_8004E238(void);
 void func_8004E268(void);
-s32 func_8004E2A4(s32);
 s32 func_8004E2CC(s32); /* ? */
 s32 func_8004E2E4(s32, s32); /* ? */
 s32 func_8004E32C(s32, s32);
@@ -1169,9 +1162,7 @@ s32 func_8004E5D8(s32, s32); /* ? */
 s32 func_8004E618(s32, s32);
 void func_8004E6C0(s32, s32);
 void func_8004E72C(s32);
-s32 func_8004E774(s32, s32);
 void func_8004E7FC(s32, s32, s32);
-void func_8004E86C(s32, s32, s32);
 s32 func_8004E8C4(s32, s32);
 s32 func_8004EA90(s32, s32); /* ? */
 s32 func_8004EAAC(s32); /* ? */
@@ -1397,7 +1388,7 @@ s32 func_8005DADC(void); /* ? */
 s32 func_8005DB70(void); /* ? */
 s32 func_8005DC04(void);
 void func_8005DC1C(s32);
-void func_8005DCA0(s32);
+void func_8005DCA0(s32, s32, s32);
 void func_8005DCD4(s32, s32);
 s32 func_8005DD50(s32, s32); /* ? */
 s32 func_8005DD70(s32); /* ? */

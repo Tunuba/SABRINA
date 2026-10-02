@@ -75,3 +75,19 @@ s32 func_80012AE4(u8 *p, s32 c, s32 n) {
     }
     return -1;
 }
+
+extern char D_80060C5C[];
+extern u32 D_800636EC[3];            /* el mando de mover (despues de 2 palabras de cabecera) */
+extern void func_800112C0(char *nombre, RectVram *r);  /* revisa el rectangulo (depuracion) */
+
+/* MoveImage: copia el rectangulo r de la VRAM a (x, y), por la cola del GPU. -1 si esta vacio. */
+s32 func_80012F2C(RectVram *r, s32 x, s32 y) {
+    func_800112C0(D_80060C5C, r);
+    if (r->w == 0 || r->h == 0) {
+        return -1;
+    }
+    D_800636EC[1] = (y << 16) | (x & 0xFFFF);
+    D_800636EC[0] = *(u32 *)&r->x;
+    D_800636EC[2] = *(u32 *)&r->w;
+    return D_800636C8->encolar(D_800636C8->dibujarOT, D_800636EC - 2, 0x14, 0);
+}

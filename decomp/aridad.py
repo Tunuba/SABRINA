@@ -25,7 +25,7 @@ def main():
     marcadas = set(re.findall(r"^(\w+) = 0x[0-9A-Fa-f]+; // type:func",
                               open(os.path.join(AQUI, "symbol_addrs.txt")).read(), re.M))
     # las que ya tienen prototipo escrito a mano en tipos_conocidos.h no se tocan
-    a_mano = set(re.findall(r"^[\w\s\*]+?(\w+)\s*\([^;]*\);",
+    a_mano = set(re.findall(r"^[\w\s\*]+?\b(\w+)\s*\([^;]*\);",
                             open(os.path.join(AQUI, "include", "tipos_conocidos.h")).read(), re.M))
     nombres = {}
     for n, d in sim.items():
@@ -35,6 +35,27 @@ def main():
     rango = {d: (d, inicios[i + 1] if i + 1 < len(inicios) else d + 0x1000) for i, d in enumerate(inicios)}
     aridad = {d: 0 for d in inicios}
     fijas = {d: VARIADICAS[n] for d, n in nombres.items() if n in VARIADICAS}
+    # lo que escriben los llamadores en a0-a3 justo antes de cada jal (en el mismo bloque, con el hueco de
+    # retardo): un trampolin que pasa sus argumentos sin tocarlos a un puntero a funcion no los lee, y solo
+    # asi se sabe cuantos recibe
+    de_llamadores = {}
+    for pc, (mn, ops) in ins.items():
+        if mn != "jal" or not ops or not re.fullmatch(r"[0-9a-f]+", ops[0]):
+            continue
+        destino = int(ops[0], 16)
+        escritos = set()
+        for q in [pc + 4] + [pc - 4 * k for k in range(1, 9)]:
+            if q not in ins:
+                break
+            m, o = ins[q]
+            if q != pc + 4 and (m in ("jal", "j", "jalr", "jr", "b") or m in verificar.SALTO_COND):
+                break
+            _, escribe = verificar.lee_escribe(m, o)
+            if escribe in ARGS:
+                escritos.add(escribe)
+        n = max((ARGS.index(r) + 1 for r in escritos), default=0)
+        de_llamadores[destino] = max(de_llamadores.get(destino, 0), n)
+    trampolin = set()
     for _ in range(6):
         cambio = False
         for d in inicios:
@@ -64,6 +85,8 @@ def main():
                 if not es_salto:
                     pila.append((pc + 4, w))
                 elif mn == "jal" or mn == "jalr":
+                    if mn == "jalr" and not w:
+                        trampolin.add(d)                       # llama sin haber tocado a0-a3
                     pila.append((pc + 8, frozenset(ARGS)))     # despues de una llamada a0-a3 no valen nada
                 elif mn in ("j", "b"):
                     destino = int(ops[0], 16) if re.fullmatch(r"[0-9a-f]+", ops[0]) else None
@@ -77,6 +100,8 @@ def main():
                     if re.fullmatch(r"[0-9a-f]+", destino):
                         pila.append((int(destino, 16), w))
             n = fijas.get(d, max((ARGS.index(r) + 1 for r in params), default=0))
+            if d in trampolin and d not in fijas:
+                n = max(n, de_llamadores.get(d, 0))
             if n != aridad[d]:
                 aridad[d], cambio = n, True
         if not cambio:

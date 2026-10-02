@@ -107,6 +107,8 @@ def usar_sinteticas():
 
 def lote(noms):
     import auto
+    auto.armar_datos_m2c()
+    auto.armar_tipos()                 # que tipos_conocidos.h recien editado llegue a m2c
     V = usar_sinteticas()
     antes = {}
     if os.path.exists(TSV):

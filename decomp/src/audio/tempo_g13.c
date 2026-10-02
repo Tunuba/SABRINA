@@ -148,3 +148,14 @@ s32 func_8003E0C4(u16 *datos, u32 n) {
         }
     }
 }
+
+/* Lee un registro de la SPU (n en medias palabras); salvo con modo -1, el valor es una direccion y se pasa
+ * a bytes. */
+s32 func_8003E9FC(s32 n, s32 modo) {
+    u32 v = *(volatile u16 *)(D_80074EBC + n * 2);
+
+    if (modo == -1) {
+        return v;
+    }
+    return v << D_80074ED0;
+}

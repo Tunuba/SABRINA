@@ -26,4 +26,19 @@ typedef double f64;
 #define NULL ((void *)0)
 #endif
 
+
+#ifndef SIN_COMPROBACIONES   /* m2c no lee asm */
+/* add/addi/sub de MIPS que el original usa a mano: saltan a la excepcion si se desbordan, y GCC solo
+   emite addu/subu. Para que el C haga lo mismo con cualquier valor. */
+static inline s32 SUMA_TRAMPA(s32 a, s32 b) {
+    s32 r;
+    __asm__ volatile("add %0, %1, %2" : "=r"(r) : "r"(a), "r"(b));
+    return r;
+}
+static inline s32 RESTA_TRAMPA(s32 a, s32 b) {
+    s32 r;
+    __asm__ volatile("sub %0, %1, %2" : "=r"(r) : "r"(a), "r"(b));
+    return r;
+}
+#endif
 #endif

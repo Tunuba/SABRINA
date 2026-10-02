@@ -37,3 +37,13 @@ s32 func_8001C390(s32 ax, ...) {
     __builtin_va_start(ap, ax);
     return func_8001C33C(&ax, &ax + 3);
 }
+
+extern s32 func_8001C280(s32 *a, s32 *b);
+
+/* Como func_8001C390, con func_8001C280: los dos vectores son los argumentos seguidos en la pila. */
+s32 func_8001C2D0(s32 ax, ...) {
+    __builtin_va_list ap;
+
+    __builtin_va_start(ap, ax);
+    return func_8001C280(&ax, &ax + 3);
+}

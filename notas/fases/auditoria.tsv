@@ -303,3 +303,29 @@ func_80057800	332	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 153 de 153 v
 func_80020294	604	IGUAL	src/geometria/triangulos_g13.c	8 de 8 capturas y 411 de 411 variantes iguales
 func_80017B5C	24	IGUAL	src/geometria/triangulos_g13.c	1 de 1 capturas y 68 de 68 variantes iguales
 func_80017B7C	12	IGUAL	src/geometria/triangulos_g13.c	1 de 1 capturas y 64 de 64 variantes iguales
+sintetica: 1 de 1 capturas y 69 de 69 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 44 de 44 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 78 de 78 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 70 de 70 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 136 de 136 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 25 de 25 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 99 de 99 variantes iguales		IGUAL		
+sintetica: 0 de 1 capturas y 3 de 100 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 95 de 95 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 82 de 82 variantes iguales		IGUAL		
+sintetica: 1 de 1 capturas y 127 de 127 variantes iguales		IGUAL		
+func_80014560	56	IGUAL_SINT	src/libgpu/canal_g13.c	sintetica: 1 de 1 capturas y 69 de 69 variantes iguales
+func_8001062C	68	IGUAL_SINT	src/varios/arranque_g13.c	sintetica: 1 de 1 capturas y 38 de 38 variantes iguales
+func_8001C2D0	52	IGUAL_SINT	src/geometria/azar_g13.c	sintetica: 1 de 1 capturas y 103 de 103 variantes iguales
+func_80013D24	40	IGUAL_SINT	src/psyq/libetc_g13.c	sintetica: 1 de 1 capturas y 60 de 60 variantes iguales
+func_80021190	68	IGUAL_SINT	src/libgpu/pantalla_g13.c	sintetica: 1 de 1 capturas y 76 de 76 variantes iguales
+func_800447DC	8	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 44 de 44 variantes iguales
+func_8004EA90	28	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 78 de 78 variantes iguales
+func_8005C940	36	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 70 de 70 variantes iguales
+func_800522B0	52	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 136 de 136 variantes iguales
+func_8002244C	108	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 25 de 25 variantes iguales
+func_800534A0	56	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 99 de 99 variantes iguales
+func_80052F6C	84	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 95 de 95 variantes iguales
+func_8003B53C	64	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 82 de 82 variantes iguales
+func_800537C4	68	IGUAL_V0_SINT	src/objetos/listas_g13.c	sintetica: 0 de 1 capturas y 3 de 100 variantes iguales
+func_800300C4	104	IGUAL_SINT	src/sabrina/vida_g13.c	sintetica: 1 de 1 capturas y 127 de 127 variantes iguales

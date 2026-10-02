@@ -150,3 +150,11 @@ u8 *func_800163E4(void) {
     func_800143F4();
     return D_80063954 - 0x3C;
 }
+
+extern s32 func_80016970(s32 canal, s32 f);
+extern void func_800123E0(void);
+
+/* Pone func_800123E0 en el canal 2 de interrupciones. */
+s32 func_80013D24(void) {
+    return func_80016970(2, (s32)func_800123E0);
+}

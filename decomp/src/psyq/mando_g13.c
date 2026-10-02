@@ -512,3 +512,56 @@ s32 func_800283C4(u8 *buf1, u8 *buf2) {
     D_8006CFBC = 1;
     return 1;
 }
+
+/* Los pasos de una orden al mando: arrancan si D_8006CFA0 (con los mismos argumentos) deja empezar. */
+#define PUEDE_EMPEZAR ((s32 (*)(Puerto *p, ...))D_8006CFA0)
+extern s32 func_80026C18();
+extern s32 func_80026C34();
+extern s32 func_80026CFC();
+extern s32 func_80026D50();
+
+/* El paso de la orden con respuesta esperada: si el mando contesto lo esperado (0x53) termina en el
+   estado 2, si no lo marca 0xFE; sin respuesta avisa con D_8006CF88. */
+s32 func_80026D50(Puerto *p) {
+    u8 *b = (u8 *)p;
+    if (b[0x53] != 0) {
+        if (b[0x46] == 2) {
+            return 1;
+        }
+        b[0x46] = 0xFE;
+        return 0;
+    }
+    D_8006CF88(p);
+    return 0;
+}
+
+s32 func_80027248(Puerto *p, s32 dato) {
+    u8 *b = (u8 *)p;
+    if (PUEDE_EMPEZAR(p, dato) != 0) {
+        return 0;
+    }
+    b[0x46] = 1;
+    *(s32 (**)())(b + 0x14) = func_80026C18;
+    *(s32 *)(b + 0x20) = dato;
+    *(s32 (**)())(b + 0x18) = func_80026C34;
+    return 1;
+}
+
+s32 func_800272B0(Puerto *p, s32 a, s32 c) {
+    u8 *b = (u8 *)p;
+    if (PUEDE_EMPEZAR(p, a, c) != 0) {
+        return 0;
+    }
+    b[0x46] = 1;
+    *(s32 (**)())(b + 0x14) = func_80026CFC;
+    *(s32 (**)())(b + 0x18) = func_80026D50;
+    b[0x51] = a;
+    b[0x52] = c;
+    b[0x53] = (u8)a == b[0xE4];
+    return 1;
+}
+
+
+s32 func_80027D44(s32 a, s32 dato, s32 c) {
+    return func_80027248(D_8006CF98(a, dato, c), dato);
+}
