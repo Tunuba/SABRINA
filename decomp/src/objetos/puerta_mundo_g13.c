@@ -165,3 +165,22 @@ void func_8004CB48(Objeto *o) {
     }
     *(s16 *)((u8 *)o->datos + 0x1A) = 2;
 }
+
+extern s32 thunk_FUN_8004866c(Objeto *o);
+
+/* Saca la puerta de la lista (corriendo las de atras) y la borra. */
+s32 func_8004DAC4(Objeto *o) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (D_800C98C4[i] == o) {
+            D_800C98C4[i] = NULL;
+            break;
+        }
+    }
+    for (; i + 1 < 4; i++) {
+        D_800C98C4[i] = D_800C98C4[i + 1];
+    }
+    D_8007CC1C--;
+    return thunk_FUN_8004866c(o);
+}
