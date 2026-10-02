@@ -153,3 +153,21 @@ void Liberar(void *p) {
         func_800161C8(copia.archivo);
     }
 }
+
+extern s8 D_8007CC26;                /* 1 desde la primera vez */
+extern u8 D_8007CC25;                /* 1 si ya se pidio el monton al sistema */
+extern char D_80075834[];
+
+/* Pide al sistema la memoria del monton, una sola vez (la segunda avisa y devuelve NULL). */
+void *func_8004DC10(s32 a, s32 tam) {
+    if (D_8007CC26 == 0) {
+        D_8007CC25 = 0;
+        D_8007CC26 = 1;
+    }
+    if (D_8007CC25 == 0) {
+        D_8007CC25 = 1;
+        return malloc_bios(tam, 1);
+    }
+    printf(D_80075834);
+    return NULL;
+}

@@ -104,3 +104,31 @@ void func_8004EEF4(s32 puerto, s32 n) {
         D_8007CA20 = 0;
     } while (D_8007CC40 != 0);
 }
+
+extern u8 D_800D1610[4];             /* la cabecera de la partida: "SC", tipo de icono, bloques */
+extern char D_800D1614[];            /* el titulo */
+extern u8 D_800D1690[0x80];          /* el icono */
+extern u16 D_800D1670[16];           /* su paleta */
+extern char D_8007594C[];
+extern u8 D_80075964[0x80];
+extern u16 D_800759E4[16];
+extern char *strcpy(char *d, const char *s);
+extern void *memset(void *p, s32 c, u32 n);
+
+/* Arma la cabecera de la partida para la tarjeta: "SC", icono de un cuadro, un bloque, el titulo, el icono y
+ * su paleta. Devuelve 16. */
+s32 func_8004EB04(void) {
+    u16 i;
+
+    D_800D1610[0] = 'S';
+    D_800D1610[1] = 'C';
+    D_800D1610[2] = 0x11;
+    D_800D1610[3] = 1;
+    strcpy(D_800D1614, D_8007594C);
+    memcpy(D_800D1690, D_80075964, 0x80);
+    memset(D_800D1670, 0, 0x20);
+    for (i = 0; i != 16; i++) {
+        D_800D1670[i] = D_800759E4[i];
+    }
+    return 16;
+}

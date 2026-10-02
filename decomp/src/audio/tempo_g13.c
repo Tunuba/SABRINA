@@ -75,3 +75,10 @@ s32 func_80041CD8(s32 propio) {
     }
     return func_800143F4();
 }
+
+extern s32 func_80016970(s32 canal, s32 f);
+
+/* Pone f en el canal 4 de interrupciones. */
+s32 func_8003EAF8(s32 f) {
+    return func_80016970(4, f);
+}
