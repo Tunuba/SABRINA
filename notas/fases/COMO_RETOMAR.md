@@ -279,3 +279,7 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   sin IGUAL del lote es casi todo del CD (8002A-8002F, 80017D80, 8005D50C), asm puro (setjmp, parche de la
   BIOS, InitGeom 800177B4), BuclePrincipal (no termina) y las NO_TERMINA. Siguiente: mas capturas (hay 322
   sin capturas; el paseo ya rinde poco, probar a jugar de verdad con recorridos por nivel).
+- 02-10 tarde: func_8002D170 sola volvio a morir (ERROR) con la memoria de Windows en 1.8 GB: queda pendiente,
+  no insistir hasta tener la PC libre. El paseo con --acciones no saco nada nuevo (322 sin capturas).
+  Idea para seguir (sin probar, consultar antes): para funciones puras sin capturas, usar como captura la
+  RAM de otra funcion del mismo momento y variar los argumentos; el verificador compara original y C igual.
