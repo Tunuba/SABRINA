@@ -2,7 +2,8 @@
 una cuadricula de puntos (escribe su x y su z) y espera un rato en cada uno, asi se activan los objetos de
 todas las celdas. Un solo emulador, sin ventana.
 
-Uso: py capt_paseo.py <lista.txt> [niveles separados por comas] [paso en celdas] [cuadros por punto] [n]
+Uso: py capt_paseo.py <lista.txt> [niveles separados por comas] [paso en celdas] [cuadros por punto] [n] [--acciones]
+(--acciones: en cada punto pone un hechizo y aprieta los botones de atacar, lanzar y saltar)
 """
 import os
 import sys
@@ -18,6 +19,7 @@ niveles = [int(x) for x in sys.argv[2].split(",")] if len(sys.argv) > 2 else lis
 paso = int(sys.argv[3]) if len(sys.argv) > 3 else 8          # en celdas de la cuadricula (64 x 64)
 cuadros = int(sys.argv[4]) if len(sys.argv) > 4 else 40
 n = int(sys.argv[5]) if len(sys.argv) > 5 else 2
+acciones = "--acciones" in sys.argv
 CAPT = os.path.join(RAIZ, "decomp", "capturas")
 solo = set(open(lista).read().split())
 funcs = [(int(d, 16), nom) for d, tam, nom in (l.split() for l in open(os.path.join(RAIZ, "decomp", "funciones_juego.tsv")))
@@ -60,6 +62,12 @@ with Emu(iso=CUE, log="capt_paseo.log", extra=("-fastboot",), depurar=True) as e
                 e.eval(f"local s = rd32(0x8007CAF8); if s ~= 0 then wr32(s + 0x24, {x & 0xFFFFFFFF}); "
                        f"wr32(s + 0x2C, {z & 0xFFFFFFFF}) end; return 'ok'")
                 esperar(e, cuadros)
+                if acciones:
+                    # con el hechizo de cada mundo puesto: atacar, lanzar y saltar en cada punto
+                    e.eval(f"wr8(0x800C8566, {(cz // paso + cx // paso) % 5}); return 'ok'")
+                    for b in ("SQUARE", "CIRCLE", "TRIANGLE", "CROSS", "R1", "L1"):
+                        e.lua("boton", b=b, f=4)
+                        esperar(e, 12)
         print(f"nivel {nivel} listo, {time.time() - t0:.0f} s", flush=True)
 nuevas = [nom for _, nom in funcs if antes[nom] == 0 and cuantas(nom) > 0]
 print(f"{len(nuevas)} funciones capturadas por primera vez ({time.time() - t0:.0f} s): {' '.join(nuevas)}")
