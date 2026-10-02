@@ -283,3 +283,5 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   no insistir hasta tener la PC libre. El paseo con --acciones no saco nada nuevo (322 sin capturas).
   Idea para seguir (sin probar, consultar antes): para funciones puras sin capturas, usar como captura la
   RAM de otra funcion del mismo momento y variar los argumentos; el verificador compara original y C igual.
+- 02-10: CAPTURAS SINTETICAS aprobadas: ver `notas/fases/2026-10-02_capturas_sinteticas.md`. Herramienta
+  `decomp/sint.py`, resultados en `decomp/progreso_sint.tsv` (IGUAL_SINT), capturas en `capturas_sint/`.

@@ -25,6 +25,7 @@ notas/videos/
 decomp/asm/
 decomp/build/
 decomp/capturas/
+decomp/capturas_sint/
 decomp/SLUS_012.08
 decomp/*.ld
 decomp/*.d
