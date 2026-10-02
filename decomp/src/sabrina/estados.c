@@ -18,7 +18,7 @@ void func_8003018C(Objeto *o) {
 }
 
 /* Pasa a Sabrina al estado func_8003018C con la animacion 21 de su tabla. */
-void func_8003019C(void) {
+s32 func_8003019C(void) {
     Objeto *s = p_sabrina;
     Objeto *c = D_8007CB8C;
     EstadoAnim *as = s->anim;
@@ -34,6 +34,7 @@ void func_8003019C(void) {
     p_sabrina->actualizar = (FuncObjeto)func_8003018C;
     D_8007CB80 = 1;
     D_8007CB8C->actualizar = (FuncObjeto)func_80025064;
+    return (s32)D_8007CB8C;   /* lo que queda en v0 */
 }
 
 /* Pasa a Sabrina al estado func_80030208 con la primera animacion de su tabla. */

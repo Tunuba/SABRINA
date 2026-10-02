@@ -12,7 +12,7 @@ extern s8 D_8008AF88[0x50];          /* que ranuras de objetos del mundo estan e
 extern u8 D_8008AFD8[0x50][0x120];   /* los objetos del mundo, de 0x120 bytes */
 
 void func_800206E8(void);
-void func_8001E230(void *modelo);
+s32 func_8001E230(void *modelo);
 void *func_8001E06C(void *modelo, s32 b);
 s32 func_80039BC8(Forma *a, Forma *b);
 s32 func_8001C33C(s32 *a, s32 *b);   /* producto escalar de dos vectores, en 24.8 */
@@ -24,15 +24,19 @@ void func_80024300(void) {
 }
 
 /* Cambia el modelo del objeto: suelta el que tenga y, si n >= 0, le pone una copia de modelos_cargados[n]. */
-void func_800249CC(Objeto *o, s32 n) {
+s32 func_800249CC(Objeto *o, s32 n) {
+    s32 v = (s32)o->modelo;    /* lo que queda en v0 */
+
     if (o->modelo != NULL) {
         func_800206E8();
-        func_8001E230(o->modelo);
+        v = func_8001E230(o->modelo);
         o->modelo = NULL;
     }
     if (n >= 0) {
         o->modelo = func_8001E06C(modelos_cargados[n], D_8007C9F0);
+        v = (s32)o->modelo;
     }
+    return v;
 }
 
 /* Busca el objeto del mundo mas cercano cuya forma toca la del objeto y se lo pasa a su funcion de aviso

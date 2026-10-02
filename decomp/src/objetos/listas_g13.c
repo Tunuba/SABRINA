@@ -570,3 +570,44 @@ s32 func_800563C4(u8 *o) {
     *(void **)(b + 0xC) = p;
     return (s32)p;
 }
+
+extern s8 D_800C8567[];
+extern s32 func_800249CC(u8 *o, s32 modelo);
+
+/* Arranque de la puerta de cada nivel: su modelo (0x1A, 0x1B o 0x1C segun el nivel dentro de su grupo de
+   3; la tercera queda abierta), el numero de nivel que lleva (bloque +4) y la marca 0x80 si ese nivel ya
+   se paso (D_800C8567). Devuelve lo que queda en v0. */
+s32 func_80054A58(u8 *o) {
+    u8 *b = o + 0x74;
+    s8 n;
+    s32 g;
+    *(s16 *)(o + 0x32) = 0;
+    *(s16 *)(o + 0x34) = 0;
+    *(s16 *)(o + 0x30) = 0;
+    *(s16 *)(o + 0x70) = 1;
+    *(s32 *)(b + 4) = nivel_actual;
+    *(s32 *)(o + 0x54) = 5;
+    *(s32 *)(o + 0x58) = 5;
+    *(s32 *)(o + 0x5C) = 5;
+    *(s32 *)(b + 8) = 0;
+    n = nivel_actual;
+    if ((u32)n < 0xE) {
+        if (n == 0 || n == 13) {
+            *(s32 *)(b + 8) = 0;
+        } else {
+            g = (n - 1) % 3;
+            *(s32 *)(b + 8) = g == 2;
+            func_800249CC(o, 0x1A + g);
+            if (g == 2) {
+                *(s16 *)(o + 0x70) = 0;
+            }
+            *(s32 *)(b + 4) = n - 1;
+        }
+    }
+    if (D_800C8567[*(s32 *)(b + 4)] != 0) {
+        u8 f = o[0x20] | 0x80;
+        o[0x20] = f;
+        return f;
+    }
+    return 0;
+}

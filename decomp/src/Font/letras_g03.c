@@ -33,17 +33,23 @@ TOCA_NULL u16 func_80019234(s32 inicio) {
 
 /* Si D_8007CA14 es 0, la linea inicio + k arranca en 0xED8. Despues a cada linea del texto con contador
  * distinto de cero le resta 200. */
-TOCA_NULL void func_80019374(s32 inicio, s32 k) {
-    LineaTexto *l = D_800798BC[inicio + k];
-    u16 i;
+TOCA_NULL s32 func_80019374(s32 inicio, s32 k) {
+    LineaTexto *l = D_800798BC[SUMA_TRAMPA(inicio, k)];
+    u32 i;
+    s32 v;
 
     if (D_8007CA14 == 0) {
         l->cuenta = 0xED8;
+        v = 0xED8;
+    } else {
+        v = D_8007CA14;
     }
-    for (i = 0; l != NULL; i++) {
-        l = D_800798BC[inicio + i];
+    for (i = 0; l != NULL; i = v & 0xFFFF) {
+        l = D_800798BC[SUMA_TRAMPA(inicio, i)];
         if (l->cuenta != 0) {
             l->cuenta -= 200;
         }
+        v = i + 1;      /* lo que queda en v0 */
     }
+    return v;
 }
