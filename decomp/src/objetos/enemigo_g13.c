@@ -555,3 +555,41 @@ void func_8002E51C(Objeto *o) {
         break;
     }
 }
+
+extern s32 D_800C6598, D_800C659C, D_800C65A4, D_800C65A8;
+extern void func_8001E588(Objeto *o);
+
+/* Crea una bola (objeto 5) en desde, de escala dada y modelo tipo, lanzada al pecho de Sabrina a 0x4000;
+ * si nace dentro de una pared se marca para borrar. */
+void func_80048DC0(Objeto *o, s32 *desde, s32 *fuera, s32 tipo, s32 escala) {
+    Objeto *t;
+    s32 v[3];
+
+    t = func_800252A0(5, o, desde[0], desde[1], desde[2], 0, 0, 0, 0, 0, 0, 1, 1);
+    t->escala[0] = escala;
+    t->escala[1] = escala;
+    t->escala[2] = escala;
+    func_800249CC(t, tipo);
+    func_8001E588(t);
+    fuera[0] = p_sabrina->x;
+    fuera[1] = p_sabrina->y - 0xCCD - 0x7FFF;
+    fuera[2] = p_sabrina->z;
+    func_80048CF4(t, fuera, 0x4000, v);
+    t->empuje_x = v[0];
+    t->vel_y = v[1];
+    t->empuje_z = v[2];
+    func_8001C45C(v);
+    D_800C6594[0] = t->x;
+    D_800C6598 = t->y;
+    D_800C659C = t->z;
+    D_800C6594[0] -= ((((v[0] >> 4) * 0xCC) >> 8) << 8);
+    D_800C6598 -= ((((v[1] >> 4) * 0xCC) >> 8) << 8);
+    D_800C659C -= ((((v[2] >> 4) * 0x33 * 4) >> 8) << 8);
+    D_800C65A0[0] = t->x + t->empuje_x;
+    D_800C65A4 = t->y + t->vel_y;
+    D_800C65A8 = t->z + t->empuje_z;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    if (func_8003AE84() != 0) {
+        *(u8 *)&t->_20 |= 0x80;
+    }
+}
