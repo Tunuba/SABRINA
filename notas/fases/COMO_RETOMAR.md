@@ -261,3 +261,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - Paseo (`scripts/capt_paseo.py`): niveles 0 a 6 hechos; FALTAN los niveles 7 a 14 (de a uno:
   `py capt_paseo.py lista.txt 7 8 40`, la lista = SIN_CAPTURAS de progreso.tsv sin .regs).
 - func_8002D170 sigue pendiente (se muere por memoria en el lote; sola da IGUAL).
+- 02-10 manana: las 36 de p_sabrina repetidas (2 IGUAL, 4 IGUAL_V0, 6 DISTINTO, resto YA_HECHA).
+  Enemigos verificados: func_80034710 IGUAL; func_8002E030, func_8003D5F4, func_80045CF4 IGUAL_V0;
+  func_8002E51C DISTINTO por la tabla de saltos. Paseo 6 a 14: casi nada nuevo (5 funciones; el nivel 9 con
+  paso 4 dio 2). Las 327 que siguen sin capturas no aparecen paseando: hara falta jugar de verdad o
+  provocar los objetos de otra forma.
