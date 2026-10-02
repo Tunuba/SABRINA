@@ -239,3 +239,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - func_8002D170 dio IGUAL sola (15 min) pero en el lote quedo ERROR otra vez: repetirla sola.
 - Saltadas por el CD: func_8002D714, func_8002D56C, func_8002FF1C, func_8002B810, func_8002B2BC,
   func_8005D50C (el reproductor de video).
+- 01-10 noche, final: el reintento de func_8002D170 sola (auto.py --solo, 15 min) lo corto Claude Code por
+  memoria critica de Windows (no por el lote); quedo ERROR. Probable causa de los "process pool terminated"
+  de antes: la PC se queda sin memoria (otras sesiones) y se lleva al trabajador. Al cortar habia 1.8 GB
+  libres: no se lanzo nada mas. Pendiente: func_8002D170 sola cuando haya memoria, y mas capturas con
+  `scripts/capt_sin.py` (lo que mas rindio: partir del `arranque`).
