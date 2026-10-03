@@ -121,3 +121,69 @@ s32 func_8002A950(s32 modo, u8 *res) {
         return e;
     }
 }
+
+extern s32 D_8006D30C;                 /* nivel de depuracion */
+extern s32 D_8006D130[];               /* por orden: si limpia el estado de datos listos */
+extern s32 D_8006D230[];               /* por orden: cuantos bytes de parametro lleva */
+extern u8 D_8006D31C[4];               /* la ultima posicion pedida (orden 2, Setloc) */
+extern u8 D_8006D320;                  /* el ultimo modo (orden 0xE, Setmode) */
+extern volatile u8 *D_8006D2B4;        /* registro de orden */
+extern volatile u8 *D_8006D2B8;        /* registro de parametros */
+extern char D_8006141C[], D_80061424[], D_80061434[];
+
+/* CdControl(orden, param, res, asinc): espera a que termine la orden anterior, manda la nueva con sus
+ * parametros y, si no es asincrona, espera el fin y copia el resultado. 0 si fue bien, -1 si fallo o se
+ * paso el tiempo, -2 si la orden necesita parametros y no se dieron. */
+s32 func_8002AC18(s32 orden, u8 *param, u8 *res, s32 asinc) {
+    u8 c = orden;
+    s32 k;
+    u8 *de;
+
+    if (D_8006D30C >= 2) {
+        printf(D_8006141C, D_8006D328[c]);
+    }
+    if (D_8006D230[c] != 0 && param == 0) {
+        if (D_8006D30C > 0) {
+            printf(D_80061424, D_8006D328[c]);
+        }
+        return -2;
+    }
+    func_8002A6D0(0, 0);
+    if (c == 2) {
+        for (k = 0; k < 4; k++) {
+            D_8006D31C[k] = param[k];
+        }
+    }
+    if (c == 0xE) {
+        D_8006D320 = param[0];
+    }
+    D_8006D2C8[0] = 0;
+    if (D_8006D130[c] != 0) {
+        D_8006D2C8[1] = 0;
+    }
+    *D_8006D2B0 = 0;
+    for (k = 0; k < D_8006D230[c]; k++) {
+        *D_8006D2B8 = param[k];
+    }
+    D_8006D321 = orden;
+    *D_8006D2B4 = orden;
+    if (asinc != 0) {
+        return 0;
+    }
+    D_80091460 = func_8001626C(-1) + 0x3C0;
+    D_80091464 = 0;
+    D_80091468 = D_80061434;
+    while (D_8006D2C8[0] == 0) {
+        if (se_paso() != 0) {
+            return -1;
+        }
+        atender();
+    }
+    if (res != 0) {
+        de = D_80091448;
+        for (k = 7; k != -1; k--) {
+            *res++ = *de++;
+        }
+    }
+    return D_8006D2C8[0] == 5 ? -1 : 0;
+}
