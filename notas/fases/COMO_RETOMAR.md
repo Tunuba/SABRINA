@@ -368,3 +368,20 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   usan la cola del GPU saltan a 0 despues (falta ver por que). (2) VSync: 13 NO_TERMINA giran esperando el
   contador de cuadros. (3) BIOS de archivos: lseek/read/write vuelven sin poner v0 (func_800502DC).
   `verif/donde_gira.sh` dice en que funcion gira cada NO_TERMINA: CD 16, VSync 13, GPU 11.
+- **03-10 madrugada, resultados**: reales 64.8 %, sinteticas 16.3 % (81.2 % entre las dos). A mano en esta
+  sesion (archivos `*_g14.c`): CrearParticula (952, real, estaba solo declarada), CdSync/CdReady (reales),
+  y con sinteticas: tarjeta (escritura comprobada y formateo), menus de nivel y mundo, DRAWENV, rayo y el
+  objeto que lanza rayos, proyectil, tirador, saltarin, fuente de chispas, atrapar objetos, lanzado hacia
+  Sabrina, reduccion de colores a paleta (func_8001A754, 1668), voltear imagen, glifos de la fuente, lugar
+  en la VRAM. Con el verificador nuevo pasaron solas func_80023FD4 (IGUAL), func_80030208 (IGUAL_V0),
+  func_80025EF8, func_8003E914/8003E0C4 y varias TOPE_DE_TIEMPO.
+- Trampa de los borradores de m2c que se repite: cuando una funcion llamada escribe un vector de 3 en
+  `&sp5C`, m2c declara sp5C, sp60, sp64 como variables sueltas y el C pasa basura; va en un arreglo.
+- Trampa de GCC: guarda variables en el lugar de un argumento de pila (la pila del que llama) cuando junta
+  ramas o reusa el hogar del parametro; el original no toca esa pila. Se corta con `__asm__("" : "+r"(x))`
+  y separando ramas con `__asm__ volatile("" ::: "memory")` (CrearParticula).
+- Mutantes (`verif/lanzar_mut1.sh`, `lanzar_mut2.sh`): func_8004B320 7/8 muertos (fuerte); func_80054068
+  3/8 (debil: las capturas no recorren varias ramas). Resultados en build/mut1.txt y mut2.txt.
+- Quedan sin verificar casi solo: las que esperan al CD/VSync/GPU (NO_TERMINA), las herramientas de
+  desarrollo que leen archivos, y 37 sin capturas (BIOS, trozos de codigo, archivos). `verif/lanzar_cqt.sh`
+  mide si alguna NO_TERMINA termina en otra captura que no sea la primera.
