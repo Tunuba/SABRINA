@@ -35,3 +35,12 @@ sobreviven. Un IGUAL_SINT de una funcion con muchas ramas vale menos que uno de 
 opciones `--llamadas` y `--globales` sueltan los limites y `--nuevas` salta las que ya estan en
 progreso_sint.tsv. Al 02-10 quedan 326 SIN_CAPTURAS; con los limites mas sueltos entran 114 (las demas usan
 el GTE, mtc0 o syscall).
+
+## Estado al cierre del 02-10 (noche)
+
+- Lote (progreso_sint.tsv): 140 IGUAL_SINT y 51 IGUAL_V0_SINT.
+- A mano (auditoria.tsv): 59 IGUAL_SINT (casi todas las que el lote dejo DISTINTO, NO_COMPILA o IGUAL_V0).
+- No se pueden verificar asi: las que esperan al hardware (NO_TERMINA en la original), las que copian
+  codigo a la BIOS (func_800521AC, func_80052240, func_800523B4) y los trozos de codigo sueltos
+  (func_80052114, func_80052140, func_80052184, func_800161C8, func_8004E2CC ya esta).
+- `sint.py candidatas --gte` deja pasar las que usan el GTE (gte.py lo emula igual que con capturas reales).
