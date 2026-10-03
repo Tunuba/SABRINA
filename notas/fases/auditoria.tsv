@@ -408,3 +408,5 @@ func_8001A108	288	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 cap
 func_80019FBC	332	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 capturas y 55 de 55 variantes iguales
 func_800605C8	484	IGUAL_SINT	src/objetos/ruta_g13.c	sintetica: 1 de 1 capturas y 3 de 3 variantes iguales
 func_8001951C	540	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 86 de 86 variantes iguales
+func_80039350	800	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 49 de 49 variantes iguales
+func_80026820	1016	IGUAL_SINT	src/psyq/mando_g13.c	sintetica: 1 de 1 capturas y 34 de 34 variantes iguales
