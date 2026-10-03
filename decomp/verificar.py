@@ -31,13 +31,19 @@ import time
 import gte
 from unicorn import Uc, UcError, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_HOOK_MEM_READ, UC_HOOK_INTR
 from unicorn.mips_const import UC_MIPS_REG_PC, UC_MIPS_REG_RA, UC_MIPS_REG_V0, UC_MIPS_REG_V1, UC_MIPS_REG_SP, \
-    UC_MIPS_REG_HI, UC_MIPS_REG_LO, UC_MIPS_REG_ZERO
+    UC_MIPS_REG_HI, UC_MIPS_REG_LO, UC_MIPS_REG_ZERO, UC_MIPS_REG_A0
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 BASE_C = 0x80400000
-# PRUEBA, apagada: con SABRINA_GPU_LISTA=1 el estado del GPU (GPUSTAT) dice siempre "desocupado", asi
-# DrawSync/LoadImage y las que esperan al GPU terminan. Cambia el metodo: no se usa sin que Meme lo apruebe.
-GPU_LISTA = os.environ.get("SABRINA_GPU_LISTA") == "1"
+# Modelos del hardware que espera el juego (aprobados por Meme el 2026-10-03). Original y C ven lo mismo, asi
+# que la comparacion sigue siendo justa; solo dejan terminar a las funciones que esperaban para siempre.
+# - GPU desocupado: el estado del GPU (GPUSTAT, 0x1F801814) dice siempre listo para comandos, VRAM y DMA.
+# - VSync: cada llamada a VSync (func_8001626C) hace pasar un cuadro (sube D_800649EC, que en la consola
+#   sube la interrupcion de VBlank), y la espera de cuadros (func_800161D4) encuentra el contador ya en el
+#   cuadro que espera, como si hubieran pasado.
+# Con SABRINA_SIN_MODELOS=1 se apagan (para comparar con como era antes).
+MODELOS = os.environ.get("SABRINA_SIN_MODELOS") != "1"
+GPU_LISTA = MODELOS
 FIN = 0x80FFFFF0            # direccion de retorno centinela
 LIMITE = 20_000_000         # instrucciones como maximo por ejecucion
 ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
@@ -449,6 +455,25 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             u.emu_stop()
 
     uc.hook_add(UC_HOOK_CODE, codigo, begin=0xA0, end=0xC4)
+    if MODELOS:
+        espera, contador = simbolos()["func_800161D4"], simbolos()["D_800649EC"] & 0x1FFFFFFF
+
+        def vsync(u, dirc, tam, _):
+            objetivo = u.reg_read(UC_MIPS_REG_A0)
+            ahora = struct.unpack("<i", bytes(u.mem_read(contador, 4)))[0]
+            if ahora < (objetivo if objetivo < 0x80000000 else objetivo - 0x100000000):
+                u.mem_write(contador, struct.pack("<I", objetivo & 0xFFFFFFFF))
+
+        uc.hook_add(UC_HOOK_CODE, vsync, begin=espera, end=espera)
+        # y cada llamada a VSync hace pasar un cuadro: los que preguntan VSync(-1) esperando que avance
+        # (las cargas, las pantallas legales) si no, giran para siempre
+        entrada = simbolos()["func_8001626C"]
+
+        def cuadro(u, dirc, tam, _):
+            ahora = struct.unpack("<I", bytes(u.mem_read(contador, 4)))[0]
+            u.mem_write(contador, struct.pack("<I", (ahora + 1) & 0xFFFFFFFF))
+
+        uc.hook_add(UC_HOOK_CODE, cuadro, begin=entrada, end=entrada)
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
     gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))

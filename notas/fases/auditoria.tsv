@@ -105,8 +105,8 @@ CrearParticula	952	IGUAL	src/objetos/particula_g14.c	8 de 8 capturas y 844 de 84
 CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
 LeerCuadriculaINO	312	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
 LeerModelosINO	380	IGUAL	src/modelLoader/cargar_g04.c	1 de 1 capturas y 57 de 57 variantes iguales (5 capturas donde la original no termina, sin comparar)
-func_8001315C	192	IGUAL_GPU	src/libgpu/gpu_g01.c	8 de 8 capturas y 818 de 818 variantes iguales
-func_80022D4C	268	IGUAL_GPU	src/TexAnima/paletas_g06.c	8 de 8 capturas y 192 de 192 variantes iguales
+func_8001315C	192	IGUAL	src/libgpu/gpu_g01.c	8 de 8 capturas y 818 de 818 variantes iguales (con el modelo de GPU desocupada)
+func_80022D4C	268	IGUAL	src/TexAnima/paletas_g06.c	8 de 8 capturas y 192 de 192 variantes iguales (con el modelo de GPU desocupada)
 func_80022E58	156	IGUAL	src/TexAnima/paletas_g06.c	5 de 5 capturas y 120 de 120 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_80025BA0	240	NO_TERMINA	src/membank/tarjeta_g06.c	la original no termina en el emulador (espera al hardware)
 func_8002FE64	184	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
@@ -445,7 +445,7 @@ func_8003CE04	236	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 102 de 1
 func_80060274	244	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 98 de 98 variantes iguales
 func_80053138	280	IGUAL_SINT	src/objetos/agarrable_g13.c	1 de 1 capturas y 106 de 106 variantes iguales
 func_800538A0	304	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
-func_800123E0	608	IGUAL_GPU	src/libgpu/cola_g13.c	8 de 8 capturas y 478 de 478 variantes iguales
+func_800123E0	608	IGUAL	src/libgpu/cola_g13.c	8 de 8 capturas y 478 de 478 variantes iguales (con el modelo de GPU desocupada)
 func_80022614	772	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
 func_80022918	692	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
 func_80053400	160	IGUAL_SINT	src/objetos/seguir_padre_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
@@ -453,11 +453,11 @@ func_80024450	284	NO_TERMINA	src/varios/herramienta_tex_g14.c	la original no ter
 func_80046F74	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 117 de 117 variantes iguales
 func_80046ED8	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 121 de 121 variantes iguales
 func_80019464	184	IGUAL_SINT	src/objetos/menu_mundo_g14.c	1 de 1 capturas y 114 de 114 variantes iguales
-func_8001390C	236	IGUAL_SINT_GPU	src/libgpu/imagen_g14.c	1 de 1 capturas y 39 de 39 variantes iguales
-func_800139F8	236	IGUAL_SINT_GPU	src/libgpu/imagen_g14.c	1 de 1 capturas y 47 de 47 variantes iguales
-func_80013C28	252	IGUAL_SINT_GPU	src/libgpu/imagen_g14.c	1 de 1 capturas y 136 de 136 variantes iguales
+func_8001390C	236	IGUAL_SINT	src/libgpu/imagen_g14.c	1 de 1 capturas y 39 de 39 variantes iguales (con el modelo de GPU desocupada)
+func_800139F8	236	IGUAL_SINT	src/libgpu/imagen_g14.c	1 de 1 capturas y 47 de 47 variantes iguales (con el modelo de GPU desocupada)
+func_80013C28	252	IGUAL_SINT	src/libgpu/imagen_g14.c	1 de 1 capturas y 136 de 136 variantes iguales (con el modelo de GPU desocupada)
 func_80052434	324	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 66 de 66 variantes iguales
-func_80013AE4	324	IGUAL_SINT_GPU	src/libgpu/imagen_g14.c	1 de 1 capturas y 50 de 50 variantes iguales
+func_80013AE4	324	IGUAL_SINT	src/libgpu/imagen_g14.c	1 de 1 capturas y 50 de 50 variantes iguales (con el modelo de GPU desocupada)
 func_8002A6D0	640	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 514 de 514 variantes iguales
 func_8001A668	236	IGUAL_SINT	src/loadtga/voltear_g14.c	1 de 1 capturas y 35 de 35 variantes iguales
 func_800484CC	416	IGUAL_SINT	src/objetos/punto_al_azar_g14.c	1 de 1 capturas y 3 de 3 variantes iguales (pocas: casi todas hacen saltar la trampa de suma)
