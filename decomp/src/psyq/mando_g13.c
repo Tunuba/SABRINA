@@ -841,3 +841,33 @@ fin:
     b[0xEB] = 0;
     return 0;
 }
+
+/* Paso de la orden 0x4D: deja la respuesta en +0x2C. Devuelve 6 (queda en v0). */
+s32 func_80026C18(Puerto *p) {
+    u8 *b = (u8 *)p;
+    s32 r = *(s32 *)(b + 0x20);
+    b[0x37] = 0x4D;
+    b[0x36] = 6;
+    *(s32 *)(b + 0x2C) = r;
+    return 6;
+}
+
+/* Paso que arma la orden segun el estado: 2 pide 0x44 (respuesta en 0x51), 3 pide 0x4D (en 0x5D).
+   Devuelve lo que queda en v0. */
+s32 func_80026CFC(Puerto *p) {
+    u8 *b = (u8 *)p;
+    u32 e = b[0x46];
+    if (e == 2) {
+        b[0x37] = 0x44;
+        *(u8 **)(b + 0x2C) = b + 0x51;
+        b[0x36] = e;
+        return (s32)(b + 0x51);
+    }
+    if (e == 3) {
+        b[0x37] = 0x4D;
+        *(u8 **)(b + 0x2C) = b + 0x5D;
+        b[0x36] = 6;
+        return 6;
+    }
+    return 0x4D;
+}

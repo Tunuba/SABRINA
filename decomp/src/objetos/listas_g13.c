@@ -841,3 +841,149 @@ s32 func_8003BE38(u8 *o) {
     o[0x20] = f;
     return f;
 }
+
+/* Arreglos chicos de objetos; devuelven lo que queda en v0. */
+s32 func_80055624(u8 *o) {
+    u8 *b = o + 0x74;
+    *(s32 *)(b + 0x14) = 0;
+    *(s32 *)(b + 0x18) = 0;
+    return (s32)b;
+}
+
+s32 func_80055BF8(u8 *o, s32 a, s32 c) {
+    u8 *b = o + 0x74;
+    *(s32 *)(b + 0) = c;
+    *(s32 *)(b + 4) = a;
+    return (s32)b;
+}
+
+s32 func_8005B780(u8 *o) {
+    u8 f = o[0x20] | 0x80;
+    o[0x20] = f;
+    return f;
+}
+
+extern s32 func_80037DE0();
+
+/* Si lo que toca es Sabrina, el aviso de o pasa a func_80037DE0. */
+s32 func_80037DBC(s32 (**aviso)(), Objeto *a) {
+    if (a != p_sabrina) {
+        return (s32)p_sabrina;
+    }
+    *aviso = func_80037DE0;
+    return (s32)func_80037DE0;
+}
+
+/* Si lo que toca es de la clase 5, o vuelve a su valor de partida (bloque +0 a +8) y queda sin colision. */
+s32 func_80055290(u8 *o, u8 *a) {
+    u8 *b = o + 0x74;
+    s32 v;
+    if (*(u16 *)(a + 0x22) != 5) {
+        return *(u16 *)(a + 0x22);
+    }
+    v = *(s32 *)b;
+    *(s32 *)(b + 8) = v;
+    *(s16 *)(o + 0x114) = 0;
+    *(s16 *)(o + 0x112) = 0;
+    return v;
+}
+
+extern s8 D_80074BCF[];
+
+/* Pone el tipo (si no tenia), la fuerza y su valor de la tabla de tipos (D_80074BCF, 0x10 por tipo). */
+s32 func_8003973C(u8 *o, s32 tipo, s32 fuerza) {
+    u8 *b = o + 0x74;
+    s8 v;
+    if ((s8)b[0] == 0) {
+        b[0] = tipo;
+    }
+    *(s32 *)(b + 4) = fuerza;
+    *(s32 *)(b + 8) = *(s32 *)(b + 4);
+    v = D_80074BCF[(s8)b[0] * 16];
+    b[1] = v;
+    return v;
+}
+
+/* Aviso al soltar lo agarrado: se lo devuelve a func_800399E8, le saca la marca y lo suelta. */
+s32 func_80038EB4(u8 *o, u8 *a) {
+    u8 f;
+    func_800399E8(o, a);
+    *(s16 *)(a + 0x112) &= 0x7FFF;
+    f = o[0x20] | 0x80;
+    o[0x20] = f;
+    *(s32 *)(a + 0x11C) = 0;
+    return f;
+}
+
+extern u8 D_8007CC18;
+extern s16 D_8007CC16;
+extern s8 D_8007CA01;
+
+/* La puerta a otro nivel: en el estado 0, si se pidio (D_8007CC18 == 1), guarda el nivel y pasa al
+   D_8007CC16. Devuelve lo que queda en v0. */
+s32 func_8004CA5C(u8 *o) {
+    s16 est = *(s16 *)(o + 0x70);
+    if (est != 0) {
+        return est;
+    }
+    if (D_8007CC18 != 1) {
+        return D_8007CC18;
+    }
+    D_8007CA01 = nivel_actual;
+    nivel_actual = D_8007CC16;
+    *(s16 *)(o + 0x70) = 2;
+    return 2;
+}
+
+/* Lo de func_8005794C para cualquier campo del bloque que se borra al empezar. */
+static s32 aviso_por_radio(u8 *o, s32 borrar) {
+    u8 *b = o + 0x74;
+    Objeto *s;
+    s32 d[3];
+    u32 dist;
+    *(s32 *)(b + borrar) = 0;
+    s = p_sabrina;
+    if (s == NULL) {
+        return 0;
+    }
+    if (!(s->forma.banderas & 1)) {
+        return 0;
+    }
+    d[0] = RESTA_TRAMPA(*(s32 *)(o + 0x24), s->x);
+    d[1] = RESTA_TRAMPA(*(s32 *)(o + 0x28), s->y);
+    d[2] = RESTA_TRAMPA(*(s32 *)(o + 0x2C), s->z);
+    dist = func_8001C180(d);
+    if ((u32)(*(s32 *)(b + 8) >> 8) < dist) {
+        return dist;
+    }
+    return (*(s32 (**)(u8 *, Objeto *))(o + 0x10))(o, p_sabrina);
+}
+
+s32 func_8003D094(u8 *o) {
+    return aviso_por_radio(o, 0x28);
+}
+
+s32 func_80045974(u8 *o) {
+    return aviso_por_radio(o, 0x28);
+}
+
+s32 func_80049DE0(u8 *o) {
+    return aviso_por_radio(o, 0x28);
+}
+
+/* Una chispa que se mueve con su velocidad mientras le quede tiempo (bloque +8) soltando particulas;
+   al acabarse queda marcada. Devuelve lo que queda en v0. */
+s32 func_80038154(u8 *o) {
+    u8 *b = o + 0x74;
+    s32 n = *(s32 *)(b + 8);
+    if (n <= 0) {
+        u8 f = o[0x20] | 0x80;
+        o[0x20] = f;
+        return f;
+    }
+    *(s32 *)(b + 8) = SUMA_TRAMPA(n, -1);
+    *(s32 *)(o + 0x24) = SUMA_TRAMPA(*(s32 *)(o + 0x24), *(s32 *)(o + 0x38));
+    *(s32 *)(o + 0x28) = SUMA_TRAMPA(*(s32 *)(o + 0x28), *(s32 *)(o + 0x3C));
+    *(s32 *)(o + 0x2C) = SUMA_TRAMPA(*(s32 *)(o + 0x2C), *(s32 *)(o + 0x40));
+    return (s32)CrearParticula((s8)b[4], (Objeto *)o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xF, 0, 0);
+}

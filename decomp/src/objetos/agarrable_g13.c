@@ -182,3 +182,103 @@ s32 func_80039350(Objeto *o) {
     *(Funcion *)(ob + 8) = func_80024F6C;
     return (s32)func_80024F6C;
 }
+
+/* Si no esta agarrado, crea debajo el objeto de la clase 7 (la sombra). Devuelve lo que queda en v0. */
+s32 func_80038E50(Objeto *o) {
+    if (*(s16 *)((u8 *)o + 0x112) & 0x8000) {
+        return 0x8000;
+    }
+    return (s32)func_800252A0(7, o, 0, -0x50000, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+}
+
+extern s32 func_8002225C(Objeto *o, s32 x, s32 y, s32 z);
+
+/* Si Sabrina (un poco arriba) esta a menos de o+0x74, le avisa (0x08). Devuelve lo que queda en v0. */
+s32 func_8003BDCC(Objeto *o) {
+    s32 d = func_8002225C(o, p_sabrina->x, SUMA_TRAMPA(SUMA_TRAMPA(p_sabrina->y, -0x4001), -0x7FFF),
+                          p_sabrina->z);
+    if (!(d < *(s32 *)((u8 *)o + 0x74))) {
+        return d;
+    }
+    return (*(s32 (**)(Objeto *, Objeto *))((u8 *)o + 8))(o, p_sabrina);
+}
+
+/* Si Sabrina (tocable) esta a menos del alcance del bloque (+8), le avisa (0x10). Devuelve lo que queda
+ * en v0. */
+s32 func_80059F2C(Objeto *o) {
+    u8 *b = (u8 *)o + 0x74;
+    Objeto *s = p_sabrina;
+    s32 d;
+    if (s == NULL) {
+        return 0;
+    }
+    if (!(s->forma.banderas & 1)) {
+        return 0;
+    }
+    d = func_8002225C(o, s->x, s->y, s->z);
+    if (*(s32 *)(b + 8) < d) {
+        return d;
+    }
+    return (*(s32 (**)(Objeto *, Objeto *))((u8 *)o + 0x10))(o, p_sabrina);
+}
+
+extern s32 func_800221FC(s32 x1, s32 y1, s32 z1, s32 x2, s32 y2, s32 z2);
+extern u16 D_8007CB4C, D_8007CB50;
+extern void func_80048468(Objeto *o, Objeto *a);
+
+/* Si lo que toca es de la clase 6 y esta a menos de 4 unidades, o pasa al estado 3 con la animacion anim
+ * a la velocidad dada y su aviso vuelve al normal. Devuelve lo que queda en v0. */
+static s32 tocar_clase_6(Objeto *o, Objeto *a, s32 velocidad, u16 anim) {
+    u8 *ob = (u8 *)o;
+    EstadoAnim *e;
+    s32 d;
+    if (a->tipo != 6) {
+        return a->tipo;
+    }
+    d = func_800221FC(o->x, o->y, o->z, a->x, a->y, a->z);
+    if (d >= 0x40000) {
+        return d;
+    }
+    e = o->anim;
+    *(Funcion *)(ob + 8) = func_80024F6C;
+    o->estado = 3;
+    e->_4E = velocidad;
+    e->animacion = anim;
+    e->_50 = 0;
+    return anim;
+}
+
+s32 func_800558F8(Objeto *o, Objeto *a) {
+    return tocar_clase_6(o, a, 0x800, D_8007CB4C);
+}
+
+s32 func_8005473C(Objeto *o, Objeto *a) {
+    func_80048468(o, a);
+    return tocar_clase_6(o, a, 0x1000, D_8007CB50);
+}
+
+extern s32 func_80024DEC();
+
+/* Crea el objeto de la clase 0x24 que lo lleva (con o en los dos ultimos) y lo deja agarrado. Devuelve lo
+ * que queda en v0. */
+s32 func_80038918(Objeto *o) {
+    u8 *ob = (u8 *)o;
+    Objeto *h;
+    if (*(s16 *)(ob + 0x112) & 0x8000) {
+        return 0x8000;
+    }
+    h = func_800252A0(0x24, o, 0, -0x50000, 0, 0, 0, 0, 0, 0, 0, (s32)o, (s32)o);
+    *(Objeto **)(ob + 0x11C) = h;
+    if (h == NULL) {
+        return 0;
+    }
+    *(s16 *)(ob + 0x112) = 0;
+    *(s16 *)(ob + 0x114) = 0;
+    *(s16 *)(ob + 0x112) = -0x8000;
+    *(Funcion *)(ob + 0) = func_80024DEC;
+    *(Funcion *)(ob + 4) = func_80024DF4;
+    *(Funcion *)(ob + 8) = func_80039670;
+    *(Funcion *)(ob + 0xC) = func_80024F74;
+    *(Funcion *)(ob + 0x10) = func_80024F84;
+    return (s32)func_80024F84;
+}

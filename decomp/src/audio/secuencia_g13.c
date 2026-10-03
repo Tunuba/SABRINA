@@ -48,3 +48,16 @@ s32 func_80041FC8(s32 s, s32 n) {
     *(s16 *)(p + 0x5E) = 0x7F;
     return 0x7F;
 }
+
+extern s32 D_800754E8;
+extern s32 (*D_800754FC)(void);      /* SsSeqCalledTbyT */
+
+/* Llamada de cada interrupcion: la secuencia avanza una de cada dos. Devuelve lo que queda en v0. */
+s32 func_80041F54(void) {
+    if (D_800754E8 == 0) {
+        D_800754E8 = 1;
+        return 1;
+    }
+    D_800754E8 = 0;
+    return D_800754FC();
+}

@@ -301,3 +301,69 @@ s32 func_8001951C(s8 *d, u8 *s0) {
     *d = 0;
     return (s32)s;
 }
+
+/* Arranques de pantallas y modos: dejan los contadores en 0 y ponen el modo de D_8007CA20. Cada una
+   devuelve el ultimo valor puesto (queda en v0). */
+extern s16 D_8007CC56;
+extern s32 D_8007CC44;
+extern u16 D_8007CA1C, D_8007CA1E;
+
+s32 func_8004F2BC(void) {
+    D_8007CC5A = 0;
+    D_8007CC58 = 0;
+    D_8007CC50 = 0;
+    D_8007CC4E = 0;
+    D_8007CA20 = 0xE3;
+    return 0xE3;
+}
+
+s32 func_8004F4F0(void) {
+    D_8007CC4E = 3;
+    D_8007CC5A = 0;
+    D_8007CC58 = 0;
+    D_8007CA20 = 0xEF;
+    return 0xEF;
+}
+
+s32 func_8004F94C(void) {
+    D_8007CC4E = 4;
+    D_8007CC5A = 0;
+    D_8007CC58 = 0;
+    D_8007CA20 = 0xF6;
+    return 0xF6;
+}
+
+s32 func_8004F9F8(void) {
+    D_8007CC44 = 1;
+    D_8007CA20 = 0;
+    D_8007CC56 = 0xF;
+    return 0xF;
+}
+
+s32 func_80047240(void) {
+    D_8007CA1C = 6;
+    D_8007CA38 = 1;
+    D_8007CA1E = 1;
+    D_8007CA20 = 0xDF;
+    return 0xDF;
+}
+
+/* Corta el juego y pasa al nivel 13 guardando el actual. */
+s32 func_80046B50(void) {
+    s8 n = nivel_actual;
+    jugando = 0;
+    D_8007CA01 = n;
+    D_8007CA38 = 0;
+    nivel_actual = 0xD;
+    return 0xD;
+}
+
+extern u8 *D_8007CB8C;
+extern s32 D_8007CB78;
+
+s32 func_800318D4(void) {
+    u8 f = D_8007CB8C[0x20] | 0x80;
+    D_8007CB8C[0x20] = f;
+    D_8007CB78 = 0;
+    return f;
+}

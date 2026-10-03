@@ -159,3 +159,16 @@ s32 func_8003E9FC(s32 n, s32 modo) {
     }
     return v << D_80074ED0;
 }
+
+extern volatile u32 *D_80074E94;     /* el control del DMA de la SPU */
+
+/* Elige el modo de DMA de la SPU (3 para escribir, 5 para leer). Devuelve D_80074E94 (queda en v0). */
+s32 func_8003EA38(s32 escribir) {
+    *D_80074E94 &= 0xFFF8FFFF;
+    if (escribir != 0) {
+        *D_80074E94 |= 0x30000;
+    } else {
+        *D_80074E94 |= 0x50000;
+    }
+    return (s32)D_80074E94;
+}
