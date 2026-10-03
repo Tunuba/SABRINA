@@ -14,6 +14,8 @@ func_80012F2C	184	NO_COMPILA	no compila: error: el C define el dato del juego D_
 func_80013D24	40	DISTINTO	func_80013D24: 0 de 1 capturas y 0 de 52 variantes iguales -> DISTINTO
 func_800140DC	40	IGUAL_SINT	func_800140DC: 1 de 1 capturas y 61 de 61 variantes iguales -> IGUAL
 func_80014560	56	NO_COMPILA	      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+func_80014910	120	IGUAL_SINT	func_80014910: 1 de 1 capturas y 32 de 32 variantes iguales -> IGUAL
+func_80014988	56	IGUAL_SINT	func_80014988: 1 de 1 capturas y 36 de 36 variantes iguales -> IGUAL
 func_800149C0	104	IGUAL_SINT	func_800149C0: 1 de 1 capturas y 55 de 55 variantes iguales -> IGUAL
 func_80014A28	64	IGUAL_SINT	func_80014A28: 1 de 1 capturas y 44 de 44 variantes iguales -> IGUAL
 func_800161C8	12	M2C_FALLA	
@@ -21,20 +23,31 @@ func_800167D4	160	IGUAL_SINT	func_800167D4: 1 de 1 capturas y 76 de 76 variantes
 func_80016874	120	IGUAL_SINT	func_80016874: 1 de 1 capturas y 60 de 60 variantes iguales -> IGUAL
 func_80017CBC	40	IGUAL_SINT	func_80017CBC: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80017CE4	40	IGUAL_SINT	func_80017CE4: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
+func_80018CB8	132	NO_TERMINA	func_80018CB8: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
+func_8001951C	540	NO_COMPILA	      |     ^~~~~~~
+func_80019738	172	DISTINTO	func_80019738: 1 de 1 capturas y 52 de 76 variantes iguales -> DISTINTO
+func_80019FBC	332	NO_COMPILA	      |             ^~~~~~~~~~
+func_8001A108	288	NO_COMPILA	      |             ^~~~~~~
+func_8001A228	664	NO_COMPILA	      |                                 ^~~~~~~~~~
 func_8001A4C0	352	NO_COMPILA	      |                                ^~~~~~~~~~
 func_8001A620	72	IGUAL_SINT	func_8001A620: 1 de 1 capturas y 0 de 0 variantes iguales -> IGUAL
 func_8001ADD8	348	NO_COMPILA	      |                 ^~~~~~~~~~
 func_8001C280	80	IGUAL_SINT	func_8001C280: 1 de 1 capturas y 3 de 3 variantes iguales -> IGUAL
 func_8001C2D0	52	DISTINTO	func_8001C2D0: 0 de 1 capturas y 0 de 68 variantes iguales -> DISTINTO
+func_8001DF6C	212	IGUAL_SINT	func_8001DF6C: 1 de 1 capturas y 70 de 70 variantes iguales -> IGUAL
 func_80021190	68	DISTINTO	func_80021190: 0 de 1 capturas y 0 de 46 variantes iguales -> DISTINTO
 func_80022310	216	IGUAL_SINT	func_80022310: 1 de 1 capturas y 48 de 48 variantes iguales -> IGUAL
 func_8002244C	108	NO_COMPILA	/mnt/c/Proyectos/SABRINA/decomp/src/auto/func_8002244C.c:18:40: note: each undeclared identifier is reported only once f
+func_800224B8	112	DISTINTO	func_800224B8: 0 de 1 capturas y 0 de 39 variantes iguales -> DISTINTO
+func_80024450	284	NO_COMPILA	      |              ^~~~~~~~~~~~~~~~~~~~~~~
 func_80024DE4	8	IGUAL_SINT	func_80024DE4: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_80024DEC	8	IGUAL_SINT	func_80024DEC: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_80024F74	8	IGUAL_SINT	func_80024F74: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_80024F84	8	IGUAL_SINT	func_80024F84: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8002579C	8	IGUAL_SINT	func_8002579C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_80025DD4	20	IGUAL_SINT	func_80025DD4: 1 de 1 capturas y 64 de 64 variantes iguales -> IGUAL
+func_80026778	168	IGUAL_V0_SINT	func_80026778: 0 de 1 capturas y 1 de 33 variantes iguales -> IGUAL_V0
+func_80026820	1016	NO_COMPILA	      |                     ^~~~~~~~~~~
 func_80026C18	28	IGUAL_V0_SINT	func_80026C18: 0 de 1 capturas y 0 de 17 variantes iguales -> IGUAL_V0
 func_80026C34	200	IGUAL_SINT	func_80026C34: 1 de 1 capturas y 31 de 31 variantes iguales -> IGUAL
 func_80026CFC	84	IGUAL_V0_SINT	func_80026CFC: 0 de 1 capturas y 0 de 37 variantes iguales -> IGUAL_V0
@@ -45,6 +58,8 @@ func_80026DE4	32	IGUAL_SINT	func_80026DE4: 1 de 1 capturas y 22 de 22 variantes 
 func_80026E04	32	IGUAL_SINT	func_80026E04: 1 de 1 capturas y 22 de 22 variantes iguales -> IGUAL
 func_80026E24	20	IGUAL_SINT	func_80026E24: 1 de 1 capturas y 17 de 17 variantes iguales -> IGUAL
 func_80026E3C	12	IGUAL_SINT	func_80026E3C: 1 de 1 capturas y 14 de 14 variantes iguales -> IGUAL
+func_80026E48	132	IGUAL_SINT	func_80026E48: 1 de 1 capturas y 67 de 67 variantes iguales -> IGUAL
+func_80026ECC	624	IGUAL_SINT	func_80026ECC: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_8002713C	56	IGUAL_SINT	func_8002713C: 1 de 1 capturas y 65 de 65 variantes iguales -> IGUAL
 func_80027174	212	IGUAL_SINT	func_80027174: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80027248	104	DISTINTO	func_80027248: 0 de 1 capturas y 0 de 35 variantes iguales -> DISTINTO
@@ -56,26 +71,36 @@ func_800282D8	124	IGUAL_SINT	func_800282D8: 1 de 1 capturas y 46 de 46 variantes
 func_80028C54	172	IGUAL_SINT	func_80028C54: 1 de 1 capturas y 55 de 55 variantes iguales -> IGUAL
 func_8002914C	200	IGUAL_SINT	func_8002914C: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_80029830	40	IGUAL_SINT	func_80029830: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
+func_80029948	108	NO_TERMINA	func_80029948: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_800299E8	52	NO_COMPILA	no compila: error: el C define el dato del juego D_8006D328; tiene que ser extern
 func_80029A1C	52	DISTINTO	func_80029A1C: 1 de 1 capturas y 61 de 76 variantes iguales -> DISTINTO
 func_80029EB4	32	NO_TERMINA	func_80029EB4: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_80029EF8	32	IGUAL_SINT	func_80029EF8: 1 de 1 capturas y 52 de 52 variantes iguales -> IGUAL
 func_8002B270	76	IGUAL_SINT	func_8002B270: 1 de 1 capturas y 52 de 52 variantes iguales -> IGUAL
+func_8002B704	236	NO_TERMINA	func_8002B704: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_8002D540	44	NO_COMPILA	      |             ^~~~~~~
 func_8002E0F4	8	IGUAL_SINT	func_8002E0F4: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
+func_8002E0FC	280	IGUAL_SINT	func_8002E0FC: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
 func_800300C4	104	DISTINTO	func_800300C4: 1 de 1 capturas y 55 de 69 variantes iguales -> DISTINTO
 func_80031000	180	IGUAL_V0_SINT	func_80031000: 0 de 1 capturas y 0 de 63 variantes iguales -> IGUAL_V0
 func_800318D4	32	IGUAL_V0_SINT	func_800318D4: 0 de 1 capturas y 0 de 58 variantes iguales -> IGUAL_V0
 func_80034F84	76	IGUAL_SINT	func_80034F84: 1 de 1 capturas y 50 de 50 variantes iguales -> IGUAL
 func_80037DBC	36	IGUAL_V0_SINT	func_80037DBC: 0 de 1 capturas y 2 de 72 variantes iguales -> IGUAL_V0
+func_80037DE0	256	IGUAL_V0_SINT	func_80037DE0: 0 de 1 capturas y 0 de 54 variantes iguales -> IGUAL_V0
 func_80038154	200	IGUAL_V0_SINT	func_80038154: 0 de 1 capturas y 16 de 61 variantes iguales -> IGUAL_V0
 func_80038918	196	IGUAL_V0_SINT	func_80038918: 1 de 1 capturas y 47 de 57 variantes iguales -> IGUAL_V0
+func_800389DC	280	IGUAL_V0_SINT	func_800389DC: 1 de 1 capturas y 35 de 42 variantes iguales -> IGUAL_V0
+func_80038C38	256	IGUAL_V0_SINT	func_80038C38: 1 de 1 capturas y 44 de 52 variantes iguales -> IGUAL_V0
+func_80038D38	280	IGUAL_V0_SINT	func_80038D38: 1 de 1 capturas y 53 de 59 variantes iguales -> IGUAL_V0
 func_80038E50	100	IGUAL_V0_SINT	func_80038E50: 1 de 1 capturas y 48 de 55 variantes iguales -> IGUAL_V0
 func_80038EB4	84	IGUAL_V0_SINT	func_80038EB4: 0 de 1 capturas y 0 de 45 variantes iguales -> IGUAL_V0
 func_80038F08	164	IGUAL_SINT	func_80038F08: 1 de 1 capturas y 51 de 51 variantes iguales -> IGUAL
+func_80038FAC	132	IGUAL_V0_SINT	func_80038FAC: 0 de 1 capturas y 0 de 40 variantes iguales -> IGUAL_V0
 func_80039030	108	IGUAL_SINT	func_80039030: 1 de 1 capturas y 54 de 54 variantes iguales -> IGUAL
 func_8003909C	104	IGUAL_SINT	func_8003909C: 1 de 1 capturas y 50 de 50 variantes iguales -> IGUAL
 func_80039330	32	IGUAL_SINT	func_80039330: 1 de 1 capturas y 31 de 31 variantes iguales -> IGUAL
+func_80039350	800	NO_COMPILA	      |                                                                                                                 
+func_80039670	204	IGUAL_V0_SINT	func_80039670: 0 de 1 capturas y 0 de 60 variantes iguales -> IGUAL_V0
 func_8003973C	76	IGUAL_V0_SINT	func_8003973C: 1 de 1 capturas y 54 de 57 variantes iguales -> IGUAL_V0
 func_80039788	132	IGUAL_SINT	func_80039788: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_800399A0	72	IGUAL_SINT	func_800399A0: 1 de 1 capturas y 43 de 43 variantes iguales -> IGUAL
@@ -88,12 +113,16 @@ func_8003B53C	64	DISTINTO	func_8003B53C: 0 de 1 capturas y 0 de 41 variantes igu
 func_8003BB28	128	IGUAL_SINT	func_8003BB28: 1 de 1 capturas y 63 de 63 variantes iguales -> IGUAL
 func_8003BBA8	92	IGUAL_SINT	func_8003BBA8: 1 de 1 capturas y 54 de 54 variantes iguales -> IGUAL
 func_8003BC04	176	NO_COMPILA	      |                                    sp24
+func_8003BCB4	280	NO_COMPILA	/mnt/c/Proyectos/SABRINA/decomp/src/auto/func_8003BCB4.c:21:49: note: each undeclared identifier is reported only once f
 func_8003BDCC	100	IGUAL_V0_SINT	func_8003BDCC: 0 de 1 capturas y 1 de 56 variantes iguales -> IGUAL_V0
+func_8003BE38	396	IGUAL_V0_SINT	func_8003BE38: 0 de 1 capturas y 11 de 59 variantes iguales -> IGUAL_V0
 func_8003C528	336	IGUAL_SINT	func_8003C528: 1 de 1 capturas y 39 de 39 variantes iguales -> IGUAL
 func_8003CE04	236	IGUAL_V0_SINT	func_8003CE04: 0 de 1 capturas y 12 de 60 variantes iguales -> IGUAL_V0
 func_8003CEF0	112	IGUAL_SINT	func_8003CEF0: 1 de 1 capturas y 59 de 59 variantes iguales -> IGUAL
 func_8003D094	196	IGUAL_V0_SINT	func_8003D094: 0 de 1 capturas y 5 de 58 variantes iguales -> IGUAL_V0
 func_8003D158	8	IGUAL_SINT	func_8003D158: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
+func_8003D160	280	IGUAL_SINT	func_8003D160: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
+func_8003DFF0	112	NO_TERMINA	func_8003DFF0: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_8003E2AC	40	IGUAL_SINT	func_8003E2AC: 1 de 1 capturas y 48 de 48 variantes iguales -> IGUAL
 func_8003E9FC	60	NO_COMPILA	      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~
 func_8003EA38	88	IGUAL_V0_SINT	func_8003EA38: 0 de 1 capturas y 0 de 49 variantes iguales -> IGUAL_V0
@@ -101,9 +130,12 @@ func_80041F54	72	IGUAL_V0_SINT	func_80041F54: 0 de 1 capturas y 15 de 50 variant
 func_80041FC8	384	DISTINTO	func_80041FC8: 1 de 1 capturas y 56 de 59 variantes iguales -> DISTINTO
 func_80042B68	12	IGUAL_SINT	func_80042B68: 1 de 1 capturas y 37 de 37 variantes iguales -> IGUAL
 func_800447DC	8	DISTINTO	func_800447DC: 0 de 1 capturas y 0 de 30 variantes iguales -> DISTINTO
+func_80044E30	280	IGUAL_SINT	func_80044E30: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
 func_80045974	196	IGUAL_V0_SINT	func_80045974: 0 de 1 capturas y 3 de 61 variantes iguales -> IGUAL_V0
 func_80045A38	8	IGUAL_SINT	func_80045A38: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
+func_80045A40	280	IGUAL_SINT	func_80045A40: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
 func_80046B50	28	IGUAL_V0_SINT	func_80046B50: 0 de 1 capturas y 0 de 64 variantes iguales -> IGUAL_V0
+func_80047010	64	IGUAL_V0_SINT	func_80047010: 0 de 1 capturas y 0 de 72 variantes iguales -> IGUAL_V0
 func_80047058	12	IGUAL_V0_SINT	func_80047058: 0 de 1 capturas y 0 de 30 variantes iguales -> IGUAL_V0
 func_80047234	12	IGUAL_SINT	func_80047234: 1 de 1 capturas y 16 de 16 variantes iguales -> IGUAL
 func_80047240	32	IGUAL_V0_SINT	func_80047240: 0 de 1 capturas y 0 de 42 variantes iguales -> IGUAL_V0
@@ -114,14 +146,17 @@ func_80047360	16	IGUAL_SINT	func_80047360: 1 de 1 capturas y 15 de 15 variantes 
 func_80047F0C	8	IGUAL_SINT	func_80047F0C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_80047F14	16	IGUAL_SINT	func_80047F14: 1 de 1 capturas y 20 de 20 variantes iguales -> IGUAL
 func_80048710	68	IGUAL_SINT	func_80048710: 1 de 1 capturas y 54 de 54 variantes iguales -> IGUAL
+func_80048804	252	IGUAL_V0_SINT	func_80048804: 1 de 1 capturas y 38 de 48 variantes iguales -> IGUAL_V0
 func_80048908	188	IGUAL_V0_SINT	func_80048908: 0 de 1 capturas y 0 de 27 variantes iguales -> IGUAL_V0
 func_80049DE0	196	IGUAL_V0_SINT	func_80049DE0: 0 de 1 capturas y 3 de 59 variantes iguales -> IGUAL_V0
 func_80049EA4	8	IGUAL_SINT	func_80049EA4: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
+func_80049EAC	280	IGUAL_SINT	func_80049EAC: 1 de 1 capturas y 45 de 45 variantes iguales -> IGUAL
 func_8004A39C	8	IGUAL_SINT	func_8004A39C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8004A3A4	16	IGUAL_SINT	func_8004A3A4: 1 de 1 capturas y 20 de 20 variantes iguales -> IGUAL
 func_8004AAE4	64	IGUAL_SINT	func_8004AAE4: 1 de 1 capturas y 4 de 4 variantes iguales -> IGUAL
 func_8004C6D0	48	IGUAL_SINT	func_8004C6D0: 1 de 1 capturas y 68 de 68 variantes iguales -> IGUAL
 func_8004C700	48	IGUAL_SINT	func_8004C700: 1 de 1 capturas y 68 de 68 variantes iguales -> IGUAL
+func_8004C730	236	NO_COMPILA	      |             ^~~~~~~~
 func_8004C81C	8	IGUAL_SINT	func_8004C81C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8004C824	8	IGUAL_SINT	func_8004C824: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8004CA4C	16	IGUAL_V0_SINT	func_8004CA4C: 0 de 1 capturas y 0 de 15 variantes iguales -> IGUAL_V0
@@ -133,14 +168,19 @@ func_8004EAAC	60	IGUAL_SINT	func_8004EAAC: 1 de 1 capturas y 6 de 6 variantes ig
 func_8004EE1C	8	IGUAL_SINT	func_8004EE1C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8004F2BC	28	IGUAL_V0_SINT	func_8004F2BC: 0 de 1 capturas y 0 de 34 variantes iguales -> IGUAL_V0
 func_8004F4F0	28	IGUAL_V0_SINT	func_8004F4F0: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
+func_8004F50C	92	NO_TERMINA	func_8004F50C: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_8004F918	52	IGUAL_SINT	func_8004F918: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_8004F94C	28	IGUAL_V0_SINT	func_8004F94C: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
 func_8004F968	52	IGUAL_V0_SINT	func_8004F968: 0 de 1 capturas y 0 de 46 variantes iguales -> IGUAL_V0
 func_8004F99C	44	IGUAL_V0_SINT	func_8004F99C: 0 de 1 capturas y 0 de 42 variantes iguales -> IGUAL_V0
 func_8004F9F8	24	IGUAL_V0_SINT	func_8004F9F8: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
+func_8004FA10	68	IGUAL_SINT	func_8004FA10: 1 de 1 capturas y 21 de 21 variantes iguales -> IGUAL
+func_8004FD04	0	TOPE_DE_TIEMPO	
 func_80050C40	68	IGUAL_SINT	func_80050C40: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
 func_80050C84	184	IGUAL_SINT	func_80050C84: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
 func_80050D3C	184	IGUAL_SINT	func_80050D3C: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
+func_80050DF4	280	IGUAL_SINT	func_80050DF4: 1 de 1 capturas y 57 de 57 variantes iguales -> IGUAL
+func_80050F0C	280	IGUAL_SINT	func_80050F0C: 1 de 1 capturas y 54 de 54 variantes iguales -> IGUAL
 func_80051284	20	IGUAL_SINT	func_80051284: 1 de 1 capturas y 68 de 68 variantes iguales -> IGUAL
 func_800519F8	20	IGUAL_SINT	func_800519F8: 1 de 1 capturas y 38 de 38 variantes iguales -> IGUAL
 func_80051A0C	20	IGUAL_SINT	func_80051A0C: 1 de 1 capturas y 38 de 38 variantes iguales -> IGUAL
@@ -151,18 +191,25 @@ func_80051A70	20	IGUAL_SINT	func_80051A70: 1 de 1 capturas y 38 de 38 variantes 
 func_80052114	44	DISTINTO	func_80052114: 0 de 1 capturas y 0 de 0 variantes iguales -> DISTINTO
 func_80052140	68	M2C_FALLA	
 func_80052184	36	M2C_FALLA	
+func_800521AC	148	NO_COMPILA	      |                                                               ^~~~
+func_80052240	112	NO_COMPILA	      |                                                               ^~~~
 func_800522B0	52	DISTINTO	func_800522B0: 0 de 1 capturas y 0 de 76 variantes iguales -> DISTINTO
+func_80052350	56	IGUAL_SINT	func_80052350: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80052388	40	IGUAL_SINT	func_80052388: 1 de 1 capturas y 0 de 0 variantes iguales -> IGUAL
+func_800523B4	112	NO_COMPILA	      |                         ^~~~~~~~~~
 func_80052E58	68	IGUAL_SINT	func_80052E58: 1 de 1 capturas y 54 de 54 variantes iguales -> IGUAL
 func_80052E9C	8	IGUAL_SINT	func_80052E9C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
+func_80052EA4	200	DISTINTO	func_80052EA4: 0 de 1 capturas y 14 de 56 variantes iguales -> DISTINTO
 func_80052F6C	84	DISTINTO	func_80052F6C: 0 de 1 capturas y 0 de 51 variantes iguales -> DISTINTO
 func_80052FC0	120	IGUAL_SINT	func_80052FC0: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80053038	256	IGUAL_SINT	func_80053038: 1 de 1 capturas y 49 de 49 variantes iguales -> IGUAL
 func_80053138	280	IGUAL_V0_SINT	func_80053138: 0 de 1 capturas y 0 de 56 variantes iguales -> IGUAL_V0
 func_80053250	76	IGUAL_SINT	func_80053250: 1 de 1 capturas y 55 de 55 variantes iguales -> IGUAL
+func_8005329C	332	IGUAL_V0_SINT	func_8005329C: 0 de 1 capturas y 12 de 43 variantes iguales -> IGUAL_V0
 func_800533E8	24	IGUAL_SINT	func_800533E8: 1 de 1 capturas y 6 de 6 variantes iguales -> IGUAL
 func_80053400	160	DISTINTO	func_80053400: 1 de 1 capturas y 49 de 50 variantes iguales -> DISTINTO
 func_800534A0	56	DISTINTO	func_800534A0: 0 de 1 capturas y 0 de 54 variantes iguales -> DISTINTO
+func_800534D8	196	IGUAL_SINT	func_800534D8: 1 de 1 capturas y 51 de 51 variantes iguales -> IGUAL
 func_800537C4	68	DISTINTO	func_800537C4: 0 de 1 capturas y 1 de 53 variantes iguales -> DISTINTO
 func_80053808	152	DISTINTO	func_80053808: 1 de 1 capturas y 61 de 62 variantes iguales -> DISTINTO
 func_800538A0	304	IGUAL_V0_SINT	func_800538A0: 1 de 1 capturas y 0 de 9 variantes iguales -> IGUAL_V0
@@ -180,15 +227,19 @@ func_80055BF8	16	IGUAL_V0_SINT	func_80055BF8: 0 de 1 capturas y 0 de 13 variante
 func_80055C08	8	IGUAL_SINT	func_80055C08: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_80055DEC	24	IGUAL_SINT	func_80055DEC: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_80055F00	52	IGUAL_SINT	func_80055F00: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
+func_80055F34	140	IGUAL_V0_SINT	func_80055F34: 0 de 1 capturas y 0 de 25 variantes iguales -> IGUAL_V0
 func_8005794C	196	DISTINTO	func_8005794C: 0 de 1 capturas y 4 de 59 variantes iguales -> DISTINTO
 func_80057A10	8	IGUAL_SINT	func_80057A10: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
+func_80057A18	280	IGUAL_SINT	func_80057A18: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
 func_80057E8C	8	IGUAL_SINT	func_80057E8C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
+func_80057E94	160	IGUAL_SINT	func_80057E94: 1 de 1 capturas y 47 de 47 variantes iguales -> IGUAL
 func_80059F2C	136	IGUAL_V0_SINT	func_80059F2C: 1 de 1 capturas y 48 de 53 variantes iguales -> IGUAL_V0
 func_80059FB4	8	IGUAL_SINT	func_80059FB4: 1 de 1 capturas y 15 de 15 variantes iguales -> IGUAL
 func_8005B394	204	IGUAL_SINT	func_8005B394: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_8005B460	12	IGUAL_SINT	func_8005B460: 1 de 1 capturas y 12 de 12 variantes iguales -> IGUAL
 func_8005B46C	192	IGUAL_SINT	func_8005B46C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8005B780	20	IGUAL_V0_SINT	func_8005B780: 0 de 1 capturas y 0 de 50 variantes iguales -> IGUAL_V0
+func_8005B794	320	IGUAL_SINT	func_8005B794: 1 de 1 capturas y 54 de 54 variantes iguales -> IGUAL
 func_8005B8D4	192	IGUAL_SINT	func_8005B8D4: 1 de 1 capturas y 27 de 27 variantes iguales -> IGUAL
 func_8005C8E0	76	IGUAL_SINT	func_8005C8E0: 1 de 1 capturas y 3 de 3 variantes iguales -> IGUAL
 func_8005C92C	20	IGUAL_SINT	func_8005C92C: 1 de 1 capturas y 68 de 68 variantes iguales -> IGUAL
@@ -201,5 +252,7 @@ func_8005DDAC	60	IGUAL_SINT	func_8005DDAC: 1 de 1 capturas y 46 de 46 variantes 
 func_8005E290	16	IGUAL_SINT	func_8005E290: 1 de 1 capturas y 14 de 14 variantes iguales -> IGUAL
 func_80060170	260	IGUAL_SINT	func_80060170: 1 de 1 capturas y 53 de 53 variantes iguales -> IGUAL
 func_80060274	244	IGUAL_V0_SINT	func_80060274: 0 de 1 capturas y 0 de 56 variantes iguales -> IGUAL_V0
+func_80060368	496	IGUAL_SINT	func_80060368: 1 de 1 capturas y 58 de 58 variantes iguales -> IGUAL
+func_800605C8	484	NO_COMPILA	      |             ^~~~~
 thunk_FUN_8003be38	8	IGUAL_SINT	thunk_FUN_8003be38: 1 de 1 capturas y 32 de 32 variantes iguales -> IGUAL
 thunk_FUN_80047234	8	IGUAL_SINT	thunk_FUN_80047234: 1 de 1 capturas y 14 de 14 variantes iguales -> IGUAL
