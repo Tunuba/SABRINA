@@ -21,7 +21,7 @@ extern s32 func_8002EFD0(Objeto *o);  /* si termino la animacion */
 
 /* Un paso de la maquina de estados. Devuelve lo que queda en v0 en cada camino; en los estados 5 y 9 el
  * original deja la direccion a la que salta su tabla de casos (sin_estado). */
-static s32 paso(Objeto *o, void *tabla, s32 marca, s32 sin_estado) {
+static s32 paso(Objeto *o, void *tabla, s32 marca, s32 sin_estado, s32 caso1) {
     EstadoAnim *a = o->anim;
     u16 *t = o->animaciones;
     u8 *e = (u8 *)&o->extra;
@@ -31,8 +31,18 @@ static s32 paso(Objeto *o, void *tabla, s32 marca, s32 sin_estado) {
         E16(e, 0x40) = 0xC;
         o->estado = 1;
         return 1;
-    case 1:
-        return func_80048908(o, &E16(e, 0x40), e + 0x28, E8(e, 0x20));
+    case 1: {
+        /* func_80048908 a veces vuelve sin tocar v0: el original le deja ahi la direccion de este caso (la que
+           salio de la tabla de saltos), asi que se llama con v0 = caso1 */
+        s32 r;
+        __asm__ volatile(".set noreorder\n\tmove $2, %1\n\tmove $4, %2\n\tmove $5, %3\n\tmove $6, %4\n\t"
+                         "jal func_80048908\n\tmove $7, %5\n\t.set reorder\n\tmove %0, $2"
+                         : "=r"(r)
+                         : "r"(caso1), "r"(o), "r"(&E16(e, 0x40)), "r"(e + 0x28), "r"((s32)E8(e, 0x20))
+                         : "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14",
+                           "$15", "$24", "$25", "$31", "hi", "lo", "memory");
+        return r;
+    }
     case 2:
         return func_80049218(o, e, t);
     case 3:
@@ -84,23 +94,23 @@ static s32 paso(Objeto *o, void *tabla, s32 marca, s32 sin_estado) {
 }
 
 s32 func_8003D5F4(Objeto *o) {
-    return paso(o, D_8007CBD8, 1, 0x8003D7C8);
+    return paso(o, D_8007CBD8, 1, 0x8003D7C8, 0x8003D65C);
 }
 
 s32 func_80045CF4(Objeto *o) {
-    return paso(o, D_8007CBF4, 0, 0x80045EC0);
+    return paso(o, D_8007CBF4, 0, 0x80045EC0, 0x80045D5C);
 }
 
 extern void *D_8007CC74;
 
 s32 func_80057CA0(Objeto *o) {
-    return paso(o, D_8007CC74, 0, 0x80057E6C);
+    return paso(o, D_8007CC74, 0, 0x80057E6C, 0x80057D08);
 }
 
 extern void *D_8007CC10;
 
 s32 func_8004A140(Objeto *o) {
-    return paso(o, D_8007CC10, 0, 0x8004A30C);
+    return paso(o, D_8007CC10, 0, 0x8004A30C, 0x8004A1A8);
 }
 
 extern u32 func_8001C180(s32 *v);    /* largo de un vector */

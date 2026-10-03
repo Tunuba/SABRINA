@@ -13,8 +13,8 @@ malos = []
 ejemplos = []
 def comp(a, b, sp, con_v0=True):
     d = orig(a, b, sp, con_v0)
-    if d and con_v0 and orig(a, b, sp, False):
-        malos.append("; ".join(orig(a, b, sp, False)))
+    if d:
+        malos.append("; ".join(orig(a, b, sp, False)) or "; ".join(d))
         if len(ejemplos) < 4:
             base, extra, k = ult["args"]
             regs = extra[0] if extra and extra[0] else None

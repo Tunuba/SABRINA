@@ -331,3 +331,25 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
      --globales 20 --gte); solo hizo 1 de 45.
   No arreglables en C: func_800163E4 (setjmp guarda ra/sp), func_8002153C y func_8003E914/8003E0C4 (la
   captura revienta en la original), func_80046EAC/80047058/8004CA4C/80048908 (v0 de entrada).
+
+### 02-10 noche, sesion sola sin agentes (Meme: "continua descompilando, no pares")
+
+- **Los scripts de verificacion ya viven en el repo**: `decomp/verif/` (antes en el scratchpad de cada sesion,
+  se perdian). `vfull.sh src f` (capturas reales) y `vsint.sh src f` (sinteticas) muestran tambien los
+  ejemplos de variantes malas, incluso cuando solo difiere v0; `vvarias.sh [--sint] src f1 f2...` varias de un
+  mismo .c; `vreal.sh`/`vmano.sh log src:f ...` en tanda con tope `$TOPE`; `fondo.sh script salida` lanza
+  suelto; `termina.sh f...` y `donde_gira.sh f...` dicen si la original termina y donde gira;
+  `py verif/cuenta.py [--pendientes]` da el % (reales y sinteticas aparte) y la lista de lo que falta;
+  `py verif/anotar.py log [--sint]` pasa un log a auditoria.tsv sin reordenarla ni bajar un IGUAL.
+- Ojo: `wsl.exe ... bash -c '...$f...'` expande `$f` en el shell de afuera; usar un script (vvarias.sh).
+  Y no editar un .sh mientras corre: bash lo lee a medida que avanza y se rompe.
+- **verificar.py**: si una palabra de memoria que se varia es un puntero a una funcion del juego, la
+  variante solo puede ser otra funcion o 0 (`_puntero_a_funcion`): saltar a la mitad de otro codigo no lo
+  imita ningun C. Con eso func_80025EF8 paso a IGUAL.
+- Resultados: vreal6 dio IGUAL func_8004B320 (2688), func_80054068, func_8002367C, func_800447E4,
+  func_8002805C, func_8003D5F4, func_80057CA0, func_8004A140; IGUAL_V0 func_8002E51C y func_80037738.
+  vmano8: 33 IGUAL_SINT (func_80026C18 con volatile: escribe en el hardware en orden).
+  func_80045CF4 a IGUAL: en el caso 1 de `paso()` (enemigo2_g13.c) se llama a func_80048908 con v0 = la
+  direccion del caso, porque esa funcion a veces vuelve sin tocar v0.
+- Escritas: `psyq/cdsync_g14.c` (CdSync y CdReady, la original termina) y `modelLoader/leer_nodo_g14.c`
+  (LeerNodoModelo, NO_TERMINA: lee del CD).

@@ -263,6 +263,31 @@ _propias = []
 _propias_base = []
 
 
+_inicios = None
+
+
+def inicios_de_funcion():
+    """Direcciones donde empieza cada funcion del juego (funciones_juego.tsv)."""
+    global _inicios
+    if _inicios is None:
+        _inicios = set()
+        for l in open(os.path.join(AQUI, "funciones_juego.tsv")):
+            p = l.split("	")
+            if len(p) >= 3:
+                _inicios.add(int(p[0], 16))
+    return _inicios
+
+
+def _puntero_a_funcion(v, n):
+    """Si v (lo que habia en la RAM) es un puntero a una funcion del juego, la variante n solo puede ser otra
+    funcion del juego o 0: un valor al azar haria saltar a la mitad de otro codigo, que depende de cada
+    registro y de la pila del que llama, y ningun C puede imitar eso (no es un error de la funcion)."""
+    ini = inicios_de_funcion()
+    if v in ini and n not in ini:
+        return 0
+    return n
+
+
 def _evitar_base_c(v):
     """Un argumento al azar que caiga justo en la zona fisica donde vive el C compilado (BASE_C) hace que la
     version en C, al usarlo como puntero, lea su propio codigo maquina en vez de la RAM en cero que ve la
@@ -571,6 +596,7 @@ def verificar(c, funciones, n_variantes=60):
                     if tam == 4:
                         # un puntero del juego movido justo a BASE_C tendria el mismo choque que en variantes()
                         n = _evitar_base_c(n)
+                        n = _puntero_a_funcion(v, n)
                     parche[d] = n.to_bytes(tam, "little")
                 a = ejecutar(base, sim[f], None, None, parche)
                 if a["error"]:
