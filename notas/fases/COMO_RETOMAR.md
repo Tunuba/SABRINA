@@ -403,3 +403,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   muertos N/6"). Debiles (0-1 de 6): func_80026820 (mando), func_80052578 (formatear tarjeta) y, del lote,
   func_8001CB4C y func_80026ECC: dependen del hardware o de leer archivos, que el emulador no simula; para
   hacerlas fuertes hace falta modelar ese hardware (mismo tema que GPU/VSync, decision de Meme).
+- **03-10: Meme APROBO los modelos de GPU y VSync.** Prendidos por defecto en verificar.py (`MODELOS`;
+  `SABRINA_SIN_MODELOS=1` los apaga). GPU: GPUSTAT siempre listo. VSync: cada llamada a func_8001626C
+  hace pasar un cuadro y la espera func_800161D4 encuentra el contador en el objetivo. Las IGUAL_GPU
+  anotadas pasaron a IGUAL/IGUAL_SINT (con nota). Tanda `verif/lanzar_vmodelos.sh` repite con los modelos
+  las 74 NO_TERMINA/TOPE que tienen C (log build/vmodelos.txt; anotar con `py verif/anotar.py`).
