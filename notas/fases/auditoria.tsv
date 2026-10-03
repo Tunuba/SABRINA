@@ -115,12 +115,12 @@ func_80039A34	60	SIN_CAPTURAS	src/objetos/forma.c	sin capturas
 func_8003A258	8	SIN_CAPTURAS	src/objetos/forma.c	sin capturas
 ArchivoLeer	272	TOPE_DE_TIEMPO	src/File/archivo_g03.c	la verificacion no termino a tiempo
 SubirAVRAM	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
-func_800112C0	284	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
-func_80012D74	104	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_800112C0	284	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 1088 de 1088 variantes iguales
+func_80012D74	104	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 548 de 548 variantes iguales
 func_80012DDC	144	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
-func_80012ECC	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
-func_80012FE4	172	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
-func_80013090	92	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80012ECC	96	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
+func_80012FE4	172	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
+func_80013090	92	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
 func_800130EC	112	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
 func_800182A8	352	TOPE_DE_TIEMPO	src/nodos/reserva_g02.c	la verificacion no termino a tiempo
 func_80018408	128	TOPE_DE_TIEMPO	src/nodos/reserva_g02.c	la verificacion no termino a tiempo
@@ -460,3 +460,6 @@ func_80052434	324	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 6
 func_80013AE4	324	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)
 func_8002A6D0	640	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 514 de 514 variantes iguales
 func_8001A668	236	IGUAL_SINT	src/loadtga/voltear_g14.c	1 de 1 capturas y 35 de 35 variantes iguales
+func_800484CC	416	IGUAL_SINT	src/objetos/punto_al_azar_g14.c	1 de 1 capturas y 3 de 3 variantes iguales (pocas: casi todas hacen saltar la trampa de suma)
+func_8002A950	712	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 952 de 952 variantes iguales
+func_8001A228	664	IGUAL_SINT	src/libgpu/espacio_vram_g14.c	2 de 2 capturas y 62 de 62 variantes iguales
