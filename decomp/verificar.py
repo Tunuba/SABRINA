@@ -390,7 +390,23 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     # Unicorn traduce kseg0 (0x80xxxxxx) y kseg1 (0xA0xxxxxx) a la direccion fisica 0x0xxxxxxx, igual que
     # la PS1: se mapea la memoria fisica, no las direcciones virtuales.
     uc.mem_map(0x00000000, 0x01000000)            # RAM de 2 MB y, en 0x00400000, el codigo en C
-    uc.mem_map(0x1F800000, 0x00010000)            # scratchpad y registros de hardware
+    uc.mem_map(0x1F800000, 0x00001000)            # scratchpad
+    # los registros de hardware (0x1F801000-0x1F803000) van como MMIO: lo que se escribe se anota en hw y se
+    # puede volver a leer. Antes era memoria comun con un gancho de escritura, y Unicorn tiene un fallo con
+    # ese gancho: un sw/sh al hardware en el hueco de retardo de un salto hacia saltar a 0 (func_8003E914 y
+    # func_8003E0C4 daban error en la original y no en el C). Con MMIO no pasa.
+    hw = []
+    io = bytearray(0x2000)
+
+    def io_lee(u, off, tam, _):
+        return int.from_bytes(io[off:off + tam], "little")
+
+    def io_escribe(u, off, tam, valor, _):
+        hw.append((0x1F801000 + off, tam, valor))
+        io[off:off + tam] = (valor & ((1 << (8 * tam)) - 1)).to_bytes(tam, "little")
+
+    uc.mmio_map(0x1F801000, 0x2000, io_lee, None, io_escribe, None)
+    uc.mem_map(0x1F803000, 0x0000D000)            # resto (expansion 2 y demas)
     uc.mem_map(0x1FC00000, 0x00080000)            # BIOS (0xBFC00000)
     uc.mem_write(0x00000000, ram)
     uc.mem_write(0x1F800000, spad)
@@ -404,15 +420,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     uc.reg_write(UC_MIPS_REG_LO, regs[34])
     uc.reg_write(UC_MIPS_REG_RA, FIN)
     sp = regs[29]
-    hw = []
 
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
             u.reg_write(UC_MIPS_REG_PC, u.reg_read(UC_MIPS_REG_RA))
-
-    def escritura(u, acceso, dirc, tam, valor, _):
-        if 0x1F801000 <= dirc < 0x1F803000:
-            hw.append((dirc, tam, valor))
 
     interrupcion_mala = []
 
@@ -430,7 +441,6 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             u.emu_stop()
 
     uc.hook_add(UC_HOOK_CODE, codigo, begin=0xA0, end=0xC4)
-    uc.hook_add(UC_HOOK_MEM_WRITE, escritura, begin=0x1F801000, end=0x1F803000)
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
     gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))

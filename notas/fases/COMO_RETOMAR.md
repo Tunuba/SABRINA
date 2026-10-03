@@ -353,3 +353,18 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   direccion del caso, porque esa funcion a veces vuelve sin tocar v0.
 - Escritas: `psyq/cdsync_g14.c` (CdSync y CdReady, la original termina) y `modelLoader/leer_nodo_g14.c`
   (LeerNodoModelo, NO_TERMINA: lee del CD).
+- **verificar.py, registros de hardware como MMIO** (03-10): Unicorn tiene un fallo con el gancho de
+  escritura: un sw/sh al hardware en el hueco de retardo de un salto hace saltar a 0 (la original daba error
+  en func_8003E914 y func_8003E0C4 y el C no). Ahora 0x1F801000-0x1F803000 es `mmio_map`: cada escritura
+  se anota en hw (en orden) y se puede releer. Probado: esas dos a IGUAL, func_80025EF8/80029ED4/800283C4
+  siguen IGUAL y la version sin volatile de func_80026C18 sigue dando DISTINTO (detecta el orden).
+- **verificar.py, tope de tiempo en variantes**: la original de una variante tiene 40 veces lo que tardo en
+  la captura mas lenta (minimo 3 s); si lo pasa, la variante se descarta como las que dan error. Asi
+  CdSync/CdReady terminaron (antes cada variante que la hacia girar gastaba 20 millones de instrucciones).
+- **sint.py crear_con F a0=..,a1=.. [--en 0]**: captura sintetica con argumentos elegidos (anotados en
+  NN.MANO) cuando los de la donante no tienen sentido (func_8001A228 con un ancho de 0x1F8010F4 giraba).
+- Ideas SIN aprobar (cambian el metodo; preguntar a Meme): (1) GPU desocupada: GPUSTAT (0x1F801814) siempre
+  "lista" destraba DrawSync/LoadImage/StoreImage/MoveImage/DrawOTag y 3 mas (`verif/prueba_gpu.py`); 8 que
+  usan la cola del GPU saltan a 0 despues (falta ver por que). (2) VSync: 13 NO_TERMINA giran esperando el
+  contador de cuadros. (3) BIOS de archivos: lseek/read/write vuelven sin poner v0 (func_800502DC).
+  `verif/donde_gira.sh` dice en que funcion gira cada NO_TERMINA: CD 16, VSync 13, GPU 11.

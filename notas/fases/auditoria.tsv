@@ -266,7 +266,7 @@ func_8004EB04	204	IGUAL	src/varios/tarjeta_lista_g13.c	1 de 1 capturas y 124 de 
 func_8003EAF8	36	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 63 de 63 variantes iguales
 func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 116 de 116 variantes iguales
 func_80055A38	448	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
-func_8003E914	68	DISTINTO	src/audio/tempo_g13.c	43 de 43 variantes iguales pero la captura 00 da error en la original (lee 0x00000000) y no en el C; sin aclarar
+func_8003E914	68	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 35 de 35 variantes iguales
 func_8005DDE8	36	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 69 de 69 variantes iguales
 func_8005D164	108	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 198 de 198 variantes iguales
 func_8005DCD4	124	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 189 de 189 variantes iguales
@@ -274,7 +274,7 @@ func_8005D844	92	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 89 de 89 variant
 func_8005D9C0	144	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 106 de 106 variantes iguales
 func_8005D1D0	156	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 258 de 258 variantes iguales
 func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
-func_8003E0C4	448	DISTINTO	src/audio/tempo_g13.c	3 de 3 variantes iguales pero la captura 00 da error en la original (salta a 0x00000000) y no en el C; igual que func_8003E914, sin aclarar
+func_8003E0C4	448	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 37 de 37 variantes iguales
 func_80034710	96	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 131 de 131 variantes iguales
 func_8003D5F4	500	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 85 de 85 variantes iguales
 func_80045CF4	492	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 169 de 169 variantes iguales
