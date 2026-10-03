@@ -317,3 +317,17 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   (las TOPE_DE_TIEMPO de auditoria otra vez con 15 min, mas func_8004A4A8 y diagnosticos de DISTINTO).
   Despues: relote real con el auto mejorado (`de_a_una2.sh build/rehacer_reales.txt`) y el lote sintetico
   b2 (`sint_lote2.sh build/sint_lote_b2.txt --tope 0x800 --llamadas 8 --globales 20`).
+- 02-10, CIERRE (Meme apaga): todo parado a mano. Pendiente al retomar (scripts en el scratchpad de la
+  sesion; si se perdio, rehacerlos con vmano.sh = vsint.sh por funcion y vreal.sh = vfull.sh por funcion):
+  1. Verificar con capturas sinteticas las ~34 de lanzar_vmano8.sh (C a mano con su v0, ya en src/:
+     sueltas_g13, listas_g13, agarrable_g13, mando_g13, secuencia_g13, tempo_g13, vida_g13) y anotarlas
+     IGUAL_SINT en auditoria.tsv.
+  2. Verificar con capturas reales lanzar_vreal6.sh (func_800123E0, func_80022614, func_80022918,
+     func_8002805C, las maquinas func_8003D5F4/80045CF4/80057CA0/8004A140 con el v0 de la distancia,
+     func_80025EF8 con a1, func_80037738, func_80023FD4 nueva en fondo_g13.c) y diagnosticos de
+     func_8002367C, func_80054068, func_8002E51C, func_8004B320, func_800447E4.
+  3. La tanda vreal5 quedo cortada en ArchivoLeer: faltan las TOPE_DE_TIEMPO de auditoria (con 15 min).
+  4. Relanzar el lote sintetico b2 (sint_lote2.sh build/sint_lote_b2.txt --tope 0x800 --llamadas 8
+     --globales 20 --gte); solo hizo 1 de 45.
+  No arreglables en C: func_800163E4 (setjmp guarda ra/sp), func_8002153C y func_8003E914/8003E0C4 (la
+  captura revienta en la original), func_80046EAC/80047058/8004CA4C/80048908 (v0 de entrada).

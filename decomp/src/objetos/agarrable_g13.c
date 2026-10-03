@@ -282,3 +282,36 @@ s32 func_80038918(Objeto *o) {
     *(Funcion *)(ob + 0x10) = func_80024F84;
     return (s32)func_80024F84;
 }
+
+extern s32 func_80038154();
+
+/* Al tocarlo algo de la clase 5 (una sola vez, en el estado 1) lanza un rebote (clase 5) con la velocidad
+ * contraria. Devuelve lo que queda en v0. */
+s32 func_80053138(Objeto *o, Objeto *a) {
+    u8 *b = (u8 *)o + 0x74;
+    s32 vx, vy, vz;
+    u8 *h;
+    if (a->tipo != 5) {
+        return a->tipo;
+    }
+    if (o->estado != 1) {
+        return o->estado;
+    }
+    if (*(s32 *)(b + 0x14) != 0) {
+        return *(s32 *)(b + 0x14);
+    }
+    vx = RESTA_TRAMPA(0, *(s32 *)((u8 *)a + 0x38));
+    vy = RESTA_TRAMPA(0, *(s32 *)((u8 *)a + 0x3C));
+    vz = RESTA_TRAMPA(0, *(s32 *)((u8 *)a + 0x40));
+    h = (u8 *)func_800252A0(5, a, vx, vy, vz, 0, 0, 0, 0, 0, 0, 0, 0);
+    *(s32 *)(h + 0x38) = vx;
+    *(s32 *)(h + 0x3C) = vy;
+    *(s32 *)(h + 0x40) = vz;
+    *(s32 *)(h + 0x7C) = 0xC8;
+    *(Funcion *)(h + 0) = func_80038154;
+    *(Funcion *)(h + 8) = func_80024F6C;
+    *(s16 *)(h + 0x114) |= 2;
+    *(s16 *)(h + 0x112) |= 0x1000;
+    *(s32 *)(b + 0x14) = 1;
+    return 1;
+}

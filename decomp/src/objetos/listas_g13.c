@@ -987,3 +987,93 @@ s32 func_80038154(u8 *o) {
     *(s32 *)(o + 0x2C) = SUMA_TRAMPA(*(s32 *)(o + 0x2C), *(s32 *)(o + 0x40));
     return (s32)CrearParticula((s8)b[4], (Objeto *)o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xF, 0, 0);
 }
+
+/* Una chispa que cae (gravedad 0x51E) soltando particulas mientras le quede tiempo (bloque +0x22). Devuelve
+   lo que queda en v0. */
+s32 func_8003CE04(u8 *o) {
+    u8 *b = o + 0x74;
+    s16 n = *(s16 *)(b + 0x22);
+    u8 *p;
+    if (n <= 0) {
+        u8 f = o[0x20] | 0x80;
+        o[0x20] = f;
+        return f;
+    }
+    *(s16 *)(b + 0x22) = SUMA_TRAMPA(n, -1);
+    *(s32 *)(o + 0x3C) = SUMA_TRAMPA(*(s32 *)(o + 0x3C), 0x51E);
+    *(s32 *)(o + 0x24) = SUMA_TRAMPA(*(s32 *)(o + 0x24), *(s32 *)(o + 0x38));
+    *(s32 *)(o + 0x28) = SUMA_TRAMPA(*(s32 *)(o + 0x28), *(s32 *)(o + 0x3C));
+    *(s32 *)(o + 0x2C) = SUMA_TRAMPA(*(s32 *)(o + 0x2C), *(s32 *)(o + 0x40));
+    p = CrearParticula((s8)b[0x12], (Objeto *)o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, *(s16 *)(b + 0x24), 0,
+                       *(s16 *)(b + 0x20));
+    *(s32 *)(p + 0x3C) = *(s16 *)(b + 0x26);
+    return (s32)p;
+}
+
+/* Algo que vuela con su velocidad y gravedad (0x74) mientras le quede tiempo (0x78); con 0x7C == -1 deja
+   una estela. Devuelve lo que queda en v0. */
+s32 func_80060274(u8 *o) {
+    s32 m;
+    *(s32 *)(o + 0x78) = SUMA_TRAMPA(*(s32 *)(o + 0x78), -1);
+    if (*(s32 *)(o + 0x78) <= 0) {
+        u8 f = o[0x20] | 0x80;
+        o[0x20] = f;
+        return f;
+    }
+    *(s32 *)(o + 0x24) = SUMA_TRAMPA(*(s32 *)(o + 0x24), *(s32 *)(o + 0x38));
+    *(s32 *)(o + 0x28) = SUMA_TRAMPA(*(s32 *)(o + 0x28), *(s32 *)(o + 0x3C));
+    *(s32 *)(o + 0x2C) = SUMA_TRAMPA(*(s32 *)(o + 0x2C), *(s32 *)(o + 0x40));
+    *(s32 *)(o + 0x3C) = SUMA_TRAMPA(*(s32 *)(o + 0x3C), *(s32 *)(o + 0x74));
+    m = *(s32 *)(o + 0x7C);
+    if (m != -1) {
+        return m;
+    }
+    return (s32)CrearParticula(0x24, (Objeto *)o, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x32, 0, 0);
+}
+
+extern s8 D_800C8582;
+
+/* Algo que gira y, cada 0x280 pasos, crece un poco (bloque +4) hasta su tamano; quieto si ya se vencio al
+   jefe del nivel 3. Devuelve lo que queda en v0. */
+s32 func_800538A0(u8 *o) {
+    u8 *b = o + 0x74;
+    s16 n;
+    s32 e;
+    *(s16 *)(*(u8 **)(o + 0x6C) + 0x1A) = 2;
+    if (D_800C8582 != 0) {
+        return D_800C8582;
+    }
+    *(s16 *)(o + 0x32) = SUMA_TRAMPA(*(s16 *)(o + 0x32), 5);
+    if (*(s16 *)(o + 0x32) >= 0x1000) {
+        *(s16 *)(o + 0x32) = 0;
+    }
+    n = *(s16 *)(b + 6);
+    if (n < 0) {
+        e = *(s32 *)(o + 0x54);
+        if (e < 0xFFF) {
+            *(s16 *)(b + 6) = 0x280;
+            return 0x280;
+        }
+        return e;
+    }
+    *(s16 *)(b + 6) = SUMA_TRAMPA(n, -1);
+    n = *(s16 *)(b + 6);
+    if (n != 0) {
+        return n;
+    }
+    *(s16 *)(o + 0x114) = *(s16 *)(b + 8);
+    *(s16 *)(o + 0x112) = *(s16 *)(b + 0xA);
+    *(s32 *)(o + 0x54) = SUMA_TRAMPA(*(s32 *)(o + 0x54), *(s16 *)(b + 4));
+    *(s32 *)(o + 0x58) = SUMA_TRAMPA(*(s32 *)(o + 0x58), *(s16 *)(b + 4));
+    *(s32 *)(o + 0x5C) = SUMA_TRAMPA(*(s32 *)(o + 0x5C), *(s16 *)(b + 4));
+    *(s32 *)(o + 0xF8) = SUMA_TRAMPA(*(s32 *)(o + 0xF8), 0x6666);
+    e = *(s32 *)(o + 0x54);
+    if (e < 0x1000) {
+        return e;
+    }
+    *(s32 *)(o + 0x54) = 0x1000;
+    *(s32 *)(o + 0x58) = 0x1000;
+    *(s32 *)(o + 0x5C) = 0x1000;
+    *(s32 *)(o + 0xF8) = 0x18000;
+    return 0x18000;
+}

@@ -165,6 +165,7 @@ func_8004E2CC	24	M2C_FALLA
 func_8004E6C0	108	NO_COMPILA	      |                                                  ^~~~~~~~~~
 func_8004EA90	28	DISTINTO	func_8004EA90: 0 de 1 capturas y 2 de 50 variantes iguales -> DISTINTO
 func_8004EAAC	60	IGUAL_SINT	func_8004EAAC: 1 de 1 capturas y 6 de 6 variantes iguales -> IGUAL
+func_8004EDBC	96	IGUAL_SINT	func_8004EDBC: 1 de 1 capturas y 25 de 25 variantes iguales -> IGUAL
 func_8004EE1C	8	IGUAL_SINT	func_8004EE1C: 1 de 1 capturas y 34 de 34 variantes iguales -> IGUAL
 func_8004F2BC	28	IGUAL_V0_SINT	func_8004F2BC: 0 de 1 capturas y 0 de 34 variantes iguales -> IGUAL_V0
 func_8004F4F0	28	IGUAL_V0_SINT	func_8004F4F0: 0 de 1 capturas y 0 de 38 variantes iguales -> IGUAL_V0
