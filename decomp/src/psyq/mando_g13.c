@@ -844,11 +844,12 @@ fin:
 
 /* Paso de la orden 0x4D: deja la respuesta en +0x2C. Devuelve 6 (queda en v0). */
 s32 func_80026C18(Puerto *p) {
-    u8 *b = (u8 *)p;
-    s32 r = *(s32 *)(b + 0x20);
+    /* volatile: el original escribe en este orden (cuenta si p apunta al hardware) */
+    volatile u8 *b = (volatile u8 *)p;
+    s32 r = *(volatile s32 *)(b + 0x20);
     b[0x37] = 0x4D;
     b[0x36] = 6;
-    *(s32 *)(b + 0x2C) = r;
+    *(volatile s32 *)(b + 0x2C) = r;
     return 6;
 }
 
