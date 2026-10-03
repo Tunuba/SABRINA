@@ -382,3 +382,19 @@ func_80049A28	424	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 126 de 126 
 func_80049BD0	528	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 89 de 89 variantes iguales
 func_80049388	404	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 79 de 79 variantes iguales
 func_80054A58	508	IGUAL	src/objetos/listas_g13.c	2 de 2 capturas y 135 de 135 variantes iguales
+func_80026778	168	IGUAL_SINT	src/psyq/mando_g13.c	sintetica: 1 de 1 capturas y 35 de 35 variantes iguales
+func_80047010	64	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 106 de 106 variantes iguales
+func_800224B8	112	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 57 de 57 variantes iguales
+func_80019738	172	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 90 de 90 variantes iguales
+func_80055F34	140	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 25 de 25 variantes iguales
+func_80038FAC	132	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 42 de 42 variantes iguales
+func_80052EA4	200	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 67 de 67 variantes iguales
+func_8004E2CC	24	IGUAL_SINT	src/varios/arranque_g13.c	sintetica: 1 de 1 capturas y 17 de 17 variantes iguales
+func_80039670	204	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 71 de 71 variantes iguales
+func_80048804	252	IGUAL_SINT	src/objetos/enemigo2_g13.c	sintetica: 1 de 1 capturas y 57 de 57 variantes iguales
+func_80037DE0	256	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 66 de 66 variantes iguales
+func_800389DC	280	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 74 de 74 variantes iguales
+func_80038C38	256	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 71 de 71 variantes iguales
+func_80038D38	280	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 75 de 75 variantes iguales
+func_8003BCB4	280	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 66 de 66 variantes iguales
+func_8004C730	236	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 66 de 66 variantes iguales

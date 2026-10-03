@@ -770,3 +770,74 @@ s32 func_8003BCB4(u8 *o) {
     c[0x74 + 0x24] = b[4];
     return (s8)b[4];
 }
+
+/* Un chorro que sube con el objeto que lleva (bloque +0): lo empuja hacia arriba y suelta una particula
+   por paso hasta agotar la cuenta (bloque +4); despues marca al otro (1) y a si mismo (2). Devuelve lo que
+   queda en v0. */
+s32 func_8005329C(u8 *o) {
+    u8 *b = o + 0x74;
+    s16 est = *(s16 *)(o + 0x70);
+    u8 *p;
+    s32 r1, n;
+    if (est == 2) {
+        u8 f = o[0x20] | 0x80;
+        o[0x20] = f;
+        return f;
+    }
+    if (est == 1) {
+        (*(u8 **)b)[0x20] |= 0x80;
+        *(s16 *)(o + 0x70) = 2;
+        return 2;
+    }
+    if (est != 0) {
+        return est;
+    }
+    *(s32 *)(o + 0x3C) = SUMA_TRAMPA(*(s32 *)(o + 0x3C), -0xE6);
+    p = *(u8 **)b;
+    *(s32 *)(p + 0x28) = SUMA_TRAMPA(*(s32 *)(p + 0x28), *(s32 *)(o + 0x3C));
+    r1 = SUMA_TRAMPA(func_80021CE4(0x800), -0x400);
+    p = CrearParticula((s8) * (s32 *)(b + 8), *(Objeto **)b, 0, 0, 0, 0, r1, 0,
+                       SUMA_TRAMPA(func_80021CE4(0x800), -0x400), 0, 0, 0, 0x37, 0x202, 0);
+    *(s32 *)(p + 0x3C) = 0xB4;
+    *(s32 *)(b + 4) = SUMA_TRAMPA(*(s32 *)(b + 4), -1);
+    n = *(s32 *)(b + 4);
+    if (n >= 0) {
+        return n;
+    }
+    *(s16 *)(o + 0x70) = 1;
+    return 1;
+}
+
+/* Con la bandera 8 (bloque +0xC) vuelve a su lugar de partida (y con 0x100 queda sin colision) y pasa al
+   estado 1; si no, se deshace en 10 particulas y queda marcado. Devuelve lo que queda en v0. */
+s32 func_8003BE38(u8 *o) {
+    u8 *b = o + 0x74;
+    s32 base = RESTA_TRAMPA(0, *(s32 *)(o + 0x3C)) >> 1;
+    s16 fl = *(s16 *)(b + 0xC);
+    s32 i, j, dy;
+    u8 f;
+    if (fl & 8) {
+        *(s32 *)(o + 0x24) = *(s32 *)(b + 0x14);
+        *(s32 *)(o + 0x28) = *(s32 *)(b + 0x18);
+        *(s32 *)(o + 0x2C) = *(s32 *)(b + 0x1C);
+        *(s16 *)(o + 0x32) = *(s16 *)(b + 0x20);
+        *(s16 *)(o + 0x30) = 0;
+        if (fl & 0x100) {
+            (*(u8 **)(o + 0x60))[0x64] |= 1;
+            *(s32 *)(o + 0x54) = 1;
+            *(s32 *)(o + 0x58) = 1;
+            *(s32 *)(o + 0x5C) = 1;
+        }
+        *(s16 *)(o + 0x70) = 1;
+        return 1;
+    }
+    for (i = 0; i < 0xA; i = (s16)SUMA_TRAMPA(i, 1)) {
+        j = (s16)SUMA_TRAMPA(func_80021CE4(0x190), -0xC8);
+        dy = RESTA_TRAMPA(base, func_80021CE4(0xCCC));
+        CrearParticula((s8)b[0x12], (Objeto *)o, j, 0, 0, 0x28F, 0, dy, func_80021CE4(0xCCC), 0, 0x51E, 0, 0x32,
+                       0x10, 0);
+    }
+    f = o[0x20] | 0x80;
+    o[0x20] = f;
+    return f;
+}

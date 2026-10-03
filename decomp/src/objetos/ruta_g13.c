@@ -187,3 +187,49 @@ void func_800573C0(PuntoRutaI *p, s32 *c, s32 *r) {
     c[0] += x0;
     c[2] += z0;
 }
+
+extern s32 func_8001C0D0(s32 x, s32 y, s32 z);   /* largo de un vector */
+extern void func_8001C45C(s32 *v);
+extern void *func_80060558(void *p);
+extern void *func_80060590(void *p);
+
+/* Empuja o hacia el punto de ruta *pp con la fuerza fuerza[0] (en 1/4096), lo mueve y frena su velocidad a
+ * la mitad; si ya esta a menos de 0x8000 pasa al punto siguiente (o al anterior si fuerza[5] < 0). Devuelve
+ * 8 si se acabo la ruta y 0 si no. */
+s32 func_800605C8(Objeto *o, s32 *fuerza, s32 **pp) {
+    u8 *ob = (u8 *)o;
+    s32 *p = *pp;
+    s32 f = fuerza[0];
+    s32 v[3];
+    s32 d, k;
+
+    v[0] = RESTA_TRAMPA(p[0], o->x);
+    v[1] = RESTA_TRAMPA(p[1], o->y);
+    v[2] = RESTA_TRAMPA(p[2], o->z);
+    d = func_8001C0D0(v[0], v[1], v[2]);
+    func_8001C45C(v);
+    *(s32 *)(ob + 0x38) = SUMA_TRAMPA(*(s32 *)(ob + 0x38), (v[0] * f) >> 12);
+    *(s32 *)(ob + 0x3C) = SUMA_TRAMPA(*(s32 *)(ob + 0x3C), (v[1] * f) >> 12);
+    *(s32 *)(ob + 0x40) = SUMA_TRAMPA(*(s32 *)(ob + 0x40), (v[2] * f) >> 12);
+    o->x = SUMA_TRAMPA(o->x, *(s32 *)(ob + 0x38));
+    o->y = SUMA_TRAMPA(o->y, *(s32 *)(ob + 0x3C));
+    o->z = SUMA_TRAMPA(o->z, *(s32 *)(ob + 0x40));
+    k = *(s32 *)(ob + 0x38);
+    *(s32 *)(ob + 0x38) = RESTA_TRAMPA(k, k >> 1);
+    k = *(s32 *)(ob + 0x3C);
+    *(s32 *)(ob + 0x3C) = RESTA_TRAMPA(k, k >> 1);
+    k = *(s32 *)(ob + 0x40);
+    *(s32 *)(ob + 0x40) = RESTA_TRAMPA(k, k >> 1);
+    if (d >= 0x8000) {
+        return 0;
+    }
+    if (((s8 *)fuerza)[5] >= 0) {
+        *pp = func_80060558(*pp);
+    } else {
+        *pp = func_80060590(*pp);
+    }
+    if (*pp != NULL) {
+        return 0;
+    }
+    return 8;
+}

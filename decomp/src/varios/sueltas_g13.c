@@ -206,7 +206,7 @@ extern u8 D_800D2AD0[];         /* nombres de 0x40 bytes */
 extern s8 D_8007961C[0x40];     /* el nombre elegido, en letras de la fuente */
 extern u8 D_800795FC[];
 extern s8 ascii_a_letra[];
-extern void func_8001951C(s8 *d, u8 *s);
+extern s32 func_8001951C(s8 *d, u8 *s);
 
 /* Copia el nombre elegido (D_8007CC50) y lo pasa de ASCII a letras de la fuente, hasta el 0 incluido;
    despues le mide el largo. Devuelve lo que queda en v0. */
@@ -221,4 +221,83 @@ s32 func_80019738(void) {
         }
     }
     return func_800191D8(D_8007961C, D_800795FC);
+}
+
+extern char **D_8006CDD4[];     /* listas de nombres de archivo (terminadas en NULL) */
+extern char D_8007C86C[], D_8007C9D4[];
+extern s32 sprintf(char *d, const char *f, ...);
+extern s32 func_8001B0C8(char *nombre);
+extern void func_80029530(void *dst, void *src, s32 n);
+
+/* Escribe en dst la lista k de archivos: la cuenta (2 bytes) y despues los 0x20 bytes de cada uno (lo
+   que da func_8001B0C8 con su ruta completa). Devuelve la cuenta (queda en v0). */
+s32 func_80024450(s32 k, void *dst) {
+    struct {
+        s32 n;
+        s32 ficha[0x64];
+    } t;
+    char ruta[0x80];
+    char **lista = D_8006CDD4[k];
+    s32 i;
+
+    t.n = 0;
+    do {
+        sprintf(ruta, D_8007C86C, D_8007C9D4, lista[t.n]);
+        if (lista[t.n] != NULL) {
+            s32 f = func_8001B0C8(ruta);
+            t.ficha[t.n++] = f;
+        }
+    } while (lista[t.n] != NULL);
+    func_80029530(dst, &t.n, 2);
+    for (i = 0; i != t.n; i++) {
+        func_80029530(dst, (void *)t.ficha[i], 0x20);
+    }
+    return t.n;
+}
+
+extern u8 D_800654C4[];          /* signos de SJIS 0x8140.. en ASCII */
+
+/* Pasa un nombre de SJIS (la tarjeta de memoria) a ASCII, hasta 0x40 bytes: letras y numeros de ancho
+   completo a los comunes, los signos por tabla, el espacio y lo desconocido a '#' y los kanji a '*'.
+   Devuelve por donde quedo el origen (queda en v0). */
+s32 func_8001951C(s8 *d, u8 *s0) {
+    u8 *s = s0;
+    u32 c, c2;
+    while ((c = *s) != 0 && s < s0 + 0x40) {
+        if (c < 0x80) {
+            *d++ = *s++;
+            continue;
+        }
+        if (c == 0x80 || c == 0xA0) {
+            *d++ = '#';
+            s++;
+            continue;
+        }
+        if (c < 0x81 || c >= 0xFD) {
+            *d++ = '#';
+            s++;
+            continue;
+        }
+        if (c == 0x81 && (c2 = s[1]) >= 0x40 && c2 < 0x98) {
+            s += 2;
+            *d++ = D_800654C4[c2 - 0x40];
+        } else if (c == 0x82 && (c2 = s[1]) >= 0x4F && c2 < 0x59) {
+            *d++ = c2 - 0x1F;
+            s += 2;
+        } else if (c == 0x82 && (c2 = s[1]) >= 0x60 && c2 < 0x7B) {
+            *d++ = c2 - 0x1F;
+            s += 2;
+        } else if (c == 0x82 && (c2 = s[1]) >= 0x81 && c2 < 0x9C) {
+            *d++ = c2 - 0x20;
+            s += 2;
+        } else if (c >= 0xA1 && c < 0xE0) {
+            *d++ = '*';
+            s++;
+        } else {
+            *d++ = '*';
+            s += 2;
+        }
+    }
+    *d = 0;
+    return (s32)s;
 }
