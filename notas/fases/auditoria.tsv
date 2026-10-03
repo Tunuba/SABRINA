@@ -104,7 +104,7 @@ func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 9
 CrearParticula	952	IGUAL	src/objetos/particula_g14.c	8 de 8 capturas y 844 de 844 variantes iguales
 CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
 LeerCuadriculaINO	312	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
-LeerModelosINO	380	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
+LeerModelosINO	380	IGUAL	src/modelLoader/cargar_g04.c	1 de 1 capturas y 57 de 57 variantes iguales (5 capturas donde la original no termina, sin comparar)
 func_8001315C	192	IGUAL_GPU	src/libgpu/gpu_g01.c	8 de 8 capturas y 818 de 818 variantes iguales
 func_80022D4C	268	IGUAL_GPU	src/TexAnima/paletas_g06.c	8 de 8 capturas y 192 de 192 variantes iguales
 func_80022E58	156	NO_TERMINA	src/TexAnima/paletas_g06.c	la original no termina en el emulador (espera al hardware)
