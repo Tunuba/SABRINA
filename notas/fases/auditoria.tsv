@@ -473,3 +473,5 @@ func_8005359C	552	IGUAL_SINT	src/objetos/fuente_g14.c	1 de 1 capturas y 7 de 7 v
 func_8003B894	660	IGUAL_SINT	src/objetos/rayo_g14.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_8005B52C	596	IGUAL_SINT	src/objetos/proyectil_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
 func_8003C678	640	IGUAL_SINT	src/objetos/lanzado_g14.c	1 de 1 capturas y 6 de 6 variantes iguales (pocas)
+func_800552C0	712	IGUAL_SINT	src/objetos/tirador_g14.c	1 de 1 capturas y 59 de 59 variantes iguales
+func_8003B57C	792	IGUAL_SINT	src/objetos/rayo_g14.c	1 de 1 capturas y 43 de 43 variantes iguales
