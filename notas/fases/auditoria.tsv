@@ -483,3 +483,5 @@ func_8004FD04	48	IGUAL_SINT	src/auto/func_8004FD04.c	1 de 1 capturas y 0 de 0 va
 LeerNodoModelo	888	IGUAL	src/modelLoader/leer_nodo_g14.c	6 de 6 capturas y 429 de 429 variantes iguales (2 capturas donde la original no termina, sin comparar)
 func_8002A09C	1372	IGUAL	src/psyq/cd_irq_g14.c	8 de 8 capturas y 886 de 886 variantes iguales
 func_8002AC18	1036	IGUAL	src/psyq/cdsync_g14.c	5 de 5 capturas y 591 de 591 variantes iguales (3 capturas donde la original no termina, sin comparar)
+func_8002BB78	668	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 66 de 66 variantes iguales (6 capturas donde la original no termina, sin comparar)
+func_8002BE88	728	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 172 de 172 variantes iguales (6 capturas donde la original no termina, sin comparar)
