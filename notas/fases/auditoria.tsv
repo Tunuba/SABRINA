@@ -458,3 +458,5 @@ func_800139F8	236	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en e
 func_80013C28	252	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)
 func_80052434	324	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 66 de 66 variantes iguales
 func_80013AE4	324	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)
+func_8002A6D0	640	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 514 de 514 variantes iguales
+func_8001A668	236	IGUAL_SINT	src/loadtga/voltear_g14.c	1 de 1 capturas y 35 de 35 variantes iguales
