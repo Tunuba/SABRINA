@@ -1,12 +1,15 @@
 # Pasa a notas/fases/auditoria.tsv lo que dejo un log de vmano.sh / vreal.sh ("== func src" y "func: ... -> ESTADO").
-# uso: py verif/anotar.py log [--sint] [--solo f1,f2]   (desde decomp)
+# uso: py verif/anotar.py log [--sint] [--gpu] [--solo f1,f2]   (desde decomp)
 # Con --sint los estados quedan IGUAL_SINT / IGUAL_V0_SINT (capturas sinteticas, se cuentan aparte).
+# Con --gpu se agrega _GPU (verificada con SABRINA_GPU_LISTA=1, el GPU modelado como desocupado: aparte
+# hasta que Meme apruebe ese modelo).
 # Una funcion que ya estaba IGUAL no se baja a un estado peor.
 import csv, os, re, sys
 
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 log = sys.argv[1]
 sint = "--sint" in sys.argv
+gpu = "--gpu" in sys.argv
 solo = None
 if "--solo" in sys.argv:
     solo = set(sys.argv[sys.argv.index("--solo") + 1].split(","))
@@ -16,7 +19,8 @@ with open("funciones_juego.tsv", encoding="utf-8") as f:
     for d, t, n in csv.reader(f, delimiter="\t"):
         tam[n] = t
 
-RANGO = {"IGUAL": 3, "IGUAL_V0": 2, "IGUAL_SINT": 1, "IGUAL_V0_SINT": 0}
+RANGO = {"IGUAL": 3, "IGUAL_V0": 2, "IGUAL_GPU": 1.6, "IGUAL_V0_GPU": 1.5, "IGUAL_SINT": 1,
+         "IGUAL_V0_SINT": 0, "IGUAL_SINT_GPU": 0.6, "IGUAL_V0_SINT_GPU": 0.5}
 res = {}
 src = None
 for linea in open(log, encoding="utf-8", errors="replace"):
@@ -33,6 +37,8 @@ for linea in open(log, encoding="utf-8", errors="replace"):
             continue
         if sint and e in ("IGUAL", "IGUAL_V0"):
             e += "_SINT"
+        if gpu and e.startswith("IGUAL"):
+            e += "_GPU"
         res[f] = (e, src, det)
 
 p = "../notas/fases/auditoria.tsv"

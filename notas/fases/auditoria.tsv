@@ -463,3 +463,10 @@ func_8001A668	236	IGUAL_SINT	src/loadtga/voltear_g14.c	1 de 1 capturas y 35 de 3
 func_800484CC	416	IGUAL_SINT	src/objetos/punto_al_azar_g14.c	1 de 1 capturas y 3 de 3 variantes iguales (pocas: casi todas hacen saltar la trampa de suma)
 func_8002A950	712	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 952 de 952 variantes iguales
 func_8001A228	664	IGUAL_SINT	src/libgpu/espacio_vram_g14.c	2 de 2 capturas y 62 de 62 variantes iguales
+func_8001F524	420	NO_TERMINA	src/varios/herramienta_tex_g14.c	la original no termina en el emulador (espera al hardware)
+func_8001ADD8	348	IGUAL_SINT	src/Font/glifos_g14.c	2 de 2 capturas y 137 de 137 variantes iguales
+func_8004AF50	508	IGUAL_SINT	src/auto/func_8004AF50.c	1 de 1 capturas y 28 de 28 variantes iguales
+func_80052578	524	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 22 de 22 variantes iguales
+func_80013714	504	IGUAL_SINT	src/libgpu/drawenv_g14.c	1 de 1 capturas y 35 de 35 variantes iguales
+func_80039104	556	IGUAL_SINT	src/objetos/agarrar_g14.c	1 de 1 capturas y 34 de 34 variantes iguales
+func_8005359C	552	IGUAL_SINT	src/objetos/fuente_g14.c	1 de 1 capturas y 7 de 7 variantes iguales

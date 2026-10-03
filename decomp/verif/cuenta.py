@@ -16,10 +16,12 @@ for r in fj:
     tam[n] = int(r[k[1]])
 REAL = {"IGUAL", "IGUAL_V0"}; SINT = {"IGUAL_SINT", "IGUAL_V0_SINT"}
 real, sint, estado = set(), set(), {}
+gpu = set()   # verificadas con el GPU modelado como desocupado (SABRINA_GPU_LISTA=1): aparte, sin aprobar
 for r in leer("../notas/fases/auditoria.tsv"):
     e = r["estado"]; estado.setdefault(r["funcion"], "a:" + e)
     if e in REAL: real.add(r["funcion"])
     elif e in SINT: sint.add(r["funcion"])
+    elif e.startswith("IGUAL") and e.endswith("_GPU"): gpu.add(r["funcion"])
 for r in leer("progreso.tsv"):
     e = r["estado"]
     if r["funcion"] not in estado or e in REAL: estado[r["funcion"]] = "p:" + e
@@ -27,13 +29,16 @@ for r in leer("progreso.tsv"):
 for r in leer("progreso_sint.tsv"):
     if r["estado"] in SINT: sint.add(r["funcion"])
     elif r["funcion"] not in estado: estado[r["funcion"]] = "s:" + r["estado"]
-real &= set(tam); sint = (sint & set(tam)) - real
+real &= set(tam); sint = (sint & set(tam)) - real; gpu = (gpu & set(tam)) - real - sint
 tot = sum(tam.values())
 br = sum(tam[f] for f in real); bs = sum(tam[f] for f in sint)
 print(f"funciones {len(tam)}  bytes {tot}")
 print(f"reales      {len(real)} fn  {br} bytes  {100*br/tot:.1f} %")
 print(f"sinteticas  {len(sint)} fn  {bs} bytes  {100*bs/tot:.1f} %")
 print(f"total       {len(real)+len(sint)} fn  {100*(br+bs)/tot:.1f} %")
+if gpu:
+    bg = sum(tam[f] for f in gpu)
+    print(f"aparte, con el GPU modelado (sin aprobar): {len(gpu)} fn  {bg} bytes  {100*bg/tot:.1f} %")
 if "--pendientes" in sys.argv:
-    for f in sorted(set(tam) - real - sint, key=lambda f: -tam[f]):
+    for f in sorted(set(tam) - real - sint - gpu, key=lambda f: -tam[f]):
         print(f"{f}\t{tam[f]}\t{estado.get(f, '-')}")

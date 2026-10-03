@@ -35,6 +35,9 @@ from unicorn.mips_const import UC_MIPS_REG_PC, UC_MIPS_REG_RA, UC_MIPS_REG_V0, U
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 BASE_C = 0x80400000
+# PRUEBA, apagada: con SABRINA_GPU_LISTA=1 el estado del GPU (GPUSTAT) dice siempre "desocupado", asi
+# DrawSync/LoadImage y las que esperan al GPU terminan. Cambia el metodo: no se usa sin que Meme lo apruebe.
+GPU_LISTA = os.environ.get("SABRINA_GPU_LISTA") == "1"
 FIN = 0x80FFFFF0            # direccion de retorno centinela
 LIMITE = 20_000_000         # instrucciones como maximo por ejecucion
 
@@ -399,7 +402,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     io = bytearray(0x2000)
 
     def io_lee(u, off, tam, _):
-        return int.from_bytes(io[off:off + tam], "little")
+        v = int.from_bytes(io[off:off + tam], "little")
+        if GPU_LISTA and off == 0x814:
+            v |= 0x1C000000          # GPUSTAT: listo para comandos, para mandar VRAM y para DMA
+        return v
 
     def io_escribe(u, off, tam, valor, _):
         hw.append((0x1F801000 + off, tam, valor))

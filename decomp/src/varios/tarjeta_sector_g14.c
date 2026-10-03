@@ -51,3 +51,43 @@ s32 func_80052434(s32 canal, s32 sector, u8 *buf) {
     }
     return 0;
 }
+
+extern u8 D_800D5600[0x80];          /* el sector que se escribe */
+extern u8 D_800D53D0[15][0x20];      /* el directorio: una entrada por bloque */
+extern s32 D_800D55B0[20];           /* la lista de sectores rotos */
+
+static void copiar(u8 *a, u8 *de, s32 n) {
+    while (n-- > 0) {
+        *a++ = *de++;
+    }
+}
+
+/* Formatea la tarjeta: los 15 bloques del directorio libres (0xA0, siguiente 0xFFFF), la lista de sectores
+ * rotos vacia (-1) y la cabecera "MC" en el sector 0. 1 si todo se escribio bien. */
+s32 func_80052578(s32 canal) {
+    s32 i;
+
+    for (i = 0; i < 15; i++) {
+        bzero(D_800D5600, 0x80);
+        bzero(D_800D53D0[i], 0x20);
+        *(s32 *)&D_800D53D0[i][0] = 0xA0;
+        *(s32 *)&D_800D53D0[i][4] = 0;
+        *(u16 *)&D_800D53D0[i][8] = 0xFFFF;
+        copiar(D_800D5600, D_800D53D0[i], 0x20);
+        if (func_80052434(canal, i + 1, D_800D5600) != 1) {
+            return 0;
+        }
+    }
+    for (i = 0; i < 20; i++) {
+        D_800D55B0[i] = -1;
+        bzero(D_800D5600, 0x80);
+        copiar(D_800D5600, (u8 *)&D_800D55B0[i], 4);
+        if (func_80052434(canal, i + 0x10, D_800D5600) != 1) {
+            return 0;
+        }
+    }
+    bzero(D_800D5600, 0x80);
+    D_800D5600[0] = 'M';
+    D_800D5600[1] = 'C';
+    return func_80052434(canal, 0, D_800D5600) == 1;
+}
