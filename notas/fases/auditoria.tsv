@@ -113,7 +113,7 @@ func_8002FE64	184	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina
 func_8005A1EC	372	NO_TERMINA	src/sabrina/objetos_g12.c	la original no termina en el emulador (espera al hardware)
 func_80039A34	60	IGUAL_SINT	src/objetos/forma.c	1 de 1 capturas y 83 de 83 variantes iguales
 func_8003A258	8	IGUAL_SINT	src/objetos/forma.c	1 de 1 capturas y 45 de 45 variantes iguales
-ArchivoLeer	272	TOPE_DE_TIEMPO	src/File/archivo_g03.c	la verificacion no termino a tiempo
+ArchivoLeer	272	IGUAL	src/File/archivo_g03.c	8 de 8 capturas y 507 de 507 variantes iguales
 SubirAVRAM	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
 func_800112C0	284	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 1088 de 1088 variantes iguales
 func_80012D74	104	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 548 de 548 variantes iguales
@@ -122,7 +122,7 @@ func_80012ECC	96	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el em
 func_80012FE4	172	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
 func_80013090	92	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
 func_800130EC	112	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
-func_800182A8	352	TOPE_DE_TIEMPO	src/nodos/reserva_g02.c	la verificacion no termino a tiempo
+func_800182A8	352	IGUAL	src/nodos/reserva_g02.c	3 de 3 capturas y 70 de 70 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_80018408	128	IGUAL	src/nodos/reserva_g02.c	8 de 8 capturas y 624 de 624 variantes iguales
 func_80018488	288	IGUAL	src/nodos/reserva_g02.c	8 de 8 capturas y 722 de 722 variantes iguales
 func_800188C4	224	IGUAL	src/File/archivo_g03.c	5 de 5 capturas y 374 de 374 variantes iguales (3 capturas donde la original no termina, sin comparar)
@@ -480,3 +480,4 @@ func_8001A754	1668	IGUAL_SINT	src/loadtga/paleta_g14.c	4 de 4 capturas y 66 de 6
 func_8002CBB0	396	IGUAL	src/audio/cd_musica_g13.c	8 de 8 capturas y 885 de 885 variantes iguales
 func_800211D4	256	IGUAL	src/Screen/barra_g13.c	8 de 8 capturas y 309 de 309 variantes iguales
 func_8004FD04	48	IGUAL_SINT	src/auto/func_8004FD04.c	1 de 1 capturas y 0 de 0 variantes iguales (solo llama a tres funciones, sin logica propia)
+LeerNodoModelo	888	IGUAL	src/modelLoader/leer_nodo_g14.c	6 de 6 capturas y 429 de 429 variantes iguales (2 capturas donde la original no termina, sin comparar)
