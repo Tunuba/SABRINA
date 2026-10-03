@@ -310,3 +310,10 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   asm puro: no van.
 - WSL: lanzar con `scratchpad/fondo.sh script salida` (setsid nohup + confirma que arranco) y vigilar
   con `wsl.exe` (si nadie llama a wsl.exe la VM se apaga y mata lo suelto).
+- 02-10 noche (sigue): con capturas sinteticas a mano IGUAL_SINT ~50 (auditoria.tsv, estado *_SINT);
+  archivos nuevos src/objetos/agarrable_g13.c, anacronico_g13.c, jefe_golpes_g13.c, src/Screen/buferes_g13.c,
+  barra_g13.c, fondo_g13.c, src/audio/cd_musica_g13.c, secuencia_g13.c, src/libgpu/paletas_vram_g13.c.
+  Pendiente de verificar: scratchpad lanzar_vmano7.sh (func_80039350, func_80026820) y lanzar_vreal5.sh
+  (las TOPE_DE_TIEMPO de auditoria otra vez con 15 min, mas func_8004A4A8 y diagnosticos de DISTINTO).
+  Despues: relote real con el auto mejorado (`de_a_una2.sh build/rehacer_reales.txt`) y el lote sintetico
+  b2 (`sint_lote2.sh build/sint_lote_b2.txt --tope 0x800 --llamadas 8 --globales 20`).

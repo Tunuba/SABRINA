@@ -707,3 +707,123 @@ s32 func_80026778(Puerto *p, s32 a) {
     }
     return func_80026E04(p, b[0x47]);
 }
+
+extern u8 *D_800909F8;          /* por donde se va copiando la descripcion de un modo */
+
+/* Lee la descripcion del mando, un dato por intercambio (indice en 0x47): (2) los modos (u16 cada uno, en
+   la tabla de +0), (3) los actuadores (5 bytes cada uno, en +4) y (4) lo de cada modo (en +8, con sus
+   bytes a continuacion). 0xEE marca si algo cambio. Devuelve 1 al terminar una tabla y 0 si no. */
+s32 func_80026820(Puerto *p) {
+    u8 *b = (u8 *)p;
+    u8 *r, *a, *t, *src;
+    u32 e = b[0x46];
+    s32 n;
+    u16 v;
+
+    if (e == 3) {
+        r = *(u8 **)(b + 0x3C);
+        if (r[2] != 0 || r[3] != 0) {
+            return 0;
+        }
+        a = *(u8 **)(b + 4) + b[0x47] * 5;
+        if (a[0] == r[4] && a[1] == (r[5] & 0x7F) && a[2] == r[6] && a[3] == r[7] && a[4] == (r[5] >> 7)) {
+            *(u16 *)(b + 0xEE) = 0;
+        } else {
+            *(u16 *)(b + 0xEE) = 0xFFFF;
+        }
+        a[0] = (*(u8 **)(b + 0x3C))[4];
+        a[1] = (*(u8 **)(b + 0x3C))[5] & 0x7F;
+        a[2] = (*(u8 **)(b + 0x3C))[6];
+        a[3] = (*(u8 **)(b + 0x3C))[7];
+        a[4] = (*(u8 **)(b + 0x3C))[5] >> 7;
+        if (*(u16 *)(b + 0xEE) != 0) {
+            return 0;
+        }
+        b[0xEB] = 0;
+        if ((u8)++b[0x47] < b[0xE9]) {
+            return 0;
+        }
+        b[0x47] = 0;
+        b[0x48] = 0;
+        return 1;
+    }
+    if (e < 4) {
+        if (e != 2) {
+            return 1;
+        }
+        r = *(u8 **)(b + 0x3C);
+        if (r[2] != 0 || r[3] != 0) {
+            return 0;
+        }
+        (*(u16 **)b)[b[0x47]] = r[5] + (r[4] << 8);
+        v = (*(u16 **)b)[b[0x47]];
+        if (*(u16 *)(b + 0xEE) != v) {
+            *(u16 *)(b + 0xEE) = v;
+            return 0;
+        }
+        *(u16 *)(b + 0xEE) = 0;
+        b[0xEB] = 0;
+        if ((u8)++b[0x47] < b[0xE3]) {
+            return 0;
+        }
+        b[0x47] = 0;
+        return 1;
+    }
+    if (e != 4) {
+        return 1;
+    }
+    r = *(u8 **)(b + 0x3C);
+    if (r[2] != 0) {
+        b[0x48] = 0;
+        return 0;
+    }
+    t = *(u8 **)(b + 8) + b[0x47] * 8;
+    if (b[0x48] == 0) {
+        b[0x48] = r[4];
+        t[0] = r[4];
+        src = *(u8 **)(b + 0x3C) + 5;
+        if (b[0x47] == 0) {
+            D_800909F8 = *(u8 **)(b + 8) + b[0xEA] * 8;
+        } else {
+            D_800909F8 = *(u8 **)(t - 4) + ((t[-8] + 3) & 0x1FC);
+        }
+        *(u8 **)(t + 4) = D_800909F8;
+        n = 2;
+    } else {
+        src = r + 3;
+        n = 4;
+    }
+    for (; n != -1; n--) {
+        if (b[0x48] == 0) {
+            goto fin;
+        }
+        if (!(D_800909F8 < b + 0xE3)) {
+            b[0x47] = 0;
+            b[0x48] = 0;
+            return 0;
+        }
+        if (*D_800909F8 != *src) {
+            *(u16 *)(b + 0xEE) = 0xFFFF;
+        }
+        *D_800909F8++ = *src++;
+        b[0x48]--;
+    }
+    if (b[0x48] != 0) {
+        return 0;
+    }
+fin:
+    if (*(u16 *)(b + 0xEE) != 0) {
+        *(u16 *)(b + 0xEE) = 0;
+        b[0x48] = 0;
+        return 0;
+    }
+    if ((u8)++b[0x47] < b[0xEA]) {
+        b[0x48] = 0;
+        b[0xEB] = 0;
+        return 0;
+    }
+    b[0x49] = 6;
+    b[0x46] = 0xFE;
+    b[0xEB] = 0;
+    return 0;
+}

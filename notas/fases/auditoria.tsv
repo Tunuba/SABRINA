@@ -100,12 +100,7 @@ func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	9 de 9 capturas y 637 d
 func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	9 de 9 capturas y 643 de 643 variantes iguales
 func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 de 646 variantes iguales
 DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
-func_80019374	132	IGUAL_V0	src/Font/letras_g03.c	0 de 9 capturas y 2 de 568 variantes iguales
-func_800249CC	124	IGUAL_V0	src/WobjCode/objetos_g06.c	8 de 9 capturas y 339 de 433 variantes iguales
 func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales
-func_8003019C	108	IGUAL_V0	src/sabrina/estados.c	0 de 7 capturas y 0 de 654 variantes iguales
-func_8003CF60	172	IGUAL_V0	src/objetos/objeto_g09.c	0 de 3 capturas y 57 de 308 variantes iguales
-func_80044D64	196	IGUAL_V0	src/objetos/objeto_g09.c	3 de 3 capturas y 254 de 279 variantes iguales
 CrearParticula	952	NO_ESTA	src/objetos/objetos_g10.c	no esta en src/objetos/objetos_g10.c
 CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
 LeerCuadriculaINO	312	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
@@ -398,3 +393,18 @@ func_80038C38	256	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 captu
 func_80038D38	280	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 75 de 75 variantes iguales
 func_8003BCB4	280	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 66 de 66 variantes iguales
 func_8004C730	236	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 66 de 66 variantes iguales
+func_8004A140	492	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 90 de 90 variantes iguales
+func_80059FBC	560	IGUAL	src/objetos/jefe_golpes_g13.c	2 de 2 capturas y 157 de 157 variantes iguales
+func_8005B150	580	IGUAL	src/objetos/anacronico_g13.c	2 de 2 capturas y 185 de 185 variantes iguales
+func_8005EAD4	684	IGUAL	src/objetos/jefe_golpes_g13.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_8003019C	108	IGUAL	src/sabrina/estados.c	6 de 6 capturas y 583 de 583 variantes iguales
+func_80019374	132	IGUAL	src/Font/letras_g03.c	8 de 8 capturas y 504 de 504 variantes iguales
+func_800249CC	124	IGUAL	src/WobjCode/objetos_g06.c	6 de 6 capturas y 296 de 296 variantes iguales
+func_8003CF60	172	IGUAL	src/objetos/objeto_g09.c	2 de 2 capturas y 188 de 188 variantes iguales
+func_80044D64	196	IGUAL	src/objetos/objeto_g09.c	2 de 2 capturas y 150 de 150 variantes iguales
+func_8005329C	332	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 55 de 55 variantes iguales
+func_8003BE38	396	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 58 de 58 variantes iguales
+func_8001A108	288	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 capturas y 50 de 50 variantes iguales
+func_80019FBC	332	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 capturas y 55 de 55 variantes iguales
+func_800605C8	484	IGUAL_SINT	src/objetos/ruta_g13.c	sintetica: 1 de 1 capturas y 3 de 3 variantes iguales
+func_8001951C	540	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 86 de 86 variantes iguales

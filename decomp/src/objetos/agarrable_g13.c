@@ -88,3 +88,97 @@ s32 func_8004C730(s32 i) {
     *(Funcion *)h = func_8004AB24;
     return func_8004AAE4(h, 0, 0);
 }
+
+extern s32 func_80024F6C();
+extern s32 func_80014AEC(s32 x);
+
+/* Algo que cae (0) y al tocar el suelo (0x50) queda quieto (2); o que sube con sus pasajeros (1: bloque
+ * +0x14 la lista, +0x32 cuantos) y al llegar los suelta; en 2 espera (0x118) y se encoge hasta irse (3).
+ * Devuelve lo que queda en v0. */
+s32 func_80039350(Objeto *o) {
+    u8 *ob = (u8 *)o;
+    u8 *b = ob + 0x74;
+    s16 est = o->estado;
+    s32 esc, i, k;
+    s8 n;
+    u8 *p;
+
+    if (est == 3) {
+        u8 f = ob[0x20] | 0x80;
+        ob[0x20] = f;
+        return f;
+    }
+    if (est == 2) {
+        n = ob[0x118];
+        if (n >= 0) {
+            ob[0x118] = SUMA_TRAMPA(n, -1);
+            return SUMA_TRAMPA(n, -1);
+        }
+        *(s16 *)(ob + 0x32) = SUMA_TRAMPA(*(s16 *)(ob + 0x32), 0x7B);
+        esc = *(s32 *)(ob + 0x54);
+        *(s32 *)(ob + 0x54) = RESTA_TRAMPA(esc, esc >> 1);
+        *(s32 *)(ob + 0x58) = *(s32 *)(ob + 0x54);
+        *(s32 *)(ob + 0x5C) = *(s32 *)(ob + 0x54);
+        if (*(s32 *)(ob + 0x54) < 0x32) {
+            o->estado = 3;
+            return 3;
+        }
+        return *(s32 *)(ob + 0x54);
+    }
+    if (est == 1) {
+        o->y = SUMA_TRAMPA(o->y, *(s32 *)(ob + 0x3C));
+        for (i = 0; i < *(s16 *)(b + 0x32); i = SUMA_TRAMPA(i, 1)) {
+            p = *(u8 **)(b + 0x14 + i * 4);
+            if (p != NULL) {
+                k = *(s32 *)(ob + 0x3C);
+                *(s32 *)(ob + 0x3C) = RESTA_TRAMPA(k, k >> 4);
+                *(s32 *)(p + 0x58) = (func_80014AEC(RESTA_TRAMPA(o->y, *(s32 *)(p + 0x28))) *
+                                      *(s16 *)(b + 0x28 + i * 2)) / *(s32 *)(b + i * 4);
+            }
+        }
+        if (!(*(s32 *)(ob + 0x50) < o->y)) {
+            *(s16 *)(ob + 0x112) = 0;
+            *(s16 *)(ob + 0x114) = 0;
+            return *(s32 *)(ob + 0x50);
+        }
+        o->y = *(s32 *)(ob + 0x50);
+        o->estado = 2;
+        ob[0x118] = 0x14;
+        *(s16 *)(ob + 0x112) = 0;
+        *(s16 *)(ob + 0x114) = 0;
+        for (i = 0; i < *(s16 *)(b + 0x32); i = SUMA_TRAMPA(i, 1)) {
+            p = *(u8 **)(b + 0x14 + i * 4);
+            if (!(*(s16 *)(p + 0x112) & 1)) {
+                p[0x20] |= 0x80;
+            }
+        }
+        *(s16 *)(ob + 0x112) = 0;
+        *(s16 *)(ob + 0x114) = 0;
+        return *(s16 *)(b + 0x32);
+    }
+    if (est != 0) {
+        return est;
+    }
+    esc = *(s32 *)(ob + 0x54);
+    if (esc < 0x1000) {
+        *(s32 *)(ob + 0x54) = SUMA_TRAMPA(esc, RESTA_TRAMPA(0x1000, esc) >> 2);
+        if (*(s32 *)(ob + 0x54) >= 0x1000) {
+            *(s32 *)(ob + 0x54) = 0x1000;
+        }
+        *(s32 *)(ob + 0x58) = *(s32 *)(ob + 0x54);
+        *(s32 *)(ob + 0x5C) = *(s32 *)(ob + 0x54);
+    }
+    o->y = SUMA_TRAMPA(o->y, *(s32 *)(ob + 0x3C));
+    *(s32 *)(ob + 0x3C) = SUMA_TRAMPA(*(s32 *)(ob + 0x3C), 0x51E);
+    if (!(*(s32 *)(ob + 0x50) < o->y)) {
+        return *(s32 *)(ob + 0x50);
+    }
+    o->y = *(s32 *)(ob + 0x50);
+    o->estado = 2;
+    ob[0x118] = 0x14;
+    *(s16 *)(ob + 0x112) = 2;
+    *(s16 *)(ob + 0x114) = 2;
+    *(Funcion *)(ob + 4) = func_80024DF4;
+    *(Funcion *)(ob + 8) = func_80024F6C;
+    return (s32)func_80024F6C;
+}
