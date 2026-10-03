@@ -390,3 +390,9 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   original de cada captura se mide por escalones (`ESCALONES`) y las variantes tienen 16 veces ese escalon;
   la cantidad de variantes tambien depende del escalon. Antes dependia de lo cargada que estaba la PC (la
   misma funcion daba 114, 104 o 34 variantes segun la carga); ahora siempre da lo mismo.
+- **Propuesta VSync (sin aplicar, para Meme)**: VSync (func_8001626C) espera en func_800161D4 a que el
+  contador de cuadros D_800649EC (lo sube la interrupcion de VBlank) llegue a un objetivo. Modelo minimo y
+  determinista: un gancho en la entrada de func_800161D4 que ponga D_800649EC = max(D_800649EC, a0) y vuelva
+  (como las llamadas a la BIOS). Original y C llaman a la misma VSync, asi que ven lo mismo. Con GPUSTAT
+  "desocupado" (bit 22 en 0) la espera del campo entrelazado no se activa. Destrabaria ~13 NO_TERMINA.
+  Igual que el de GPU, iria con estado aparte (_VS) hasta que Meme lo apruebe.
