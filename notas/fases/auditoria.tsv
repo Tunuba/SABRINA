@@ -193,7 +193,7 @@ ActivarObjetosCercanos	544	IGUAL	src/objetos/crear_g13.c	8 de 8 capturas y 1039 
 func_800489C4	816	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
 func_8004D0C0	2564	IGUAL_V0	src/objetos/portal_g13.c	8 de 8 capturas y 540 de 613 variantes iguales (solo difiere v0)
 FisicaObjeto	2436	IGUAL	src/colision/fisica_g13.c	8 de 8 capturas y 716 de 716 variantes iguales
-func_80056CE8	1684	NO_TERMINA	src/objetos/tienda_g13.c	la original no termina en el emulador (espera la musica del CD); escrita sin verificar
+func_80056CE8	1684	IGUAL_V0	src/objetos/tienda_g13.c	2 de 2 capturas y 134 de 151 variantes iguales
 DibujarTexto	900	IGUAL	src/Font/texto_g13.c	8 de 8 capturas y 716 de 716 variantes iguales
 func_8002367C	1136	IGUAL	src/Screen/sprites_g13.c	8 de 8 capturas y 389 de 389 variantes iguales
 func_8003C1E8	832	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 173 de 173 variantes iguales
@@ -446,8 +446,8 @@ func_80060274	244	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 98 de 98
 func_80053138	280	IGUAL_SINT	src/objetos/agarrable_g13.c	1 de 1 capturas y 106 de 106 variantes iguales
 func_800538A0	304	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
 func_800123E0	608	IGUAL	src/libgpu/cola_g13.c	8 de 8 capturas y 478 de 478 variantes iguales (con el modelo de GPU desocupada)
-func_80022614	772	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
-func_80022918	692	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
+func_80022614	772	IGUAL	src/TexAnima/ciclos_g05.c	6 de 6 capturas y 544 de 544 variantes iguales
+func_80022918	692	IGUAL	src/TexAnima/ciclos_g05.c	3 de 3 capturas y 279 de 279 variantes iguales
 func_80053400	160	IGUAL_SINT	src/objetos/seguir_padre_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
 func_80024450	284	NO_TERMINA	src/varios/herramienta_tex_g14.c	la original no termina en el emulador (espera al hardware)
 func_80046F74	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 117 de 117 variantes iguales
@@ -485,3 +485,8 @@ func_8002A09C	1372	IGUAL	src/psyq/cd_irq_g14.c	8 de 8 capturas y 886 de 886 vari
 func_8002AC18	1036	IGUAL	src/psyq/cdsync_g14.c	5 de 5 capturas y 591 de 591 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_8002BB78	668	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 66 de 66 variantes iguales (6 capturas donde la original no termina, sin comparar)
 func_8002BE88	728	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 172 de 172 variantes iguales (6 capturas donde la original no termina, sin comparar)
+func_8005A360	3168	DISTINTO	src/auto/func_8005A360.c	2 de 2 capturas y 107 de 109 variantes iguales
+func_8005C9D0	968	NO_TERMINA	src/auto/func_8005C9D0.c	la original no termina en el emulador (espera al hardware)
+func_80012130	688	DISTINTO	src/auto/func_80012130.c	8 de 8 capturas y 364 de 484 variantes iguales
+func_80011D9C	640	DISTINTO	src/auto/func_80011D9C.c	0 de 6 capturas y 79 de 434 variantes iguales
+func_8002643C	632	NO_TERMINA	src/auto/func_8002643C.c	la original no termina en el emulador (espera al hardware)
