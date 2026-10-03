@@ -111,8 +111,8 @@ func_80022E58	156	NO_TERMINA	src/TexAnima/paletas_g06.c	la original no termina e
 func_80025BA0	240	NO_TERMINA	src/membank/tarjeta_g06.c	la original no termina en el emulador (espera al hardware)
 func_8002FE64	184	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
 func_8005A1EC	372	NO_TERMINA	src/sabrina/objetos_g12.c	la original no termina en el emulador (espera al hardware)
-func_80039A34	60	SIN_CAPTURAS	src/objetos/forma.c	sin capturas
-func_8003A258	8	SIN_CAPTURAS	src/objetos/forma.c	sin capturas
+func_80039A34	60	IGUAL_SINT	src/objetos/forma.c	1 de 1 capturas y 83 de 83 variantes iguales
+func_8003A258	8	IGUAL_SINT	src/objetos/forma.c	1 de 1 capturas y 45 de 45 variantes iguales
 ArchivoLeer	272	TOPE_DE_TIEMPO	src/File/archivo_g03.c	la verificacion no termino a tiempo
 SubirAVRAM	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
 func_800112C0	284	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 1088 de 1088 variantes iguales

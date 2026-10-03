@@ -1,0 +1,1 @@
+cd /mnt/c/Proyectos/SABRINA/decomp && source ~/decomp-herramientas/venv/bin/activate && cd verif && bash vsint.sh src/loadtga/paleta_g14.c func_8001A754 && cd .. && timeout 7200 python3 sint.py mutantes src/loadtga/paleta_g14.c func_8001A754 --max 8 2>&1 | grep -E "VIVO|mutantes muertos"; echo FIN

@@ -99,27 +99,32 @@ REG = {"a0": 4, "a1": 5, "a2": 6, "a3": 7}
 
 
 def crear_con(nom, cambios, en=None):
-    """Otra captura sintetica de nom (01, 02...) igual a la 00 pero con algunos registros elegidos a mano, para
-    cuando lo que deja la donante no tiene sentido para esta funcion (un ancho de 0x1F8010F4, un puntero a 0) y
-    la original no termina o no pasa de la primera comprobacion. cambios: "a0=0x...,a1=0x40". Queda anotado en
-    capturas_sint/F/NN.MANO. Con en=0 reemplaza la 00 (si con lo de la donante la original no termina, el
-    verificador da NO_TERMINA por la primera captura); la de la donante queda en 00.regs.donante."""
+    """Otra captura sintetica de nom (01, 02...) igual a la 00 pero con algunos registros o datos elegidos a
+    mano, para cuando lo que deja la donante no tiene sentido para esta funcion (un ancho de 0x1F8010F4, un
+    puntero a 0) o recorre muy poco de ella (los mutantes lo dicen). cambios, separados por coma:
+    "a0=0x80104580" pone un registro; "m80104580=10000000" escribe esos bytes (en el orden dado) en la RAM.
+    Queda anotado en capturas_sint/F/NN.MANO. Con en=0 reemplaza la 00 (si con lo de la donante la original no
+    termina, el verificador da NO_TERMINA por la primera captura); lo de la donante queda en 00.*.donante y
+    es la base de todas las capturas hechas a mano."""
     crear(nom)
     dst = os.path.join(SINT, nom)
     n = len(_glob.glob(os.path.join(dst, "*.regs"))) if en is None else en
-    base = os.path.join(dst, "00.regs")
-    if os.path.exists(base + ".donante"):
-        base += ".donante"
-    elif en == 0:
-        shutil.copyfile(base, base + ".donante")
-        base += ".donante"
-    regs = open(base).read().split()
+    for ext in ("regs", "ram", "spad"):
+        b = os.path.join(dst, "00." + ext)
+        if not os.path.exists(b + ".donante"):
+            shutil.copyfile(b, b + ".donante")
+    regs = open(os.path.join(dst, "00.regs.donante")).read().split()
+    ram = bytearray(open(os.path.join(dst, "00.ram.donante"), "rb").read())
     for c in cambios.split(","):
         r, v = c.split("=")
-        regs[REG[r]] = "%08x" % (int(v, 0) & 0xFFFFFFFF)
-    for ext in ("ram", "spad"):
-        if n:
-            shutil.copyfile(os.path.join(dst, "00." + ext), os.path.join(dst, "%02d.%s" % (n, ext)))
+        if r.startswith("m"):
+            d = int(r[1:], 16) & 0x1FFFFF
+            datos = bytes.fromhex(v)
+            ram[d:d + len(datos)] = datos
+        else:
+            regs[REG[r]] = "%08x" % (int(v, 0) & 0xFFFFFFFF)
+    open(os.path.join(dst, "%02d.ram" % n), "wb").write(ram)
+    shutil.copyfile(os.path.join(dst, "00.spad.donante"), os.path.join(dst, "%02d.spad" % n))
     open(os.path.join(dst, "%02d.regs" % n), "w").write(" ".join(regs))
     open(os.path.join(dst, "%02d.MANO" % n), "w").write(cambios + "\n")
     print(f"{nom}: captura {n:02d} con {cambios}")
