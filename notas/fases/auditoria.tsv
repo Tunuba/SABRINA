@@ -154,7 +154,7 @@ func_8002506C	492	IGUAL	src/WobjCode/objetos_g06.c	1 de 1 capturas y 93 de 93 va
 func_8002EDC8	452	IGUAL	src/varios/mezcla_g13.c	8 de 8 capturas y 791 de 791 variantes iguales
 func_8001E588	544	IGUAL	src/geometria/arbol.c	8 de 8 capturas y 686 de 686 variantes iguales
 MatrizDesdeAngulos	548	IGUAL	src/geometria/arbol.c	8 de 8 capturas y 616 de 616 variantes iguales
-func_80023FD4	576	DISTINTO	src/Screen/sprites_g13.c	3 de 3 capturas y 327 de 330 variantes iguales; las 3 malas tienen 0xAF43 casillas y leen la tabla de sprites hasta la pila propia
+func_80023FD4	576	IGUAL	src/Screen/fondo_g13.c	3 de 3 capturas y 108 de 108 variantes iguales
 func_800447E4	1004	IGUAL	src/audio/vab_g13.c	6 de 6 capturas y 473 de 473 variantes iguales
 func_80020818	560	IGUAL	src/varios/contador_g13.c	8 de 8 capturas y 608 de 608 variantes iguales
 func_80011930	560	IGUAL	src/libgpu/borrar_g13.c	6 de 6 capturas y 556 de 556 variantes iguales
@@ -187,7 +187,7 @@ func_80037A18	932	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 635 de 635 va
 func_80045278	1788	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 154 de 168 variantes iguales (solo difiere v0)
 func_80046428	1796	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 149 de 161 variantes iguales (solo difiere v0)
 func_80035314	3900	IGUAL	src/objetos/camara_g08.c	8 de 8 capturas y 505 de 505 variantes iguales
-func_80030208	3164	DISTINTO	src/sabrina/paso_g13.c	8 de 8 capturas y 475 de 476 variantes iguales; la mala tiene o = 0x74 y pasa por FisicaObjeto, que lee de la pila sin darle valor (cambia con el tamano del marco del C)
+func_80030208	3164	IGUAL_V0	src/sabrina/paso_g13.c	8 de 8 capturas y 275 de 277 variantes iguales
 func_80038318	1536	IGUAL_V0	src/objetos/atraido_g13.c	1 de 2 capturas y 143 de 211 variantes iguales (solo difiere v0)
 ActivarObjetosCercanos	544	IGUAL	src/objetos/crear_g13.c	8 de 8 capturas y 1039 de 1039 variantes iguales
 func_800489C4	816	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
@@ -470,3 +470,6 @@ func_80052578	524	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 2
 func_80013714	504	IGUAL_SINT	src/libgpu/drawenv_g14.c	1 de 1 capturas y 35 de 35 variantes iguales
 func_80039104	556	IGUAL_SINT	src/objetos/agarrar_g14.c	1 de 1 capturas y 34 de 34 variantes iguales
 func_8005359C	552	IGUAL_SINT	src/objetos/fuente_g14.c	1 de 1 capturas y 7 de 7 variantes iguales
+func_8003B894	660	IGUAL_SINT	src/objetos/rayo_g14.c	1 de 1 capturas y 54 de 54 variantes iguales
+func_8005B52C	596	IGUAL_SINT	src/objetos/proyectil_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
+func_8003C678	640	IGUAL_SINT	src/objetos/lanzado_g14.c	1 de 1 capturas y 6 de 6 variantes iguales (pocas)
