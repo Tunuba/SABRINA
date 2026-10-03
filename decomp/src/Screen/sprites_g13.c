@@ -47,48 +47,6 @@ extern u16 D_8007CC50;               /* la casilla elegida */
 extern void AddPrim(void *ot, void *prim);
 extern void SetDrawTPage(void *p, s32 dfe, s32 dtd, s32 tpage);
 
-/* Pone en la tabla de orden ot (+4 las casillas, +8 el recuadro) un sprite por casilla, uno cada 26
- * pixeles desde x = 50 a la altura 100, y un recuadro rojo de 26 x 26 sobre la casilla elegida. */
-void func_80023FD4(u8 *ot) {
-    u16 i;
-    s32 j = 0;
-    PrimSprt *s;
-    u8 *t;
-    PrimTile *r;
-
-    if (D_8007CC58 + D_8007CC5A == 0) {
-        return;
-    }
-    for (i = 0; i != D_8007CC58 + D_8007CC5A; i++, j++) {
-        D_8007CACC->x = j * 16 + j * 10 + 50;
-        D_8007CACC->y = 100;
-        D_8007CACC->w = D_800D50B0[j].w;
-        D_8007CACC->h = D_800D50B0[j].h;
-        D_8007CACC->b = 0xFF;
-        D_8007CACC->g = 0xFF;
-        D_8007CACC->r = 0xFF;
-        D_8007CACC->v = D_800D50B0[j].v;
-        D_8007CACC->u = D_800D50B0[j].u;
-        D_8007CACC->clut = D_800D50B0[j].clut;
-        s = D_8007CACC;
-        D_8007CACC = s + 1;
-        AddPrim(ot + 4, s);
-        SetDrawTPage(D_8007CAD0, 1, 0, D_800D50B0[j].tpage);
-        t = D_8007CAD0;
-        D_8007CAD0 = t + 8;
-        AddPrim(ot + 4, t);
-    }
-    D_8007CAD4->r = 200;
-    D_8007CAD4->g = 0;
-    D_8007CAD4->b = 100;
-    D_8007CAD4->x = D_8007CC50 * 26 + 45;
-    D_8007CAD4->y = 95;
-    D_8007CAD4->w = 26;
-    D_8007CAD4->h = 26;
-    r = D_8007CAD4;
-    D_8007CAD4 = r + 1;
-    AddPrim(ot + 8, r);
-}
 
 extern s32 D_8007CA58;               /* botones apretados en este cuadro */
 extern s32 D_800D1604, D_800D1608;   /* sonido de moverse y de tope */

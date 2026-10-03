@@ -318,6 +318,30 @@ def cop2_en_binario(binario):
 
 
 @functools.lru_cache(maxsize=1)
+def tablas_de_saltos():
+    """Rangos fisicos [desde, hasta) de las tablas de saltos (jtbl_). Son direcciones de codigo fijas: el
+    C tiene su propia tabla, asi que cambiarlas en una variante solo rompe el original."""
+    rangos, ini = [], None
+    for ruta in glob.glob(os.path.join(AQUI, "asm", "data", "*.s")):
+        for l in open(ruta, errors="replace"):
+            m = re.match(r"dlabel (jtbl_[0-9A-F]{8})", l)
+            if m:
+                ini = int(m.group(1)[5:], 16) & 0x1FFFFFFF
+            elif l.startswith("enddlabel jtbl_") and ini is not None:
+                rangos.append((ini, ultimo + 4))
+                ini = None
+            elif ini is not None:
+                m = re.search(r"/\* [0-9A-F]+ ([0-9A-F]{8}) ", l)
+                if m:
+                    ultimo = int(m.group(1), 16) & 0x1FFFFFFF
+    return rangos
+
+
+def en_tabla_de_saltos(d):
+    return any(a <= d < b for a, b in tablas_de_saltos())
+
+
+@functools.lru_cache(maxsize=1)
 def direcciones_cop2():
     return gte.instrucciones_cop2(desensamblado()[0])
 
@@ -521,7 +545,7 @@ def verificar(c, funciones, n_variantes=60):
             base = cap[:-5]
             ram = open(base + ".ram", "rb").read()
             lecturas, propias = entradas[base]
-            lista = sorted(lecturas.items())
+            lista = sorted((d, t) for d, t in lecturas.items() if not en_tabla_de_saltos(d))
             suyas = [x for x in lista if x[0] in propias]
             if not lista:
                 continue

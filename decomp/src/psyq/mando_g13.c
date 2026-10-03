@@ -303,8 +303,10 @@ s32 func_80025EF8(Puerto *p) {
             D_8006CFA4((Puerto *)((u8 *)p->multitap + n * 0xF0));
         }
         if (D_8006CFDC[D_8006CFC4] == 0) {
-            D_8006CFDC[D_8006CFC4] = -1;
-            D_8006CFA4(p);
+            s32 *c = &D_8006CFDC[D_8006CFC4];
+            *c = -1;
+            /* a1 llega con la direccion de la cuenta, como en el original */
+            ((void (*)(Puerto *, s32 *))D_8006CFA4)(p, c);
             D_8006CFA8(p);
         }
     }
