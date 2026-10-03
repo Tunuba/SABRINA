@@ -385,3 +385,8 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - Quedan sin verificar casi solo: las que esperan al CD/VSync/GPU (NO_TERMINA), las herramientas de
   desarrollo que leen archivos, y 37 sin capturas (BIOS, trozos de codigo, archivos). `verif/lanzar_cqt.sh`
   mide si alguna NO_TERMINA termina en otra captura que no sea la primera.
+- **verificar.py, 03-10**: (1) una captura en la que la original no termina se descarta (como una variante
+  que da error); NO_TERMINA solo si no termina en ninguna. (2) Topes por INSTRUCCIONES, no por tiempo: la
+  original de cada captura se mide por escalones (`ESCALONES`) y las variantes tienen 16 veces ese escalon;
+  la cantidad de variantes tambien depende del escalon. Antes dependia de lo cargada que estaba la PC (la
+  misma funcion daba 114, 104 o 34 variantes segun la carga); ahora siempre da lo mismo.

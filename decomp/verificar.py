@@ -40,6 +40,7 @@ BASE_C = 0x80400000
 GPU_LISTA = os.environ.get("SABRINA_GPU_LISTA") == "1"
 FIN = 0x80FFFFF0            # direccion de retorno centinela
 LIMITE = 20_000_000         # instrucciones como maximo por ejecucion
+ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
 
 _simbolos = None
 
@@ -381,7 +382,8 @@ def _memoria(captura):
     return open(captura + ".ram", "rb").read(), open(captura + ".spad", "rb").read()
 
 
-def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia=None, tope_seg=None):
+def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia=None, tope_seg=None,
+             cuenta=None):
     """Corre desde la captura. parche: {direccion fisica: bytes} que se escriben encima de la RAM.
     trazar: devuelve tambien en "lecturas" lo que la funcion lee de la RAM antes de escribirlo (sus
     entradas en memoria), como {direccion fisica: tamano}; y en "propias" las que lee el codigo de la propia
@@ -471,13 +473,13 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     error = None
     try:
         # tope_seg: tope de tiempo (solo para la original en las variantes, ver verificar)
-        uc.emu_start(pc, FIN, timeout=int(tope_seg * 1e6) if tope_seg else 0, count=LIMITE)
+        uc.emu_start(pc, FIN, timeout=int(tope_seg * 1e6) if tope_seg else 0, count=cuenta or LIMITE)
     except UcError as ex:
         error = f"{ex} en {uc.reg_read(UC_MIPS_REG_PC):08x}"
     if error is None and interrupcion_mala:
         error = interrupcion_mala[0]
     if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN:
-        error = f"no termino en {LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
+        error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1),
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias)
@@ -529,23 +531,38 @@ def verificar(c, funciones, n_variantes=60):
         ok = 0
         entradas = {}                # por captura: lo que la original lee de la RAM antes de escribirlo
         reloj = time.time()
-        t_orig = 0.0                 # lo que mas tardo la original en una captura
-        # una funcion que espera al hardware (el CD, el sonido) nunca termina en el emulador: da vueltas
-        # hasta el tope de instrucciones en cada corrida y se lleva el lote por delante
-        primera = ejecutar(caps[0][:-5], sim[f], None)
-        if primera["error"] and "no termino" in primera["error"]:
+        escalon_max = 0              # el escalon de instrucciones mas alto en que termino la original
+        # una funcion que espera al hardware (el CD, el sonido, el GPU) nunca termina en el emulador: da
+        # vueltas hasta el tope de instrucciones en cada corrida. Una captura en la que la original no termina
+        # no se puede comparar (las dos quedan esperando), asi que se descarta, como las variantes que dan
+        # error; la funcion es NO_TERMINA solo si no termina en ninguna. Antes bastaba con la primera
+        # (func_80022E58 terminaba en 5 de 8 y quedaba DISTINTO por las 3 que esperan al GPU).
+        giran = set()
+        for cap in caps:
+            primera = ejecutar(cap[:-5], sim[f], None)
+            if not (primera["error"] and "no termino" in primera["error"]):
+                break
+            giran.add(cap)
+        if len(giran) == len(caps):
             print(f"{f}: la original no termina en el emulador (espera al hardware) -> NO_TERMINA")
             total_ok = False
             continue
         for cap in caps:
             base = cap[:-5]
+            if cap in giran:
+                continue
+            for escalon in ESCALONES:
+                a = ejecutar(base, sim[f], None, cuenta=escalon)
+                if not (a["error"] and "no termino" in a["error"]):
+                    break
+            if a["error"] and "no termino" in a["error"]:
+                giran.add(cap)
+                continue
+            escalon_max = max(escalon_max, escalon)
             # el rastreo va en una corrida aparte: con los ganchos de memoria puestos Unicorn a veces corre
             # distinto (func_80044C40 salta a 0 solo con ellos), asi que no se compara esa corrida
             t = ejecutar(base, sim[f], None, trazar=True, propia=(sim[f], fin_de(f)))
             entradas[base] = (t["lecturas"], t["propias"])
-            t0 = time.time()
-            a = ejecutar(base, sim[f], None)
-            t_orig = max(t_orig, time.time() - t0)
             b = ejecutar(base, dirs[f], codigo_c)
             d = comparar(a, b, a["sp"], con_v0)
             if d and void and not comparar(a, b, a["sp"], False):
@@ -556,24 +573,26 @@ def verificar(c, funciones, n_variantes=60):
                 ok += 1
         # una funcion lenta de simular (las de biblioteca, con sus bucles largos) se prueba con menos
         # variantes: si no, una sola funcion se lleva media hora
-        lento = (time.time() - reloj) / max(len(caps), 1)
-        if lento > 0.5:
-            n_variantes = max(6, int(n_variantes * 0.5 / lento))
-            print(f"  {f}: {lento:.1f} s por corrida, se prueban {n_variantes} variantes")
+        comparables = [c for c in caps if c not in giran]
+        # (por el escalon de instrucciones y no por el tiempo: asi no prueba menos cuando la PC esta cargada)
+        if escalon_max > ESCALONES[0]:
+            n_variantes = max(6, n_variantes * ESCALONES[0] // escalon_max * 4)
+            print(f"  {f}: la original corre hasta {escalon_max} instrucciones, se prueban {n_variantes} variantes")
         # una variante que hace girar a la original (un contador o un tamano al azar) gastaria LIMITE
-        # instrucciones en cada corrida: la original de las variantes tiene de tope 40 veces lo que tardo en
-        # la captura mas lenta (al menos 3 s). Si lo pasa, la variante se descarta como las que dan error:
-        # solo baja la cobertura, nunca hace pasar un C distinto
-        tope_var = max(3.0, 40 * t_orig)
+        # instrucciones en cada corrida: la original de las variantes tiene de tope 16 veces el escalon de
+        # instrucciones en que termino en las capturas. Si lo pasa, la variante se descarta como las que dan
+        # error: solo baja la cobertura, nunca hace pasar un C distinto. Es por instrucciones y no por tiempo
+        # para que el resultado no dependa de lo cargada que este la PC.
+        cuenta_var = min(LIMITE, 16 * escalon_max)
         # variantes de los argumentos sobre la memoria de cada captura
         rnd = random.Random(1234)
         pool = constantes_de(f)
         v_ok = v_tot = v_mal = 0
-        for cap in caps:
+        for cap in comparables:
             base = cap[:-5]
             regs = [int(x, 16) for x in open(base + ".regs").read().split()]
             for r in variantes(regs, pool, n_variantes, rnd):
-                a = ejecutar(base, sim[f], None, r, tope_seg=tope_var)
+                a = ejecutar(base, sim[f], None, r, cuenta=cuenta_var)
                 if a["error"]:
                     continue                 # con esos argumentos la original tampoco funciona
                 v_tot += 1
@@ -591,7 +610,7 @@ def verificar(c, funciones, n_variantes=60):
         # variantes de la memoria: se cambian uno a tres de los valores que la original lee (contadores,
         # indices, banderas, otros datos del juego), asi tambien se prueban las ramas que dependen de la
         # memoria y no de los argumentos
-        for cap in caps:
+        for cap in comparables:
             base = cap[:-5]
             ram = open(base + ".ram", "rb").read()
             lecturas, propias = entradas[base]
@@ -623,7 +642,7 @@ def verificar(c, funciones, n_variantes=60):
                         n = _evitar_base_c(n)
                         n = _puntero_a_funcion(v, n)
                     parche[d] = n.to_bytes(tam, "little")
-                a = ejecutar(base, sim[f], None, None, parche, tope_seg=tope_var)
+                a = ejecutar(base, sim[f], None, None, parche, cuenta=cuenta_var)
                 if a["error"]:
                     continue
                 v_tot += 1
@@ -638,12 +657,13 @@ def verificar(c, funciones, n_variantes=60):
                         print(f"  {f} {os.path.basename(base)} con memoria {cambios}: " + "; ".join(d))
                 else:
                     v_ok += 1
-        bien = ok == len(caps) and v_ok == v_tot
+        bien = ok == len(comparables) and v_ok == v_tot
         # void a la que solo se llega por punteros: todo igual menos v0, y no se puede saber si alguien lo lee
         estado = "IGUAL" if bien else "IGUAL_V0" if lee_v0 is None and \
-            solo_v0 == (len(caps) - ok) + (v_tot - v_ok) else "DISTINTO"
+            solo_v0 == (len(comparables) - ok) + (v_tot - v_ok) else "DISTINTO"
         total_ok &= bien
-        print(f"{f}: {ok} de {len(caps)} capturas y {v_ok} de {v_tot} variantes iguales -> {estado}")
+        nota = f" ({len(giran)} capturas donde la original no termina, sin comparar)" if giran else ""
+        print(f"{f}: {ok} de {len(comparables)} capturas y {v_ok} de {v_tot} variantes iguales{nota} -> {estado}")
     return total_ok
 
 

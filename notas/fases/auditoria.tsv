@@ -130,13 +130,13 @@ func_80021120	112	NO_TERMINA	src/Screen/pantalla_g05.c	la original no termina en
 func_80021B4C	240	NO_TERMINA	src/Screen/pantalla_g05.c	la original no termina en el emulador (espera al hardware)
 func_80022528	60	IGUAL	src/TexAnima/ciclos_g05.c	6 de 6 capturas y 456 de 456 variantes iguales
 func_80022564	176	IGUAL	src/TexAnima/ciclos_g05.c	6 de 6 capturas y 679 de 679 variantes iguales
-func_80022BCC	384	TOPE_DE_TIEMPO	src/TexAnima/ciclos_g05.c	la verificacion no termino a tiempo
-func_8004E194	164	TOPE_DE_TIEMPO	src/varios/banco_g11.c	la verificacion no termino a tiempo
-func_8004E238	48	TOPE_DE_TIEMPO	src/varios/espera.c	la verificacion no termino a tiempo
-func_8004E268	60	TOPE_DE_TIEMPO	src/varios/espera.c	la verificacion no termino a tiempo
-func_8004E2A4	40	TOPE_DE_TIEMPO	src/varios/banco_e2xx.c	la verificacion no termino a tiempo
-func_8004E2E4	72	TOPE_DE_TIEMPO	src/varios/banco_g11.c	la verificacion no termino a tiempo
-func_8004E5D8	64	TOPE_DE_TIEMPO	src/varios/banco_e2xx.c	la verificacion no termino a tiempo
+func_80022BCC	384	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
+func_8004E194	164	IGUAL	src/varios/banco_g11.c	6 de 6 capturas y 300 de 300 variantes iguales
+func_8004E238	48	IGUAL	src/varios/espera.c	6 de 6 capturas y 218 de 218 variantes iguales
+func_8004E268	60	IGUAL	src/varios/espera.c	6 de 6 capturas y 234 de 234 variantes iguales
+func_8004E2A4	40	IGUAL	src/varios/banco_e2xx.c	8 de 8 capturas y 462 de 462 variantes iguales
+func_8004E2E4	72	IGUAL	src/varios/banco_g11.c	8 de 8 capturas y 334 de 334 variantes iguales
+func_8004E5D8	64	IGUAL	src/varios/banco_e2xx.c	8 de 8 capturas y 155 de 155 variantes iguales
 func_8004E7FC	112	TOPE_DE_TIEMPO	src/varios/banco_g11.c	la verificacion no termino a tiempo
 func_8004EE24	208	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
 func_8004FC4C	184	TOPE_DE_TIEMPO	src/varios/tarjeta_g11.c	la verificacion no termino a tiempo
@@ -477,3 +477,5 @@ func_800552C0	712	IGUAL_SINT	src/objetos/tirador_g14.c	1 de 1 capturas y 59 de 5
 func_8003B57C	792	IGUAL_SINT	src/objetos/rayo_g14.c	1 de 1 capturas y 43 de 43 variantes iguales
 func_8003C9DC	1064	IGUAL_SINT	src/objetos/saltarin_g14.c	1 de 1 capturas y 66 de 66 variantes iguales
 func_8001A754	1668	IGUAL_SINT	src/loadtga/paleta_g14.c	1 de 1 capturas y 42 de 42 variantes iguales
+func_8002CBB0	396	IGUAL	src/audio/cd_musica_g13.c	8 de 8 capturas y 885 de 885 variantes iguales
+func_800211D4	256	IGUAL	src/Screen/barra_g13.c	8 de 8 capturas y 309 de 309 variantes iguales
