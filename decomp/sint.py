@@ -10,6 +10,7 @@ IGUAL_V0_SINT en notas/fases/auditoria.tsv (a mano). Las capturas van en captura
 Uso (en WSL, con el venv):
   python3 sint.py candidatas [--tope bytes]          lista de funciones simples sin capturas
   python3 sint.py crear F1,F2,...                     crea capturas_sint/F/00 desde su donante
+  python3 sint.py crear_con F a0=..,a1=.. [--en 0]  otra captura de F con esos registros (ver crear_con)
   python3 sint.py lote F1,F2,...                      m2c + verificar con las sinteticas -> progreso_sint.tsv
   python3 sint.py verificar src/X.c F                 verifica C escrito a mano con las sinteticas
   python3 sint.py mutantes src/X.c F [--max n]        mutantes.py con las sinteticas
@@ -94,6 +95,36 @@ def crear(nom):
     open(os.path.join(dst, "DONANTE"), "w").write(don + "\n")
 
 
+REG = {"a0": 4, "a1": 5, "a2": 6, "a3": 7}
+
+
+def crear_con(nom, cambios, en=None):
+    """Otra captura sintetica de nom (01, 02...) igual a la 00 pero con algunos registros elegidos a mano, para
+    cuando lo que deja la donante no tiene sentido para esta funcion (un ancho de 0x1F8010F4, un puntero a 0) y
+    la original no termina o no pasa de la primera comprobacion. cambios: "a0=0x...,a1=0x40". Queda anotado en
+    capturas_sint/F/NN.MANO. Con en=0 reemplaza la 00 (si con lo de la donante la original no termina, el
+    verificador da NO_TERMINA por la primera captura); la de la donante queda en 00.regs.donante."""
+    crear(nom)
+    dst = os.path.join(SINT, nom)
+    n = len(_glob.glob(os.path.join(dst, "*.regs"))) if en is None else en
+    base = os.path.join(dst, "00.regs")
+    if os.path.exists(base + ".donante"):
+        base += ".donante"
+    elif en == 0:
+        shutil.copyfile(base, base + ".donante")
+        base += ".donante"
+    regs = open(base).read().split()
+    for c in cambios.split(","):
+        r, v = c.split("=")
+        regs[REG[r]] = "%08x" % (int(v, 0) & 0xFFFFFFFF)
+    for ext in ("ram", "spad"):
+        if n:
+            shutil.copyfile(os.path.join(dst, "00." + ext), os.path.join(dst, "%02d.%s" % (n, ext)))
+    open(os.path.join(dst, "%02d.regs" % n), "w").write(" ".join(regs))
+    open(os.path.join(dst, "%02d.MANO" % n), "w").write(cambios + "\n")
+    print(f"{nom}: captura {n:02d} con {cambios}")
+
+
 def usar_sinteticas():
     """Hace que verificar (y mutantes) busquen las capturas en capturas_sint/."""
     import verificar
@@ -159,6 +190,8 @@ def main():
     elif a[0] == "crear":
         for n in a[1].split(","):
             crear(n)
+    elif a[0] == "crear_con":
+        crear_con(a[1], a[2], int(a[a.index("--en") + 1]) if "--en" in a else None)
     elif a[0] == "lote":
         lote(a[1].split(","))
     elif a[0] == "verificar":

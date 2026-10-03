@@ -221,7 +221,7 @@ func_8005ED8C	5092	IGUAL	src/objetos/jefe_g13.c	3 de 3 capturas y 258 de 258 var
 func_8004E32C	684	IGUAL	src/varios/banco_g13.c	8 de 8 capturas y 630 de 630 variantes iguales
 func_8002886C	1000	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 743 de 743 variantes iguales
 func_80028D40	844	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 651 de 651 variantes iguales
-func_80025EF8	820	DISTINTO	src/psyq/mando_g13.c	8 de 8 capturas y 672 de 675 variantes iguales
+func_80025EF8	820	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 672 de 672 variantes iguales
 func_8001321C	1272	IGUAL	src/libgpu/pantalla_g13.c	8 de 8 capturas y 756 de 756 variantes iguales
 func_8001981C	1000	IGUAL	src/Screen/menu_g13.c	8 de 8 capturas y 916 de 916 variantes iguales
 DanoPorSuelo	1864	IGUAL	src/colision/suelo_dano_g13.c	8 de 8 capturas y 707 de 707 variantes iguales
@@ -276,8 +276,8 @@ func_8005D1D0	156	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 258 de 258 vari
 func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
 func_8003E0C4	448	DISTINTO	src/audio/tempo_g13.c	3 de 3 variantes iguales pero la captura 00 da error en la original (salta a 0x00000000) y no en el C; igual que func_8003E914, sin aclarar
 func_80034710	96	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 131 de 131 variantes iguales
-func_8003D5F4	500	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 170 de 170 variantes iguales
-func_80045CF4	492	IGUAL_V0	src/objetos/enemigo2_g13.c	2 de 2 capturas y 121 de 148 variantes iguales (solo v0)
+func_8003D5F4	500	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 85 de 85 variantes iguales
+func_80045CF4	492	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 169 de 169 variantes iguales
 func_8002E51C	1792	IGUAL_V0	src/objetos/enemigo_g13.c	2 de 2 capturas y 109 de 112 variantes iguales
 func_8001C390	52	IGUAL	src/geometria/azar_g13.c	2 de 2 capturas y 212 de 212 variantes iguales
 func_8004DB6C	164	IGUAL	src/objetos/puerta_mundo_g13.c	2 de 2 capturas y 227 de 227 variantes iguales
@@ -448,3 +448,8 @@ func_800538A0	304	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 24 de 24
 func_800123E0	608	NO_TERMINA	src/libgpu/cola_g13.c	la original no termina en el emulador (espera al hardware)
 func_80022614	772	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
 func_80022918	692	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
+func_80053400	160	IGUAL_SINT	src/objetos/seguir_padre_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
+func_80024450	284	NO_TERMINA	src/varios/herramienta_tex_g14.c	la original no termina en el emulador (espera al hardware)
+func_80046F74	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 117 de 117 variantes iguales
+func_80046ED8	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 121 de 121 variantes iguales
+func_80019464	184	IGUAL_SINT	src/objetos/menu_mundo_g14.c	1 de 1 capturas y 114 de 114 variantes iguales
