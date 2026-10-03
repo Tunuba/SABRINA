@@ -396,3 +396,6 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   (como las llamadas a la BIOS). Original y C llaman a la misma VSync, asi que ven lo mismo. Con GPUSTAT
   "desocupado" (bit 22 en 0) la espera del campo entrelazado no se activa. Destrabaria ~13 NO_TERMINA.
   Igual que el de GPU, iria con estado aparte (_VS) hasta que Meme lo apruebe.
+- Con capturas a mano por estado (`verif/capturas_8003C9DC.sh`, `capturas_8003B57C.sh`) los mutantes
+  muertos subieron: func_8003C9DC de 4/8 a 6/8, func_8003B57C de 2/8 a 6/8 (los vivos son `<` por `<=` en
+  bordes y constantes que no cambian el resultado en esos datos).
