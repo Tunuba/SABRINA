@@ -399,3 +399,7 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
 - Con capturas a mano por estado (`verif/capturas_8003C9DC.sh`, `capturas_8003B57C.sh`) los mutantes
   muertos subieron: func_8003C9DC de 4/8 a 6/8, func_8003B57C de 2/8 a 6/8 (los vivos son `<` por `<=` en
   bordes y constantes que no cambian el resultado en esos datos).
+- Repaso de mutantes de las sinteticas grandes (`build/mut3.txt`, anotado en auditoria.tsv como "mutantes
+  muertos N/6"). Debiles (0-1 de 6): func_80026820 (mando), func_80052578 (formatear tarjeta) y, del lote,
+  func_8001CB4C y func_80026ECC: dependen del hardware o de leer archivos, que el emulador no simula; para
+  hacerlas fuertes hace falta modelar ese hardware (mismo tema que GPU/VSync, decision de Meme).
