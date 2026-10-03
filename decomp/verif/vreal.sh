@@ -1,6 +1,6 @@
 # uso: vmano.sh log src:func ...  (verifica con capturas REALES, de a una, tope 15 min)
-cd /mnt/c/Proyectos/SABRINA/decomp
 aqui=$(dirname "$(readlink -f "$0")")
+cd /mnt/c/Proyectos/SABRINA/decomp
 log=$1; shift
 for par in "$@"; do
   src=${par%%:*}; f=${par##*:}

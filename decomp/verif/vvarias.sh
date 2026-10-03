@@ -1,6 +1,6 @@
 # uso: vvarias.sh [--sint] src func ...  -> verifica varias funciones de un mismo .c, de a una (tope $TOPE o 25 min)
-cd /mnt/c/Proyectos/SABRINA/decomp
 aqui=$(dirname "$(readlink -f "$0")")
+cd /mnt/c/Proyectos/SABRINA/decomp
 v=vfull.sh; [ "$1" = "--sint" ] && { v=vsint.sh; shift; }
 src=$1; shift
 for f in "$@"; do

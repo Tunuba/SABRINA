@@ -453,3 +453,8 @@ func_80024450	284	NO_TERMINA	src/varios/herramienta_tex_g14.c	la original no ter
 func_80046F74	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 117 de 117 variantes iguales
 func_80046ED8	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 121 de 121 variantes iguales
 func_80019464	184	IGUAL_SINT	src/objetos/menu_mundo_g14.c	1 de 1 capturas y 114 de 114 variantes iguales
+func_8001390C	236	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)
+func_800139F8	236	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)
+func_80013C28	252	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)
+func_80052434	324	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 66 de 66 variantes iguales
+func_80013AE4	324	NO_TERMINA	src/libgpu/imagen_g14.c	la original no termina en el emulador (espera al hardware)

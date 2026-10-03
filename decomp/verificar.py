@@ -378,7 +378,7 @@ def _memoria(captura):
     return open(captura + ".ram", "rb").read(), open(captura + ".spad", "rb").read()
 
 
-def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia=None):
+def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia=None, tope_seg=None):
     """Corre desde la captura. parche: {direccion fisica: bytes} que se escriben encima de la RAM.
     trazar: devuelve tambien en "lecturas" lo que la funcion lee de la RAM antes de escribirlo (sus
     entradas en memoria), como {direccion fisica: tamano}; y en "propias" las que lee el codigo de la propia
@@ -454,7 +454,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         uc.hook_add(UC_HOOK_MEM_WRITE, escribe)
     error = None
     try:
-        uc.emu_start(pc, FIN, count=LIMITE)
+        # tope_seg: tope de tiempo (solo para la original en las variantes, ver verificar)
+        uc.emu_start(pc, FIN, timeout=int(tope_seg * 1e6) if tope_seg else 0, count=LIMITE)
     except UcError as ex:
         error = f"{ex} en {uc.reg_read(UC_MIPS_REG_PC):08x}"
     if error is None and interrupcion_mala:
@@ -512,6 +513,7 @@ def verificar(c, funciones, n_variantes=60):
         ok = 0
         entradas = {}                # por captura: lo que la original lee de la RAM antes de escribirlo
         reloj = time.time()
+        t_orig = 0.0                 # lo que mas tardo la original en una captura
         # una funcion que espera al hardware (el CD, el sonido) nunca termina en el emulador: da vueltas
         # hasta el tope de instrucciones en cada corrida y se lleva el lote por delante
         primera = ejecutar(caps[0][:-5], sim[f], None)
@@ -525,7 +527,9 @@ def verificar(c, funciones, n_variantes=60):
             # distinto (func_80044C40 salta a 0 solo con ellos), asi que no se compara esa corrida
             t = ejecutar(base, sim[f], None, trazar=True, propia=(sim[f], fin_de(f)))
             entradas[base] = (t["lecturas"], t["propias"])
+            t0 = time.time()
             a = ejecutar(base, sim[f], None)
+            t_orig = max(t_orig, time.time() - t0)
             b = ejecutar(base, dirs[f], codigo_c)
             d = comparar(a, b, a["sp"], con_v0)
             if d and void and not comparar(a, b, a["sp"], False):
@@ -540,6 +544,11 @@ def verificar(c, funciones, n_variantes=60):
         if lento > 0.5:
             n_variantes = max(6, int(n_variantes * 0.5 / lento))
             print(f"  {f}: {lento:.1f} s por corrida, se prueban {n_variantes} variantes")
+        # una variante que hace girar a la original (un contador o un tamano al azar) gastaria LIMITE
+        # instrucciones en cada corrida: la original de las variantes tiene de tope 40 veces lo que tardo en
+        # la captura mas lenta (al menos 3 s). Si lo pasa, la variante se descarta como las que dan error:
+        # solo baja la cobertura, nunca hace pasar un C distinto
+        tope_var = max(3.0, 40 * t_orig)
         # variantes de los argumentos sobre la memoria de cada captura
         rnd = random.Random(1234)
         pool = constantes_de(f)
@@ -548,7 +557,7 @@ def verificar(c, funciones, n_variantes=60):
             base = cap[:-5]
             regs = [int(x, 16) for x in open(base + ".regs").read().split()]
             for r in variantes(regs, pool, n_variantes, rnd):
-                a = ejecutar(base, sim[f], None, r)
+                a = ejecutar(base, sim[f], None, r, tope_seg=tope_var)
                 if a["error"]:
                     continue                 # con esos argumentos la original tampoco funciona
                 v_tot += 1
@@ -598,7 +607,7 @@ def verificar(c, funciones, n_variantes=60):
                         n = _evitar_base_c(n)
                         n = _puntero_a_funcion(v, n)
                     parche[d] = n.to_bytes(tam, "little")
-                a = ejecutar(base, sim[f], None, None, parche)
+                a = ejecutar(base, sim[f], None, None, parche, tope_seg=tope_var)
                 if a["error"]:
                     continue
                 v_tot += 1
