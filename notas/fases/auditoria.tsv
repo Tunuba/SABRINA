@@ -479,3 +479,4 @@ func_8003C9DC	1064	IGUAL_SINT	src/objetos/saltarin_g14.c	1 de 1 capturas y 66 de
 func_8001A754	1668	IGUAL_SINT	src/loadtga/paleta_g14.c	4 de 4 capturas y 66 de 66 variantes iguales
 func_8002CBB0	396	IGUAL	src/audio/cd_musica_g13.c	8 de 8 capturas y 885 de 885 variantes iguales
 func_800211D4	256	IGUAL	src/Screen/barra_g13.c	8 de 8 capturas y 309 de 309 variantes iguales
+func_8004FD04	48	IGUAL_SINT	src/auto/func_8004FD04.c	1 de 1 capturas y 0 de 0 variantes iguales (solo llama a tres funciones, sin logica propia)
