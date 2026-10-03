@@ -101,7 +101,7 @@ func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	9 de 9 capturas y 643 d
 func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 de 646 variantes iguales
 DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
 func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales
-CrearParticula	952	NO_ESTA	src/objetos/objetos_g10.c	no esta en src/objetos/objetos_g10.c
+CrearParticula	952	IGUAL	src/objetos/particula_g14.c	8 de 8 capturas y 844 de 844 variantes iguales
 CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
 LeerCuadriculaINO	312	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
 LeerModelosINO	380	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
