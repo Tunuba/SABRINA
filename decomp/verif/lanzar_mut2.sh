@@ -1,0 +1,1 @@
+cd /mnt/c/Proyectos/SABRINA/decomp && source ~/decomp-herramientas/venv/bin/activate && for p in src/loadtga/paleta_g14.c:func_8001A754 src/objetos/saltarin_g14.c:func_8003C9DC src/objetos/rayo_g14.c:func_8003B57C; do echo "== ${p##*:}"; timeout 5400 python3 sint.py mutantes ${p%%:*} ${p##*:} --max 8 2>&1 | grep -E "VIVO|mutantes muertos"; done; echo FIN

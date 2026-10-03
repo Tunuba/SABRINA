@@ -6,7 +6,7 @@ for f in "$@"; do
 import sys, glob, os
 import verificar as V
 f = sys.argv[1]
-caps = sorted(glob.glob(os.path.join("capturas", f, "*.regs")))
+caps = sorted(glob.glob(os.path.join(os.environ.get("CAPTURAS", "capturas"), f, "*.regs")))
 if not caps:
     print("SIN_CAPTURAS"); sys.exit()
 r = V.ejecutar(caps[0][:-5], V.simbolos()[f], None)

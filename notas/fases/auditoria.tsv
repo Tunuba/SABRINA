@@ -105,8 +105,8 @@ CrearParticula	952	IGUAL	src/objetos/particula_g14.c	8 de 8 capturas y 844 de 84
 CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
 LeerCuadriculaINO	312	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
 LeerModelosINO	380	NO_TERMINA	src/modelLoader/cargar_g04.c	la original no termina en el emulador (espera al hardware)
-func_8001315C	192	NO_TERMINA	src/libgpu/gpu_g01.c	la original no termina en el emulador (espera al hardware)
-func_80022D4C	268	NO_TERMINA	src/TexAnima/paletas_g06.c	la original no termina en el emulador (espera al hardware)
+func_8001315C	192	IGUAL_GPU	src/libgpu/gpu_g01.c	8 de 8 capturas y 818 de 818 variantes iguales
+func_80022D4C	268	IGUAL_GPU	src/TexAnima/paletas_g06.c	8 de 8 capturas y 192 de 192 variantes iguales
 func_80022E58	156	NO_TERMINA	src/TexAnima/paletas_g06.c	la original no termina en el emulador (espera al hardware)
 func_80025BA0	240	NO_TERMINA	src/membank/tarjeta_g06.c	la original no termina en el emulador (espera al hardware)
 func_8002FE64	184	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
@@ -445,7 +445,7 @@ func_8003CE04	236	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 102 de 1
 func_80060274	244	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 98 de 98 variantes iguales
 func_80053138	280	IGUAL_SINT	src/objetos/agarrable_g13.c	1 de 1 capturas y 106 de 106 variantes iguales
 func_800538A0	304	IGUAL_SINT	src/objetos/listas_g13.c	1 de 1 capturas y 24 de 24 variantes iguales
-func_800123E0	608	NO_TERMINA	src/libgpu/cola_g13.c	la original no termina en el emulador (espera al hardware)
+func_800123E0	608	IGUAL_GPU	src/libgpu/cola_g13.c	8 de 8 capturas y 478 de 478 variantes iguales
 func_80022614	772	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
 func_80022918	692	NO_TERMINA	src/TexAnima/ciclos_g05.c	la original no termina en el emulador (espera al hardware)
 func_80053400	160	IGUAL_SINT	src/objetos/seguir_padre_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
@@ -475,3 +475,5 @@ func_8005B52C	596	IGUAL_SINT	src/objetos/proyectil_g14.c	1 de 1 capturas y 48 de
 func_8003C678	640	IGUAL_SINT	src/objetos/lanzado_g14.c	1 de 1 capturas y 6 de 6 variantes iguales (pocas)
 func_800552C0	712	IGUAL_SINT	src/objetos/tirador_g14.c	1 de 1 capturas y 59 de 59 variantes iguales
 func_8003B57C	792	IGUAL_SINT	src/objetos/rayo_g14.c	1 de 1 capturas y 43 de 43 variantes iguales
+func_8003C9DC	1064	IGUAL_SINT	src/objetos/saltarin_g14.c	1 de 1 capturas y 66 de 66 variantes iguales
+func_8001A754	1668	IGUAL_SINT	src/loadtga/paleta_g14.c	1 de 1 capturas y 42 de 42 variantes iguales
