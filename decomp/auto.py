@@ -238,7 +238,9 @@ def limpiar(texto, externas):
         if q:
             # puntero a funcion del juego (`static s32 (*D_8006CFA0)() = NULL;`): definido asi seria una
             # copia en NULL y la llamada saltaria a 0; es la variable del juego
-            externas = list(externas) + [f"extern {q.group(1)};"]
+            # sin prototipo: m2c a veces lo llama con distinta cantidad de argumentos en cada lugar
+            externas = list(externas) + ["extern " + re.sub(r"\)\s*\([^)]*\)$", ")()", q.group(1))
+                                         .replace("M2C_UNK", "s32") + ";"]
             continue
         if afuera and re.match(r"^[\w\s\*]+\b\w+\s*\([^;{]*\)\s*;\s*(/\*.*\*/)?$", s):
             continue                                   # prototipos que inventa m2c (dentro de una funcion

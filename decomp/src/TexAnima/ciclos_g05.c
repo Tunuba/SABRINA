@@ -92,3 +92,58 @@ s32 func_80022BCC(s32 n) {
         return c;
     }
 }
+
+extern void *Reservar(s32 tam, char *archivo, s32 linea);
+extern char D_8006C478[];            /* "TexAnima.c" */
+extern void func_80012ECC(Rect *r, void *datos);   /* StoreImage */
+extern s32 func_80012D74(s32 modo);  /* DrawSync */
+
+#define CICLO ((u8 *)D_8008AF74[(u8)D_8007CB10])
+
+/* Agrega una textura animada para el pedazo de VRAM de t (x, y en 0x12/0x14, ancho en 0x8 en pixeles de
+ * 4 bits, alto en 0xA): guarda su imagen y las 6 filas de abajo. Devuelve la nueva cuenta (queda en v0). */
+s32 func_80022614(u8 *t) {
+    D_8008AF60[(u8)D_8007CB10] = Reservar(0x1388, D_8006C478, 0x3F);
+    D_8008AF74[(u8)D_8007CB10] = Reservar(0x18, D_8006C478, 0x40);
+    *(u16 *)(CICLO + 0) = *(u16 *)(t + 0x12);
+    *(u16 *)(CICLO + 2) = *(u16 *)(t + 0x14);
+    CICLO[4] = *(s16 *)(t + 8) / 4;
+    CICLO[5] = *(s16 *)(t + 0xA);
+    *(u16 *)(CICLO + 0xC) = *(u16 *)(CICLO + 0);
+    *(u16 *)(CICLO + 0xE) = *(u16 *)(CICLO + 2);
+    *(s16 *)(CICLO + 0x10) = CICLO[4];
+    *(s16 *)(CICLO + 0x12) = CICLO[5];
+    *(void **)(CICLO + 8) = Reservar(CICLO[4] * SUMA_TRAMPA(CICLO[5], 6) * 4, D_8006C478, 0x4C);
+    func_80012ECC((Rect *)(CICLO + 0xC), *(void **)(CICLO + 8));
+    func_80012D74(0);
+    *(s16 *)(CICLO + 0x12) = 6;
+    func_80012ECC((Rect *)(CICLO + 0xC), (void *)SUMA_TRAMPA(*(s32 *)(CICLO + 8), 0x480));
+    func_80012D74(0);
+    *(s16 *)(CICLO + 0x12) = CICLO[5];
+    CICLO[0x14] = 0;
+    CICLO[0x15] = 0;
+    CICLO[0x16] = 0;
+    return (u8)D_8007CB10++ + 1;
+}
+
+/* Como func_80022614 pero sin las 6 filas de abajo y con 0x14 en 1. Devuelve la nueva cuenta. */
+s32 func_80022918(u8 *t) {
+    D_8008AF60[(u8)D_8007CB10] = Reservar(0x1388, D_8006C478, 0x63);
+    D_8008AF74[(u8)D_8007CB10] = Reservar(0x18, D_8006C478, 0x64);
+    *(u16 *)(CICLO + 0) = *(u16 *)(t + 0x12);
+    *(u16 *)(CICLO + 2) = *(u16 *)(t + 0x14);
+    CICLO[4] = *(s16 *)(t + 8) / 4;
+    CICLO[5] = *(s16 *)(t + 0xA);
+    *(u16 *)(CICLO + 0xC) = *(u16 *)(CICLO + 0);
+    *(u16 *)(CICLO + 0xE) = *(u16 *)(CICLO + 2);
+    *(s16 *)(CICLO + 0x10) = CICLO[4];
+    *(s16 *)(CICLO + 0x12) = CICLO[5];
+    *(void **)(CICLO + 8) = Reservar(CICLO[4] * SUMA_TRAMPA(CICLO[5], 6) * 4, D_8006C478, 0x70);
+    func_80012ECC((Rect *)(CICLO + 0xC), *(void **)(CICLO + 8));
+    func_80012D74(0);
+    *(s16 *)(CICLO + 0x12) = CICLO[5];
+    CICLO[0x14] = 1;
+    CICLO[0x15] = 0;
+    CICLO[0x16] = 0;
+    return (u8)D_8007CB10++ + 1;
+}

@@ -354,7 +354,7 @@ extern void bzero(void *p, s32 n);
 
 /* Arma los seis bytes de los motores del mando (0x57 a 0x5C): con la tabla de actuadores (0xE6, 0x28)
  * enciende los que piden su motor si alcanza la corriente; sin ella, segun el tipo de mando. */
-void func_8002805C(Puerto *p) {
+s32 func_8002805C(Puerto *p) {
     s32 n, m, i, mascara, usar, k;
     u8 *a;
 
@@ -376,27 +376,39 @@ void func_8002805C(Puerto *p) {
                 if (k < 0x3D) {
                     D_8006CFCC = k;
                     for (i = 0; i < n; i++) {
-                        if (B(p, 0x5E + i) == m) {
+                        if (B(p, 0x5D + i) == m) {
                             B(p, 0x57 + i) = 1;
                         }
                     }
                 }
             }
         }
-    } else if (((u8)(p->tipo - 4) < 2 || p->tipo == 7) && p->_E6 == 0 && B(p, 0x34) >= 2) {
+        return 0;   /* lo que queda en v0 */
+    }
+    if (((u8)(p->tipo - 4) < 2 || p->tipo == 7) && p->_E6 == 0 && B(p, 0x34) >= 2) {
         a = *(u8 **)((u8 *)p + 0x28);
-        if ((a[0] & 0xC0) == 0x40 && (a[1] & 1) && D_8006CFCC + 0xA < 0x3D) {
-            B(p, 0x58) = 1;
-            B(p, 0x57) = 1;
-            D_8006CFCC += 0xA;
+        if ((a[0] & 0xC0) != 0x40) {
+            return a[0] & 0xC0;
         }
-    } else if (p->tipo == 3) {
+        if (!(a[1] & 1)) {
+            return 0;
+        }
+        if (D_8006CFCC + 0xA >= 0x3D) {
+            return 1;
+        }
+        B(p, 0x58) = 1;
+        B(p, 0x57) = 1;
+        D_8006CFCC += 0xA;
+        return D_8006CFCC;
+    }
+    if (p->tipo == 3) {
         B(p, 0x57) = 1;
     } else if (p->_E6 == 0) {
         for (i = 5; i >= 0; i--) {
             B(p, 0x57 + i) = 1;
         }
     }
+    return 1;
 }
 
 extern void *D_8006CF9C, *D_8006CFA0;

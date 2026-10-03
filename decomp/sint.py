@@ -49,7 +49,7 @@ def asm_de(nom):
     return ""
 
 
-def candidatas(tope, max_llamadas=2, max_globales=6, hechas=()):
+def candidatas(tope, max_llamadas=2, max_globales=6, hechas=(), con_gte=False):
     progreso = {}
     for l in list(open(os.path.join(AQUI, "progreso.tsv")))[1:]:
         p = l.rstrip("\n").split("\t")
@@ -61,7 +61,8 @@ def candidatas(tope, max_llamadas=2, max_globales=6, hechas=()):
         a = asm_de(nom)
         llamadas = len(re.findall(r"\bjal\b|\bjalr\b", a))
         globales = len(re.findall(r"%hi\(|%gp_rel\(", a))
-        hw = bool(re.search(r"cop2|lwc2|swc2|mtc0|mfc0|syscall|break", a))
+        # el GTE (cop2, lwc2, swc2, mtc2, mfc2, ctc2, cfc2) lo emula gte.py; con_gte lo deja pasar
+        hw = bool(re.search(r"mtc0|mfc0|syscall|break", a)) or (not con_gte and bool(re.search(r"cop2|lwc2|swc2|mtc2|mfc2|ctc2|cfc2", a)))
         if llamadas <= max_llamadas and globales <= max_globales and not hw and nom not in hechas:
             res.append((tam, nom, llamadas, globales))
     return sorted(res)
@@ -153,7 +154,7 @@ def main():
         gl = int(a[a.index("--globales") + 1]) if "--globales" in a else 6
         # --nuevas: salta las que ya estan en progreso_sint.tsv
         hechas = {l.split("\t")[0] for l in open(TSV)} if "--nuevas" in a and os.path.exists(TSV) else set()
-        for t, n, ll, g in candidatas(tope, ll, gl, hechas):
+        for t, n, ll, g in candidatas(tope, ll, gl, hechas, "--gte" in a):
             print(f"{t}\t{n}\t{ll}\t{g}")
     elif a[0] == "crear":
         for n in a[1].split(","):

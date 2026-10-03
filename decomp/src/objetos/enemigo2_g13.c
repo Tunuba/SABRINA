@@ -37,8 +37,11 @@ static s32 paso(Objeto *o, void *tabla, s32 marca, s32 sin_estado) {
         return func_80049218(o, e, t);
     case 3:
     case 4:
-        if (func_800487B0(o, p_sabrina, 0x96) >= 0x200) {
-            return 0;
+        {
+            s32 d = func_800487B0(o, p_sabrina, 0x96);
+            if (d >= 0x200) {
+                return d;   /* v0 queda con la distancia */
+            }
         }
         if (o->estado != 4 && a->animacion != t[4]) {
             a->animacion = t[4];
