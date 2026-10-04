@@ -1,6 +1,6 @@
 #include "juego.h"
 
-/* Cargas de animaciones (.ANI) de Sabrina y del mundo, como func_8002FE64: copian la lista de
+/* Cargas de animaciones (.ANI) del caos, de Sabrina y de los mundos: copian la lista de
  * animaciones a la pila (CargarANI no la mira), cargan el archivo y guardan donde empieza cada una. */
 
 extern s32 CargarANI(s32 a0, s32 n, char *nombre, s16 *indices);
@@ -10,7 +10,9 @@ extern char D_8006DF74[];
 extern char D_8006E3A4[];
 extern char D_8006E820[];
 extern char D_8006ECC8[];
+extern char D_8006EDB4[];
 extern char D_8007C89C[];
+extern s32 mao_chaos[8];
 extern s32 mao_egypt[43];
 extern s32 mao_hub[6];
 extern s32 mao_japan[43];
@@ -228,6 +230,33 @@ extern u16 D_80093CE4;
 extern u16 D_80093CE8;
 extern u16 D_80093CEC;
 extern u16 D_80093CF2;
+extern u16 D_80093CF4;
+extern u16 D_80093CF6;
+extern u16 D_80093CF8;
+extern u16 D_80093CFA;
+extern u16 D_80093CFC;
+extern u16 D_80093CFE;
+extern u16 D_80093D00;
+extern u16 D_80093D02;
+
+void func_8002FE64(void) {
+    s32 copia[8];
+    s16 indices[8];
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+        copia[i] = mao_chaos[i];
+    }
+    CargarANI((s32) copia, 8, D_8006EDB4, indices);
+    D_80093CF4 = indices[0];
+    D_80093CF6 = indices[1];
+    D_80093CF8 = indices[2];
+    D_80093CFC = indices[3];
+    D_80093CFA = indices[4];
+    D_80093CFE = indices[5];
+    D_80093D00 = indices[6];
+    D_80093D02 = indices[7];
+}
 
 void func_8002F298(void) {
     s32 copia[47];

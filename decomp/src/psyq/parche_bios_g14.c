@@ -42,3 +42,23 @@ void func_80017BC0(void) {
     FlushCache();
     func_800143F4();
 }
+
+extern s32 D_800653C0;               /* donde guarda ra mientras trabaja */
+
+/* InitGeom (libgte): parchea la BIOS, prende el coprocesador geometrico (bit 30 del registro de estado) y
+ * pone sus valores de fabrica: ZSF3 0x155, ZSF4 0x100, H 1000, DQA -0x1062, DQB 0x1400000 y OFX/OFY 0. */
+void func_800177B4(void) {
+    u32 sr;
+
+    D_800653C0 = (s32) __builtin_return_address(0);
+    func_80017BC0();
+    __asm__ volatile("mfc0 %0, $12" : "=r"(sr));
+    sr |= 0x40000000;
+    __asm__ volatile("mtc0 %0, $12\n\tnop" : : "r"(sr));
+    __asm__ volatile("ctc2 %0, $29\n\tnop" : : "r"(0x155));
+    __asm__ volatile("ctc2 %0, $30\n\tnop" : : "r"(0x100));
+    __asm__ volatile("ctc2 %0, $26\n\tnop" : : "r"(0x3E8));
+    __asm__ volatile("ctc2 %0, $27\n\tnop" : : "r"(-0x1062));
+    __asm__ volatile("ctc2 %0, $28\n\tnop" : : "r"(0x1400000));
+    __asm__ volatile("ctc2 $0, $24\n\tctc2 $0, $25\n\tnop");
+}
