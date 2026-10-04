@@ -625,3 +625,35 @@ Despues: HerramientaArmarModelos y HerramientaArmarCuadricula (leen GRAPHICS\ y 
 Trucos de esta noche: marco a mano con el cuerpo en el sp exacto del original (stub = marco original - marco
 del cuerpo; locales con PILA(off)); el s3/s4 que trae el que llama se pasa desde el stub (`move $5, $19`),
 porque leerlo con asm dentro del cuerpo falla si GCC ya uso ese registro.
+
+### 04-10 TARDE-NOCHE, SESION SOLA (EMPIEZA AQUI)
+
+**Reales 79.3 % + sinteticas 18.1 % = 97.4 %** antes de anotar la cadena de herramientas (`py decomp/verif/cuenta.py`).
+Pasaron: func_8001B0C8 (lector de .TGA) IGUAL_SINT; func_800502DC (paso de lectura de la tarjeta), func_800521AC,
+func_80052240 y func_800523B4 (parches de libcard a la BIOS) IGUAL_SINT.
+
+**Modelos nuevos (encabezados de verificar.py y modelo_cd.py):**
+- Sectores despues de los archivos virtuales: vacios pero con su cabecera. El lector sigue leyendo el sector de
+  detras antes del Pause y libcd revisa la cabecera: con 00:00:00 daba "CdRead: sector error" y repetia cada
+  lectura 600 veces (por eso las tandas de texturas tardaban tanto).
+- .TNF, .bud y .XDX virtuales de GRAPHICS (HerramientaArmarModelos y HerramientaArmarCuadricula).
+- open/lseek/read/write/close de la BIOS sobre archivos de la tarjeta ("bu00:"), asincronos como los usa libcard.
+- GetB0Table (B0 0x57) y la pagina de las tablas de la BIOS se compara (antes no: ni el parche de func_80017BC0
+  se veia; se reverifico y sigue IGUAL).
+
+**Trampa nueva: la BIOS libre del emulador toca el juego.** OpenBIOS reconoce el parche de libcard en
+func_80052240 y lo anula reescribiendo 3 palabras del codigo (80052260-6C: nop y un salto al final). Las capturas
+traen esa RAM, asi que la "original" corria el codigo anulado. Su captura sintetica lleva restaurados los bytes del
+ejecutable (00.MANO). Revisado: en esa RAM es la unica zona de codigo distinta del ejecutable.
+
+**Truco nuevo:** cuando una funcion llamada lee un s-registro del que llama (func_8001B0C8 lee s4) y GCC no
+respeta `register ... asm("$20")`, hacer la llamada con asm en linea que carga el registro antes del jal y lo
+declara pisado (ver `src/varios/armar_modelos_g15.c`).
+
+**PENDIENTE (corriendo en WSL al escribir esto, de a una):** `verif/lanzar_tga_todas.sh` = tga2, tga4, tga5, pic,
+modelos y despues `lanzar_tras_modelos.sh` (cuadricula). Al terminar cada una: `py verif/anotar.py build/X.txt --sint`.
+Si se cortaron, relanzar con `verif/fondo.sh verif/lanzar_tga_todas.sh build/tga_todas.out` (quitar tga1 de la
+lista, ya esta anotada). Las 3 nuevas (PIC, modelos, cuadricula) ya dieron IGUAL sin variantes a mano.
+La prueba de mutantes de func_800502DC se corto por falta de memoria en Windows (no se repitio).
+Lo que queda despues es limite: video, BuclePrincipal, setjmp, InitCARD/InitGeom (ra dentro del C), func_80017D80,
+trampolines de la BIOS en asm (func_800161BC/C8, func_800142FC) y el manejador de excepciones (func_80017B8C).
