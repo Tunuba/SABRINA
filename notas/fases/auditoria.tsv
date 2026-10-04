@@ -141,7 +141,7 @@ func_8004E7FC	112	IGUAL	src/varios/banco_g11.c	8 de 8 capturas y 151 de 151 vari
 func_8004EE24	208	IGUAL	src/varios/tarjeta_g11.c	2 de 2 capturas y 263 de 263 variantes iguales (1 capturas donde la original no termina, sin comparar)
 func_8004FC4C	184	IGUAL	src/varios/tarjeta_g11.c	2 de 2 capturas y 173 de 173 variantes iguales (1 capturas donde la original no termina, sin comparar)
 func_800508D4	92	IGUAL	src/varios/tarjeta_g11.c	1 de 1 capturas y 110 de 110 variantes iguales
-func_80051298	284	NO_TERMINA	src/varios/tarjeta_g11.c	la original no termina en el emulador (espera al hardware)
+func_80051298	284	IGUAL	src/varios/tarjeta_g11.c	3 de 3 capturas y 228 de 228 variantes iguales
 func_8003A46C	184	IGUAL	src/colision/triangulo_g09.c	8 de 8 capturas y 537 de 537 variantes iguales
 ArchivoIniciar	120	IGUAL	src/File/archivo_g03.c	8 de 8 capturas y 435 de 435 variantes iguales
 func_80047710	712	IGUAL	src/WobjCode/anotados_g13.c	8 de 8 capturas y 1024 de 1024 variantes iguales
@@ -563,7 +563,7 @@ func_8001B600	152	IGUAL_SINT	src/auto/func_8001B600.c	1 de 1 capturas y 0 de 0 v
 func_80018CB8	132	NO_TERMINA	src/auto/func_80018CB8.c	la original no termina en el emulador (espera al hardware)
 func_8003DFF0	112	IGUAL_SINT	src/auto/func_8003DFF0.c	1 de 1 capturas y 112 de 112 variantes iguales
 func_80029948	108	IGUAL_SINT	src/auto/func_80029948.c	1 de 1 capturas y 76 de 76 variantes iguales
-func_8004F50C	92	NO_TERMINA	src/auto/func_8004F50C.c	la original no termina en el emulador (espera al hardware)
+func_8004F50C	92	IGUAL_V0_SINT	src/varios/tarjeta_cerrar_g15.c	0 de 2 capturas y 0 de 272 variantes iguales
 func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
 func_8004EBD0	396	IGUAL_SINT	src/varios/tarjeta_iconos_g15.c	1 de 1 capturas y 134 de 134 variantes iguales

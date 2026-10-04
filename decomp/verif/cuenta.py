@@ -12,7 +12,8 @@ k = list(fj[0].keys())  # direccion, tamano, nombre
 tam = {}
 for r in fj:
     n = r[k[2]]
-    if n.startswith(("caseD_", "switchD_", "LAB_")): continue
+    # D_800609B0 es una tabla de datos (constructores y punteros del arranque), no codigo (04-10)
+    if n.startswith(("caseD_", "switchD_", "LAB_", "D_")): continue
     tam[n] = int(r[k[1]])
 REAL = {"IGUAL", "IGUAL_V0"}; SINT = {"IGUAL_SINT", "IGUAL_V0_SINT"}
 real, sint, estado = set(), set(), {}
