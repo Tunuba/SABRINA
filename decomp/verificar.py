@@ -428,10 +428,19 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     hw = []
     io = bytearray(0x2000)
     cd = modelo_cd.Cd() if CD else None
+    # DICR (0x1F8010F4) como en la consola (04-10): las banderas de fin de DMA (bits 24-30) se borran
+    # escribiendo 1; el bit 31 es el resumen. Al arrancar un DMA con su interrupcion habilitada (bit 16+n y el
+    # 23) queda su bandera y la interrupcion pendiente, que se entrega en el proximo punto (ver VSync)
+    dicr = {"bajo": 0, "banderas": 0}
 
     def io_lee(u, off, tam, _):
         if cd and 0x800 <= off < 0x804:
             return cd.lee(off - 0x800)
+        if MODELOS and off == 0x0F4 and tam == 4:
+            b = dicr["banderas"]
+            resumen = 0x80000000 if (dicr["bajo"] & 0x8000) or (dicr["bajo"] & 0x800000 and
+                                                                b & (dicr["bajo"] >> 16) & 0x7F) else 0
+            return dicr["bajo"] | (b << 24) | resumen
         v = int.from_bytes(io[off:off + tam], "little")
         if GPU_LISTA and off == 0x814:
             v |= 0x1C000000          # GPUSTAT: listo para comandos, para mandar VRAM y para DMA
@@ -454,6 +463,14 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     def io_escribe(u, off, tam, valor, _):
         hw.append((0x1F801000 + off, tam, valor))
         io[off:off + tam] = (valor & ((1 << (8 * tam)) - 1)).to_bytes(tam, "little")
+        if MODELOS and off == 0x0F4 and tam == 4:
+            dicr["bajo"] = valor & 0xFFFFFF
+            dicr["banderas"] &= ~(valor >> 24) & 0x7F
+        elif MODELOS and off in (0x088, 0x098, 0x0A8, 0x0B8, 0x0C8, 0x0D8, 0x0E8) and tam == 4 and \
+                valor & 0x01000000:
+            n = (off - 0x088) >> 4
+            if dicr["bajo"] & (1 << (16 + n)) and dicr["bajo"] & 0x800000:
+                dicr["banderas"] |= 1 << n
         if cd and 0x800 <= off < 0x804:
             cd.escribe(off - 0x800, valor)
         elif cd and off == 0x0B8 and tam == 4 and valor & 0x01000000:
@@ -478,6 +495,15 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         cd.modo = ram[simbolos()["D_8006D320"] & 0x1FFFFF]
         loc = simbolos()["D_8006D31C"] & 0x1FFFFF
         cd.posicion(ram[loc:loc + 3])
+        # si la ultima orden de libcd fue leer (ReadN/ReadS), el lector estaba leyendo al capturar
+        if ram[simbolos()["D_8006D321"] & 0x1FFFFF] in (0x06, 0x1B):
+            cd.leyendo = True
+    if MODELOS:
+        # el DICR de antes de la captura: habilitados los canales que tienen funcion de DMA (DMACallback)
+        f = simbolos()["D_800649F4"] & 0x1FFFFF
+        for n in range(7):
+            if struct.unpack_from("<I", ram, f + 4 * n)[0]:
+                dicr["bajo"] |= (1 << (16 + n)) | 0x800000
     if codigo_c:
         uc.mem_write(BASE_C & 0x1FFFFFFF, codigo_c)
     for d, b in (parche or {}).items():
@@ -562,6 +588,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                     pend.append(s["func_8002A5F8"])
                 elif cd and cd.tipo:
                     cd.log.append("D" if dentro else "-")
+                if dicr["banderas"] & (dicr["bajo"] >> 16) & 0x7F and dicr["bajo"] & 0x800000 and not dentro:
+                    pend.append(s["func_80016B4C"])      # fin de DMA (libetc)
                 if not es_vsync:
                     pass
                 elif VBLANK:

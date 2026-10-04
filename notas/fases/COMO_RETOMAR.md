@@ -484,3 +484,13 @@ la memoria de Windows baja (Bambu Studio, Edge y otros node se la comen); lanzar
     interrupcion habilitada en DICR, marcar el bit 24+n y entregar func_80016B4C en el proximo punto.
   - Ojo: no editar verificar.py mientras corre una tanda (cada vfull lo importa de nuevo); editar una copia y
     cambiarla con mv. Una tanda (cd3) quedo con resultados rotos por eso y se repitio entera (cd4).
+  - DICR (0x1F8010F4) como en la consola: banderas de fin de DMA que se borran escribiendo 1, puestas al
+    arrancar un DMA con su interrupcion habilitada; el estado inicial se arma con los canales que tienen
+    funcion en D_800649F4; la rutina de libetc func_80016B4C se entrega en los mismos puntos que el CD.
+    Y si la ultima orden de libcd (D_8006D321) fue ReadN/ReadS, el modelo arranca leyendo: func_8005CEBC
+    termina. `verif/histo.sh F [instrucciones]` cuenta bloques por funcion (donde se va el tiempo).
+  - NO se puede: el reproductor de video (ReproducirSTR, func_8005D50C) decodifica de verdad cada cuadro
+    (DecDCTvlc2, millones de instrucciones por cuadro): un video entero no cabe en 20 M instrucciones.
+  - Propuesta (no hecha): interrupciones de VBlank "por tiempo" solo cuando una corrida pasa de ~2 M
+    instrucciones sin volver (cada 100 mil), para los bucles que esperan un contador que sube en VBlank sin
+    llamar a nada (func_800218D4 espera D_8007CAE6, func_80021B4C). Ojo con parar en un hueco de retardo.
