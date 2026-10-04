@@ -592,3 +592,36 @@ texturas TGA que no estan en el disco (func_8001B0C8/B698/B9C0, Herramienta*, fu
 func_80018CB8, func_80024450) y PCdrv; video (func_8005D50C, ReproducirSTR); tarjeta (func_80051298,
 func_8004F50C, func_800522E4); InitGeom (ra en memoria); setjmp/BuclePrincipal; func_8002153C (la captura
 rompe la original); func_80018218 (monton lleno).
+
+### 04-10 NOCHE, PARADO A MANO PARA ACTUALIZAR LA PC (EMPIEZA AQUI)
+
+**Reales 79.3 % + sinteticas 17.9 % = 97.2 %** (`py decomp/verif/cuenta.py`). Pasaron esta noche:
+func_80018218 y func_8002153C IGUAL (malloc de la BIOS), func_80051298 IGUAL (tarjeta), func_8004F50C
+IGUAL_V0_SINT, func_8001B000 IGUAL_SINT, func_8001B9C0 IGUAL_SINT (fuente). D_800609B0 salio de la cuenta (es
+una tabla de datos, no codigo). func_80017D80 queda en 687/689: limite real (con nombre apuntando al codigo
+CdSearchFile desborda su pila y pisa registros guardados; el original y GCC guardan variables distintas ahi).
+
+**Modelos nuevos en verificar.py / modelo_cd.py** (documentados en el encabezado de cada uno):
+- malloc/free de la BIOS (MALLOC, zona MONTON_BIOS aparte y comparada);
+- tarjeta de memoria (TARJETA: tarjeta en blanco, _card_read/_card_write/_card_status, eventos IOE, y un cuadro
+  de VBlank cuando el juego espera el aviso D_800D52C8);
+- PCdrv (PCDRV: ganchos en los break de func_800294F0/80029518/80029530; lo escrito a la PC se compara);
+- archivos de la PC de desarrollo: CdSearchFile de un .TGA en GRAPHICS\TARGA|SPRITE|PICTURES|FONT da un archivo
+  virtual (modelo_cd.archivo_virtual, 16x16; las fuentes 24x32 con 4 letras) servido despues del final del disco;
+- CD: si el juego consulta el lector sin VSync y hay respuesta en cola, llega a las 64 consultas
+  (ESPERA_DIRECTA; el Pause desde dentro de la interrupcion al terminar CdRead).
+
+**PENDIENTE, en este orden** (todo escrito, original y C ya comparados iguales a mano con dbg; falta la tanda
+con variantes, que se corto). Lanzar de a una con `verif/fondo.sh verif/lanzar_X.sh build/X.out` y anotar con
+`py verif/anotar.py build/X.txt --sint`:
+1. `lanzar_tga1.sh` func_8001B0C8 (`src/varios/textura_tga_g15.c`, capturas_sint con 00 y 01 hechas a mano);
+2. `lanzar_tga2.sh` func_8001B698 (`textura_sprite_g15.c`);
+3. `lanzar_tga4.sh` func_80018CB8 (`fuente_a_pc_g15.c`, solo difiere v0: deberia dar IGUAL_V0);
+4. `lanzar_tga5.sh` func_80024450 (reescrita en `herramienta_tex_g14.c` con el marco del original);
+5. HerramientaConvertirPIC (`src/varios/convertir_pic_g15.c`) escrita y con captura (a0 = "LEGAL.PIC"), sin
+   comparar todavia: el marco del cuerpo dio 0x28 (s0-s3) y tiene que ser 0x20; usar DIR() para las globales
+   como en herramienta_tex_g14.c antes de probar.
+Despues: HerramientaArmarModelos y HerramientaArmarCuadricula (leen GRAPHICS\ y escriben con PCdrv).
+Trucos de esta noche: marco a mano con el cuerpo en el sp exacto del original (stub = marco original - marco
+del cuerpo; locales con PILA(off)); el s3/s4 que trae el que llama se pasa desde el stub (`move $5, $19`),
+porque leerlo con asm dentro del cuerpo falla si GCC ya uso ese registro.

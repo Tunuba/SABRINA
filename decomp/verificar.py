@@ -76,6 +76,10 @@ TABLA_C0 = 0x81000000
 #   operacion (write, read, _card_info, _card_load) termina enseguida con los eventos IOE de software y de
 #   hardware (lo que hacen sus manejadores func_800519E4 y func_80051A34: D_800D5390 y D_800D53A0 en 1). Lo
 #   escrito en la tarjeta tambien se compara. SABRINA_SIN_TARJETA=1 apaga todo esto.
+# - PCdrv (04-10): las herramientas de desarrollo escriben a la PC con "break" (0x102 PCcreat, 0x104 PCclose,
+#   0x106 PCwrite, en func_800294F0/80029518/80029530; un gancho en cada break). El modelo contesta que salio bien y anota cada
+#   creacion, cierre y escritura (con los datos); eso tambien se compara. SABRINA_SIN_PCDRV=1 lo apaga.
+PCDRV = MODELOS and os.environ.get("SABRINA_SIN_PCDRV") != "1"
 TARJETA = MODELOS and os.environ.get("SABRINA_SIN_TARJETA") != "1"
 MALLOC = MODELOS and os.environ.get("SABRINA_SIN_MALLOC") != "1"
 MONTON_BIOS = 0x81100000
@@ -575,6 +579,30 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     interrupcion_mala = []
 
+    pc_escrito = []                                   # lo que se mando a la PC de desarrollo (ver PCDRV)
+    pc_abiertos = {"n": 0}
+
+    def pcdrv(codigo_break, u):
+        a1, a2, a3 = (u.reg_read(UC_MIPS_REG_ZERO + r) for r in (5, 6, 7))
+        if codigo_break == 0x102:                      # PCcreat(nombre): manejador en v1
+            nombre = bytes(u.mem_read(a1 & 0x1FFFFFFF, 64)).split(bytes(1))[0]
+            pc_abiertos["n"] += 1
+            pc_escrito.append(("crear", nombre, pc_abiertos["n"]))
+            u.reg_write(UC_MIPS_REG_V0, 0)
+            u.reg_write(UC_MIPS_REG_V1, pc_abiertos["n"])
+        elif codigo_break == 0x104:                    # PCclose(manejador)
+            pc_escrito.append(("cerrar", a1))
+            u.reg_write(UC_MIPS_REG_V0, 0)
+            u.reg_write(UC_MIPS_REG_V1, 0)
+        elif codigo_break == 0x106:                    # PCwrite(manejador, largo, datos): v1 lo escrito
+            datos = bytes(u.mem_read(a3 & 0x1FFFFFFF, a2)) if 0 < a2 <= 0x200000 else b""
+            pc_escrito.append(("escribir", a1, datos))
+            u.reg_write(UC_MIPS_REG_V0, 0)
+            u.reg_write(UC_MIPS_REG_V1, len(datos))
+        else:
+            interrupcion_mala.append(f"PCdrv {codigo_break:x} sin modelo")
+            u.emu_stop()
+
     def interrupcion(u, intno, _):
         # unico uso de "syscall" en el juego: EnterCriticalSection/ExitCriticalSection (psyq_g01.c), que
         # apagan/prenden las interrupciones de la CPU real; Unicorn no modela eso. Al llegar aca el pc ya
@@ -589,6 +617,16 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             u.emu_stop()
 
     uc.hook_add(UC_HOOK_CODE, codigo, begin=0xA0, end=0xC4)
+    if PCDRV:
+        # Unicorn no avisa el break como interrupcion (salta al vector de excepciones): un gancho en cada uno
+        def break_pcdrv(u, dirc, tam, _):
+            ins = struct.unpack("<I", bytes(u.mem_read(dirc & 0x1FFFFFFF, 4)))[0]
+            pcdrv((ins >> 6) & 0xFFFFF, u)
+            u.reg_write(UC_MIPS_REG_PC, dirc + 4)
+
+        for f, off in (("func_800294F0", 0xC), ("func_80029518", 0x8), ("func_80029530", 0xC)):
+            d = simbolos()[f] + off
+            uc.hook_add(UC_HOOK_CODE, break_pcdrv, begin=d, end=d)
     if MODELOS:
         espera, contador = simbolos()["func_800161D4"], simbolos()["D_800649EC"] & 0x1FFFFFFF
 
@@ -685,6 +723,24 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 g = s["StGetNext"]
                 uc.hook_add(UC_HOOK_CODE, entrada_vsync, begin=g, end=g)
             uc.hook_add(UC_HOOK_CODE, vuelta, begin=VUELTA_INT, end=VUELTA_INT)
+            if cd and PCDRV:
+                # CdSearchFile de un .TGA de las carpetas de la PC de desarrollo: el archivo virtual de modelo_cd
+                carpetas = (b"\\GRAPHICS\\TARGA\\", b"\\GRAPHICS\\SPRITE\\", b"\\GRAPHICS\\PICTURES\\",
+                            b"\\GRAPHICS\\FONT\\")
+
+                def buscar_virtual(u, dirc, tam, _):
+                    f, nom = u.reg_read(UC_MIPS_REG_ZERO + 4), u.reg_read(UC_MIPS_REG_ZERO + 5)
+                    n = bytes(u.mem_read(nom & 0x1FFFFFFF, 80)).split(bytes(1))[0].upper()
+                    if not (n.startswith(carpetas) and n.endswith(b".TGA;1")):
+                        return
+                    lba, largo = modelo_cd.archivo_virtual(n)
+                    corto = n.split(b"\\")[-1][:15]
+                    u.mem_write(f & 0x1FFFFFFF, bytes(modelo_cd._msf(lba)) + bytes([0]) + struct.pack("<I", largo) +
+                                corto + bytes(16 - len(corto)))
+                    u.reg_write(UC_MIPS_REG_V0, f)
+                    u.reg_write(UC_MIPS_REG_PC, u.reg_read(UC_MIPS_REG_RA))
+
+                uc.hook_add(UC_HOOK_CODE, buscar_virtual, begin=s["func_8002BE88"], end=s["func_8002BE88"])
             if VBLANK and TARJETA:
                 # espera de la tarjeta (ver TARJETA): la misma instruccion lee el aviso en 0 dos veces seguidas
                 aviso = s["D_800D52C0"] + 8
@@ -753,6 +809,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 tarjeta=sorted(tarjeta.items()),
+                pc=pc_escrito,
                 hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias, cd=cd.log if cd else [])
 
 
@@ -777,6 +834,8 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("monton de la BIOS distinto")
     if a.get("tarjeta", []) != b.get("tarjeta", []):
         dif.append("tarjeta de memoria distinta")
+    if a.get("pc", []) != b.get("pc", []):
+        dif.append("lo escrito a la PC de desarrollo es distinto")
     if a["hw"] != b["hw"]:
         dif.append("escrituras de hardware distintas")
     return dif

@@ -572,3 +572,4 @@ func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
 func_8003E9FC	60	IGUAL_SINT	src/varios/tabla_corrida_g14.c	3 de 3 capturas y 284 de 284 variantes iguales
 func_80019D80	572	IGUAL	src/auto/func_80019D80.c	8 de 8 capturas y 214 de 214 variantes iguales
+func_8001B9C0	776	IGUAL_SINT	src/varios/textura_fuente_g15.c	1 de 1 capturas y 23 de 23 variantes iguales

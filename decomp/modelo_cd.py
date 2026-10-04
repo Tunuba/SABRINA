@@ -52,8 +52,44 @@ def pistas():
     return _pistas
 
 
+# Archivos de la PC de desarrollo (04-10): las herramientas del juego leen .TGA de carpetas que no se grabaron
+# en el disco (GRAPHICS\TARGA, SPRITE, PICTURES, FONT). archivo_virtual(nombre) arma uno chico y fijo (16x16,
+# 16 bits, pocos colores, sacados del nombre; las fuentes 24x32 con 4 letras) y lo pone despues del final del disco; verificar.py hace que
+# CdSearchFile lo encuentre. sector() lo sirve como un sector de datos (modo 2, forma 1).
+VIRTUAL_LBA = 400000
+_virtuales = {}      # nombre -> (lba, tam)
+_sectores_virtuales = {}
+
+
+def archivo_virtual(nombre):
+    if nombre not in _virtuales:
+        h = sum(nombre) & 0xFF
+        colores = [((h * 7 + k * 37) & 0x7FFF) | (0x8000 if k & 1 else 0) for k in range(5)]
+        if b"FONT" in nombre:
+            # una fuente: 24x32 con 4 letras separadas por columnas de 0x7BC0 (0x1F0 despues de convertir,
+            # el separador que busca func_8001ADD8)
+            ancho, alto, sep = 24, 32, (5, 11, 17, 23)
+        else:
+            ancho, alto, sep = 16, 16, ()
+        cab = bytes([0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, ancho, 0, alto, 0, 0x10, 0x20])
+        pix = b"".join((0x7BC0 if x in sep else colores[(x * 3 + y * 5 + h) % 5]).to_bytes(2, "little")
+                       for y in range(alto) for x in range(ancho))
+        datos = cab + pix
+        lba = VIRTUAL_LBA + 4 * len(_virtuales)
+        for k in range(0, len(datos), 0x800):
+            _sectores_virtuales[lba + k // 0x800] = datos[k:k + 0x800]
+        _virtuales[nombre] = (lba, len(datos))
+    return _virtuales[nombre]
+
+
 def sector(lba):
     """Los 2352 bytes del sector (ceros fuera del disco o en pistas de audio sin datos)."""
+    if lba in _sectores_virtuales:
+        d = _sectores_virtuales[lba]
+        fin = 0x89 if lba + 1 not in _sectores_virtuales else 0x08     # datos (y fin de archivo en el ultimo)
+        sub = bytes([1, 0, fin, 0]) * 2
+        return bytes([0]) + bytes([0xFF]) * 10 + bytes([0]) + bytes(_msf(lba)) + bytes([2]) + sub + d + \
+            bytes(RAW - 24 - len(d))
     for inicio, archivo, base in reversed(pistas()):
         if lba >= base:
             m = _archivos.get(archivo)
@@ -66,6 +102,8 @@ def sector(lba):
     return bytes(RAW)
 
 
+ESPERA_DIRECTA = 64
+
 # ordenes de dos pasos (acuse y despues respuesta completa)
 DOS_PASOS = {0x07, 0x08, 0x09, 0x0A, 0x15, 0x16, 0x1A, 0x1E}
 
@@ -77,6 +115,7 @@ class Cd:
         self.respuesta = []          # la respuesta de la interrupcion pendiente
         self.ie = 0x1F
         self.tipo = 0                # la interrupcion pendiente (0 ninguna)
+        self.consultas = 0           # consultas seguidas del tipo sin nada pendiente (ver lee)
         self.cola = []               # interrupciones que esperan a la proxima VSync: (tipo, bytes)
         self.lba = 0                 # donde esta la cabeza
         self.destino = 0             # lo que pidio Setloc
@@ -110,6 +149,17 @@ class Cd:
                 return self.fifo[self.pos - 1]
             return 0
         if self.indice & 1:
+            # el juego consulta el lector sin VSync (una orden que espera su fin desde dentro de una
+            # interrupcion, como el Pause al terminar CdRead): en la consola la respuesta llega sola al rato,
+            # aca despues de ESPERA_DIRECTA consultas sin nada pendiente (04-10)
+            if self.tipo == 0 and self.cola:
+                self.consultas += 1
+                if self.consultas >= ESPERA_DIRECTA:
+                    self.consultas = 0
+                    self.tipo, self.respuesta = self.cola.pop(0)
+                    self.log.append("J%d" % self.tipo)
+            else:
+                self.consultas = 0
             return self.tipo | 0xE0
         return self.ie | 0xE0
 
