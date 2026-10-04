@@ -493,7 +493,7 @@ func_8002643C	632	NO_TERMINA	src/auto/func_8002643C.c	la original no termina en 
 func_80011B60	572	IGUAL	src/libgpu/encolar_g14.c	8 de 8 capturas y 586 de 586 variantes iguales
 func_8002622C	528	IGUAL	src/auto/func_8002622C.c	7 de 7 capturas y 268 de 268 variantes iguales (1 capturas donde la original no termina, sin comparar)
 CargarSonidoNivel	468	NO_TERMINA	src/auto/CargarSonidoNivel.c	la original no termina en el emulador (espera al hardware)
-func_800213A0	412	DISTINTO	src/auto/func_800213A0.c	0 de 1 capturas y 0 de 88 variantes iguales
+func_800213A0	412	IGUAL	src/Screen/pantalla_iniciar_g14.c	1 de 1 capturas y 88 de 88 variantes iguales
 func_80025A10	400	NO_TERMINA	src/auto/func_80025A10.c	la original no termina en el emulador (espera al hardware)
 func_8002CD3C	376	IGUAL_V0	src/auto/func_8002CD3C.c	3 de 3 capturas y 316 de 322 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_8005CEBC	368	NO_TERMINA	src/auto/func_8005CEBC.c	la original no termina en el emulador (espera al hardware)
