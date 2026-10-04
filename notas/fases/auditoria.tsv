@@ -485,7 +485,7 @@ func_8002A09C	1372	IGUAL	src/psyq/cd_irq_g14.c	8 de 8 capturas y 886 de 886 vari
 func_8002AC18	1036	IGUAL	src/psyq/cdsync_g14.c	5 de 5 capturas y 591 de 591 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_8002BB78	668	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 66 de 66 variantes iguales (6 capturas donde la original no termina, sin comparar)
 func_8002BE88	728	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 172 de 172 variantes iguales (6 capturas donde la original no termina, sin comparar)
-func_8005A360	3168	DISTINTO	src/auto/func_8005A360.c	2 de 2 capturas y 107 de 109 variantes iguales
+func_8005A360	3168	IGUAL	src/objetos/jefe_mundo_g14.c	2 de 2 capturas y 109 de 109 variantes iguales
 func_8005C9D0	968	NO_TERMINA	src/auto/func_8005C9D0.c	la original no termina en el emulador (espera al hardware)
 func_80012130	688	IGUAL	src/libgpu/encolar_g14.c	8 de 8 capturas y 484 de 484 variantes iguales
 func_80011D9C	640	IGUAL	src/libgpu/vram_fifo_g14.c	6 de 6 capturas y 434 de 434 variantes iguales
