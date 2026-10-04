@@ -61,7 +61,11 @@ VUELTA_INT = 0x80FFFFE0     # direccion de retorno centinela de las rutinas de i
 #   la tabla C0 no esta. El modelo pone una en una pagina aparte (0x01000000, fuera de la RAM que se compara)
 #   con la entrada 6 (el manejador de excepciones) apuntando a las 6 instrucciones que trae la BIOS real en
 #   +0x28; func_80017BC0 (libapi) las encuentra y las parchea, como en la consola.
+#   GetB0Table (B0 0x57, 04-10 tarde): la tabla B0 en la misma pagina (TABLA_B0), con la entrada 0x5B
+#   apuntando mas abajo en la pagina: libcard (func_80052240) copia ahi 5 instrucciones suyas en +0x9C8.
+#   La pagina entera se compara (antes no se comparaba: ni el parche de func_80017BC0 se veia).
 TABLA_C0 = 0x81000000
+TABLA_B0 = TABLA_C0 + 0x200
 # - BIOS, malloc (A0 0x33) y free (A0 0x34) (04-10): al arrancar, Reservar usa el malloc de la BIOS
 #   (D_8007C8E0 != 0), que en el emulador volvia sin hacer nada y dejaba en v0 lo que traia; memset escribia
 #   entonces en la direccion 0 y la funcion no terminaba. El modelo da bloques seguidos (alineados a 8) en
@@ -522,6 +526,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         uc.mem_map(TABLA_C0 & 0x1FFFFFFF, 0x1000)     # la tabla C0 del modelo y el codigo al que apunta
         uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x18, struct.pack("<I", TABLA_C0 + 0x100))
         uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x128, struct.pack("<6I", *C0_VIEJO))
+        uc.mem_write((TABLA_B0 & 0x1FFFFFFF) + 0x5B * 4, struct.pack("<I", TABLA_C0 + 0x400))
     uc.mem_write(0x00000000, ram)
     uc.mem_write(0x1F800000, spad)
     if cd:
@@ -625,6 +630,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 return
             if MODELOS and dirc == 0xB0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x56:
                 u.reg_write(UC_MIPS_REG_V0, TABLA_C0)    # GetC0Table: la tabla del modelo (ver TABLA_C0)
+            if MODELOS and dirc == 0xB0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x57:
+                u.reg_write(UC_MIPS_REG_V0, TABLA_B0)    # GetB0Table (ver TABLA_C0)
             if MALLOC and dirc == 0xA0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x33:
                 tam = (u.reg_read(UC_MIPS_REG_A0) + 7) & ~7          # malloc (ver MONTON_BIOS)
                 if monton["usado"] + tam <= MONTON_TAM:
@@ -867,6 +874,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 tarjeta=sorted(tarjeta.items()),
+                tablas=bytes(uc.mem_read(TABLA_C0 & 0x1FFFFFFF, 0x1000)) if MODELOS else b"",
                 pc=pc_escrito,
                 hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias, cd=cd.log if cd else [])
 
@@ -890,6 +898,8 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("scratchpad distinto")
     if a.get("monton", b"") != b.get("monton", b""):
         dif.append("monton de la BIOS distinto")
+    if a.get("tablas", b"") != b.get("tablas", b""):
+        dif.append("tablas de la BIOS distintas")
     if a.get("tarjeta", []) != b.get("tarjeta", []):
         dif.append("tarjeta de memoria distinta")
     if a.get("pc", []) != b.get("pc", []):

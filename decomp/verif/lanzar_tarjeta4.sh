@@ -1,0 +1,1 @@
+TOPE=3600 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vmano.sh /mnt/c/Proyectos/SABRINA/decomp/build/tarjeta4.txt src/varios/tarjeta_leer_g15.c:func_800502DC src/varios/tarjeta_bios_g15.c:func_800521AC src/varios/tarjeta_bios_g15.c:func_80052240 src/varios/tarjeta_bios_g15.c:func_800523B4
