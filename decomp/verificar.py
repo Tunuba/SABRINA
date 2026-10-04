@@ -64,7 +64,7 @@ VUELTA_INT = 0x80FFFFE0     # direccion de retorno centinela de las rutinas de i
 TABLA_C0 = 0x81000000
 C0_VIEJO = (0xAF410004, 0xAF420008, 0xAF43000C, 0xAF5F007C, 0x40037000, 0x00000000)
 FIN = 0x80FFFFF0            # direccion de retorno centinela
-LIMITE = 20_000_000         # instrucciones como maximo por ejecucion
+LIMITE = int(os.environ.get("SABRINA_LIMITE", 20_000_000))   # instrucciones como maximo por ejecucion (SABRINA_LIMITE para una tanda larga)
 ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
 
 _simbolos = None

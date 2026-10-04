@@ -570,4 +570,4 @@ func_8004EBD0	396	DISTINTO	src/auto/func_8004EBD0.c	0 de 1 capturas y 0 de 134 v
 func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 132 variantes iguales
 func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
-func_8003E9FC	60	DISTINTO	src/varios/tabla_corrida_g14.c	0 de 1 capturas y 14 de 14 variantes iguales
+func_8003E9FC	60	IGUAL_SINT	src/varios/tabla_corrida_g14.c	3 de 3 capturas y 284 de 284 variantes iguales
