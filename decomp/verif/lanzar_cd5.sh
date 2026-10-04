@@ -1,0 +1,1 @@
+SABRINA_VARIANTES=20 TOPE=1500 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vreal.sh /mnt/c/Proyectos/SABRINA/decomp/build/cd5.txt src/varios/animaciones_g14.c:func_8002FE64 src/psyq/parche_bios_g14.c:func_800177B4 src/Screen/primitivas_g13.c:func_8002153C src/auto/func_80027534.c:func_80027534 src/auto/func_800273B0.c:func_800273B0 
