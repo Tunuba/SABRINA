@@ -408,3 +408,7 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   hace pasar un cuadro y la espera func_800161D4 encuentra el contador en el objetivo. Las IGUAL_GPU
   anotadas pasaron a IGUAL/IGUAL_SINT (con nota). Tanda `verif/lanzar_vmodelos.sh` repite con los modelos
   las 74 NO_TERMINA/TOPE que tienen C (log build/vmodelos.txt; anotar con `py verif/anotar.py`).
+- 03-10, modelos agregados en la misma linea (Meme: "no pares hasta terminar todo"): el control de cada canal de
+  DMA dice "transferencia terminada" (destraba DrawSync y la cola del GPU) y el estado del puerto del mando
+  (0x1F801044) dice listo/recibido/enviado. Lo que sigue girando: respuesta del CD, MDEC (video), la
+  rutina de VBlank del juego (D_8007CAE6) y partes del protocolo del mando.

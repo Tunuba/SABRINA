@@ -1,0 +1,1 @@
+TOPE=1800 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vreal.sh /mnt/c/Proyectos/SABRINA/decomp/build/vdma.txt src/modelLoader/cargar_g04.c:LeerCuadriculaINO src/auto/func_800213A0.c:func_800213A0 src/Screen/pantalla_g05.c:func_80021120 

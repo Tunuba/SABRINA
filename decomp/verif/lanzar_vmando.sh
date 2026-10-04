@@ -1,0 +1,1 @@
+TOPE=1800 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vreal.sh /mnt/c/Proyectos/SABRINA/decomp/build/vmando.txt src/auto/func_8002622C.c:func_8002622C src/membank/tarjeta_g06.c:func_80025BA0 src/auto/func_80027368.c:func_80027368 src/auto/func_80026744.c:func_80026744 

@@ -413,6 +413,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         v = int.from_bytes(io[off:off + tam], "little")
         if GPU_LISTA and off == 0x814:
             v |= 0x1C000000          # GPUSTAT: listo para comandos, para mandar VRAM y para DMA
+        if MODELOS and off in (0x088, 0x098, 0x0A8, 0x0B8, 0x0C8, 0x0D8, 0x0E8) and tam == 4:
+            v &= ~0x11000000         # control de cada canal de DMA: la transferencia ya termino
+        if MODELOS and off == 0x044:
+            v |= 0x7                 # estado del puerto del mando: listo para mandar, dato recibido, enviado
         return v
 
     def io_escribe(u, off, tam, valor, _):
