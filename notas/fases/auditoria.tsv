@@ -556,3 +556,15 @@ func_800275F8	916	IGUAL	src/psyq/mando_envio_g14.c	8 de 8 capturas y 252 de 252 
 func_8002D714	2332	DISTINTO	src/psyq/cd_stream_g14.c	2 de 2 capturas y 3 de 4 variantes iguales
 func_800177B4	128	DISTINTO	src/psyq/parche_bios_g14.c	0 de 1 capturas y 0 de 56 variantes iguales
 func_8002153C	660	DISTINTO	src/Screen/primitivas_g13.c	0 de 1 capturas y 0 de 0 variantes iguales
+func_8003DEE8	264	IGUAL_SINT	src/auto/func_8003DEE8.c	1 de 1 capturas y 109 de 109 variantes iguales
+func_8002B704	236	IGUAL_SINT	src/auto/func_8002B704.c	1 de 1 capturas y 79 de 79 variantes iguales
+func_8001B000	200	DISTINTO	src/auto/func_8001B000.c	0 de 1 capturas y 0 de 58 variantes iguales
+func_8001B600	152	IGUAL_SINT	src/auto/func_8001B600.c	1 de 1 capturas y 0 de 0 variantes iguales
+func_80018CB8	132	NO_TERMINA	src/auto/func_80018CB8.c	la original no termina en el emulador (espera al hardware)
+func_8003DFF0	112	IGUAL_SINT	src/auto/func_8003DFF0.c	1 de 1 capturas y 112 de 112 variantes iguales
+func_80029948	108	IGUAL_SINT	src/auto/func_80029948.c	1 de 1 capturas y 76 de 76 variantes iguales
+func_8004F50C	92	NO_TERMINA	src/auto/func_8004F50C.c	la original no termina en el emulador (espera al hardware)
+func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
+func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
+func_8004EBD0	396	DISTINTO	src/auto/func_8004EBD0.c	0 de 1 capturas y 0 de 134 variantes iguales
+func_800522E4	108	DISTINTO	src/auto/func_800522E4.c	0 de 1 capturas y 0 de 132 variantes iguales
