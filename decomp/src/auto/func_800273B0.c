@@ -7,9 +7,9 @@ extern s32 D_8006CFC4;
 extern s32 D_8006CFD4;
 extern s32 D_8006CFEC;
 
-static M2C_UNK (*D_8006CF9C)(s32) = NULL;
-static M2C_UNK (*D_8006CFB0)() = NULL;
-static M2C_UNK (*D_8006CFB4)() = NULL;
+extern M2C_UNK (*D_8006CF9C)(s32);
+extern M2C_UNK (*D_8006CFB0)();
+extern M2C_UNK (*D_8006CFB4)();
 
 void func_800273B0(void *arg0) {
     u8 var_a1;

@@ -5,8 +5,8 @@
 extern s32 D_8006CFD0;
 extern s32 D_8006CFF0;
 
-static s32 (*D_8006CF8C)(void *, s32) = NULL;
-static M2C_UNK (*D_8006CF90)(void *) = NULL;
+extern s32 (*D_8006CF8C)(void *, s32);
+extern M2C_UNK (*D_8006CF90)(void *);
 
 s32 func_80027534(void *arg0) {
     s32 temp_v0;
