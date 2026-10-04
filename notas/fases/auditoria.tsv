@@ -248,7 +248,7 @@ func_800190C0	280	IGUAL	src/Font/textos_g13.c	1 de 1 capturas y 93 de 93 variant
 func_800193F8	108	IGUAL	src/Font/textos_g13.c	2 de 2 capturas y 158 de 158 variantes iguales
 func_800163E4	216	DISTINTO	src/psyq/libetc_g13.c	1 de 2 capturas y 152 de 251 variantes iguales; difieren 2 palabras en 80063950: el setjmp (func_80016170) guarda la direccion de vuelta y la pila del que llama, que en el C son otras
 ReproducirSTR	184	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
-PantallasLegales	456	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
+PantallasLegales	456	DISTINTO	src/Screen/video_g13.c	0 de 1 capturas y 0 de 26 variantes iguales
 func_800144C4	156	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 58 de 58 variantes iguales
 func_80014598	52	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 56 de 56 variantes iguales
 func_80016F38	544	IGUAL	src/psyq/libgs_g13.c	1 de 1 capturas y 52 de 52 variantes iguales
@@ -571,3 +571,4 @@ func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 1
 func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
 func_8003E9FC	60	IGUAL_SINT	src/varios/tabla_corrida_g14.c	3 de 3 capturas y 284 de 284 variantes iguales
+func_80019D80	572	IGUAL	src/auto/func_80019D80.c	8 de 8 capturas y 214 de 214 variantes iguales
