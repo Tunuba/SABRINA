@@ -513,3 +513,9 @@ mover_imagen, tabla_corrida, mando_cuadro, parche_bios (InitGeom), cd_stream_avi
 Lo que queda sin salida conocida: video entero (DecDCTvlc2), basura de pila en cargas con nombre roto,
 tarjeta de memoria (func_80051298: falta modelo de la tarjeta), func_80018218 (montón lleno en la captura),
 setjmp, BuclePrincipal, herramientas que leen del PC.
+  - Mas limites (04-10): InitGeom (func_800177B4) guarda en memoria la direccion de retorno del parche de la
+    BIOS (D_80084CD0): apunta al codigo, distinto en C. func_8002D714 copia 4 bytes sin inicializar de su
+    pila (si D_80091478 != 0) y el marco de GCC es otro (0x68 contra 0x40). func_8002153C: la captura rompe
+    la original (salta a 0). La pila de interrupciones del modelo se restaura al volver (guardaba registros
+    del codigo interrumpido, distintos en C).
+  - 04-10 mediodia: 76.1 % reales + 16.9 % sinteticas = 93.0 %.
