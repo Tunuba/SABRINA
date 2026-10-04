@@ -507,8 +507,8 @@ func_80011850	224	IGUAL	src/auto/func_80011850.c	8 de 8 capturas y 725 de 725 va
 func_800273B0	216	NO_TERMINA	src/auto/func_800273B0.c	la original no termina en el emulador (espera al hardware)
 func_80027534	196	NO_TERMINA	src/auto/func_80027534.c	la original no termina en el emulador (espera al hardware)
 func_80021A94	184	IGUAL	src/Screen/video_arranque_g14.c	1 de 1 capturas y 46 de 46 variantes iguales
-CargarINO	184	NO_TERMINA	src/auto/CargarINO.c	la original no termina en el emulador (espera al hardware)
-func_8002FFB8	176	NO_TERMINA	src/auto/func_8002FFB8.c	la original no termina en el emulador (espera al hardware)
+CargarINO	184	DISTINTO	src/auto/CargarINO.c	0 de 2 capturas y 0 de 27 variantes iguales (4 capturas donde la original no termina, sin comparar)
+func_8002FFB8	176	IGUAL	src/auto/func_8002FFB8.c	6 de 6 capturas y 144 de 144 variantes iguales
 func_8005CD98	176	IGUAL	src/auto/func_8005CD98.c	1 de 1 capturas y 33 de 33 variantes iguales
 func_80027488	172	NO_TERMINA	src/auto/func_80027488.c	la original no termina en el emulador (espera al hardware)
 func_80010880	160	IGUAL	src/auto/func_80010880.c	6 de 6 capturas y 621 de 621 variantes iguales
@@ -518,12 +518,12 @@ ArchivoAbrir	140	IGUAL	src/auto/ArchivoAbrir.c	3 de 3 capturas y 58 de 58 varian
 func_8002CB2C	132	IGUAL	src/auto/func_8002CB2C.c	1 de 1 capturas y 111 de 111 variantes iguales
 func_8003DE68	128	IGUAL	src/auto/func_8003DE68.c	1 de 1 capturas y 64 de 64 variantes iguales
 func_8005CE48	116	IGUAL	src/auto/func_8005CE48.c	1 de 1 capturas y 106 de 106 variantes iguales
-func_8002CEB4	112	NO_TERMINA	src/auto/func_8002CEB4.c	la original no termina en el emulador (espera al hardware)
+func_8002CEB4	112	IGUAL	src/auto/func_8002CEB4.c	6 de 6 capturas y 329 de 329 variantes iguales
 func_8005C964	108	IGUAL	src/Screen/limpiar_g14.c	1 de 1 capturas y 130 de 130 variantes iguales
 func_8003DDFC	108	IGUAL	src/auto/func_8003DDFC.c	6 de 6 capturas y 672 de 672 variantes iguales
 func_8002BE14	104	IGUAL	src/auto/func_8002BE14.c	8 de 8 capturas y 876 de 876 variantes iguales
 func_8003DDA0	92	IGUAL	src/auto/func_8003DDA0.c	4 de 4 capturas y 256 de 256 variantes iguales
-func_80019CC4	84	NO_TERMINA	src/auto/func_80019CC4.c	la original no termina en el emulador (espera al hardware)
+func_80019CC4	84	IGUAL	src/auto/func_80019CC4.c	6 de 6 capturas y 108 de 108 variantes iguales
 func_8003E060	84	IGUAL	src/auto/func_8003E060.c	8 de 8 capturas y 876 de 876 variantes iguales
 func_80027368	72	IGUAL	src/psyq/mando_cerrar_g14.c	8 de 8 capturas y 390 de 390 variantes iguales
 CargarArchivoEntero	68	IGUAL	src/auto/CargarArchivoEntero.c	6 de 6 capturas y 84 de 84 variantes iguales
@@ -531,9 +531,11 @@ func_800297CC	60	IGUAL	src/auto/func_800297CC.c	1 de 1 capturas y 136 de 136 var
 func_800219F8	56	IGUAL	src/auto/func_800219F8.c	6 de 6 capturas y 718 de 718 variantes iguales
 func_8005DCA0	52	IGUAL	src/auto/func_8005DCA0.c	1 de 1 capturas y 72 de 72 variantes iguales
 func_80026744	40	IGUAL	src/auto/func_80026744.c	8 de 8 capturas y 580 de 580 variantes iguales
-func_8002CB00	32	NO_TERMINA	src/auto/func_8002CB00.c	la original no termina en el emulador (espera al hardware)
+func_8002CB00	32	DISTINTO	src/auto/func_8002CB00.c	0 de 2 capturas y 4 de 78 variantes iguales
 func_80046B90	28	IGUAL	src/auto/func_80046B90.c	2 de 2 capturas y 208 de 208 variantes iguales
 func_8003E0B4	16	IGUAL	src/auto/func_8003E0B4.c	6 de 6 capturas y 360 de 360 variantes iguales
 func_8002D170	128	IGUAL	src/auto/func_8002D170.c	1 de 1 capturas y 117 de 117 variantes iguales
 func_80010BD8	796	IGUAL	src/Font/fnt_flush_g14.c	8 de 8 capturas y 1051 de 1051 variantes iguales
 func_8002B810	708	IGUAL	src/psyq/cd_dir_g14.c	1 de 1 capturas y 112 de 112 variantes iguales
+func_8002FF1C	156	IGUAL	src/varios/animaciones_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
+func_80017BC0	172	DISTINTO	src/psyq/parche_bios_g14.c	0 de 1 capturas y 0 de 0 variantes iguales
