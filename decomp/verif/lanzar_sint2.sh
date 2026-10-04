@@ -1,0 +1,1 @@
+TOPE=900 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vmano.sh /mnt/c/Proyectos/SABRINA/decomp/build/sint2.txt src/psyq/cd_datasync_g14.c:func_8002B49C src/libgpu/mover_imagen_g14.c:func_80012F2C src/varios/tabla_corrida_g14.c:func_8003E9FC 

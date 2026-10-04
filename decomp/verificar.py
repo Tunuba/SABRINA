@@ -566,6 +566,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             # al terminar la ultima se restauran y se entra de nuevo a VSync, que esta vez sigue de largo.
             s = simbolos()
             pila_int = s["D_80063954"] + 0xFDC
+            pila_ini = s["D_80063954"] & 0x1FFFFFFF
+            pila_int_f = pila_int & 0x1FFFFFFF
             en_int = s["D_8006391A"] & 0x1FFFFFFF
             estado = {"pendientes": [], "guardado": None, "seguir": False}
 
@@ -606,6 +608,9 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 estado["guardado"] = [u.reg_read(UC_MIPS_REG_ZERO + i) for i in range(32)] + \
                     [u.reg_read(UC_MIPS_REG_HI), u.reg_read(UC_MIPS_REG_LO)]
                 estado["dentro"] = dentro
+                # la pila de las interrupciones se deja como estaba al volver: guarda registros del codigo
+                # interrumpido, que son distintos en la original y en el C (ruido del modelo, no del juego)
+                estado["pila"] = bytes(u.mem_read(pila_ini, pila_int_f - pila_ini))
                 u.mem_write(en_int, struct.pack("<H", 1))    # dentro de una interrupcion, como en libetc
                 correr_siguiente(u)
 
@@ -619,6 +624,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 u.reg_write(UC_MIPS_REG_HI, r[32])
                 u.reg_write(UC_MIPS_REG_LO, r[33])
                 u.mem_write(en_int, struct.pack("<H", estado["dentro"]))
+                u.mem_write(pila_ini, estado["pila"])
                 estado["guardado"] = None
                 estado["seguir"] = True
                 u.reg_write(UC_MIPS_REG_PC, estado["volver"])
