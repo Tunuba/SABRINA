@@ -15,9 +15,8 @@ extern void LeerMAO(void *archivo);
 
 /* Abre anims\<nombre> y lee n animaciones. En indices[i] deja donde empieza cada una dentro del bloque,
  * en palabras de 4 bytes. Devuelve 1. */
-s32 CargarANI(s32 a0, s32 n, char *nombre, s16 *indices) {
-    u8 archivo[0xA0];
-    char ruta[0x80];
+__attribute__((noinline, used)) static s32 cargar_ani(u8 *archivo, s32 n, char *nombre, s16 *indices) {
+    char *ruta = (char *) archivo + 0xA0;
     s32 i;
 
     ArchivoIniciar(archivo);
@@ -29,6 +28,22 @@ s32 CargarANI(s32 a0, s32 n, char *nombre, s16 *indices) {
     }
     ArchivoCerrar(archivo, -1);
     return 1;
+}
+
+/* El archivo y la ruta van en sp+0x20 y sp+0xC0 de un marco de 0x140, como en el original: las funciones
+ * del archivo leen bytes de esos lugares sin llenarlos antes, y con el marco de GCC la basura era otra.
+ * a0 no se usa, asi que lleva el archivo al cuerpo. */
+__attribute__((naked))
+s32 CargarANI(s32 a0, s32 n, char *nombre, s16 *indices) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x140\n"
+            "\tsw $31, 0x1C($sp)\n"
+            "\tjal cargar_ani\n"
+            "\taddiu $4, $sp, 0x20\n"
+            "\tlw $31, 0x1C($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x140\n"
+            ".set reorder");
 }
 
 /* Las 8 animaciones del caos (mao_chaos: 8 palabras que se copian a la pila y CargarANI no mira). */

@@ -21,9 +21,8 @@ extern void *memset(void *p, s32 c, u32 n);
 extern void CrearObjetoMundo(u8 *objeto);
 
 /* Lee la cantidad y los objetos, la cantidad y los puntos de ruta, y crea los dos primeros objetos. */
-void CargarWRLDDATA(char *nombre) {
-    char ruta[0x80];
-    u8 archivo[0xA0];
+__attribute__((noinline, used)) static void cargar_wrlddata(char *nombre, char *ruta) {
+    u8 *archivo = (u8 *) ruta + 0x80;
     char *punto;
     s32 tam;
 
@@ -46,4 +45,19 @@ void CargarWRLDDATA(char *nombre) {
     CrearObjetoMundo(D_8007CB40);
     CrearObjetoMundo(D_8007CB40 + 0x9C);
     ArchivoCerrar(archivo, -1);
+}
+
+/* La ruta y el archivo van en sp+0x18 y sp+0x98 de un marco de 0x138, como en el original (las funciones
+ * del archivo leen bytes de ahi sin llenarlos). El marco va a mano. */
+__attribute__((naked))
+void CargarWRLDDATA(char *nombre) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x138\n"
+            "\tsw $31, 0x14($sp)\n"
+            "\tjal cargar_wrlddata\n"
+            "\taddiu $5, $sp, 0x18\n"
+            "\tlw $31, 0x14($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x138\n"
+            ".set reorder");
 }

@@ -51,9 +51,8 @@ static void reiniciar_cuadro(void) {
     H16(0) = 0;
 }
 
-void func_8002D714(void) {
-    u8 cd[2];
-    u8 sub[4];
+/* El cuerpo; sub y cd viven en el marco de func_8002D714 (abajo), en los lugares del original. */
+__attribute__((noinline, used)) static void lectura_sector(u8 *sub, u8 *cd) {
     u16 estado;
     s32 control;
     u32 i;
@@ -218,6 +217,23 @@ void func_8002D714(void) {
     if (D_80091410 != 0 && D_80091430 != 0) {
         data_ready_callback();
     }
+}
+
+/* Si D_80091478 != 0 el original no llena sub y copia al sector los 4 bytes que habia en su pila
+ * (sp+0x28 de un marco de 0x40, solo con ra guardado). GCC pone ahi registros guardados, asi que el
+ * marco va a mano y el cuerpo usa esos mismos lugares. */
+__attribute__((naked))
+void func_8002D714(void) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x40\n"
+            "\tsw $31, 0x38($sp)\n"
+            "\taddiu $4, $sp, 0x28\n"
+            "\tjal lectura_sector\n"
+            "\taddiu $5, $sp, 0x30\n"
+            "\tlw $31, 0x38($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x40\n"
+            ".set reorder");
 }
 
 extern char D_80061774[];            /* aviso de DMA ocupado */
