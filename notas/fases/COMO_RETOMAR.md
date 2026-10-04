@@ -412,3 +412,31 @@ Lote de fondo al cerrar esta tanda: 875 de 886.
   DMA dice "transferencia terminada" (destraba DrawSync y la cola del GPU) y el estado del puerto del mando
   (0x1F801044) dice listo/recibido/enviado. Lo que sigue girando: respuesta del CD, MDEC (video), la
   rutina de VBlank del juego (D_8007CAE6) y partes del protocolo del mando.
+
+### TRASPASO 04-10 madrugada (EMPIEZA AQUI el chat siguiente)
+
+**Estado: reales 73.4 % (658 fn) + sinteticas 16.9 % (289 fn) = 90.3 %.** Medir con `py decomp/verif/cuenta.py`
+(desde `decomp`; `--pendientes` lista lo que falta). Todo commiteado y pusheado en main.
+
+Modelos aprobados por Meme y prendidos en verificar.py: GPU desocupada, VSync (cada llamada pasa un cuadro),
+DMA terminado al instante, puerto del mando listo. Capturas donde la original no termina se descartan; topes
+por instrucciones (determinista).
+
+**Siguiente, en orden:**
+1. Tanda `verif/lanzar_v9.sh` (log `decomp/build/v9.txt`): estaba en func_80019D80; faltan func_8002CF28,
+   func_8002B2BC, func_80017D80, func_800189A4, CargarWRLDDATA (borradores de src/auto). Anotar con
+   `py verif/anotar.py build/v9.txt`. Las que no compilan o den DISTINTO: escribir a mano (`*_g14.c`).
+   func_8005D50C (824, el reproductor de video) no compila: escribirla a mano (ya terminan con los modelos).
+2. 27 NO_TERMINA con C siguen girando: respuesta del CD (func_8002AC18 adentro), MDEC/video (func_8005DADC),
+   la rutina de VBlank del juego (D_8007CAE6, func_800218D4/80021B4C/800219F8) y partes del mando
+   (func_8002643C). Un modelo de "VSyncCallback" (llamar a la funcion registrada en cada cuadro) destrabaria
+   las de VBlank; el del CD es mas dificil (respuestas del controlador).
+3. 34 SIN_CAPTURAS: herramientas de desarrollo que leen archivos, BIOS, asm puro; pocas se pueden.
+4. Sinteticas debiles segun mutantes (auditoria.tsv "mutantes muertos"): func_80026820, func_80052578,
+   func_8001CB4C, func_80026ECC dependen del hardware; ahora con el modelo del mando podrian mejorar.
+5. Meme dejo `C:\esp` (proyecto ESP32) por si algo sirve para ganar velocidad: revisar.
+
+Trampas de esta sesion (repetidas): m2c pone sp5C/sp60/sp64 sueltos donde va un vector o un RECT (usar
+arreglo); borradores viejos definen punteros a funcion como `static = NULL`; heredoc pierde `\` (usar
+Write o 0x5C); `wsl.exe bash -c '$f'` expande afuera (usar scripts); Claude Code mata procesos de fondo si
+la memoria de Windows baja (Bambu Studio, Edge y otros node se la comen); lanzar con `verif/fondo.sh`.

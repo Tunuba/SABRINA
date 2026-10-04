@@ -168,3 +168,68 @@ fin:
     }
     return 0;
 }
+
+extern u8 D_80091A7C[128][0x2C];     /* la tabla de directorios: numero, padre, sector, nombre */
+extern char D_80061530[], D_8006155C[], D_80061564[], D_80061594[], D_800615B8[], D_800615D8[], D_800615EC[];
+extern s32 strncmp(const char *a, const char *b, s32 n);
+
+/* Lee el descriptor del volumen (sector 16), comprueba "CD001" y lee la tabla de directorios (Path Table):
+ * para cada directorio (hasta 128) su numero, el del padre, el sector y el nombre. Olvida el directorio que
+ * estaba leido. 1 si fue bien, 0 si no. */
+s32 func_8002B810(void) {
+    u8 *p = D_8009307C;
+    s32 r, i;
+    u32 lba;
+    u8 *e;
+
+    r = func_8002BE14(1, 0x10, p);
+    if (r != 1) {
+        if (D_8006D30C > 0) {
+            printf(D_80061530);
+        }
+        return 0;
+    }
+    if (strncmp((char *)p + 1, D_8006155C, 5) != 0) {
+        if (D_8006D30C > 0) {
+            printf(D_80061564);
+        }
+        return 0;
+    }
+    lba = leer32(p + 0x8C);
+    if (func_8002BE14(1, lba, p) != r) {
+        if (D_8006D30C > 0) {
+            printf(D_80061594, lba);
+        }
+        return 0;
+    }
+    if (D_8006D30C >= 2) {
+        printf(D_800615B8);
+    }
+    i = 0;
+    if (p < p + 0x800) {
+        do {
+            if (*p == 0) {
+                break;
+            }
+            e = D_80091A7C[i];
+            *(u32 *)(e + 8) = leer32(p + 2);
+            *(s32 *)(e + 0) = i + 1;
+            *(s32 *)(e + 4) = p[6];
+            memcpy(e + 0xC, p + 8, p[0]);
+            e[0xC + p[0]] = 0;
+            p += p[0] + 8 + (p[0] & 1);
+            if (D_8006D30C >= 2) {
+                printf(D_800615D8, *(s32 *)(e + 8), *(s32 *)(e + 0), *(s32 *)(e + 4), e + 0xC);
+            }
+            i++;
+        } while (i < 0x80 && p < D_8009387C);
+    }
+    if (i < 0x80) {
+        *(s32 *)(D_80091A7C[i] + 4) = 0;
+    }
+    D_8006D3C8 = 0;
+    if (D_8006D30C >= 2) {
+        printf(D_800615EC, i);
+    }
+    return 1;
+}
