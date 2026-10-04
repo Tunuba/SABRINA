@@ -492,7 +492,7 @@ func_80011D9C	640	IGUAL	src/libgpu/vram_fifo_g14.c	6 de 6 capturas y 434 de 434 
 func_8002643C	632	IGUAL	src/psyq/mando_byte_g14.c	8 de 8 capturas y 263 de 263 variantes iguales
 func_80011B60	572	IGUAL	src/libgpu/encolar_g14.c	8 de 8 capturas y 586 de 586 variantes iguales
 func_8002622C	528	IGUAL	src/auto/func_8002622C.c	7 de 7 capturas y 268 de 268 variantes iguales (1 capturas donde la original no termina, sin comparar)
-CargarSonidoNivel	468	NO_TERMINA	src/auto/CargarSonidoNivel.c	la original no termina en el emulador (espera al hardware)
+CargarSonidoNivel	468	IGUAL	src/audio/sonido_nivel_g14.c	6 de 6 capturas y 96 de 96 variantes iguales
 func_800213A0	412	IGUAL	src/Screen/pantalla_iniciar_g14.c	1 de 1 capturas y 88 de 88 variantes iguales
 func_80025A10	400	IGUAL	src/psyq/mando_cuadro_g14.c	8 de 8 capturas y 363 de 363 variantes iguales
 func_8002CD3C	376	IGUAL_V0	src/auto/func_8002CD3C.c	3 de 3 capturas y 316 de 322 variantes iguales (3 capturas donde la original no termina, sin comparar)
@@ -567,4 +567,7 @@ func_8004F50C	92	NO_TERMINA	src/auto/func_8004F50C.c	la original no termina en e
 func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
 func_8004EBD0	396	DISTINTO	src/auto/func_8004EBD0.c	0 de 1 capturas y 0 de 134 variantes iguales
-func_800522E4	108	DISTINTO	src/auto/func_800522E4.c	0 de 1 capturas y 0 de 132 variantes iguales
+func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 132 variantes iguales
+func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
+func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
+func_8003E9FC	60	DISTINTO	src/varios/tabla_corrida_g14.c	0 de 1 capturas y 14 de 14 variantes iguales
