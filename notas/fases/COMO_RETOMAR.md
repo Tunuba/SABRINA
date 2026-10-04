@@ -542,3 +542,23 @@ Ideas si se quiere seguir: modelo de la tarjeta de memoria; capturas sinteticas 
   descomprimidos; arrancar.ps1 los vuelve a bajar solo si falta una herramienta), los logs de las tandas
   (`decomp/build/*.txt`, ya anotados en auditoria.tsv) y los `decomp/tmp_*`. No se toco: capturas,
   capturas_sint, disco/ (con las versiones del mod), extraido, estados, herramientas instaladas.
+
+### CIERRE FINAL 04-10 noche (EMPIEZA AQUI)
+
+**Reales 77.6 % + sinteticas 17.4 % = 95.0 %** (`py decomp/verif/cuenta.py`). Todo pusheado en main.
+Despues del cierre de la tarde:
+- `SABRINA_LIMITE` (tope de instrucciones por corrida, defecto 20 M) para las funciones largas. Con 300 M y
+  6 variantes func_80019D80 (la actualizacion de cada cuadro, 572 bytes) dio IGUAL (`verif/lanzar_largas.sh`).
+- func_8003E9FC IGUAL_SINT con capturas sinteticas armadas a mano (`verif/capturas_8003E9FC.sh`, usa
+  `sint.py crear_con` con datos en la RAM: el puntero de la tabla valido).
+- **PENDIENTE (parado a mano por Meme):** `verif/lanzar_largas2.sh` verifica la PantallasLegales nueva
+  (`src/Screen/pantallas_legales_g14.c`), escrita con el marco de pila del original (0xB8): las funciones
+  que llama copian bytes sin inicializar de la pila, y con el marco de GCC (0xD8) la basura cambiaba (la
+  version de video_g13.c dio DISTINTO solo por eso, en D_8006D31C). Truco para bajar el marco: armar las
+  direcciones de las globales y las constantes del bucle con asm volatile (`DIR`, `CUATRO`) para que GCC no
+  las guarde en registros. Lanzar con `verif/fondo.sh verif/lanzar_largas2.sh build/largas2.out` (~1 h) y
+  anotar con `py verif/anotar.py build/largas2.txt`. El mismo truco puede servir para otras cuyas llamadas
+  leen basura de pila (no para las que la leen en su propio marco).
+- func_800522E4 (InitCARD): limite, func_800521AC guarda la direccion de retorno en memoria.
+- Las SIN_CAPTURAS chicas que quedan (func_800294F0, 80029518, 80029530, 80052114/40/84, 800161C8) son asm
+  puro o llamadas al PC de desarrollo (break de PCdrv): no van a C.
