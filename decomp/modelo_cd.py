@@ -87,6 +87,11 @@ class Cd:
         self.sectores = 0            # sectores entregados (tope para no leer para siempre)
         self.log = []                # para depurar (verif/traza_cd.sh)
 
+    def posicion(self, msf):
+        """La posicion de la ultima Setloc (la copia de libcd, 3 bytes en BCD)."""
+        if _de_bcd(msf[0]) < 80:
+            self.destino = self.lba = (_de_bcd(msf[0]) * 60 + _de_bcd(msf[1])) * 75 + _de_bcd(msf[2]) - 150
+
     def estado(self):
         return 0x02 | (0x20 if self.leyendo else 0) | (0x80 if self.tocando else 0)
 
@@ -121,6 +126,9 @@ class Cd:
         elif off == 3:
             if self.indice == 0:
                 if v & 0x80:
+                    if not self.sector:
+                        # piden un sector sin haber leido: el que estaba listo al capturar, el de la posicion
+                        self.sector = self._datos_del_sector(sector(self.lba))
                     if self.pos >= len(self.fifo):
                         self.fifo, self.pos = self.sector, 0
                 else:

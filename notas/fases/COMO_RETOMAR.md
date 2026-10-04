@@ -440,3 +440,34 @@ Trampas de esta sesion (repetidas): m2c pone sp5C/sp60/sp64 sueltos donde va un 
 arreglo); borradores viejos definen punteros a funcion como `static = NULL`; heredoc pierde `\` (usar
 Write o 0x5C); `wsl.exe bash -c '$f'` expande afuera (usar scripts); Claude Code mata procesos de fondo si
 la memoria de Windows baja (Bambu Studio, Edge y otros node se la comen); lanzar con `verif/fondo.sh`.
+
+### 04-10 manana (sesion sola, Meme: "tu mandas, te doy la aprobacion de todo")
+
+- **Tanda v9**: la vieja NO estaba parada; termino sin resultado en func_80019D80 (la actualizacion de cada
+  cuadro: TOPE, es lentisima de emular). WSL: el distro por defecto ahora es docker-desktop, lanzar con
+  `wsl.exe -d Ubuntu-24.04 ...` y, desde Git Bash, `MSYS_NO_PATHCONV=1`.
+- **Escritas a mano (047d651)**: func_8005D50C reproductor de video (Screen/video_reproductor_g14.c),
+  func_8002D714 lectura de video por CD y func_8002D56C arranque del DMA (psyq/cd_stream_g14.c),
+  func_8002CF28 CdPlay y func_8002B2BC CD_init (psyq/cd_play_g14.c), func_800275F8 envio al mando
+  (psyq/mando_envio_g14.c), func_80017BC0 parche de la BIOS (psyq/parche_bios_g14.c, GetC0Table con asm),
+  func_80051024 directorio de la tarjeta (varios/tarjeta_dir_g14.c), func_80017D80 cargar archivo entero
+  (File/archivo_entero_g14.c), las 6 cargas de animaciones (varios/animaciones_g14.c, generadas del asm).
+  func_80016170 es setjmp: asm puro.
+- **Modelos nuevos en verificar.py, prendidos por defecto** (aprobados por Meme 04-10):
+  - VBlank: en cada llamada a VSync corre la rutina de VBlank del juego (func_80016A2C), que sube el contador
+    y llama a las funciones de VSyncCallback (la barra de carga). En la pila de interrupciones y guardando
+    todos los registros. `SABRINA_SIN_VBLANK=1` lo apaga.
+  - CD: `decomp/modelo_cd.py` imita el controlador del CD (ordenes, acuse INT3, respuesta INT2, sectores INT1
+    sacados del .bin del disco, DMA del canal 3). El acuse queda pendiente al dar la orden; lo demas se
+    entrega en la proxima VSync corriendo la rutina del CD de libcd (func_8002A5F8). El modo del CD se toma
+    de la copia de libcd en RAM (D_8006D320). `SABRINA_SIN_CD=1` lo apaga.
+    `verif/traza_cd.sh F [n]` muestra donde queda la original y el dialogo con el CD (o=orden, I=respuesta
+    de la cola, S=sector, v=VSync con la interrupcion pendiente).
+  Con eso terminan CargarArchivoEntero, CargarANI, CargarINO, func_80019CC4, func_8003E0B4, func_8002CEB4,
+  func_800219F8 (antes NO_TERMINA). Tanda `verif/lanzar_cd1.sh` (log build/cd1.txt): las 45 NO_TERMINA y
+  las escritas a mano, de chica a grande.
+  - Arreglos del modelo del CD: arranca en la posicion de la ultima Setloc de libcd (D_8006D31C) y, si piden
+    un sector (request 0x80) sin haber leido, da el de esa posicion (en la consola ya estaba listo al
+    capturar; si no, func_8002D714 giraba esperando datos).
+  - MDEC (04-10): el estado (0x1F801824) dice siempre desocupado y sin datos de salida (0x80040000). No
+    decodifica: los DMA 0/1 terminan sin copiar, igual en original y C.

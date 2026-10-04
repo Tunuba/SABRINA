@@ -431,6 +431,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             v |= 0x1C000000          # GPUSTAT: listo para comandos, para mandar VRAM y para DMA
         if MODELOS and off in (0x088, 0x098, 0x0A8, 0x0B8, 0x0C8, 0x0D8, 0x0E8) and tam == 4:
             v &= ~0x11000000         # control de cada canal de DMA: la transferencia ya termino
+        if MODELOS and off == 0x824 and tam == 4:
+            v = 0x80040000           # estado del MDEC: desocupado y sin datos de salida (04-10; no decodifica)
         if MODELOS and off == 0x044:
             v |= 0x7                 # estado del puerto del mando: listo para mandar, dato recibido, enviado
         return v
@@ -456,6 +458,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     if cd:
         # el modo que el juego le puso al CD antes de la captura: libcd guarda una copia (Setmode)
         cd.modo = ram[simbolos()["D_8006D320"] & 0x1FFFFF]
+        loc = simbolos()["D_8006D31C"] & 0x1FFFFF
+        cd.posicion(ram[loc:loc + 3])
     if codigo_c:
         uc.mem_write(BASE_C & 0x1FFFFFFF, codigo_c)
     for d, b in (parche or {}).items():
