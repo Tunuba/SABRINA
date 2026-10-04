@@ -519,3 +519,21 @@ setjmp, BuclePrincipal, herramientas que leen del PC.
     la original (salta a 0). La pila de interrupciones del modelo se restaura al volver (guardaba registros
     del codigo interrumpido, distintos en C).
   - 04-10 mediodia: 76.1 % reales + 16.9 % sinteticas = 93.0 %.
+
+### CIERRE 04-10 tarde (EMPIEZA AQUI)
+
+**Reales 77.4 % (692 fn) + sinteticas 17.4 % (298 fn) = 94.8 %.** Todas las tandas terminaron y estan
+anotadas (cd4, cd5, sintcd, cd6a, cd6, sint2). Todo pusheado en main.
+Hoy pasaron a IGUAL, entre otras: func_8005C9D0 y func_8005CEBC (video), func_800275F8, func_8002643C,
+func_80025A10, func_80027488/534/3B0 (mando), func_8002D56C, func_8002CB00, CdPlay, CD_init, CargarINO,
+CargarSonidoNivel, CargarArchivoEntero, las 7 cargas de animaciones, el directorio de la tarjeta,
+func_80017BC0, func_800218D4, func_80021B4C, func_8005D26C, func_8005D8D0, func_8005DCA0; y 9 sinteticas.
+Lo que queda (ver lista con `py verif/cuenta.py --pendientes`) es casi todo limite conocido:
+- basura de pila en el tope del marco (el original guarda registros debajo de los locales): func_8002D714,
+  func_80017D80, func_800189A4, CargarANI, CargarWRLDDATA, func_8001B000, func_8004EBD0 (bufer de pila en
+  la cola del GPU), InitGeom (ra guardado en memoria);
+- video entero (DecDCTvlc2): func_8005D50C, ReproducirSTR; PantallasLegales espera muchos cuadros o un boton;
+- tarjeta de memoria (func_80051298, func_800522E4): faltaria un modelo de la tarjeta;
+- herramientas que leen del PC (SIN_CAPTURAS), BIOS/asm (setjmp, BuclePrincipal, func_800521AC...);
+- func_8003E9FC: la captura sintetica tiene el puntero en 0 (haria falta una con D_80074EBC valido).
+Ideas si se quiere seguir: modelo de la tarjeta de memoria; capturas sinteticas con globales elegidas.
