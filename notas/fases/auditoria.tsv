@@ -102,7 +102,7 @@ func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 d
 DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
 func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales
 CrearParticula	952	IGUAL	src/objetos/particula_g14.c	8 de 8 capturas y 844 de 844 variantes iguales
-CargarANI	188	NO_TERMINA	src/varios/animaciones_g07.c	la original no termina en el emulador (espera al hardware)
+CargarANI	188	DISTINTO	src/varios/animaciones_g07.c	6 de 6 capturas y 72 de 75 variantes iguales
 LeerCuadriculaINO	312	IGUAL	src/modelLoader/cargar_g04.c	6 de 6 capturas y 179 de 179 variantes iguales
 LeerModelosINO	380	IGUAL	src/modelLoader/cargar_g04.c	1 de 1 capturas y 57 de 57 variantes iguales (5 capturas donde la original no termina, sin comparar)
 func_8001315C	192	IGUAL	src/libgpu/gpu_g01.c	8 de 8 capturas y 818 de 818 variantes iguales (con el modelo de GPU desocupada)
@@ -127,7 +127,7 @@ func_80018408	128	IGUAL	src/nodos/reserva_g02.c	8 de 8 capturas y 624 de 624 var
 func_80018488	288	IGUAL	src/nodos/reserva_g02.c	8 de 8 capturas y 722 de 722 variantes iguales
 func_800188C4	224	IGUAL	src/File/archivo_g03.c	5 de 5 capturas y 374 de 374 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_80021120	112	IGUAL	src/Screen/pantalla_g05.c	6 de 6 capturas y 567 de 567 variantes iguales
-func_80021B4C	240	NO_TERMINA	src/Screen/pantalla_g05.c	la original no termina en el emulador (espera al hardware)
+func_80021B4C	240	IGUAL	src/Screen/pantalla_g05.c	3 de 3 capturas y 168 de 168 variantes iguales (5 capturas donde la original no termina, sin comparar)
 func_80022528	60	IGUAL	src/TexAnima/ciclos_g05.c	6 de 6 capturas y 456 de 456 variantes iguales
 func_80022564	176	IGUAL	src/TexAnima/ciclos_g05.c	6 de 6 capturas y 679 de 679 variantes iguales
 func_80022BCC	384	IGUAL	src/TexAnima/ciclos_g05.c	8 de 8 capturas y 868 de 868 variantes iguales
@@ -502,10 +502,10 @@ func_80029D28	332	IGUAL	src/auto/func_80029D28.c	8 de 8 capturas y 759 de 759 va
 func_80029AB8	316	IGUAL	src/auto/func_80029AB8.c	8 de 8 capturas y 826 de 826 variantes iguales
 func_8005D26C	308	DISTINTO	src/Screen/video_cuadro_g14.c	2 de 2 capturas y 217 de 244 variantes iguales
 func_800218D4	244	NO_TERMINA	src/auto/func_800218D4.c	la original no termina en el emulador (espera al hardware)
-func_8005D8D0	240	NO_TERMINA	src/auto/func_8005D8D0.c	la original no termina en el emulador (espera al hardware)
+func_8005D8D0	240	IGUAL	src/auto/func_8005D8D0.c	1 de 1 capturas y 36 de 36 variantes iguales
 func_80011850	224	IGUAL	src/auto/func_80011850.c	8 de 8 capturas y 725 de 725 variantes iguales
-func_800273B0	216	NO_TERMINA	src/auto/func_800273B0.c	la original no termina en el emulador (espera al hardware)
-func_80027534	196	NO_TERMINA	src/auto/func_80027534.c	la original no termina en el emulador (espera al hardware)
+func_800273B0	216	DISTINTO	src/auto/func_800273B0.c	8 de 8 capturas y 268 de 312 variantes iguales
+func_80027534	196	DISTINTO	src/auto/func_80027534.c	0 de 8 capturas y 0 de 241 variantes iguales
 func_80021A94	184	IGUAL	src/Screen/video_arranque_g14.c	1 de 1 capturas y 46 de 46 variantes iguales
 CargarINO	184	IGUAL	src/varios/cargar_ino_g14.c	2 de 2 capturas y 27 de 27 variantes iguales (4 capturas donde la original no termina, sin comparar)
 func_8002FFB8	176	IGUAL	src/auto/func_8002FFB8.c	6 de 6 capturas y 144 de 144 variantes iguales
