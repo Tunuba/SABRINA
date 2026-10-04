@@ -500,3 +500,16 @@ la memoria de Windows baja (Bambu Studio, Edge y otros node se la comen); lanzar
     los locales y la estructura llega al tope del marco, donde GCC guarda ra: no hay forma de igualar la
     basura en C. CargarINO paso porque su marco coincide. `verif/marcos.sh archivo.c f...` compara marcos.
     Para func_8002FE64 bastaba no tener CargarANI en el mismo archivo (GCC la metia adentro).
+
+### TRASPASO 04-10 manana (EMPIEZA AQUI el chat siguiente si este se corta)
+
+**Estado al escribir esto: reales 74.3 % + sinteticas 16.9 % = 91.1 %** (sube con lo que anoten las tandas).
+Tandas encadenadas corriendo solas en WSL (cada una espera el FIN de la anterior, `verif/cadena.sh`):
+cd4 (build/cd4.txt) -> cd5 -> sintcd (sinteticas que no terminaban, ahora con modelos) -> cd6 -> sint2.
+Al terminar: `py verif/anotar.py build/cdN.txt` (y `--sint` para sintcd.txt y sint2.txt), cuenta.py, commit.
+Si se cortaron (la PC se apago), relanzar desde la que no tiene FIN con `verif/fondo.sh verif/lanzar_X.sh`.
+Escritas a mano en esta sesion y en esas tandas: cargar_ino, wrlddata, sonido_nivel, cd_datasync,
+mover_imagen, tabla_corrida, mando_cuadro, parche_bios (InitGeom), cd_stream_aviso (todas *_g14.c).
+Lo que queda sin salida conocida: video entero (DecDCTvlc2), basura de pila en cargas con nombre roto,
+tarjeta de memoria (func_80051298: falta modelo de la tarjeta), func_80018218 (montón lleno en la captura),
+setjmp, BuclePrincipal, herramientas que leen del PC.
