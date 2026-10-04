@@ -57,6 +57,12 @@ GPU_LISTA = MODELOS
 VBLANK = MODELOS and os.environ.get("SABRINA_SIN_VBLANK") != "1"
 CD = MODELOS and os.environ.get("SABRINA_SIN_CD") != "1"
 VUELTA_INT = 0x80FFFFE0     # direccion de retorno centinela de las rutinas de interrupcion
+# - BIOS, GetC0Table (B0 0x56): las capturas se hicieron con una BIOS sin el kernel de Sony en la RAM, asi que
+#   la tabla C0 no esta. El modelo pone una en una pagina aparte (0x01000000, fuera de la RAM que se compara)
+#   con la entrada 6 (el manejador de excepciones) apuntando a las 6 instrucciones que trae la BIOS real en
+#   +0x28; func_80017BC0 (libapi) las encuentra y las parchea, como en la consola.
+TABLA_C0 = 0x81000000
+C0_VIEJO = (0xAF410004, 0xAF420008, 0xAF43000C, 0xAF5F007C, 0x40037000, 0x00000000)
 FIN = 0x80FFFFF0            # direccion de retorno centinela
 LIMITE = 20_000_000         # instrucciones como maximo por ejecucion
 ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
@@ -431,6 +437,14 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             v |= 0x1C000000          # GPUSTAT: listo para comandos, para mandar VRAM y para DMA
         if MODELOS and off in (0x088, 0x098, 0x0A8, 0x0B8, 0x0C8, 0x0D8, 0x0E8) and tam == 4:
             v &= ~0x11000000         # control de cada canal de DMA: la transferencia ya termino
+        if MODELOS and off == 0x070:
+            v |= 0x80                # I_STAT: el mando respondio (ACK, interrupcion 7) (04-10)
+        if MODELOS and off == 0x120:
+            # el contador 2 avanza 0x40 en cada lectura (04-10): las esperas con tiempo de libpad
+            # (func_800290AC) terminan. Lo escrito lo pone en ese valor, como en la consola. Los contadores
+            # 0 y 1 no: VSync lee el 1 hasta que dos lecturas seguidas coincidan
+            v = (int.from_bytes(io[off:off + 2], "little") + 0x40) & 0xFFFF
+            io[off:off + 2] = v.to_bytes(2, "little")
         if MODELOS and off == 0x824 and tam == 4:
             v = 0x80040000           # estado del MDEC: desocupado y sin datos de salida (04-10; no decodifica)
         if MODELOS and off == 0x044:
@@ -453,6 +467,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     uc.mmio_map(0x1F801000, 0x2000, io_lee, None, io_escribe, None)
     uc.mem_map(0x1F803000, 0x0000D000)            # resto (expansion 2 y demas)
     uc.mem_map(0x1FC00000, 0x00080000)            # BIOS (0xBFC00000)
+    if MODELOS:
+        uc.mem_map(TABLA_C0 & 0x1FFFFFFF, 0x1000)     # la tabla C0 del modelo y el codigo al que apunta
+        uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x18, struct.pack("<I", TABLA_C0 + 0x100))
+        uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x128, struct.pack("<6I", *C0_VIEJO))
     uc.mem_write(0x00000000, ram)
     uc.mem_write(0x1F800000, spad)
     if cd:
@@ -473,6 +491,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
+            if MODELOS and dirc == 0xB0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x56:
+                u.reg_write(UC_MIPS_REG_V0, TABLA_C0)    # GetC0Table: la tabla del modelo (ver TABLA_C0)
             u.reg_write(UC_MIPS_REG_PC, u.reg_read(UC_MIPS_REG_RA))
 
     interrupcion_mala = []
