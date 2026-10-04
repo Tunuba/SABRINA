@@ -534,3 +534,4 @@ func_80026744	40	NO_TERMINA	src/auto/func_80026744.c	la original no termina en e
 func_8002CB00	32	NO_TERMINA	src/auto/func_8002CB00.c	la original no termina en el emulador (espera al hardware)
 func_80046B90	28	IGUAL	src/auto/func_80046B90.c	2 de 2 capturas y 208 de 208 variantes iguales
 func_8003E0B4	16	NO_TERMINA	src/auto/func_8003E0B4.c	la original no termina en el emulador (espera al hardware)
+func_8002D170	128	IGUAL	src/auto/func_8002D170.c	1 de 1 capturas y 117 de 117 variantes iguales
