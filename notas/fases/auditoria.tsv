@@ -558,7 +558,7 @@ func_800177B4	128	DISTINTO	src/psyq/parche_bios_g14.c	0 de 1 capturas y 0 de 56 
 func_8002153C	660	IGUAL	src/Screen/primitivas_g13.c	1 de 1 capturas y 128 de 128 variantes iguales
 func_8003DEE8	264	IGUAL_SINT	src/auto/func_8003DEE8.c	1 de 1 capturas y 109 de 109 variantes iguales
 func_8002B704	236	IGUAL_SINT	src/auto/func_8002B704.c	1 de 1 capturas y 79 de 79 variantes iguales
-func_8001B000	200	DISTINTO	src/auto/func_8001B000.c	0 de 1 capturas y 0 de 58 variantes iguales
+func_8001B000	200	IGUAL_SINT	src/varios/cache_tex_g15.c	1 de 1 capturas y 58 de 58 variantes iguales
 func_8001B600	152	IGUAL_SINT	src/auto/func_8001B600.c	1 de 1 capturas y 0 de 0 variantes iguales
 func_80018CB8	132	NO_TERMINA	src/auto/func_80018CB8.c	la original no termina en el emulador (espera al hardware)
 func_8003DFF0	112	IGUAL_SINT	src/auto/func_8003DFF0.c	1 de 1 capturas y 112 de 112 variantes iguales

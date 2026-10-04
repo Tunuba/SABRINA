@@ -71,8 +71,11 @@ TABLA_C0 = 0x81000000
 #   como VSyncCallback). Las esperas que giran leyendo ese aviso sin llamar a VSync (func_80051298) no
 #   terminaban: cuando la misma instruccion lo lee en 0 dos veces seguidas, pasa un cuadro (corre la rutina
 #   de VBlank como una interrupcion, ver VBLANK) antes de la instruccion siguiente. Y la tarjeta esta puesta y
-#   contesta bien: cada _card_info/_card_clear/_card_read/_card_write/_card_load deja el evento IOE (lo que hace
-#   su manejador, func_800519E4: D_800D5390 = 1) en el momento. SABRINA_SIN_TARJETA=1 apaga las dos cosas.
+#   contesta bien: la BIOS de la tarjeta se modela (bios_tarjeta) con una tarjeta en blanco por ejecucion,
+#   _card_write guarda el sector de 128 bytes, _card_read lo devuelve, _card_status dice lista, y cada
+#   operacion (write, read, _card_info, _card_load) termina enseguida con los eventos IOE de software y de
+#   hardware (lo que hacen sus manejadores func_800519E4 y func_80051A34: D_800D5390 y D_800D53A0 en 1). Lo
+#   escrito en la tarjeta tambien se compara. SABRINA_SIN_TARJETA=1 apaga todo esto.
 TARJETA = MODELOS and os.environ.get("SABRINA_SIN_TARJETA") != "1"
 MALLOC = MODELOS and os.environ.get("SABRINA_SIN_MALLOC") != "1"
 MONTON_BIOS = 0x81100000
@@ -536,8 +539,29 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     uc.reg_write(UC_MIPS_REG_RA, FIN)
     sp = regs[29]
 
+    tarjeta = {}                                      # (puerto, sector) -> 128 bytes (ver TARJETA)
+    if TARJETA:
+        ev_sw, ev_hw = simbolos()["D_800D5390"] & 0x1FFFFFFF, simbolos()["D_800D53A0"] & 0x1FFFFFFF
+
+    def bios_tarjeta(u, dirc, f):
+        a0, a1, a2 = (u.reg_read(UC_MIPS_REG_ZERO + r) for r in (4, 5, 6))
+        if (dirc, f) == (0xB0, 0x4E):                  # _card_write(puerto, sector, bufer)
+            tarjeta[(a0, a1)] = bytes(u.mem_read(a2 & 0x1FFFFFFF, 128))
+        elif (dirc, f) == (0xB0, 0x4F):                # _card_read(puerto, sector, bufer)
+            u.mem_write(a2 & 0x1FFFFFFF, tarjeta.get((a0, a1), bytes(128)))
+        elif (dirc, f) not in ((0xA0, 0xAB), (0xA0, 0xAC)):   # _card_info, _card_load
+            return (dirc, f) in ((0xB0, 0x5C), (0xB0, 0x50))  # _card_status: lista; _new_card: nada
+        # termino bien: los manejadores de los eventos IOE (func_800519E4 y func_80051A34) ponen su aviso
+        u.mem_write(ev_sw, struct.pack("<I", 1))
+        u.mem_write(ev_hw, struct.pack("<I", 1))
+        return True
+
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
+            if TARJETA and bios_tarjeta(u, dirc, u.reg_read(UC_MIPS_REG_ZERO + 9)):
+                u.reg_write(UC_MIPS_REG_V0, 1)
+                u.reg_write(UC_MIPS_REG_PC, u.reg_read(UC_MIPS_REG_RA))
+                return
             if MODELOS and dirc == 0xB0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x56:
                 u.reg_write(UC_MIPS_REG_V0, TABLA_C0)    # GetC0Table: la tabla del modelo (ver TABLA_C0)
             if MALLOC and dirc == 0xA0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x33:
@@ -693,16 +717,6 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                         espera_t["pc"] = pc
 
                 uc.hook_add(UC_HOOK_MEM_READ, lee_aviso, begin=aviso, end=aviso + 3)
-                # y la tarjeta contesta: cada operacion de la BIOS termina bien enseguida (evento IOE, el que
-                # atiende func_800519E4 poniendo D_800D5390 en 1)
-                ioe = s["D_800D5390"] & 0x1FFFFFFF
-
-                def tarjeta_contesta(u, dirc, tam, _):
-                    u.mem_write(ioe, struct.pack("<I", 1))
-
-                for nombre in ("_card_info", "_card_clear", "_card_read", "_card_write", "_card_load"):
-                    if nombre in s:
-                        uc.hook_add(UC_HOOK_CODE, tarjeta_contesta, begin=s[nombre], end=s[nombre])
                 uc.hook_add(UC_HOOK_MEM_READ, lee_aviso, begin=aviso & 0x1FFFFFFF, end=(aviso & 0x1FFFFFFF) + 3)
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
@@ -738,6 +752,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1),
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
+                tarjeta=sorted(tarjeta.items()),
                 hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias, cd=cd.log if cd else [])
 
 
@@ -760,6 +775,8 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("scratchpad distinto")
     if a.get("monton", b"") != b.get("monton", b""):
         dif.append("monton de la BIOS distinto")
+    if a.get("tarjeta", []) != b.get("tarjeta", []):
+        dif.append("tarjeta de memoria distinta")
     if a["hw"] != b["hw"]:
         dif.append("escrituras de hardware distintas")
     return dif
