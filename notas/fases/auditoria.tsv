@@ -117,9 +117,9 @@ ArchivoLeer	272	IGUAL	src/File/archivo_g03.c	8 de 8 capturas y 507 de 507 varian
 SubirAVRAM	96	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
 func_800112C0	284	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 1088 de 1088 variantes iguales
 func_80012D74	104	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 548 de 548 variantes iguales
-func_80012DDC	144	TOPE_DE_TIEMPO	src/libgpu/gpu_g00.c	la verificacion no termino a tiempo
+func_80012DDC	144	IGUAL	src/libgpu/gpu_g00.c	6 de 6 capturas y 308 de 308 variantes iguales
 func_80012ECC	96	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
-func_80012FE4	172	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
+func_80012FE4	172	IGUAL	src/libgpu/gpu_g00.c	8 de 8 capturas y 491 de 491 variantes iguales
 func_80013090	92	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
 func_800130EC	112	NO_TERMINA	src/libgpu/gpu_g00.c	la original no termina en el emulador (espera al hardware)
 func_800182A8	352	IGUAL	src/nodos/reserva_g02.c	3 de 3 capturas y 70 de 70 variantes iguales (3 capturas donde la original no termina, sin comparar)
@@ -506,3 +506,14 @@ func_8005D8D0	240	NO_TERMINA	src/auto/func_8005D8D0.c	la original no termina en 
 func_80011850	224	IGUAL	src/auto/func_80011850.c	8 de 8 capturas y 725 de 725 variantes iguales
 func_800273B0	216	NO_TERMINA	src/auto/func_800273B0.c	la original no termina en el emulador (espera al hardware)
 func_80027534	196	NO_TERMINA	src/auto/func_80027534.c	la original no termina en el emulador (espera al hardware)
+func_80021A94	184	DISTINTO	src/auto/func_80021A94.c	1 de 1 capturas y 45 de 46 variantes iguales
+CargarINO	184	NO_TERMINA	src/auto/CargarINO.c	la original no termina en el emulador (espera al hardware)
+func_8002FFB8	176	NO_TERMINA	src/auto/func_8002FFB8.c	la original no termina en el emulador (espera al hardware)
+func_8005CD98	176	IGUAL	src/auto/func_8005CD98.c	1 de 1 capturas y 33 de 33 variantes iguales
+func_80027488	172	NO_TERMINA	src/auto/func_80027488.c	la original no termina en el emulador (espera al hardware)
+func_80010880	160	IGUAL	src/auto/func_80010880.c	6 de 6 capturas y 621 de 621 variantes iguales
+func_8002988C	144	IGUAL	src/auto/func_8002988C.c	1 de 1 capturas y 112 de 112 variantes iguales
+func_80018218	144	NO_TERMINA	src/auto/func_80018218.c	la original no termina en el emulador (espera al hardware)
+ArchivoAbrir	140	IGUAL	src/auto/ArchivoAbrir.c	3 de 3 capturas y 58 de 58 variantes iguales (5 capturas donde la original no termina, sin comparar)
+func_8002CB2C	132	IGUAL	src/auto/func_8002CB2C.c	1 de 1 capturas y 111 de 111 variantes iguales
+func_8003DE68	128	IGUAL	src/auto/func_8003DE68.c	1 de 1 capturas y 64 de 64 variantes iguales
