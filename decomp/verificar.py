@@ -29,6 +29,7 @@ import tempfile
 import time
 
 import gte
+import modelo_cd
 from unicorn import Uc, UcError, UC_ARCH_MIPS, UC_MODE_MIPS32, UC_MODE_LITTLE_ENDIAN, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_HOOK_MEM_READ, UC_HOOK_INTR
 from unicorn.mips_const import UC_MIPS_REG_PC, UC_MIPS_REG_RA, UC_MIPS_REG_V0, UC_MIPS_REG_V1, UC_MIPS_REG_SP, \
     UC_MIPS_REG_HI, UC_MIPS_REG_LO, UC_MIPS_REG_ZERO, UC_MIPS_REG_A0
@@ -44,6 +45,18 @@ BASE_C = 0x80400000
 # Con SABRINA_SIN_MODELOS=1 se apagan (para comparar con como era antes).
 MODELOS = os.environ.get("SABRINA_SIN_MODELOS") != "1"
 GPU_LISTA = MODELOS
+# Modelos agregados el 2026-10-04 (Meme aprobo todo). SABRINA_SIN_VBLANK=1 / SABRINA_SIN_CD=1 apagan cada uno.
+# - VBlank: en cada llamada a VSync corre la rutina de VBlank del juego (func_80016A2C: sube D_800649EC y
+#   llama a las funciones de VSyncCallback, como la barra de carga func_800211D4), en la pila de las
+#   interrupciones (D_80063954 + 0xFDC) y guardando todos los registros, como una interrupcion. Reemplaza al
+#   "cuadro" de VSync de arriba (el contador lo sube la rutina misma).
+# - CD: modelo_cd.py imita el controlador del CD (ordenes, respuestas, sectores del .bin, DMA del canal 3).
+#   Sus interrupciones (salvo el acuse de una orden, que queda pendiente al darla) se entregan en cada
+#   llamada a VSync corriendo la rutina del CD de libcd (func_8002A5F8), antes de la de VBlank, si el juego
+#   no esta ya dentro de una interrupcion (D_8006391A).
+VBLANK = MODELOS and os.environ.get("SABRINA_SIN_VBLANK") != "1"
+CD = MODELOS and os.environ.get("SABRINA_SIN_CD") != "1"
+VUELTA_INT = 0x80FFFFE0     # direccion de retorno centinela de las rutinas de interrupcion
 FIN = 0x80FFFFF0            # direccion de retorno centinela
 LIMITE = 20_000_000         # instrucciones como maximo por ejecucion
 ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
@@ -408,8 +421,11 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     # func_8003E0C4 daban error en la original y no en el C). Con MMIO no pasa.
     hw = []
     io = bytearray(0x2000)
+    cd = modelo_cd.Cd() if CD else None
 
     def io_lee(u, off, tam, _):
+        if cd and 0x800 <= off < 0x804:
+            return cd.lee(off - 0x800)
         v = int.from_bytes(io[off:off + tam], "little")
         if GPU_LISTA and off == 0x814:
             v |= 0x1C000000          # GPUSTAT: listo para comandos, para mandar VRAM y para DMA
@@ -422,12 +438,24 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     def io_escribe(u, off, tam, valor, _):
         hw.append((0x1F801000 + off, tam, valor))
         io[off:off + tam] = (valor & ((1 << (8 * tam)) - 1)).to_bytes(tam, "little")
+        if cd and 0x800 <= off < 0x804:
+            cd.escribe(off - 0x800, valor)
+        elif cd and off == 0x0B8 and tam == 4 and valor & 0x01000000:
+            # DMA del CD (canal 3): del sector pedido a la RAM, MADR 0x0B0 y BCR 0x0B4
+            madr = int.from_bytes(io[0x0B0:0x0B4], "little") & 0x1FFFFC
+            bcr = int.from_bytes(io[0x0B4:0x0B8], "little")
+            n = (bcr & 0xFFFF) * max(bcr >> 16, 1) * 4
+            if madr + n <= 0x200000:
+                u.mem_write(madr, cd.dma(n))
 
     uc.mmio_map(0x1F801000, 0x2000, io_lee, None, io_escribe, None)
     uc.mem_map(0x1F803000, 0x0000D000)            # resto (expansion 2 y demas)
     uc.mem_map(0x1FC00000, 0x00080000)            # BIOS (0xBFC00000)
     uc.mem_write(0x00000000, ram)
     uc.mem_write(0x1F800000, spad)
+    if cd:
+        # el modo que el juego le puso al CD antes de la captura: libcd guarda una copia (Setmode)
+        cd.modo = ram[simbolos()["D_8006D320"] & 0x1FFFFF]
     if codigo_c:
         uc.mem_write(BASE_C & 0x1FFFFFFF, codigo_c)
     for d, b in (parche or {}).items():
@@ -477,7 +505,67 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             ahora = struct.unpack("<I", bytes(u.mem_read(contador, 4)))[0]
             u.mem_write(contador, struct.pack("<I", (ahora + 1) & 0xFFFFFFFF))
 
-        uc.hook_add(UC_HOOK_CODE, cuadro, begin=entrada, end=entrada)
+        if not (VBLANK or CD):
+            uc.hook_add(UC_HOOK_CODE, cuadro, begin=entrada, end=entrada)
+        else:
+            # en la entrada de VSync, como interrupciones: la del CD (si tiene algo) y la de VBlank. Se guardan
+            # todos los registros, cada rutina corre en la pila de las interrupciones y vuelve a VUELTA_INT;
+            # al terminar la ultima se restauran y se entra de nuevo a VSync, que esta vez sigue de largo.
+            s = simbolos()
+            pila_int = s["D_80063954"] + 0xFDC
+            en_int = s["D_8006391A"] & 0x1FFFFFFF
+            estado = {"pendientes": [], "guardado": None, "seguir": False}
+
+            def correr_siguiente(u):
+                rutina = estado["pendientes"].pop(0)
+                u.reg_write(UC_MIPS_REG_SP, pila_int)
+                u.reg_write(UC_MIPS_REG_RA, VUELTA_INT)
+                u.reg_write(UC_MIPS_REG_PC, rutina)
+
+            def entrada_vsync(u, dirc, tam, _):
+                if estado["seguir"]:
+                    estado["seguir"] = False
+                    return
+                if estado["guardado"] is not None:
+                    # VSync llamada desde una rutina de interrupcion: un cuadro mas, sin anidar interrupciones
+                    if not VBLANK:
+                        cuadro(u, dirc, tam, _)
+                    return
+                pend = []
+                dentro = struct.unpack("<H", bytes(u.mem_read(en_int, 2)))[0]
+                if cd and cd.cuadro() and not dentro:
+                    pend.append(s["func_8002A5F8"])
+                elif cd and cd.tipo:
+                    cd.log.append("D" if dentro else "-")
+                if VBLANK:
+                    pend.append(s["func_80016A2C"])
+                else:
+                    cuadro(u, dirc, tam, _)
+                if not pend:
+                    return
+                estado["pendientes"] = pend
+                estado["guardado"] = [u.reg_read(UC_MIPS_REG_ZERO + i) for i in range(32)] + \
+                    [u.reg_read(UC_MIPS_REG_HI), u.reg_read(UC_MIPS_REG_LO)]
+                estado["dentro"] = dentro
+                u.mem_write(en_int, struct.pack("<H", 1))    # dentro de una interrupcion, como en libetc
+                correr_siguiente(u)
+
+            def vuelta(u, dirc, tam, _):
+                if estado["pendientes"]:
+                    correr_siguiente(u)
+                    return
+                r = estado["guardado"]
+                for i in range(1, 32):
+                    u.reg_write(UC_MIPS_REG_ZERO + i, r[i])
+                u.reg_write(UC_MIPS_REG_HI, r[32])
+                u.reg_write(UC_MIPS_REG_LO, r[33])
+                u.mem_write(en_int, struct.pack("<H", estado["dentro"]))
+                estado["guardado"] = None
+                estado["seguir"] = True
+                u.reg_write(UC_MIPS_REG_PC, entrada)
+
+            uc.hook_add(UC_HOOK_CODE, entrada_vsync, begin=entrada, end=entrada)
+            uc.hook_add(UC_HOOK_CODE, vuelta, begin=VUELTA_INT, end=VUELTA_INT)
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
     gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))
@@ -511,7 +599,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1),
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
-                hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias)
+                hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias, cd=cd.log if cd else [])
 
 
 def comparar(a, b, sp, con_v0=True):
