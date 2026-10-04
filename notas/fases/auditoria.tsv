@@ -525,7 +525,7 @@ func_8002BE14	104	IGUAL	src/auto/func_8002BE14.c	8 de 8 capturas y 876 de 876 va
 func_8003DDA0	92	IGUAL	src/auto/func_8003DDA0.c	4 de 4 capturas y 256 de 256 variantes iguales
 func_80019CC4	84	NO_TERMINA	src/auto/func_80019CC4.c	la original no termina en el emulador (espera al hardware)
 func_8003E060	84	IGUAL	src/auto/func_8003E060.c	8 de 8 capturas y 876 de 876 variantes iguales
-func_80027368	72	DISTINTO	src/auto/func_80027368.c	0 de 8 capturas y 0 de 390 variantes iguales
+func_80027368	72	IGUAL	src/psyq/mando_cerrar_g14.c	8 de 8 capturas y 390 de 390 variantes iguales
 CargarArchivoEntero	68	NO_TERMINA	src/auto/CargarArchivoEntero.c	la original no termina en el emulador (espera al hardware)
 func_800297CC	60	IGUAL	src/auto/func_800297CC.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_800219F8	56	NO_TERMINA	src/auto/func_800219F8.c	la original no termina en el emulador (espera al hardware)
