@@ -498,6 +498,9 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         # si la ultima orden de libcd fue leer (ReadN/ReadS), el lector estaba leyendo al capturar
         if ram[simbolos()["D_8006D321"] & 0x1FFFFF] in (0x06, 0x1B):
             cd.leyendo = True
+            # y el sector que ya habia llegado estaba pedido (request 0x80): los datos esperan en el FIFO
+            cd.sector = cd._datos_del_sector(modelo_cd.sector(cd.lba))
+            cd.fifo, cd.pos = cd.sector, 0
     if MODELOS:
         # el DICR de antes de la captura: habilitados los canales que tienen funcion de DMA (DMACallback)
         f = simbolos()["D_800649F4"] & 0x1FFFFF
