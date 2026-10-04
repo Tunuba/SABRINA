@@ -76,6 +76,15 @@ TABLA_C0 = 0x81000000
 #   operacion (write, read, _card_info, _card_load) termina enseguida con los eventos IOE de software y de
 #   hardware (lo que hacen sus manejadores func_800519E4 y func_80051A34: D_800D5390 y D_800D53A0 en 1). Lo
 #   escrito en la tarjeta tambien se compara. SABRINA_SIN_TARJETA=1 apaga todo esto.
+#   Archivos de la tarjeta (04-10 tarde): open/lseek/read/write/close de la BIOS (B0 0x32-0x36) sobre
+#   "bu00:..." volvian sin hacer nada y las esperas `while (lseek(...) != desde)` y `while (read(...) != 0)` de
+#   func_800502DC/func_80050418 giraban para siempre. open crea el archivo si el modo trae O_CREAT (0x200,
+#   del tamano de los bloques que dice el modo >> 16) y si no existe da -1; lseek mueve la posicion (y la
+#   devuelve); read y write son asincronos como los usa libcard (modo 0x8000): copian enseguida, devuelven 0
+#   y terminan con los eventos IOE, como las operaciones de arriba. read y lseek con un descriptor que no se
+#   abrio en la corrida (las capturas sinteticas traen el de la donante) leen ceros de un archivo sin nombre;
+#   write a uno que no se abrio (stdout de printf) sigue sin hacer nada. Los archivos se comparan con la
+#   tarjeta.
 # - PCdrv (04-10): las herramientas de desarrollo escriben a la PC con "break" (0x102 PCcreat, 0x104 PCclose,
 #   0x106 PCwrite, en func_800294F0/80029518/80029530; un gancho en cada break). El modelo contesta que salio bien y anota cada
 #   creacion, cierre y escritura (con los datos); eso tambien se compara. SABRINA_SIN_PCDRV=1 lo apaga.
@@ -547,8 +556,54 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     if TARJETA:
         ev_sw, ev_hw = simbolos()["D_800D5390"] & 0x1FFFFFFF, simbolos()["D_800D53A0"] & 0x1FFFFFFF
 
+    archivos = {"abiertos": {}, "pos": {}, "sig": 2}   # descriptor -> nombre, descriptor -> posicion
+
+    def archivo_tarjeta(u, f, a0, a1, a2):
+        """open/lseek/read/write/close de la BIOS sobre la tarjeta (ver TARJETA); None si no es de la tarjeta."""
+        if f == 0x32:                                  # open(nombre, modo)
+            n = bytes(u.mem_read(a0 & 0x1FFFFFFF, 64)).split(bytes(1))[0]
+            if not n.startswith(b"bu"):
+                return None
+            if (-1, n) not in tarjeta:
+                if not a1 & 0x200:
+                    return 0xFFFFFFFF
+                tarjeta[(-1, n)] = bytes(max(1, a1 >> 16) * 0x2000)
+            d = archivos["sig"]
+            archivos["sig"] += 1
+            archivos["abiertos"][d], archivos["pos"][d] = n, 0
+            return d
+        n = archivos["abiertos"].get(a0)
+        if f == 0x33:                                  # lseek(descriptor, desde, de_donde)
+            archivos["pos"][a0] = (a1 + (archivos["pos"].get(a0, 0) if a2 == 1 else 0)) & 0xFFFFFFFF
+            return archivos["pos"][a0]
+        if f == 0x36:                                  # close(descriptor)
+            if n is None:
+                return None
+            del archivos["abiertos"][a0]
+            return a0
+        if f == 0x35 and n is None:                    # write a stdout: como antes
+            return None
+        pos = archivos["pos"].get(a0, 0)
+        datos = bytearray(tarjeta.get((-1, n), b"")) if n is not None else bytearray()
+        if f == 0x34:                                  # read(descriptor, bufer, n)
+            trozo = bytes(datos[pos:pos + a2])
+            u.mem_write(a1 & 0x1FFFFFFF, trozo + bytes(a2 - len(trozo)))
+        else:                                          # write(descriptor, bufer, n)
+            datos[pos:pos + a2] = bytes(u.mem_read(a1 & 0x1FFFFFFF, a2))
+            tarjeta[(-1, n)] = bytes(datos)
+        archivos["pos"][a0] = pos + a2
+        u.mem_write(ev_sw, struct.pack("<I", 1))
+        u.mem_write(ev_hw, struct.pack("<I", 1))
+        return 0
+
     def bios_tarjeta(u, dirc, f):
         a0, a1, a2 = (u.reg_read(UC_MIPS_REG_ZERO + r) for r in (4, 5, 6))
+        if dirc == 0xB0 and 0x32 <= f <= 0x36:
+            v = archivo_tarjeta(u, f, a0, a1, a2)
+            if v is None:
+                return False
+            u.reg_write(UC_MIPS_REG_V0, v)
+            return "v0"
         if (dirc, f) == (0xB0, 0x4E):                  # _card_write(puerto, sector, bufer)
             tarjeta[(a0, a1)] = bytes(u.mem_read(a2 & 0x1FFFFFFF, 128))
         elif (dirc, f) == (0xB0, 0x4F):                # _card_read(puerto, sector, bufer)
@@ -562,8 +617,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
-            if TARJETA and bios_tarjeta(u, dirc, u.reg_read(UC_MIPS_REG_ZERO + 9)):
-                u.reg_write(UC_MIPS_REG_V0, 1)
+            hecho = TARJETA and bios_tarjeta(u, dirc, u.reg_read(UC_MIPS_REG_ZERO + 9))
+            if hecho:
+                if hecho != "v0":
+                    u.reg_write(UC_MIPS_REG_V0, 1)
                 u.reg_write(UC_MIPS_REG_PC, u.reg_read(UC_MIPS_REG_RA))
                 return
             if MODELOS and dirc == 0xB0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x56:
@@ -731,7 +788,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 def buscar_virtual(u, dirc, tam, _):
                     f, nom = u.reg_read(UC_MIPS_REG_ZERO + 4), u.reg_read(UC_MIPS_REG_ZERO + 5)
                     n = bytes(u.mem_read(nom & 0x1FFFFFFF, 80)).split(bytes(1))[0].upper()
-                    if not (n.startswith(carpetas) and n.endswith(b".TGA;1")):
+                    if not (n.startswith(carpetas) and n.endswith(b".TGA;1") or
+                            n.startswith(b"\\GRAPHICS\\") and n.endswith((b".TNF;1", b".BUD;1", b".XDX;1"))):
                         return
                     lba, largo = modelo_cd.archivo_virtual(n)
                     corto = n.split(b"\\")[-1][:15]

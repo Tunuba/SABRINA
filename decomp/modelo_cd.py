@@ -11,6 +11,7 @@ La original y el C llaman a la misma VSync, asi que ven lo mismo en el mismo ord
 Lo que no se modela: el audio (Play suena "en silencio"), los errores de lectura y la tapa abierta.
 """
 import mmap
+import struct
 import os
 
 DISCO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "disco")
@@ -56,6 +57,8 @@ def pistas():
 # en el disco (GRAPHICS\TARGA, SPRITE, PICTURES, FONT). archivo_virtual(nombre) arma uno chico y fijo (16x16,
 # 16 bits, pocos colores, sacados del nombre; las fuentes 24x32 con 4 letras) y lo pone despues del final del disco; verificar.py hace que
 # CdSearchFile lo encuentre. sector() lo sirve como un sector de datos (modo 2, forma 1).
+# Tambien los .TNF y .bud de cualquier carpeta de GRAPHICS que lee HerramientaArmarModelos y el .XDX de
+# HerramientaArmarCuadricula (ver _modelo_virtual).
 VIRTUAL_LBA = 400000
 _virtuales = {}      # nombre -> (lba, tam)
 _sectores_virtuales = {}
@@ -64,6 +67,8 @@ _sectores_virtuales = {}
 def archivo_virtual(nombre):
     if nombre not in _virtuales:
         h = sum(nombre) & 0xFF
+        if nombre.endswith((b".TNF;1", b".BUD;1", b".XDX;1")):
+            return _guardar_virtual(nombre, _modelo_virtual(nombre, h))
         colores = [((h * 7 + k * 37) & 0x7FFF) | (0x8000 if k & 1 else 0) for k in range(5)]
         if b"FONT" in nombre:
             # una fuente: 24x32 con 4 letras separadas por columnas de 0x7BC0 (0x1F0 despues de convertir,
@@ -74,18 +79,46 @@ def archivo_virtual(nombre):
         cab = bytes([0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, ancho, 0, alto, 0, 0x10, 0x20])
         pix = b"".join((0x7BC0 if x in sep else colores[(x * 3 + y * 5 + h) % 5]).to_bytes(2, "little")
                        for y in range(alto) for x in range(ancho))
-        datos = cab + pix
-        lba = VIRTUAL_LBA + 4 * len(_virtuales)
-        for k in range(0, len(datos), 0x800):
-            _sectores_virtuales[lba + k // 0x800] = datos[k:k + 0x800]
-        _virtuales[nombre] = (lba, len(datos))
+        _guardar_virtual(nombre, cab + pix)
     return _virtuales[nombre]
 
 
+def _guardar_virtual(nombre, datos):
+    lba = VIRTUAL_LBA + 4 * len(_virtuales)
+    for k in range(0, len(datos), 0x800):
+        _sectores_virtuales[lba + k // 0x800] = datos[k:k + 0x800]
+    _virtuales[nombre] = (lba, len(datos))
+    return _virtuales[nombre]
+
+
+def _modelo_virtual(nombre, h):
+    """Los archivos de HerramientaArmarModelos (el .TNF y el .bud de cada modelo en GRAPHICS) y el .XDX. El .TNF: cuantos nombres (2
+    bytes), cuantos bytes siguen (2) y cada nombre de textura con su largo delante (incluye el 0 del final).
+    El .bud, como lo lee func_8001CB4C: un objeto raiz con un hijo y despues -1. Cada objeto: vertices,
+    poligonos e hijos (2 bytes cada uno), 32 bytes, el largo del nombre (2) y el nombre, los hijos, los
+    poligonos (0x1C bytes) y los vertices (0xC)."""
+    s16 = lambda *v: b"".join(struct.pack("<h", x) for x in v)
+    relleno = lambda n, k: bytes((h * 13 + k * 7 + i) & 0xFF for i in range(n))
+    if nombre.endswith(b".XDX;1"):
+        # la cuadricula de HerramientaArmarCuadricula: cuantos elementos de 12 bytes (2), de 8 (2), 4 bytes
+        # que no lee y cuantos de 2 (4); despues los tres bloques
+        return s16(2, 1) + relleno(4, 7) + struct.pack("<i", 3) + relleno(24, 8) + relleno(8, 9) + relleno(6, 10)
+    if nombre.endswith(b".TNF;1"):
+        nombres = [b"T%02X%d.TGA" % (h, k) + bytes(1) for k in range(2)]
+        cuerpo = b"".join(bytes([len(n)]) + n for n in nombres)
+        return s16(len(nombres), len(cuerpo)) + cuerpo
+    hijo = s16(1, 1, 0) + relleno(0x20, 1) + s16(0) + relleno(0x1C, 2) + relleno(0xC, 3)
+    return s16(2, 1, 1) + relleno(0x20, 4) + s16(4) + b"RAIZ" + hijo + relleno(0x1C, 5) + relleno(0x18, 6) + \
+        s16(-1)
+
+
 def sector(lba):
-    """Los 2352 bytes del sector (ceros fuera del disco o en pistas de audio sin datos)."""
-    if lba in _sectores_virtuales:
-        d = _sectores_virtuales[lba]
+    """Los 2352 bytes del sector (ceros fuera del disco o en pistas de audio sin datos). Despues de los archivos
+    virtuales, un sector de datos vacio con su cabecera: el lector sigue leyendo el sector que viene detras del
+    ultimo pedido antes de que llegue el Pause, y libcd revisa la cabecera de cada uno ("CdRead: sector
+    error" y vuelta a empezar si no coincide, como pasaba con todos los archivos virtuales: 600 vueltas)."""
+    if lba in _sectores_virtuales or _sectores_virtuales and lba >= VIRTUAL_LBA:
+        d = _sectores_virtuales.get(lba, b"")
         fin = 0x89 if lba + 1 not in _sectores_virtuales else 0x08     # datos (y fin de archivo en el ultimo)
         sub = bytes([1, 0, fin, 0]) * 2
         return bytes([0]) + bytes([0xFF]) * 10 + bytes([0]) + bytes(_msf(lba)) + bytes([2]) + sub + d + \

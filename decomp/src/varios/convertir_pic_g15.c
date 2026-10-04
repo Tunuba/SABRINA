@@ -35,6 +35,7 @@ extern s32 func_80029530(s32 arch, void *datos, s32 n);  /* PCwrite */
 #define CABECERA PILA(0x24)             /* los 0x12 bytes de la cabecera del .TGA */
 #define RUTA ((char *) PILA(0x38))
 #define ARCHIVO PILA(0xB8)
+#define DIR(x) ({ void *_d; __asm__ volatile("la %0, " #x : "=r"(_d)); _d; })  /* sin guardarla en un registro */
 
 __attribute__((noinline, used)) static void convertir_pic(char *nombre) {
     TexPIC *t;
@@ -43,9 +44,9 @@ __attribute__((noinline, used)) static void convertir_pic(char *nombre) {
     s32 arch;
 
     ArchivoIniciar(ARCHIVO);
-    t = Reservar(0x20, D_800686C4, 0x171);
+    t = Reservar(0x20, DIR(D_800686C4), 0x171);
     memset(t, 0, 0x20);
-    sprintf(RUTA, D_8007C7C8, D_8007A20C, nombre);
+    sprintf(RUTA, DIR(D_8007C7C8), DIR(D_8007A20C), nombre);
     p = func_80014FF0(RUTA, '.');
     p[1] = 'T';
     p[2] = 'G';
@@ -54,10 +55,10 @@ __attribute__((noinline, used)) static void convertir_pic(char *nombre) {
     ArchivoLeer(ARCHIVO, CABECERA, 0x12);
     t->ancho = CABECERA[0xC] + (CABECERA[0xD] << 8);
     t->alto = CABECERA[0xE] + (CABECERA[0xF] << 8);
-    imagen = Reservar(t->ancho * t->alto * 2, D_800686C4, 0x180);
+    imagen = Reservar(t->ancho * t->alto * 2, DIR(D_800686C4), 0x180);
     func_8001A108(ARCHIVO, t, imagen);
     func_8001A668(imagen, t->ancho, t->alto, 2);
-    sprintf(RUTA, D_8007C7C8, D_8007A1D0, nombre);
+    sprintf(RUTA, DIR(D_8007C7C8), DIR(D_8007A1D0), nombre);
     p = func_80014FF0(RUTA, '.');
     p[1] = 'P';
     p[2] = 'I';
