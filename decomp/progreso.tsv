@@ -489,7 +489,7 @@ func_8003018C	16	YA_HECHA
 func_8003019C	108	YA_HECHA	
 func_80030208	3164	YA_HECHA	
 func_80030E64	100	YA_HECHA	
-func_80030EC8	80	SIN_CAPTURAS	
+func_80030EC8	80	IGUAL	func_80030EC8: 1 de 1 capturas y 51 de 51 variantes iguales -> IGUAL
 func_80030F18	232	YA_HECHA	
 func_80031000	180	SIN_CAPTURAS	
 func_800313E4	176	IGUAL	func_800313E4: 1 de 1 capturas y 76 de 76 variantes iguales -> IGUAL
@@ -523,7 +523,7 @@ func_80036524	204	YA_HECHA
 func_800365F0	656	YA_HECHA	
 func_80036880	1240	YA_HECHA	
 func_80036D58	1296	YA_HECHA	
-func_80037268	16	SIN_CAPTURAS	
+func_80037268	16	IGUAL	func_80037268: 1 de 1 capturas y 41 de 41 variantes iguales -> IGUAL
 func_80037278	496	DISTINTO	func_80037278: 1 de 6 capturas y 23 de 221 variantes iguales -> DISTINTO
 func_80037468	720	DISTINTO	func_80037468: 0 de 2 capturas y 10 de 91 variantes iguales -> DISTINTO
 func_80037738	548	YA_HECHA	
@@ -730,7 +730,7 @@ func_800492B4	212	YA_HECHA
 func_80049388	404	IGUAL_V0	func_80049388: 2 de 2 capturas y 56 de 59 variantes iguales -> IGUAL_V0
 func_8004951C	456	DISTINTO	func_8004951C: 2 de 2 capturas y 57 de 69 variantes iguales -> DISTINTO
 func_800496E4	528	DISTINTO	func_800496E4: 2 de 2 capturas y 66 de 79 variantes iguales -> DISTINTO
-func_800498F4	308	SIN_CAPTURAS	
+func_800498F4	308	IGUAL	func_800498F4: 2 de 2 capturas y 46 de 46 variantes iguales -> IGUAL
 func_80049A28	424	DISTINTO	func_80049A28: 0 de 2 capturas y 23 de 77 variantes iguales -> DISTINTO
 func_80049BD0	528	DISTINTO	func_80049BD0: 0 de 2 capturas y 3 de 76 variantes iguales -> DISTINTO
 func_80049DE0	196	SIN_CAPTURAS	
@@ -955,7 +955,7 @@ func_80059FB4	8	SIN_CAPTURAS
 func_80059FBC	560	YA_HECHA	
 func_8005A1EC	372	YA_HECHA	
 func_8005A360	3168	NO_TERMINA	func_8005A360: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
-func_8005AFC0	72	SIN_CAPTURAS	
+func_8005AFC0	72	IGUAL	func_8005AFC0: 1 de 1 capturas y 50 de 50 variantes iguales -> IGUAL
 func_8005B008	328	IGUAL	func_8005B008: 1 de 1 capturas y 46 de 46 variantes iguales -> IGUAL
 func_8005B150	580	YA_HECHA	
 func_8005B394	204	SIN_CAPTURAS	
