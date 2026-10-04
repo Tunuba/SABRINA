@@ -496,12 +496,12 @@ CargarSonidoNivel	468	NO_TERMINA	src/auto/CargarSonidoNivel.c	la original no ter
 func_800213A0	412	IGUAL	src/Screen/pantalla_iniciar_g14.c	1 de 1 capturas y 88 de 88 variantes iguales
 func_80025A10	400	NO_TERMINA	src/auto/func_80025A10.c	la original no termina en el emulador (espera al hardware)
 func_8002CD3C	376	IGUAL_V0	src/auto/func_8002CD3C.c	3 de 3 capturas y 316 de 322 variantes iguales (3 capturas donde la original no termina, sin comparar)
-func_8005CEBC	368	NO_TERMINA	src/auto/func_8005CEBC.c	la original no termina en el emulador (espera al hardware)
+func_8005CEBC	368	IGUAL	src/auto/func_8005CEBC.c	2 de 2 capturas y 88 de 88 variantes iguales
 func_800257F4	368	IGUAL	src/auto/func_800257F4.c	8 de 8 capturas y 694 de 694 variantes iguales
 func_80029D28	332	IGUAL	src/auto/func_80029D28.c	8 de 8 capturas y 759 de 759 variantes iguales
 func_80029AB8	316	IGUAL	src/auto/func_80029AB8.c	8 de 8 capturas y 826 de 826 variantes iguales
-func_8005D26C	308	DISTINTO	src/Screen/video_cuadro_g14.c	2 de 2 capturas y 217 de 244 variantes iguales
-func_800218D4	244	NO_TERMINA	src/auto/func_800218D4.c	la original no termina en el emulador (espera al hardware)
+func_8005D26C	308	IGUAL	src/Screen/video_cuadro_g14.c	2 de 2 capturas y 93 de 93 variantes iguales
+func_800218D4	244	IGUAL	src/auto/func_800218D4.c	8 de 8 capturas y 437 de 437 variantes iguales
 func_8005D8D0	240	IGUAL	src/auto/func_8005D8D0.c	1 de 1 capturas y 36 de 36 variantes iguales
 func_80011850	224	IGUAL	src/auto/func_80011850.c	8 de 8 capturas y 725 de 725 variantes iguales
 func_800273B0	216	DISTINTO	src/auto/func_800273B0.c	8 de 8 capturas y 268 de 312 variantes iguales
@@ -539,3 +539,5 @@ func_80010BD8	796	IGUAL	src/Font/fnt_flush_g14.c	8 de 8 capturas y 1051 de 1051 
 func_8002B810	708	IGUAL	src/psyq/cd_dir_g14.c	1 de 1 capturas y 112 de 112 variantes iguales
 func_8002FF1C	156	IGUAL	src/varios/animaciones_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
 func_80017BC0	172	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
+CargarWRLDDATA	308	DISTINTO	src/WobjCode/wrlddata_g14.c	6 de 6 capturas y 148 de 157 variantes iguales
+func_800189A4	352	DISTINTO	src/File/archivo_entero_g14.c	6 de 8 capturas y 237 de 314 variantes iguales
