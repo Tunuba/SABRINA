@@ -248,7 +248,7 @@ func_800190C0	280	IGUAL	src/Font/textos_g13.c	1 de 1 capturas y 93 de 93 variant
 func_800193F8	108	IGUAL	src/Font/textos_g13.c	2 de 2 capturas y 158 de 158 variantes iguales
 func_800163E4	216	DISTINTO	src/psyq/libetc_g13.c	1 de 2 capturas y 152 de 251 variantes iguales; difieren 2 palabras en 80063950: el setjmp (func_80016170) guarda la direccion de vuelta y la pila del que llama, que en el C son otras
 ReproducirSTR	184	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
-PantallasLegales	456	DISTINTO	src/Screen/video_g13.c	0 de 1 capturas y 0 de 26 variantes iguales
+PantallasLegales	456	IGUAL	src/Screen/pantallas_legales_g14.c	1 de 1 capturas y 26 de 26 variantes iguales
 func_800144C4	156	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 58 de 58 variantes iguales
 func_80014598	52	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 56 de 56 variantes iguales
 func_80016F38	544	IGUAL	src/psyq/libgs_g13.c	1 de 1 capturas y 52 de 52 variantes iguales
@@ -542,7 +542,7 @@ func_80017BC0	172	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 56 de 56 va
 CargarWRLDDATA	308	IGUAL	src/WobjCode/wrlddata_g14.c	6 de 6 capturas y 285 de 285 variantes iguales
 func_800189A4	352	IGUAL	src/File/archivo_entero_g14.c	8 de 8 capturas y 707 de 707 variantes iguales
 func_8002D56C	424	IGUAL	src/psyq/cd_stream_g14.c	2 de 2 capturas y 54 de 54 variantes iguales
-func_80017D80	468	DISTINTO	src/File/archivo_entero_g14.c	6 de 6 capturas y 610 de 689 variantes iguales
+func_80017D80	468	DISTINTO	src/File/archivo_entero_g14.c	6 de 6 capturas y 687 de 689 variantes iguales
 func_8002B2BC	480	IGUAL	src/psyq/cd_play_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
 func_8002CF28	488	IGUAL	src/psyq/cd_play_g14.c	8 de 8 capturas y 374 de 374 variantes iguales
 func_8002F780	544	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 138 de 138 variantes iguales
@@ -566,7 +566,7 @@ func_80029948	108	IGUAL_SINT	src/auto/func_80029948.c	1 de 1 capturas y 76 de 76
 func_8004F50C	92	NO_TERMINA	src/auto/func_8004F50C.c	la original no termina en el emulador (espera al hardware)
 func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
-func_8004EBD0	396	DISTINTO	src/auto/func_8004EBD0.c	0 de 1 capturas y 0 de 134 variantes iguales
+func_8004EBD0	396	IGUAL_SINT	src/varios/tarjeta_iconos_g15.c	1 de 1 capturas y 134 de 134 variantes iguales
 func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 132 variantes iguales
 func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales

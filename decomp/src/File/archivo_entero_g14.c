@@ -26,10 +26,9 @@ extern void Liberar(void *p);
 /* Busca el archivo (10 intentos), reserva su tamano, se pone en su primer sector (CdlSetloc, 10 intentos)
  * y lo lee (10 intentos). Devuelve el bloque, o 0 si fallo (lo libera). Lee un sector menos que los que
  * ocupa el archivo, como el original. */
-void *func_80017D80(char *nombre) {
-    CdArchivoG14 a;
-    char ruta[0x80];
-    u8 pos[4];
+__attribute__((noinline, used)) static void *cargar_entero(char *nombre, CdArchivoG14 *ap, char *ruta,
+                                                          u8 *pos) {
+#define a (*ap)
     void *datos;
     s32 primero;
     s32 ultimo;
@@ -79,6 +78,26 @@ void *func_80017D80(char *nombre) {
     while (CdReadSync(1, 0) > 0) {
     }
     return datos;
+#undef a
+}
+
+/* Como en func_800189A4: el cuarto byte de pos es lo que habia en la pila (sp+0xC7 de un marco de 0xC8), y
+ * el archivo y la ruta van en sp+0xAC y sp+0x2C. Ademas CdSearchFile lee basura de su propia pila, asi que
+ * el cuerpo tiene que quedar con el sp del original: este marco es de 0xA0 y el del cuerpo de 0x28 (con los
+ * registros guardados donde el original). ra va en sp+0, que el original no usa. */
+__attribute__((naked))
+void *func_80017D80(char *nombre) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0xA0\n"
+            "\tsw $31, 0x0($sp)\n"
+            "\taddiu $5, $sp, 0x84\n"
+            "\taddiu $6, $sp, 0x4\n"
+            "\tjal cargar_entero\n"
+            "\taddiu $7, $sp, 0x9C\n"
+            "\tlw $31, 0x0($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0xA0\n"
+            ".set reorder");
 }
 
 extern char D_80065468[];               /* el nombre del archivo fuente, para Afirmar */
@@ -94,8 +113,7 @@ typedef struct {
 
 /* Llena el buffer del archivo: se pone en su sector (10 intentos) y lee 0x19 sectores (10 intentos); avanza
  * el sector y vuelve el cursor al principio. Devuelve 0, o 1 si fallo. */
-s32 func_800189A4(ArchivoCdG14 *a) {
-    u8 pos[4];
+__attribute__((noinline, used)) static s32 llenar_buffer(ArchivoCdG14 *a, u8 *pos) {
     s32 listo;
     u8 i;
 
@@ -132,4 +150,19 @@ s32 func_800189A4(ArchivoCdG14 *a) {
     while (CdReadSync(1, 0) > 0) {
     }
     return 0;
+}
+
+/* CdIntToPos llena 3 bytes de pos y el cuarto queda con lo que habia en la pila (sp+0x2F de un marco de
+ * 0x30); func_80029D28 lo copia igual. GCC pone ahi otra cosa, asi que el marco va a mano. */
+__attribute__((naked))
+s32 func_800189A4(ArchivoCdG14 *a) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x30\n"
+            "\tsw $31, 0x20($sp)\n"
+            "\tjal llenar_buffer\n"
+            "\taddiu $5, $sp, 0x2C\n"
+            "\tlw $31, 0x20($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x30\n"
+            ".set reorder");
 }

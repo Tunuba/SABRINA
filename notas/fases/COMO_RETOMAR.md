@@ -562,3 +562,33 @@ Despues del cierre de la tarde:
 - func_800522E4 (InitCARD): limite, func_800521AC guarda la direccion de retorno en memoria.
 - Las SIN_CAPTURAS chicas que quedan (func_800294F0, 80029518, 80029530, 80052114/40/84, 800161C8) son asm
   puro o llamadas al PC de desarrollo (break de PCdrv): no van a C.
+
+### 04-10, ULTIMA SESION (EMPIEZA AQUI)
+
+**Reales 78.8 % + sinteticas 17.5 % = 96.4 %** (`py decomp/verif/cuenta.py`). Pasaron:
+- PantallasLegales IGUAL (la tanda `verif/lanzar_largas2.sh` que quedo pendiente, 1 h 40 min).
+- func_8002D714 IGUAL_V0 (2332 bytes, la mas grande que quedaba), func_800189A4 IGUAL, CargarANI IGUAL,
+  CargarWRLDDATA IGUAL, func_8004EBD0 IGUAL_SINT (nuevo `src/varios/tarjeta_iconos_g15.c`).
+
+**El truco: marco a mano para la basura de pila** (como CrearRecogible en `objetos/crear_g13.c`). El original
+deja bytes sin llenar en su marco (un CdlLOC de 3 bytes en 4, una paleta sin llenar, el archivo y la ruta
+que lee ArchivoAbrir) y los copia. La funcion pasa a ser un stub con asm que arma el marco del tamano del
+original y llama a un cuerpo en C (`static`, `noinline, used`) con punteros a los lugares de la pila del
+original (`addiu $aN, $sp, off`, sacados del asm). Detalles:
+- `__attribute__((naked))` va en SU PROPIA LINEA: verificar.py busca `void` al principio de la linea de la
+  definicion (es_void); con el atributo delante no la ve como void y compara v0 (func_8002D714 daba DISTINTO
+  solo por v0). GCC avisa que ignora naked en MIPS: no importa, la funcion solo tiene el asm.
+- Si ademas las funciones que llama leen basura de SU pila (func_80017D80: CdSearchFile deja D_8006D31C
+  distinto), el cuerpo tiene que quedar con el sp del original: stub de (marco original - marco del
+  cuerpo) y ra en una palabra que el original no usa. Ver func_80017D80 en `File/archivo_entero_g14.c`.
+  func_80017D80 quedo asi en 687 de 689 (antes 610): en las 2 que faltan `nombre` apunta a la pila y la
+  cadena cruza la unica palabra libre del marco (sp+0x28, donde el stub guarda ra), y printf no termina ni
+  con 300 M. No hay otro lugar libre: limite.
+- Con 4 argumentos ocupados se aprovecha uno que la funcion no usa (CargarANI: a0) o se calcula un puntero
+  desde otro (ruta + 0x80).
+
+Lo que queda (`py verif/cuenta.py --pendientes`), todo limite conocido: herramientas de desarrollo de
+texturas TGA que no estan en el disco (func_8001B0C8/B698/B9C0, Herramienta*, func_8001B000 su cache,
+func_80018CB8, func_80024450) y PCdrv; video (func_8005D50C, ReproducirSTR); tarjeta (func_80051298,
+func_8004F50C, func_800522E4); InitGeom (ra en memoria); setjmp/BuclePrincipal; func_8002153C (la captura
+rompe la original); func_80018218 (monton lleno).
