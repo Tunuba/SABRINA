@@ -471,3 +471,16 @@ la memoria de Windows baja (Bambu Studio, Edge y otros node se la comen); lanzar
     capturar; si no, func_8002D714 giraba esperando datos).
   - MDEC (04-10): el estado (0x1F801824) dice siempre desocupado y sin datos de salida (0x80040000). No
     decodifica: los DMA 0/1 terminan sin copiar, igual en original y C.
+  - Mas modelos 04-10 (en verificar.py, con MODELOS): I_STAT con el bit 7 (ACK del mando) y el contador 2
+    que avanza 0x40 por lectura (las esperas con tiempo de libpad); el 0 y el 1 quietos porque VSync lee el 1
+    hasta que dos lecturas coincidan (con los tres avanzando, VSync giraba para siempre). GetC0Table devuelve
+    una tabla C0 del modelo en 0x81000000 (la BIOS de las capturas no tiene el kernel de Sony en la RAM).
+    Las interrupciones del CD tambien llegan al entrar a StGetNext (el juego la llama en un bucle sin VSync).
+    Con eso terminan las del mando (func_8002643C, 80027488, 800273B0, 80027534), func_8005C9D0,
+    func_800218D4, func_80025A10.
+  - Falta para el video (ReproducirSTR, func_8005D50C, PantallasLegales, func_8005CEBC): el video corre y
+    llegan los sectores, pero los cuadros se consumen en la interrupcion de fin de DMA (libetc,
+    func_80016B4C, DICR 0x1F8010F4 y las funciones de D_800649F4). Modelar: al arrancar un DMA con su
+    interrupcion habilitada en DICR, marcar el bit 24+n y entregar func_80016B4C en el proximo punto.
+  - Ojo: no editar verificar.py mientras corre una tanda (cada vfull lo importa de nuevo); editar una copia y
+    cambiarla con mv. Una tanda (cd3) quedo con resultados rotos por eso y se repitio entera (cd4).

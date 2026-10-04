@@ -550,9 +550,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 if estado["seguir"]:
                     estado["seguir"] = False
                     return
+                es_vsync = dirc == entrada
                 if estado["guardado"] is not None:
                     # VSync llamada desde una rutina de interrupcion: un cuadro mas, sin anidar interrupciones
-                    if not VBLANK:
+                    if es_vsync and not VBLANK:
                         cuadro(u, dirc, tam, _)
                     return
                 pend = []
@@ -561,12 +562,15 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                     pend.append(s["func_8002A5F8"])
                 elif cd and cd.tipo:
                     cd.log.append("D" if dentro else "-")
-                if VBLANK:
+                if not es_vsync:
+                    pass
+                elif VBLANK:
                     pend.append(s["func_80016A2C"])
                 else:
                     cuadro(u, dirc, tam, _)
                 if not pend:
                     return
+                estado["volver"] = dirc
                 estado["pendientes"] = pend
                 estado["guardado"] = [u.reg_read(UC_MIPS_REG_ZERO + i) for i in range(32)] + \
                     [u.reg_read(UC_MIPS_REG_HI), u.reg_read(UC_MIPS_REG_LO)]
@@ -586,9 +590,14 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 u.mem_write(en_int, struct.pack("<H", estado["dentro"]))
                 estado["guardado"] = None
                 estado["seguir"] = True
-                u.reg_write(UC_MIPS_REG_PC, entrada)
+                u.reg_write(UC_MIPS_REG_PC, estado["volver"])
 
             uc.hook_add(UC_HOOK_CODE, entrada_vsync, begin=entrada, end=entrada)
+            if cd:
+                # StGetNext no espera (devuelve 1 si no hay cuadro) y el juego la llama en un bucle sin VSync:
+                # al entrar tambien llegan las interrupciones del CD (solo las del CD)
+                g = s["StGetNext"]
+                uc.hook_add(UC_HOOK_CODE, entrada_vsync, begin=g, end=g)
             uc.hook_add(UC_HOOK_CODE, vuelta, begin=VUELTA_INT, end=VUELTA_INT)
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
