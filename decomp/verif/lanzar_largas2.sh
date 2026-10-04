@@ -1,0 +1,1 @@
+SABRINA_LIMITE=300000000 SABRINA_VARIANTES=6 TOPE=7200 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vreal.sh /mnt/c/Proyectos/SABRINA/decomp/build/largas2.txt src/Screen/pantallas_legales_g14.c:PantallasLegales
