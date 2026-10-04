@@ -537,3 +537,8 @@ Lo que queda (ver lista con `py verif/cuenta.py --pendientes`) es casi todo limi
 - herramientas que leen del PC (SIN_CAPTURAS), BIOS/asm (setjmp, BuclePrincipal, func_800521AC...);
 - func_8003E9FC: la captura sintetica tiene el puntero en 0 (haria falta una con D_80074EBC valido).
 Ideas si se quiere seguir: modelo de la tarjeta de memoria; capturas sinteticas con globales elegidas.
+- **Limpieza 04-10 (Meme lo pidio):** borrados `decomp/build/ctx` (2.1 GB, contextos de m2c: se rehacen solos
+  con auto.py si hacen falta), `disco.zip` (copia de `disco/`), `herramientas/_zip` (los zips ya
+  descomprimidos; arrancar.ps1 los vuelve a bajar solo si falta una herramienta), los logs de las tandas
+  (`decomp/build/*.txt`, ya anotados en auditoria.tsv) y los `decomp/tmp_*`. No se toco: capturas,
+  capturas_sint, disco/ (con las versiones del mod), extraido, estados, herramientas instaladas.
