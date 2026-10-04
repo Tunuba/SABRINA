@@ -105,3 +105,26 @@ s32 func_80051024(s32 puerto, char *patron, u8 *destino, s32 *n, s32 saltar, s32
     }
     return 0;
 }
+
+extern void ChangeClearPAD(s32 modo);
+extern void func_800143E4(void);     /* EnterCriticalSection */
+extern void func_800143F4(void);     /* ExitCriticalSection */
+extern s32 func_80014A6C(void);
+extern void InitCARD2(s32 compartir);
+extern void func_800522B0(void);
+extern void func_800521AC(void);
+extern void func_80052240(void);
+
+/* InitCARD (libcard): arranca la tarjeta; compartir se apaga si func_80014A6C da 0. */
+void func_800522E4(s32 compartir) {
+    ChangeClearPAD(0);
+    func_800143E4();
+    if (func_80014A6C() == 0) {
+        compartir = 0;
+    }
+    InitCARD2(compartir);
+    func_800522B0();
+    func_800521AC();
+    func_80052240();
+    func_800143F4();
+}
