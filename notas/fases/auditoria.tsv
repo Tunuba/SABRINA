@@ -486,15 +486,15 @@ func_8002AC18	1036	IGUAL	src/psyq/cdsync_g14.c	5 de 5 capturas y 591 de 591 vari
 func_8002BB78	668	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 66 de 66 variantes iguales (6 capturas donde la original no termina, sin comparar)
 func_8002BE88	728	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 172 de 172 variantes iguales (6 capturas donde la original no termina, sin comparar)
 func_8005A360	3168	IGUAL	src/objetos/jefe_mundo_g14.c	2 de 2 capturas y 109 de 109 variantes iguales
-func_8005C9D0	968	DISTINTO	src/auto/func_8005C9D0.c	0 de 1 capturas y 0 de 33 variantes iguales
+func_8005C9D0	968	IGUAL	src/Screen/video_inicio_g14.c	1 de 1 capturas y 33 de 33 variantes iguales
 func_80012130	688	IGUAL	src/libgpu/encolar_g14.c	8 de 8 capturas y 484 de 484 variantes iguales
 func_80011D9C	640	IGUAL	src/libgpu/vram_fifo_g14.c	6 de 6 capturas y 434 de 434 variantes iguales
-func_8002643C	632	DISTINTO	src/auto/func_8002643C.c	8 de 8 capturas y 261 de 263 variantes iguales
+func_8002643C	632	IGUAL	src/psyq/mando_byte_g14.c	8 de 8 capturas y 263 de 263 variantes iguales
 func_80011B60	572	IGUAL	src/libgpu/encolar_g14.c	8 de 8 capturas y 586 de 586 variantes iguales
 func_8002622C	528	IGUAL	src/auto/func_8002622C.c	7 de 7 capturas y 268 de 268 variantes iguales (1 capturas donde la original no termina, sin comparar)
 CargarSonidoNivel	468	NO_TERMINA	src/auto/CargarSonidoNivel.c	la original no termina en el emulador (espera al hardware)
 func_800213A0	412	IGUAL	src/Screen/pantalla_iniciar_g14.c	1 de 1 capturas y 88 de 88 variantes iguales
-func_80025A10	400	DISTINTO	src/auto/func_80025A10.c	0 de 8 capturas y 38 de 363 variantes iguales
+func_80025A10	400	IGUAL	src/psyq/mando_cuadro_g14.c	8 de 8 capturas y 363 de 363 variantes iguales
 func_8002CD3C	376	IGUAL_V0	src/auto/func_8002CD3C.c	3 de 3 capturas y 316 de 322 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_8005CEBC	368	IGUAL	src/auto/func_8005CEBC.c	2 de 2 capturas y 88 de 88 variantes iguales
 func_800257F4	368	IGUAL	src/auto/func_800257F4.c	8 de 8 capturas y 694 de 694 variantes iguales
@@ -541,10 +541,10 @@ func_8002FF1C	156	IGUAL	src/varios/animaciones_g14.c	1 de 1 capturas y 56 de 56 
 func_80017BC0	172	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
 CargarWRLDDATA	308	DISTINTO	src/WobjCode/wrlddata_g14.c	6 de 6 capturas y 148 de 157 variantes iguales
 func_800189A4	352	DISTINTO	src/File/archivo_entero_g14.c	6 de 8 capturas y 237 de 314 variantes iguales
-func_8002D56C	424	NO_TERMINA	src/psyq/cd_stream_g14.c	la original no termina en el emulador (espera al hardware)
-func_80017D80	468	DISTINTO	src/File/archivo_entero_g14.c	6 de 6 capturas y 287 de 289 variantes iguales
-func_8002B2BC	480	DISTINTO	src/psyq/cd_play_g14.c	0 de 1 capturas y 0 de 56 variantes iguales
-func_8002CF28	488	DISTINTO	src/psyq/cd_play_g14.c	8 de 8 capturas y 373 de 374 variantes iguales
+func_8002D56C	424	IGUAL	src/psyq/cd_stream_g14.c	2 de 2 capturas y 54 de 54 variantes iguales
+func_80017D80	468	DISTINTO	src/File/archivo_entero_g14.c	6 de 6 capturas y 288 de 289 variantes iguales
+func_8002B2BC	480	IGUAL	src/psyq/cd_play_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
+func_8002CF28	488	IGUAL	src/psyq/cd_play_g14.c	8 de 8 capturas y 374 de 374 variantes iguales
 func_8002F780	544	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 138 de 138 variantes iguales
 func_8002F524	604	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 83 de 83 variantes iguales
 func_8002F9A0	604	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 83 de 83 variantes iguales
