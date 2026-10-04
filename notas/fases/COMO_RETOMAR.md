@@ -423,7 +423,7 @@ DMA terminado al instante, puerto del mando listo. Capturas donde la original no
 por instrucciones (determinista).
 
 **Siguiente, en orden:**
-1. Tanda `verif/lanzar_v9.sh` (log `decomp/build/v9.txt`): estaba en func_80019D80; faltan func_8002CF28,
+1. Tanda `verif/lanzar_v9.sh` (log `decomp/build/v9.txt`), PARADA a mano al cerrar en func_80019D80: relanzar desde ahi (func_80019D80, func_8002CF28,
    func_8002B2BC, func_80017D80, func_800189A4, CargarWRLDDATA (borradores de src/auto). Anotar con
    `py verif/anotar.py build/v9.txt`. Las que no compilan o den DISTINTO: escribir a mano (`*_g14.c`).
    func_8005D50C (824, el reproductor de video) no compila: escribirla a mano (ya terminan con los modelos).
