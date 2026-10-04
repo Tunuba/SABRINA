@@ -494,3 +494,9 @@ la memoria de Windows baja (Bambu Studio, Edge y otros node se la comen); lanzar
   - Propuesta (no hecha): interrupciones de VBlank "por tiempo" solo cuando una corrida pasa de ~2 M
     instrucciones sin volver (cada 100 mil), para los bucles que esperan un contador que sube en VBlank sin
     llamar a nada (func_800218D4 espera D_8007CAE6, func_80021B4C). Ojo con parar en un hueco de retardo.
+  - Limite de C (04-10): CargarANI, CargarWRLDDATA (y quiza CargarSonidoNivel) dan DISTINTO solo en
+    variantes con el nombre del archivo roto: ArchivoCerrar imprime "Deleting file %s" con un puntero sin
+    inicializar de la estructura del archivo (basura de la pila). El original guarda los registros DEBAJO de
+    los locales y la estructura llega al tope del marco, donde GCC guarda ra: no hay forma de igualar la
+    basura en C. CargarINO paso porque su marco coincide. `verif/marcos.sh archivo.c f...` compara marcos.
+    Para func_8002FE64 bastaba no tener CargarANI en el mismo archivo (GCC la metia adentro).
