@@ -498,3 +498,6 @@ func_80025A10	400	NO_TERMINA	src/auto/func_80025A10.c	la original no termina en 
 func_8002CD3C	376	IGUAL_V0	src/auto/func_8002CD3C.c	3 de 3 capturas y 316 de 322 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_8005CEBC	368	NO_TERMINA	src/auto/func_8005CEBC.c	la original no termina en el emulador (espera al hardware)
 func_800257F4	368	IGUAL	src/auto/func_800257F4.c	8 de 8 capturas y 694 de 694 variantes iguales
+func_80029D28	332	IGUAL	src/auto/func_80029D28.c	8 de 8 capturas y 759 de 759 variantes iguales
+func_80029AB8	316	IGUAL	src/auto/func_80029AB8.c	8 de 8 capturas y 826 de 826 variantes iguales
+func_8005D26C	308	DISTINTO	src/auto/func_8005D26C.c	0 de 2 capturas y 7 de 244 variantes iguales
