@@ -109,7 +109,7 @@ func_8001315C	192	IGUAL	src/libgpu/gpu_g01.c	8 de 8 capturas y 818 de 818 varian
 func_80022D4C	268	IGUAL	src/TexAnima/paletas_g06.c	8 de 8 capturas y 192 de 192 variantes iguales (con el modelo de GPU desocupada)
 func_80022E58	156	IGUAL	src/TexAnima/paletas_g06.c	5 de 5 capturas y 120 de 120 variantes iguales (3 capturas donde la original no termina, sin comparar)
 func_80025BA0	240	IGUAL	src/membank/tarjeta_g06.c	3 de 3 capturas y 127 de 127 variantes iguales (5 capturas donde la original no termina, sin comparar)
-func_8002FE64	184	DISTINTO	src/varios/animaciones_g07.c	1 de 1 capturas y 44 de 48 variantes iguales
+func_8002FE64	184	IGUAL	src/varios/animaciones_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
 func_8005A1EC	372	IGUAL_V0	src/sabrina/objetos_g12.c	0 de 1 capturas y 0 de 54 variantes iguales
 func_80039A34	60	IGUAL_SINT	src/objetos/forma.c	1 de 1 capturas y 83 de 83 variantes iguales
 func_8003A258	8	IGUAL_SINT	src/objetos/forma.c	1 de 1 capturas y 45 de 45 variantes iguales
@@ -504,8 +504,8 @@ func_8005D26C	308	IGUAL	src/Screen/video_cuadro_g14.c	2 de 2 capturas y 93 de 93
 func_800218D4	244	IGUAL	src/auto/func_800218D4.c	8 de 8 capturas y 437 de 437 variantes iguales
 func_8005D8D0	240	IGUAL	src/auto/func_8005D8D0.c	1 de 1 capturas y 36 de 36 variantes iguales
 func_80011850	224	IGUAL	src/auto/func_80011850.c	8 de 8 capturas y 725 de 725 variantes iguales
-func_800273B0	216	DISTINTO	src/auto/func_800273B0.c	8 de 8 capturas y 268 de 312 variantes iguales
-func_80027534	196	DISTINTO	src/auto/func_80027534.c	0 de 8 capturas y 0 de 241 variantes iguales
+func_800273B0	216	IGUAL	src/auto/func_800273B0.c	8 de 8 capturas y 312 de 312 variantes iguales
+func_80027534	196	IGUAL	src/auto/func_80027534.c	8 de 8 capturas y 241 de 241 variantes iguales
 func_80021A94	184	IGUAL	src/Screen/video_arranque_g14.c	1 de 1 capturas y 46 de 46 variantes iguales
 CargarINO	184	IGUAL	src/varios/cargar_ino_g14.c	2 de 2 capturas y 27 de 27 variantes iguales (4 capturas donde la original no termina, sin comparar)
 func_8002FFB8	176	IGUAL	src/auto/func_8002FFB8.c	6 de 6 capturas y 144 de 144 variantes iguales
@@ -554,3 +554,5 @@ func_8002F298	652	IGUAL	src/varios/animaciones_g14.c	6 de 6 capturas y 277 de 27
 func_8005D50C	824	NO_TERMINA	src/Screen/video_reproductor_g14.c	la original no termina en el emulador (espera al hardware)
 func_800275F8	916	IGUAL	src/psyq/mando_envio_g14.c	8 de 8 capturas y 252 de 252 variantes iguales
 func_8002D714	2332	DISTINTO	src/psyq/cd_stream_g14.c	2 de 2 capturas y 3 de 4 variantes iguales
+func_800177B4	128	DISTINTO	src/psyq/parche_bios_g14.c	0 de 1 capturas y 0 de 56 variantes iguales
+func_8002153C	660	DISTINTO	src/Screen/primitivas_g13.c	0 de 1 capturas y 0 de 0 variantes iguales
