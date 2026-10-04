@@ -139,9 +139,9 @@ loop_5:
             D_8006D314 = (s32) sp19;
         }
         if ((sp10 == 5) && (D_8006D30C > 0)) {
-            printf((s32) "DiskError: ");
+            printf((s32) D_800613AC);
             if (D_8006D30C > 0) {
-                printf((s32) "com=%s,code=(%02x:%02x)\n", *(D_8006D328 + (D_8006D321 * 4)), D_8006D310, D_8006D314);
+                printf((s32) D_800613B8, *(D_8006D328 + (D_8006D321 * 4)), D_8006D310, D_8006D314);
             }
         }
         switch (sp10) {
@@ -295,8 +295,8 @@ block_41:
             }
             return 6;
         default:
-            puts((s32) "CDROM: unknown intr");
-            printf((s32) "(%d)\n", sp10);
+            puts((s32) D_800613D4);
+            printf((s32) D_800613E8, sp10);
             goto block_66;
         }
     } else {

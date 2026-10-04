@@ -44,9 +44,9 @@ extern u8 D_8006D2C8[];
 extern u8 D_8006D321;
 extern u8 D_8006D328[];
 extern u8 D_8006D3A8[];
+extern s32 (*D_8006D304)();
+extern s32 (*D_8006D308)();
 
-static M2C_UNK (*D_8006D304)(u8, u8 *) = NULL;
-static M2C_UNK (*D_8006D308)(u8, u8 *) = NULL;
 u8 D_8006D328[0x80];                                /* unable to generate initializer: cannot parse D_80061338 as integer */
 u8 D_8006D3A8[0x20];                                /* unable to generate initializer: cannot parse D_80061378 as integer */
 
@@ -65,11 +65,11 @@ s32 func_8002A6D0(s32 arg0, s32 arg1) {
 
     D_80091460 = func_8001626C(-1) + 0x3C0;
     D_80091464 = 0;
-    *D_80091468 = "CD_sync";
+    *D_80091468 = D_80061408;
 loop_1:
     if ((D_80091460 < func_8001626C(-1)) || (temp_v1 = D_80091464, D_80091464 += 1, ((temp_v1 > 0x3C0000) != 0))) {
-        puts((s32) "CD timeout: ");
-        printf((s32) "%s:(%s) Sync=%s, Ready=%s\n", *D_80091468, *((D_8006D321 * 4) + D_8006D328), *((M2C_FIELD(D_8006D2C8, u8 *, 0) * 4) + D_8006D3A8), *((M2C_FIELD(D_8006D2C8, u8 *, 1) * 4) + D_8006D3A8));
+        puts((s32) D_80061380);
+        printf((s32) D_80061390, *D_80091468, *((D_8006D321 * 4) + D_8006D328), *((M2C_FIELD(D_8006D2C8, u8 *, 0) * 4) + D_8006D3A8), *((M2C_FIELD(D_8006D2C8, u8 *, 1) * 4) + D_8006D3A8));
         func_8002B0AC();
         var_v0_2 = -1;
     } else {

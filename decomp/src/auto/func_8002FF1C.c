@@ -35,7 +35,7 @@ void func_8002FF1C(void) {
         var_t8 += 4;
         var_t7 += 4;
     } while (var_t9 > 0);
-    CargarANI((s32) &sp1C, 6, (s32) "Hub.ANI", (s32) &sp34);
+    CargarANI((s32) &sp1C, 6, (s32) D_8007C89C, (s32) &sp34);
     D_80093CE4 = sp34;
     D_80093CEC = sp36;
     D_80093CE8 = sp38;

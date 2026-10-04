@@ -26,13 +26,13 @@ loop_1:
         ArchivoLeer(arg0, temp_v0 + 0x14, 0x20);
         ArchivoLeer(arg0, (s32) &sp2E, 2);
         if (sp2E != 0) {
-            temp_v0_2 = Reservar(sp2E + 1, (s32) "modelLoader.c");
+            temp_v0_2 = Reservar(sp2E + 1, (s32) D_80068830);
             ArchivoLeer(arg0, temp_v0_2, (s32) sp2E);
             *(temp_v0_2 + sp2E) = 0;
             func_8001E2DC(temp_v0, temp_v0_2);
             Liberar(temp_v0_2);
         } else {
-            printf((s32) "EMPTY!\n");
+            printf((s32) D_8007C7D8);
         }
 loop_7:
         sp2C -= 1;
@@ -40,10 +40,10 @@ loop_7:
             LeerNodoModelo(arg0, temp_v0, 0);
             goto loop_7;
         }
-        M2C_FIELD(temp_v0, s32 *, 0x58) = Reservar(M2C_FIELD(temp_v0, s16 *, 0x5E) * 0x1C, (s32) "modelLoader.c");
+        M2C_FIELD(temp_v0, s32 *, 0x58) = Reservar(M2C_FIELD(temp_v0, s16 *, 0x5E) * 0x1C, (s32) D_80068830);
         Afirmar(M2C_FIELD(temp_v0, s32 *, 0x58));
         ArchivoLeer(arg0, M2C_FIELD(temp_v0, s32 *, 0x58), M2C_FIELD(temp_v0, s16 *, 0x5E) * 0x1C);
-        M2C_FIELD(temp_v0, s32 *, 0x54) = Reservar(M2C_FIELD(temp_v0, s16 *, 0x5C) * 0xC, (s32) "modelLoader.c");
+        M2C_FIELD(temp_v0, s32 *, 0x54) = Reservar(M2C_FIELD(temp_v0, s16 *, 0x5C) * 0xC, (s32) D_80068830);
         Afirmar(M2C_FIELD(temp_v0, s32 *, 0x54));
         ArchivoLeer(arg0, M2C_FIELD(temp_v0, s32 *, 0x54), M2C_FIELD(temp_v0, s16 *, 0x5C) * 0xC);
         var_s0 = M2C_FIELD(temp_v0, s32 *, 0x58);

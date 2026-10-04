@@ -117,7 +117,7 @@ void func_8002F298(void) {
         var_t8 += 4;
         var_t7 += 4;
     } while (var_t9 > 0);
-    CargarANI((s32) &sp1C, 0x2F, (s32) "Sabrina.ANI", (s32) &spD8);
+    CargarANI((s32) &sp1C, 0x2F, (s32) D_8006DAF0, (s32) &spD8);
     D_80093A44 = spD8;
     D_80093A46 = spDA;
     D_80093A48 = spDC;

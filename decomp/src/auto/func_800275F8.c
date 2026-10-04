@@ -8,12 +8,12 @@ extern s32 D_8006CFDC[];
 extern s32 D_8006CFE4;
 extern void * D_8006CFE8;
 extern s32 D_8006CFF0;
+extern u8 (*D_8006CF84)(u8);
+extern s32 (*D_8006CF8C)(void *, s32);
+extern u8 (*D_8006CF90)(s32);
+extern u8 (*D_8006CFA4)(s32);
+extern u8 (*D_8006CFA8)(s32);
 
-static M2C_UNK (*D_8006CF84)(M2C_UNK) = NULL;
-static s32 (*D_8006CF8C)(void *, s32) = NULL;
-static M2C_UNK (*D_8006CF90)(s32) = NULL;
-static M2C_UNK (*D_8006CFA4)(s32) = NULL;
-static M2C_UNK (*D_8006CFA8)(s32) = NULL;
 
 s32 func_800275F8(void *arg0) {
     s32 *temp_s2;

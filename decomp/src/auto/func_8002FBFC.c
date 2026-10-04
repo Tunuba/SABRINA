@@ -111,7 +111,7 @@ void func_8002FBFC(void) {
         var_t8 += 4;
         var_t7 += 4;
     } while (var_t9 > 0);
-    CargarANI((s32) &sp18, 0x2C, (s32) "WEST.ANI", (s32) &spC8);
+    CargarANI((s32) &sp18, 0x2C, (s32) D_8006ECC8, (s32) &spC8);
     D_80093B94 = spC8;
     D_80093B98 = spCA;
     D_80093BA2 = spCC;

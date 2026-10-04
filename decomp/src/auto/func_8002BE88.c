@@ -85,7 +85,7 @@ block_15:
     }
     if (var_v0_2 == 0) {
         if (D_8006D30C > 0) {
-            printf((s32) "%s: path level (%d) error\n", arg1, var_s2);
+            printf((s32) D_800614A4, arg1, var_s2);
             return 0;
         }
         goto block_37;
@@ -93,7 +93,7 @@ block_15:
     if (sp10 == 0) {
         var_a1 = arg1;
         if (D_8006D30C > 0) {
-            var_a0_2 = "%s: dir was not found\n";
+            var_a0_2 = D_800614C0;
             goto block_36;
         }
         goto block_37;
@@ -101,7 +101,7 @@ block_15:
     *var_s1 = 0;
     if (func_8002BB78(var_a0) == 0) {
         if (D_8006D30C > 0) {
-            printf((s32) "CdSearchFile: disc error\n");
+            printf((s32) D_800614D8);
             return 0;
         }
         /* Duplicate return node #38. Try simplifying control flow for better match */
@@ -109,7 +109,7 @@ block_15:
     }
     var_s2_2 = 0;
     if (D_8006D30C >= 2) {
-        printf((s32) "CdSearchFile: searching %s...\n", &sp10);
+        printf((s32) D_800614F4, &sp10);
         var_s2_2 = 0;
     }
     var_s0 = D_80091484 - 8;
@@ -119,7 +119,7 @@ loop_28:
     if ((s8) D_80091484[var_s1_2] != 0) {
         if (func_8002B7F0((s32) var_s3, (s32) &sp10) != 0) {
             if (D_8006D30C >= 2) {
-                printf((s32) "%s:  found\n", &sp10);
+                printf((s32) D_80061514, &sp10);
             }
             M2C_FIELD(arg0, s32 *, 0) = (s32) M2C_FIELD(var_s0, s32 *, 0);
             M2C_FIELD(arg0, s32 *, 4) = (s32) M2C_FIELD(var_s0, s32 *, 4);
@@ -141,7 +141,7 @@ loop_28:
 block_34:
     var_a1 = (s32) &sp10;
     if (D_8006D30C > 0) {
-        var_a0_2 = "%s: not found\n";
+        var_a0_2 = D_80061520;
 block_36:
         printf((s32) var_a0_2, var_a1);
     }

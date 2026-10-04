@@ -1,0 +1,79 @@
+#include "juego.h"
+#include "m2c_macros.h"
+#include "m2c_ajustes.h"
+
+extern u8 D_80084B8C[];
+extern u8 D_80084C30[];
+extern u8 D_80084C34[];
+extern u8 D_80084C38[];
+extern u8 D_80084C3C[];
+extern s32 D_80084C44;
+extern s32 D_80084C48;
+extern s32 D_80084C4C;
+extern u8 D_80084C50[];
+extern u8 D_80084C70[];
+extern u8 D_80084CA0[];
+extern u8 D_80084CB0[];
+
+void func_80016F38(s32 arg0, s32 arg1) {
+    u8 *temp_v0;
+
+    D_80084C48 = arg0 & 0xFFFF;
+    D_80084C4C = arg1 & 0xFFFF;
+    M2C_FIELD(D_80084CA0, s16 *, -0xC) = 0;
+    M2C_FIELD(D_80084CA0, s16 *, -0xE) = 0;
+    M2C_FIELD(D_80084CA0, s16 *, -6) = 0;
+    M2C_FIELD(D_80084CA0, s16 *, -0xA) = 0;
+    M2C_FIELD(D_80084CA0, s16 *, -2) = 0;
+    M2C_FIELD(D_80084CA0, s16 *, -4) = 0;
+    M2C_FIELD(D_80084CA0, s32 *, 0xC) = 0;
+    M2C_FIELD(D_80084CA0, s32 *, 8) = 0;
+    M2C_FIELD(D_80084CA0, s32 *, 4) = 0;
+    M2C_FIELD(D_80084CA0, s16 *, -0x10) = 0x1000;
+    M2C_FIELD(D_80084CA0, s16 *, -8) = 0x1000;
+    M2C_FIELD(D_80084CA0, s16 *, 0) = 0x1000;
+    M2C_FIELD(D_80084CB0, s32 *, 0) = (s32) M2C_FIELD(D_80084CA0, s16 *, -0x10);
+    M2C_FIELD(D_80084CB0, s32 *, 4) = (s32) M2C_FIELD(D_80084CA0, s16 *, -0xC);
+    M2C_FIELD(D_80084CB0, s32 *, 8) = (s32) M2C_FIELD(D_80084CA0, s16 *, -8);
+    M2C_FIELD(D_80084CB0, s32 *, 0xC) = (s32) M2C_FIELD(D_80084CA0, s16 *, -4);
+    M2C_FIELD(D_80084CB0, s32 *, 0x10) = (s32) M2C_FIELD(D_80084CA0, s16 *, 0);
+    M2C_FIELD(D_80084CB0, s32 *, 0x14) = (s32) M2C_FIELD(D_80084CA0, s32 *, 4);
+    M2C_FIELD(D_80084CB0, s32 *, 0x18) = (s32) M2C_FIELD(D_80084CA0, s32 *, 8);
+    M2C_FIELD(D_80084CB0, s32 *, 0x1C) = (s32) M2C_FIELD(D_80084CA0, s32 *, 0xC);
+    M2C_FIELD(D_80084C50, s32 *, 0) = (s32) M2C_FIELD(D_80084CA0, s16 *, -0x10);
+    M2C_FIELD(D_80084C50, s32 *, 4) = (s32) M2C_FIELD(D_80084CA0, s16 *, -0xC);
+    M2C_FIELD(D_80084C50, s32 *, 8) = (s32) M2C_FIELD(D_80084CA0, s16 *, -8);
+    M2C_FIELD(D_80084C50, s32 *, 0xC) = (s32) M2C_FIELD(D_80084CA0, s16 *, -4);
+    M2C_FIELD(D_80084C50, s32 *, 0x10) = (s32) M2C_FIELD(D_80084CA0, s16 *, 0);
+    M2C_FIELD(D_80084C50, s32 *, 0x14) = (s32) M2C_FIELD(D_80084CA0, s32 *, 4);
+    M2C_FIELD(D_80084C50, s32 *, 0x18) = (s32) M2C_FIELD(D_80084CA0, s32 *, 8);
+    M2C_FIELD(D_80084C50, s32 *, 0x1C) = (s32) M2C_FIELD(D_80084CA0, s32 *, 0xC);
+    M2C_FIELD(D_80084C50, s32 *, 0x10) = 0;
+    M2C_FIELD(D_80084C50, s32 *, 8) = 0;
+    M2C_FIELD(D_80084C50, s32 *, 0) = 0;
+    M2C_FIELD(D_80084C70, s32 *, 0) = (s32) M2C_FIELD(D_80084C50, s32 *, 0);
+    M2C_FIELD(D_80084C70, s32 *, 4) = (s32) M2C_FIELD(D_80084C50, s32 *, 4);
+    M2C_FIELD(D_80084C70, s32 *, 8) = (s32) M2C_FIELD(D_80084C50, s32 *, 8);
+    M2C_FIELD(D_80084C70, s32 *, 0xC) = (s32) M2C_FIELD(D_80084C50, s32 *, 0xC);
+    M2C_FIELD(D_80084C70, s32 *, 0x10) = (s32) M2C_FIELD(D_80084C50, s32 *, 0x10);
+    M2C_FIELD(D_80084C70, s32 *, 0x14) = (s32) M2C_FIELD(D_80084C50, s32 *, 0x14);
+    M2C_FIELD(D_80084C70, s32 *, 0x18) = (s32) M2C_FIELD(D_80084C50, s32 *, 0x18);
+    M2C_FIELD(D_80084C70, s32 *, 0x1C) = (s32) M2C_FIELD(D_80084C50, s32 *, 0x1C);
+    M2C_FIELD(D_80084C30, s16 *, 0) = 0;
+    M2C_FIELD(D_80084C30, s16 *, 2) = 0;
+    M2C_FIELD(D_80084C34, s16 *, 0) = 0;
+    M2C_FIELD(D_80084C34, s16 *, 2) = 0;
+    M2C_FIELD(D_80084C38, s16 *, 2) = 0;
+    M2C_FIELD(D_80084C38, s16 *, 0) = 0;
+    M2C_FIELD(D_80084C3C, s16 *, 2) = 0;
+    M2C_FIELD(D_80084CB0, s32 *, 8) = (s16) (((s32) (D_80084C4C << 0xE) / (s32) D_80084C48) / 3);
+    M2C_FIELD(D_80084C3C, s16 *, 0) = 0;
+    M2C_FIELD(D_80084B8C, s8 *, 3) = 3;
+    M2C_FIELD(D_80084B8C, s8 *, 7) = 2;
+    temp_v0 = D_80084B8C + 0x10;
+    M2C_FIELD(temp_v0, s8 *, 3) = 3;
+    M2C_FIELD(temp_v0, s8 *, 7) = 2;
+    D_80084C44 = 1;
+    M2C_FIELD(D_80084C3C, u16 *, 4) = (u16) D_80084C48;
+    M2C_FIELD(D_80084C3C, u16 *, 6) = (u16) D_80084C4C;
+}

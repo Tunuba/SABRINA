@@ -99,7 +99,7 @@ void func_8002F780(void) {
         var_t8 += 4;
         var_t7 += 4;
     } while (var_t9 > 0);
-    CargarANI((s32) &sp1C, 0x26, (s32) "STONE.ANI", (s32) &spB4);
+    CargarANI((s32) &sp1C, 0x26, (s32) D_8006E3A4, (s32) &spB4);
     D_80093B64 = spB4;
     D_80093B68 = spB6;
     D_80093B72 = spB8;

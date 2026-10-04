@@ -37,7 +37,7 @@ s32 func_8002BB78(s32 arg0) {
         if (func_8002BE14(1, *(D_80091A58 + (arg0 * 0x2C)), (s32) D_8009307C) != 1) {
             var_v0 = -1;
             if (D_8006D30C > 0) {
-                printf((s32) "CD_cachefile: dir not found\n");
+                printf((s32) D_80061610);
                 return -1;
             }
             /* Duplicate return node #24. Try simplifying control flow for better match */
@@ -45,7 +45,7 @@ s32 func_8002BB78(s32 arg0) {
         }
         var_v0_2 = D_8009307C + 0x800;
         if (D_8006D30C >= 2) {
-            printf((s32) "CD_cachefile: searching...\n");
+            printf((s32) D_80061630);
             var_v0_2 = D_8009307C + 0x800;
         }
         var_s2 = 0;
@@ -72,7 +72,7 @@ loop_8:
                     M2C_FIELD(D_8009147C, u16 *, 8) = (u16) D_8006164C;
                 }
                 if (D_8006D30C >= 2) {
-                    printf((s32) "\t(%02x:%02x:%02x) %8d %s\n", D_8009147C[var_s1], D_8009147D[var_s1], D_8009147E[var_s1], D_80091480[var_s1], var_s3);
+                    printf((s32) D_80061654, D_8009147C[var_s1], D_8009147D[var_s1], D_8009147E[var_s1], D_80091480[var_s1], var_s3);
                 }
                 var_s3 += 0x18;
                 var_s1 += 0x18;
@@ -90,7 +90,7 @@ loop_8:
         }
         var_v0 = 1;
         if (D_8006D30C >= 2) {
-            printf((s32) "CD_cachefile: %d files found\n", var_s2);
+            printf((s32) D_80061670, var_s2);
             goto block_23;
         }
         /* Duplicate return node #24. Try simplifying control flow for better match */

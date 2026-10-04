@@ -23,7 +23,7 @@ s32 func_80017D80(s32 arg0) {
     var_s1 = 0;
     memset((s32) &spAC, 0, 0x18);
     func_80017D3C(arg0);
-    sprintf((s32) &sp2C, (s32) "\\%s;1", arg0);
+    sprintf((s32) &sp2C, (s32) D_8007C774, arg0);
 loop_1:
     func_8002BE88((s32) &spAC, (s32) &sp2C);
     var_s0 += 1;
@@ -34,7 +34,7 @@ loop_1:
     }
     temp_s3 = CdPosToInt((s32) &spAC);
     temp_s4 = (temp_s3 + ((u32) (spB0 + 0x7FF) >> 0xB)) - 1;
-    temp_s2 = Reservar(spB0, (s32) "BasicTools.c");
+    temp_s2 = Reservar(spB0, (s32) D_800653F8);
     var_s0_2 = 0;
     if (temp_s4 < (u32) temp_s3) {
         Liberar(temp_s2);

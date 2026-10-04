@@ -80,3 +80,56 @@ void *func_80017D80(char *nombre) {
     }
     return datos;
 }
+
+extern char D_80065468[];               /* el nombre del archivo fuente, para Afirmar */
+extern void Afirmar(s32 cond, char *archivo, s32 linea);
+
+typedef struct {
+    u8 *buffer;                         /* 0x00 */
+    u8 *cursor;                         /* 0x04 */
+    u8 _08[0x90];
+    u32 sector;                         /* 0x98 el siguiente sector a leer */
+    u32 ultimo;                         /* 0x9C */
+} ArchivoCdG14;
+
+/* Llena el buffer del archivo: se pone en su sector (10 intentos) y lee 0x19 sectores (10 intentos); avanza
+ * el sector y vuelve el cursor al principio. Devuelve 0, o 1 si fallo. */
+s32 func_800189A4(ArchivoCdG14 *a) {
+    u8 pos[4];
+    s32 listo;
+    u8 i;
+
+    i = 0;
+    listo = 0;
+    if (a->ultimo < a->sector) {
+        Afirmar(0, D_80065468, 0xAA);
+    }
+    func_80029F18(a->sector, pos);
+    do {
+        if (func_80029D28(0x15, pos, 0) != 0) {
+            listo = 1;
+        }
+        i++;
+    } while (listo == 0 && i < 10);
+    if (listo == 0) {
+        return 1;
+    }
+    Afirmar(1, D_80065468, 0xBA);
+    Afirmar(1, D_80065468, 0xBC);
+    i = 0;
+    listo = 0;
+    do {
+        if (CdRead(0x19, a->buffer, 0x80) != 0) {
+            listo = 1;
+        }
+        i++;
+    } while (listo == 0 && i < 10);
+    if (listo == 0) {
+        return 1;
+    }
+    a->sector += 0x19;
+    a->cursor = a->buffer;
+    while (CdReadSync(1, 0) > 0) {
+    }
+    return 0;
+}

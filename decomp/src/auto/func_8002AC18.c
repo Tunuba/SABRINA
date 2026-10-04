@@ -53,9 +53,9 @@ extern u8 D_8006D320;
 extern u8 D_8006D321;
 extern u8 D_8006D328[];
 extern u8 D_8006D3A8[];
+extern s32 (*D_8006D304)();
+extern s32 (*D_8006D308)();
 
-static M2C_UNK (*D_8006D304)(u8, u8 *) = NULL;
-static M2C_UNK (*D_8006D308)(u8, u8 *) = NULL;
 u8 D_8006D328[0x80];                                /* unable to generate initializer: cannot parse D_80061338 as integer */
 u8 D_8006D3A8[0x20];                                /* unable to generate initializer: cannot parse D_80061378 as integer */
 
@@ -79,13 +79,13 @@ s32 func_8002AC18(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     u8 temp_v0_3;
 
     if (D_8006D30C >= 2) {
-        printf((s32) "%s...\n", *(D_8006D328 + ((arg0 & 0xFF) * 4)));
+        printf((s32) D_8006141C, *(D_8006D328 + ((arg0 & 0xFF) * 4)));
     }
     temp_v0 = arg0 & 0xFF;
     if ((D_8006D230[temp_v0] != 0) && (arg1 == 0)) {
         var_v0 = -2;
         if (D_8006D30C > 0) {
-            printf((s32) "%s: no param\n", *(D_8006D328 + (temp_v0 * 4)));
+            printf((s32) D_80061424, *(D_8006D328 + (temp_v0 * 4)));
             return -2;
         }
         /* Duplicate return node #42. Try simplifying control flow for better match */
@@ -127,13 +127,13 @@ s32 func_8002AC18(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (arg3 == 0) {
         D_80091460 = func_8001626C(-1) + 0x3C0;
         D_80091464 = 0;
-        *D_80091468 = "CD_cw";
+        *D_80091468 = D_80061434;
         var_a2 = arg2;
         if (M2C_FIELD(D_8006D2C8, u8 *, 0) == 0) {
 loop_20:
             if ((D_80091460 < func_8001626C(-1)) || (temp_v1_2 = D_80091464, D_80091464 += 1, ((temp_v1_2 > 0x3C0000) != 0))) {
-                puts((s32) "CD timeout: ");
-                printf((s32) "%s:(%s) Sync=%s, Ready=%s\n", *D_80091468, *((D_8006D321 * 4) + D_8006D328), *((M2C_FIELD(D_8006D2C8, u8 *, 0) * 4) + D_8006D3A8), *((M2C_FIELD(D_8006D2C8, u8 *, 1) * 4) + D_8006D3A8));
+                puts((s32) D_80061380);
+                printf((s32) D_80061390, *D_80091468, *((D_8006D321 * 4) + D_8006D328), *((M2C_FIELD(D_8006D2C8, u8 *, 0) * 4) + D_8006D3A8), *((M2C_FIELD(D_8006D2C8, u8 *, 1) * 4) + D_8006D3A8));
                 func_8002B0AC();
                 var_v0_4 = -1;
             } else {

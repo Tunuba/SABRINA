@@ -50,7 +50,7 @@ s32 func_8002CF28(s32 arg0, s32 arg1, s32 arg2) {
     D_80093A0C = temp_v0;
     if (temp_v0 == 0) {
         if (D_8006D30C >= 2) {
-            printf((s32) "No TOC found: please use CD-DA disc...\n");
+            printf((s32) D_800616E4);
         }
         D_8006D5AC = -1;
         return -1;

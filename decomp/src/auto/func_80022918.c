@@ -20,9 +20,9 @@ void func_80022918(s32 arg0) {
     void *temp_v0_3;
     void *temp_v1;
 
-    *(D_8008AF60 + (D_8007CB10 * 4)) = Reservar(0x1388, (s32) "TexAnima.c");
+    *(D_8008AF60 + (D_8007CB10 * 4)) = Reservar(0x1388, (s32) D_8006C478);
     temp_a0 = D_8008AF74 + (D_8007CB10 * 4);
-    *temp_a0 = Reservar(0x18, (s32) "TexAnima.c");
+    *temp_a0 = Reservar(0x18, (s32) D_8006C478);
     **temp_a0 = (u16) M2C_FIELD(arg0, u16 *, 0x12);
     M2C_FIELD(*(D_8008AF74 + (D_8007CB10 * 4)), u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 0x14);
     temp_v0 = M2C_FIELD(arg0, s16 *, 8);
@@ -41,7 +41,7 @@ void func_80022918(s32 arg0) {
     temp_a0_5 = *(D_8008AF74 + (D_8007CB10 * 4));
     M2C_FIELD(temp_a0_5, s16 *, 0x12) = (s16) M2C_FIELD(temp_a0_5, u8 *, 5);
     temp_v0_2 = *(D_8008AF74 + (D_8007CB10 * 4));
-    M2C_FIELD(*(D_8008AF74 + (D_8007CB10 * 4)), s32 *, 8) = Reservar(M2C_FIELD(temp_v0_2, u8 *, 4) * (M2C_FIELD(temp_v0_2, u8 *, 5) + 6) * 4, (s32) "TexAnima.c");
+    M2C_FIELD(*(D_8008AF74 + (D_8007CB10 * 4)), s32 *, 8) = Reservar(M2C_FIELD(temp_v0_2, u8 *, 4) * (M2C_FIELD(temp_v0_2, u8 *, 5) + 6) * 4, (s32) D_8006C478);
     temp_v0_3 = *(D_8008AF74 + (D_8007CB10 * 4));
     func_80012ECC((s32) (temp_v0_3 + 0xC), M2C_FIELD(temp_v0_3, s32 *, 8));
     func_80012D74(0);

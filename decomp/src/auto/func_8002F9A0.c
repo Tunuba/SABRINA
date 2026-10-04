@@ -109,7 +109,7 @@ void func_8002F9A0(void) {
         var_t8 += 4;
         var_t7 += 4;
     } while (var_t9 > 0);
-    CargarANI((s32) &sp1C, 0x2B, (s32) "JAPAN.ANI", (s32) &spC8);
+    CargarANI((s32) &sp1C, 0x2B, (s32) D_8006E820, (s32) &spC8);
     D_80093B24 = spC8;
     D_80093B28 = spCA;
     D_80093B32 = spCC;

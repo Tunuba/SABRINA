@@ -108,7 +108,7 @@ void func_8002F524(void) {
         var_t8 += 4;
         var_t7 += 4;
     } while (var_t9 > 0);
-    CargarANI((s32) &sp1C, 0x2B, (s32) "EGYPT.ANI", (s32) &spC8);
+    CargarANI((s32) &sp1C, 0x2B, (s32) D_8006DF74, (s32) &spC8);
     D_80093AB4 = spC8;
     D_80093AB8 = spCA;
     D_80093AC2 = spCC;
