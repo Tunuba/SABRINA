@@ -10,6 +10,7 @@ entrega en la proxima llamada a VSync, corriendo la rutina de interrupcion del C
 La original y el C llaman a la misma VSync, asi que ven lo mismo en el mismo orden.
 Lo que no se modela: el audio (Play suena "en silencio"), los errores de lectura y la tapa abierta.
 """
+import mmap
 import os
 
 DISCO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "disco")
@@ -55,11 +56,12 @@ def sector(lba):
     """Los 2352 bytes del sector (ceros fuera del disco o en pistas de audio sin datos)."""
     for inicio, archivo, base in reversed(pistas()):
         if lba >= base:
-            f = _archivos.get(archivo)
-            if f is None:
-                f = _archivos[archivo] = open(archivo, "rb")
-            f.seek((lba - base) * RAW)
-            b = f.read(RAW)
+            m = _archivos.get(archivo)
+            if m is None:
+                # mmap: el disco esta en /mnt/c (lento por archivo), asi lo cachea el sistema
+                with open(archivo, "rb") as f:
+                    m = _archivos[archivo] = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+            b = m[(lba - base) * RAW:(lba - base + 1) * RAW]
             return b + bytes(RAW - len(b))
     return bytes(RAW)
 

@@ -628,7 +628,7 @@ def comparar(a, b, sp, con_v0=True):
     return dif
 
 
-def verificar(c, funciones, n_variantes=60):
+def verificar(c, funciones, n_variantes=int(os.environ.get("SABRINA_VARIANTES", "60"))):
     import random
     sim = simbolos()
     codigo_c, dirs = compilar(c, funciones)
