@@ -62,6 +62,21 @@ VUELTA_INT = 0x80FFFFE0     # direccion de retorno centinela de las rutinas de i
 #   con la entrada 6 (el manejador de excepciones) apuntando a las 6 instrucciones que trae la BIOS real en
 #   +0x28; func_80017BC0 (libapi) las encuentra y las parchea, como en la consola.
 TABLA_C0 = 0x81000000
+# - BIOS, malloc (A0 0x33) y free (A0 0x34) (04-10): al arrancar, Reservar usa el malloc de la BIOS
+#   (D_8007C8E0 != 0), que en el emulador volvia sin hacer nada y dejaba en v0 lo que traia; memset escribia
+#   entonces en la direccion 0 y la funcion no terminaba. El modelo da bloques seguidos (alineados a 8) en
+#   una zona aparte (MONTON_BIOS, fuera de la RAM de la PS1) y free no hace nada. Lo escrito en esa zona
+#   tambien se compara. SABRINA_SIN_MALLOC=1 lo apaga.
+# - Tarjeta de memoria (04-10): libcard avisa que termino (D_800D52C8) desde la rutina de VBlank (func_80050828
+#   como VSyncCallback). Las esperas que giran leyendo ese aviso sin llamar a VSync (func_80051298) no
+#   terminaban: cuando la misma instruccion lo lee en 0 dos veces seguidas, pasa un cuadro (corre la rutina
+#   de VBlank como una interrupcion, ver VBLANK) antes de la instruccion siguiente. Y la tarjeta esta puesta y
+#   contesta bien: cada _card_info/_card_clear/_card_read/_card_write/_card_load deja el evento IOE (lo que hace
+#   su manejador, func_800519E4: D_800D5390 = 1) en el momento. SABRINA_SIN_TARJETA=1 apaga las dos cosas.
+TARJETA = MODELOS and os.environ.get("SABRINA_SIN_TARJETA") != "1"
+MALLOC = MODELOS and os.environ.get("SABRINA_SIN_MALLOC") != "1"
+MONTON_BIOS = 0x81100000
+MONTON_TAM = 0x00400000
 C0_VIEJO = (0xAF410004, 0xAF420008, 0xAF43000C, 0xAF5F007C, 0x40037000, 0x00000000)
 FIN = 0x80FFFFF0            # direccion de retorno centinela
 LIMITE = int(os.environ.get("SABRINA_LIMITE", 20_000_000))   # instrucciones como maximo por ejecucion (SABRINA_LIMITE para una tanda larga)
@@ -484,6 +499,9 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     uc.mmio_map(0x1F801000, 0x2000, io_lee, None, io_escribe, None)
     uc.mem_map(0x1F803000, 0x0000D000)            # resto (expansion 2 y demas)
     uc.mem_map(0x1FC00000, 0x00080000)            # BIOS (0xBFC00000)
+    if MALLOC:
+        uc.mem_map(MONTON_BIOS & 0x1FFFFFFF, MONTON_TAM)
+    monton = {"usado": 0}
     if MODELOS:
         uc.mem_map(TABLA_C0 & 0x1FFFFFFF, 0x1000)     # la tabla C0 del modelo y el codigo al que apunta
         uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x18, struct.pack("<I", TABLA_C0 + 0x100))
@@ -522,6 +540,13 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
             if MODELOS and dirc == 0xB0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x56:
                 u.reg_write(UC_MIPS_REG_V0, TABLA_C0)    # GetC0Table: la tabla del modelo (ver TABLA_C0)
+            if MALLOC and dirc == 0xA0 and u.reg_read(UC_MIPS_REG_ZERO + 9) == 0x33:
+                tam = (u.reg_read(UC_MIPS_REG_A0) + 7) & ~7          # malloc (ver MONTON_BIOS)
+                if monton["usado"] + tam <= MONTON_TAM:
+                    u.reg_write(UC_MIPS_REG_V0, MONTON_BIOS + monton["usado"])
+                    monton["usado"] += tam
+                else:
+                    u.reg_write(UC_MIPS_REG_V0, 0)
             u.reg_write(UC_MIPS_REG_PC, u.reg_read(UC_MIPS_REG_RA))
 
     interrupcion_mala = []
@@ -626,7 +651,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 u.mem_write(en_int, struct.pack("<H", estado["dentro"]))
                 u.mem_write(pila_ini, estado["pila"])
                 estado["guardado"] = None
-                estado["seguir"] = True
+                estado["seguir"] = not estado.pop("sin_seguir", False)
                 u.reg_write(UC_MIPS_REG_PC, estado["volver"])
 
             uc.hook_add(UC_HOOK_CODE, entrada_vsync, begin=entrada, end=entrada)
@@ -636,6 +661,49 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 g = s["StGetNext"]
                 uc.hook_add(UC_HOOK_CODE, entrada_vsync, begin=g, end=g)
             uc.hook_add(UC_HOOK_CODE, vuelta, begin=VUELTA_INT, end=VUELTA_INT)
+            if VBLANK and TARJETA:
+                # espera de la tarjeta (ver TARJETA): la misma instruccion lee el aviso en 0 dos veces seguidas
+                aviso = s["D_800D52C0"] + 8
+                espera_t = {"pc": None, "gancho": None}
+
+                def dar_cuadro(u, dirc, tam, _):
+                    u.hook_del(espera_t["gancho"])
+                    espera_t["gancho"] = None
+                    if estado["guardado"] is not None:
+                        return
+                    estado["volver"] = dirc
+                    estado["pendientes"] = [s["func_80016A2C"]]
+                    estado["guardado"] = [u.reg_read(UC_MIPS_REG_ZERO + i) for i in range(32)] +                         [u.reg_read(UC_MIPS_REG_HI), u.reg_read(UC_MIPS_REG_LO)]
+                    estado["dentro"] = struct.unpack("<H", bytes(u.mem_read(en_int, 2)))[0]
+                    estado["pila"] = bytes(u.mem_read(pila_ini, pila_int_f - pila_ini))
+                    estado["sin_seguir"] = True
+                    u.mem_write(en_int, struct.pack("<H", 1))
+                    correr_siguiente(u)
+
+                def lee_aviso(u, acceso, dirc, tam, valor, _):
+                    pc = u.reg_read(UC_MIPS_REG_PC)
+                    v = struct.unpack("<I", bytes(u.mem_read(aviso & 0x1FFFFFFF, 4)))[0]
+                    if v != 0 or estado["guardado"] is not None:
+                        espera_t["pc"] = None
+                        return
+                    if espera_t["pc"] == pc and espera_t["gancho"] is None:
+                        espera_t["gancho"] = u.hook_add(UC_HOOK_CODE, dar_cuadro)
+                        espera_t["pc"] = None
+                    else:
+                        espera_t["pc"] = pc
+
+                uc.hook_add(UC_HOOK_MEM_READ, lee_aviso, begin=aviso, end=aviso + 3)
+                # y la tarjeta contesta: cada operacion de la BIOS termina bien enseguida (evento IOE, el que
+                # atiende func_800519E4 poniendo D_800D5390 en 1)
+                ioe = s["D_800D5390"] & 0x1FFFFFFF
+
+                def tarjeta_contesta(u, dirc, tam, _):
+                    u.mem_write(ioe, struct.pack("<I", 1))
+
+                for nombre in ("_card_info", "_card_clear", "_card_read", "_card_write", "_card_load"):
+                    if nombre in s:
+                        uc.hook_add(UC_HOOK_CODE, tarjeta_contesta, begin=s[nombre], end=s[nombre])
+                uc.hook_add(UC_HOOK_MEM_READ, lee_aviso, begin=aviso & 0x1FFFFFFF, end=(aviso & 0x1FFFFFFF) + 3)
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
     gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))
@@ -669,6 +737,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1),
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
+                monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias, cd=cd.log if cd else [])
 
 
@@ -689,6 +758,8 @@ def comparar(a, b, sp, con_v0=True):
             dif.append(f"{len(malos)} palabras de RAM distintas, la primera en {0x80000000 + malos[0]:08x}")
     if a["spad"] != b["spad"]:
         dif.append("scratchpad distinto")
+    if a.get("monton", b"") != b.get("monton", b""):
+        dif.append("monton de la BIOS distinto")
     if a["hw"] != b["hw"]:
         dif.append("escrituras de hardware distintas")
     return dif

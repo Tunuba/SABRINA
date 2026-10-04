@@ -1,0 +1,1 @@
+SABRINA_LIMITE=100000000 TOPE=3600 bash /mnt/c/Proyectos/SABRINA/decomp/verif/vreal.sh /mnt/c/Proyectos/SABRINA/decomp/build/malloc1.txt src/nodos/reserva_crear_g15.c:func_80018218 src/Screen/primitivas_g13.c:func_8002153C
