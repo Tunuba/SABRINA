@@ -727,3 +727,8 @@ Relanzar con `verif/fondo.sh verif/lanzar_X.sh /dev/null`. Revisar: cualquier "D
 **Progreso del repaso de stubs al bajar la bateria (29 %):**
   func_800189A4: 8 de 8 capturas y 177 de 177 variantes iguales -> IGUAL
   func_8002D714: 2 de 2 capturas y 1 de 1 variantes iguales -> IGUAL
+  CargarANI: 6 de 6 capturas y 76 de 76 variantes iguales -> IGUAL
+A 18 % de bateria el repaso iba por CargarWRLDDATA (4 de 17). Si la PC se apago: al prender, conectar el cargador
+y relanzar `verif/fondo.sh verif/lanzar_conservados.sh /dev/null` (empieza de cero, ~1-2 h), despues
+`verif/lanzar_criticas.sh` y `verif/lanzar_mut5_log.sh`. Hasta aqui ninguna funcion repasada cambio de estado:
+las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
