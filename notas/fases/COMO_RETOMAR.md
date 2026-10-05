@@ -788,7 +788,10 @@ Tambien sobrevivio quitar cada `Liberar(datos)` de los caminos de error (el mode
 suma "CdControl falla" (su primera instruccion cambiada por `jr ra; move v0, zero` en la RAM, igual para las dos):
 mata el de la linea 73; el de un sector mata el de la linea 86. El C da IGUAL en los cuatro casos. "CdRead falla" no
 sirve: CdSearchFile tambien usa CdRead para leer el directorio y la busqueda falla antes.
+Resultado final del cuerpo de func_80017D80 (`lanzar_mut_cuerpos.sh`): 4 de 8 cazados por el verificador; los otros 4
+(y el de la linea 73) caen con caso17d80.py: lineas 60, 76, 86 y 87 con el de un sector, 73 con CdControl falla.
 PantallasLegales con los registros conservados: IGUAL (26 de 26). Las 18 con stub siguen IGUAL.
+Las 13 con secciones criticas (`lanzar_criticas.sh`) siguen IGUAL / IGUAL_SINT con la comparacion nueva.
 Cola `verif/lanzar_mut_cuerpos.sh` -> build/mut_cuerpos.txt: mutantes en el cuerpo de las 15 funciones con stub.
 
 Trampa: un `open(p, "w")` de python en Windows sin `encoding="utf-8"` escribe en cp1252 y rompe los acentos de este

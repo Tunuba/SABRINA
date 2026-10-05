@@ -14,7 +14,8 @@ import verificar as V
 
 F = "func_80017D80"
 C = "src/File/archivo_entero_g14.c"
-VIVOS = ("< por <= (linea 60)", "sin la linea `Liberar(datos);` (linea 86)", "sin la linea `Liberar(datos);` (linea 73)")
+VIVOS = ("< por <= (linea 60)", "sin la linea `Liberar(datos);` (linea 73)", "sin la linea `Liberar(datos);` (linea 86)",
+         "0 por 1 (linea 76)", "0 por 1 (linea 87)")
 base = f"capturas/{F}/00"
 regs = [int(x, 16) for x in open(base + ".regs").read().split()]
 nombre = regs[4] & 0x1FFFFF
