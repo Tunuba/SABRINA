@@ -449,7 +449,7 @@ func_800123E0	608	IGUAL	src/libgpu/cola_g13.c	8 de 8 capturas y 478 de 478 varia
 func_80022614	772	IGUAL	src/TexAnima/ciclos_g05.c	6 de 6 capturas y 544 de 544 variantes iguales
 func_80022918	692	IGUAL	src/TexAnima/ciclos_g05.c	3 de 3 capturas y 279 de 279 variantes iguales
 func_80053400	160	IGUAL_SINT	src/objetos/seguir_padre_g14.c	1 de 1 capturas y 48 de 48 variantes iguales
-func_80024450	284	NO_TERMINA	src/varios/herramienta_tex_g14.c	la original no termina en el emulador (espera al hardware)
+func_80024450	284	IGUAL_SINT	src/varios/herramienta_tex_g14.c	2 de 2 capturas y 33 de 33 variantes iguales
 func_80046F74	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 117 de 117 variantes iguales
 func_80046ED8	156	IGUAL_SINT	src/objetos/menu_nivel_g14.c	1 de 1 capturas y 121 de 121 variantes iguales
 func_80019464	184	IGUAL_SINT	src/objetos/menu_mundo_g14.c	1 de 1 capturas y 114 de 114 variantes iguales
@@ -581,3 +581,4 @@ func_8001B0C8	972	IGUAL_SINT	src/varios/textura_tga_g15.c	2 de 2 capturas y 111 
 func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 91 de 91 variantes iguales
 HerramientaConvertirPIC	452	IGUAL_SINT	src/varios/convertir_pic_g15.c	1 de 1 capturas y 85 de 85 variantes iguales
 HerramientaArmarCuadricula	432	IGUAL_SINT	src/varios/armar_cuadricula_g15.c	1 de 1 capturas y 86 de 86 variantes iguales
+HerramientaArmarModelos	680	IGUAL_SINT	src/varios/armar_modelos_g15.c	1 de 1 capturas y 16 de 16 variantes iguales (1 capturas donde la original no termina, sin comparar)
