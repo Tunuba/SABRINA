@@ -511,7 +511,7 @@ Si se cortaron (la PC se apago), relanzar desde la que no tiene FIN con `verif/f
 Escritas a mano en esta sesion y en esas tandas: cargar_ino, wrlddata, sonido_nivel, cd_datasync,
 mover_imagen, tabla_corrida, mando_cuadro, parche_bios (InitGeom), cd_stream_aviso (todas *_g14.c).
 Lo que queda sin salida conocida: video entero (DecDCTvlc2), basura de pila en cargas con nombre roto,
-tarjeta de memoria (func_80051298: falta modelo de la tarjeta), func_80018218 (montón lleno en la captura),
+tarjeta de memoria (func_80051298: falta modelo de la tarjeta), func_80018218 (montÃ³n lleno en la captura),
 setjmp, BuclePrincipal, herramientas que leen del PC.
   - Mas limites (04-10): InitGeom (func_800177B4) guarda en memoria la direccion de retorno del parche de la
     BIOS (D_80084CD0): apunta al codigo, distinto en C. func_8002D714 copia 4 bytes sin inicializar de su
@@ -738,7 +738,7 @@ las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
   seguian las otras 9 sinteticas del repaso, PantallasLegales, las criticas y los mutantes: relanzar como dice arriba.
   Las 10 sinteticas con stub tambien IGUAL con los registros conservados (anotadas). Falta PantallasLegales.
 
-### PAUSA 05-10 (Meme pidio pausar) — EMPIEZA AQUI
+### PAUSA 05-10 (Meme pidio pausar) â€” EMPIEZA AQUI
 
 **98.7 %: reales 79.3 % (701 fn) + sinteticas 19.4 % (313 fn) = 1014 de 1034. Todo pusheado.**
 Repaso de stubs con los registros conservados: 17 de 18 siguen IGUAL (7 reales y 10 sinteticas, anotadas).
@@ -778,8 +778,16 @@ con las 60 por defecto. Para confirmar un arreglo de una funcion con variantes r
 C tiene que tener cada variable en el mismo registro s que la original: `register ... asm("$N")` mas el asm volatile
 vacio con "+r" despues de cada llamada, y los punteros al marco recalculados desde sp.
 
-Mutantes (`sint.py mutantes`, 8): 8 de 8 cazados, pero todos en el stub; la herramienta no muta el cuerpo `static`,
-que queda cubierto solo por las 689 variantes.
+Mutantes: la primera prueba (8 de 8 cazados) muto solo el stub. **mutantes.py ahora muta el cuerpo en C de los stubs
+de asm** (detecta el `jal cuerpo` del stub; `--en` para elegirlo a mano) y anota la linea de cada mutante. En el
+cuerpo de func_80017D80 sobrevivio `<` por `<=` (linea 60, `ultimo < primero`): ninguna captura carga un archivo de
+un solo sector. `verif/caso17d80.py` corre la captura 00 con WRLDDATA\FRONT\FRW.BIN (368 bytes): el C IGUAL y el
+mutante DISTINTO. (La original devuelve 0 con un archivo de un sector: pide leer 0 sectores, falla 10 veces y lo
+libera. Error del juego, el C lo copia.)
+Cola `verif/lanzar_mut_cuerpos.sh` -> build/mut_cuerpos.txt: mutantes en el cuerpo de las 15 funciones con stub.
+
+Trampa: un `open(p, "w")` de python en Windows sin `encoding="utf-8"` escribe en cp1252 y rompe los acentos de este
+archivo (paso en fa3d3e1, arreglado en el commit siguiente).
 
 Lo que queda (19 fn) sigue siendo limite: setjmp, InitGeom e InitCARD guardan en memoria una direccion de vuelta
 que en el C apunta al C (en un ejecutable rearmado en su direccion daria igual), video, BuclePrincipal, main y asm puro.

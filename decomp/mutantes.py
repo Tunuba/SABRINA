@@ -5,7 +5,11 @@ reves, && por ||, una suma por una resta, una linea borrada) y verifica cada cop
 como IGUAL es una parte de la funcion que las capturas no prueban: o hace falta otra captura, o el cambio
 no altera nada (mutante equivalente, pasa a veces con las lineas borradas que no hacen nada).
 
-Uso: python3 mutantes.py src/X.c Funcion [--max 16]
+Uso: python3 mutantes.py src/X.c Funcion [--max 16] [--en Cuerpo]
+
+Si la funcion es un stub de asm (el truco del marco a mano: solo arma la pila y hace `jal cuerpo`), se muta el
+cuerpo en C al que salta, que esta en el mismo archivo; con --en se elige a mano que funcion mutar. Se sigue
+verificando la funcion pedida. Antes se mutaba el stub, y el cuerpo, que es la descompilacion, no se probaba.
 """
 import contextlib
 import io
@@ -18,11 +22,14 @@ import tempfile
 import verificar
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
+# el principio de la definicion de una funcion (no su extern); admite __attribute__((...)) delante, como los
+# cuerpos de los stubs (`__attribute__((noinline, used)) static void *cuerpo(...)`)
+DEF = r"^(?!extern\b)(?:__attribute__\(\(.*?\)\)\s*)?\w[\w\s\*]*?\b"
 
 
 def cuerpo(texto, funcion):
     """(inicio, fin) del cuerpo de la funcion entre sus llaves."""
-    m = re.search(r"^(?!extern\b)\w[\w\s\*]*?\b" + funcion + r"\s*\([^;{]*\)\s*\{", texto, re.M)
+    m = re.search(DEF + funcion + r"\s*\([^;{]*\)\s*\{", texto, re.M)
     if not m:
         raise SystemExit(f"no encuentro {funcion}")
     i, prof = m.end(), 1
@@ -32,13 +39,24 @@ def cuerpo(texto, funcion):
     return m.end(), i - 1
 
 
+def a_mutar(texto, funcion):
+    """La funcion cuyo C se muta: la pedida, o el cuerpo al que salta si es un stub de asm."""
+    ini, fin = cuerpo(texto, funcion)
+    c = texto[ini:fin]
+    m = re.search(r"(?:\\t|\s|\")jal\s+(\w+)", c)          # en el fuente va como "\tjal cuerpo\n"
+    if "__asm__" in c and m and re.search(DEF + m.group(1) + r"\s*\(", texto, re.M):
+        return m.group(1)
+    return funcion
+
+
 def mutantes(texto, funcion):
     ini, fin = cuerpo(texto, funcion)
     c = texto[ini:fin]
     res = []
 
     def cambio(a, b, nuevo, que):
-        res.append((texto[:ini] + c[:a] + nuevo + c[b:] + texto[fin:], que))
+        linea = texto.count("\n", 0, ini + a) + 1
+        res.append((texto[:ini] + c[:a] + nuevo + c[b:] + texto[fin:], f"{que} (linea {linea})"))
 
     for m in re.finditer(r"(?<![\w.])(0x[0-9A-Fa-f]+|\d+)(?![\w.])", c):
         v = int(m.group(1), 0)
@@ -66,7 +84,10 @@ def main():
     c, funcion = sys.argv[1], sys.argv[2]
     maximo = int(sys.argv[sys.argv.index("--max") + 1]) if "--max" in sys.argv else 16
     texto = open(c).read()
-    todos = mutantes(texto, funcion)
+    mutar = sys.argv[sys.argv.index("--en") + 1] if "--en" in sys.argv else a_mutar(texto, funcion)
+    if mutar != funcion:
+        print(f"  {funcion} es un stub de asm: se muta {mutar}", flush=True)
+    todos = mutantes(texto, mutar)
     random.Random(7).shuffle(todos)
     todos = todos[:maximo]
     vivos = []
