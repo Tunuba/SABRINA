@@ -201,9 +201,11 @@ void func_80050C40(void) {
 /* Crea bu<puerto>:<nombre> con bloques en la parte alta del modo (bloques << 16 | 0x200). Devuelve 6 si ya
  * existe, 0 si se creo, -1 si habia un evento abierto, 7 si la tarjeta no contesto nada, y si no el codigo de la
  * tarjeta (reintenta con 3 enseguida y con 2 hasta 4 veces; 0 pasa a 5). */
-s32 func_800513B4(s32 puerto, char *nombre, s32 bloques) {
-    char ruta[32];
-    s32 resultado;
+/* El cuerpo de func_800513B4. Corre con ruta en el marco del stub (sp+0x10 de la original) y resultado en
+ * ruta+32 (sp+0x30), como la original: un nombre de mas de 32 letras desborda ruta y pisa resultado y los registros
+ * guardados, igual en las dos (05-10: con el marco de GCC, 1 de 84 variantes daba otro nombre de archivo). */
+__attribute__((noinline, used)) static s32 crear_cuerpo(s32 puerto, char *nombre, s32 bloques, char *ruta) {
+    volatile s32 *resultado = (volatile s32 *) (ruta + 32);
     s32 veces = 0;
     s32 archivo;
     volatile s32 *tarjeta = D_800D52C0;
@@ -243,22 +245,46 @@ s32 func_800513B4(s32 puerto, char *nombre, s32 bloques) {
                 while (tarjeta[2] == 0) {
                 }
             }
-            resultado = D_800D52B4;
+            *resultado = D_800D52B4;
             tarjeta[2] = 0;
         }
         func_80051284(D_800D5318);
-        if (resultado == 0) {
+        if (*resultado == 0) {
             return 7;
         }
-        if (resultado == 3) {
+        if (*resultado == 3) {
             continue;
         }
-        if (resultado != 2 || ++veces >= 4) {
+        if (*resultado != 2 || ++veces >= 4) {
             break;
         }
     }
-    if (resultado == 0) {
-        resultado = 5;
+    if (*resultado == 0) {
+        *resultado = 5;
     }
-    return resultado;
+    return *resultado;
+}
+
+/* Stub con el marco de la original (0x50): s0-s4 en 0x38-0x48, ra en 0x4C, ruta en 0x10. */
+__attribute__((naked))
+s32 func_800513B4(s32 puerto, char *nombre, s32 bloques) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x50\n"
+            "\tsw $16, 0x38($sp)\n"
+            "\tsw $17, 0x3C($sp)\n"
+            "\tsw $18, 0x40($sp)\n"
+            "\tsw $19, 0x44($sp)\n"
+            "\tsw $20, 0x48($sp)\n"
+            "\tsw $31, 0x4C($sp)\n"
+            "\tjal crear_cuerpo\n"
+            "\taddiu $7, $sp, 0x10\n"
+            "\tlw $31, 0x4C($sp)\n"
+            "\tlw $20, 0x48($sp)\n"
+            "\tlw $19, 0x44($sp)\n"
+            "\tlw $18, 0x40($sp)\n"
+            "\tlw $17, 0x3C($sp)\n"
+            "\tlw $16, 0x38($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x50\n"
+            ".set reorder");
 }

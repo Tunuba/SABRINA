@@ -567,7 +567,7 @@ func_8004F50C	92	IGUAL_V0_SINT	src/varios/tarjeta_cerrar_g15.c	0 de 2 capturas y
 func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
 func_8004EBD0	396	IGUAL_SINT	src/varios/tarjeta_iconos_g15.c	2 de 2 capturas y 64 de 64 variantes iguales
-func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 132 variantes iguales
+func_800522E4	108	IGUAL_SINT	src/varios/tarjeta_dir_g14.c	1 de 1 capturas y 28 de 28 variantes iguales
 func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
 func_8003E9FC	60	IGUAL_SINT	src/varios/tabla_corrida_g14.c	3 de 3 capturas y 284 de 284 variantes iguales
