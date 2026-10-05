@@ -21,7 +21,7 @@ VARIADICAS = {"printf": 1, "sprintf": 2, "FntPrint": 1}   # argumentos fijos; el
 # Cuantos argumentos recibe cada rutina de la BIOS (los stubs `li t2,0xB0; jr t2; li t1,N` no leen a0-a3, asi que
 # el recorrido de arriba cree que no reciben nada y m2c se come los argumentos de la llamada: 05-10,
 # DeliverEvent(0xF0000009, 0x20) salia como DeliverEvent() y el juego se colgaba)
-ARIDAD_NOMBRE = {"TestEvent": 1, "OpenEvent": 3, "EnableEvent": 1, "CloseEvent": 1, "DeliverEvent": 2,
+ARIDAD_NOMBRE = {"TestEvent": 1, "OpenEvent": 4, "EnableEvent": 1, "CloseEvent": 1, "DeliverEvent": 2,
                  "WaitEvent": 1, "DisableEvent": 1, "ChangeClearRCnt": 2, "ChangeClearPAD": 1,
                  "_card_info": 1, "_card_load": 1, "GPU_cw": 1, "firstfile2": 2, "nextfile": 1, "exit": 1}
 

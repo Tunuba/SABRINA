@@ -90,7 +90,7 @@ void GPU_cw(s32);
 void _bu_init(void);
 void func_800142FC(void);
 s32 DeliverEvent(s32, s32); /* ? */
-s32 OpenEvent(s32, s32, s32);
+s32 OpenEvent(s32, s32, s32, s32);
 void CloseEvent(s32);
 void WaitEvent(s32);
 s32 TestEvent(s32);
