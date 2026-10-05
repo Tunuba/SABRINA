@@ -942,6 +942,11 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
   los mutantes de func_8001FD50 (los primeros se pararon a mano por RAM: Windows llego a 0.9 GB libres por las otras
   sesiones; WSL solo ocupaba 0.5 GB). Al terminar: `py verif/anotar.py build/cola_dibujo.txt` y
   `py verif/anotar.py build/cola_0510b.txt --solo func_800589EC,func_80058EE4,func_800593E0`.
+- **PARADO A MANO por Meme ("mata todo")**: se mataron las dos colas y se apago la maquina de WSL. De los mutantes de
+  `lanzar_0510b.sh` alcanzaron a salir func_80051764 8 de 8 y func_800589EC 8 de 8; func_80058EE4 y func_800593E0
+  quedaron sin mutantes y `lanzar_dibujo.sh` no llego a empezar. Para seguir: quitar de `lanzar_0510b.sh` lo ya hecho
+  (o correr solo los mutantes que faltan) y relanzar `lanzar_dibujo.sh` (espera el "TODO FIN" de `cola_0510b.txt`:
+  agregarlo a mano o quitar esa espera).
 - func_80050AB8: no es un error, es costo. Cuando el modelo de la tarjeta responde 3 la original reintenta sin fin y
   esa variante gasta el tope de instrucciones en las dos versiones; con 8 variantes pasa de una hora. Correrla sola
   con `timeout` largo (4 h) cuando la PC este libre.
