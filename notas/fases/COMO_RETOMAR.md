@@ -723,3 +723,7 @@ Esta noche, ademas de lo de arriba:
 Relanzar con `verif/fondo.sh verif/lanzar_X.sh /dev/null`. Revisar: cualquier "DISTINTO" con "al volver distintos" o
 "secciones criticas distintas" es un error real del C nuevo de detectar; las sint se anotan con
 `py verif/anotar.py build/X_sint.txt --sint` (las reales ya estaban IGUAL en la auditoria; solo hay que confirmar).
+
+**Progreso del repaso de stubs al bajar la bateria (29 %):**
+  func_800189A4: 8 de 8 capturas y 177 de 177 variantes iguales -> IGUAL
+  func_8002D714: 2 de 2 capturas y 1 de 1 variantes iguales -> IGUAL
