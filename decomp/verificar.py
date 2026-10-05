@@ -879,6 +879,37 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                 hw=hw, sp=sp, error=error, lecturas=lecturas, propias=propias, cd=cd.log if cd else [])
 
 
+# Lo que no se compara de la pila: 0x4000 por debajo del sp de entrada, mas el marco entero de la original si es
+# mas grande (04-10 noche: HerramientaConvertirTEX tiene un marco de 0x800A0 con un bufer de media VRAM; sus
+# registros guardados quedaban dentro de lo comparado). verificar() lo pone para cada funcion (marco_original).
+PILA_LOCAL = {"bytes": 0x4000}
+
+
+def marco_original(funcion):
+    """El tamano del marco de pila de la original (su primer addiu sp, o lui/ori/addu at para los grandes)."""
+    lineas = []
+    for ruta in glob.glob(os.path.join(AQUI, "asm", "*.s")):
+        dentro = False
+        with open(ruta, errors="replace") as asm:
+            for l in asm:
+                if re.match(r"\s*glabel " + funcion + r"\s*$", l):
+                    dentro = True
+                elif dentro:
+                    lineas.append(l)
+                    if len(lineas) > 4:
+                        break
+        if lineas:
+            break
+    texto = " ".join(lineas)
+    m = re.search(r"addiu\s+\$sp, \$sp, -0x([0-9A-F]+)", texto)
+    if m:
+        return int(m.group(1), 16)
+    m = re.search(r"ori\s+\$at, \$at, \(0x([0-9A-F]{8}) &", texto)
+    if m and "addu       $sp, $sp, $at" in texto:
+        return 0x100000000 - int(m.group(1), 16)
+    return 0
+
+
 def comparar(a, b, sp, con_v0=True):
     dif = []
     if a["error"] or b["error"]:
@@ -887,7 +918,7 @@ def comparar(a, b, sp, con_v0=True):
         dif.append(f"v0 {a['v0']:08x} contra {b['v0']:08x}")
     # la pila local y los 16 bytes de sp a sp+16, que la convencion de llamada le da a la funcion llamada
     # para guardar a0-a3 (una llamada al final, compilada como salto, los usa para la que sigue)
-    ini_pila = (sp & 0x1FFFFF) - 0x4000
+    ini_pila = (sp & 0x1FFFFF) - PILA_LOCAL["bytes"]
     fin_pila = (sp & 0x1FFFFF) + 16
     ra, rb = a["ram"], b["ram"]
     if ra != rb:
@@ -915,6 +946,7 @@ def verificar(c, funciones, n_variantes=int(os.environ.get("SABRINA_VARIANTES", 
     codigo_c, dirs = compilar(c, funciones)
     total_ok = True
     for f in funciones:
+        PILA_LOCAL["bytes"] = 0x4000 + (marco_original(f) if marco_original(f) > 0x4000 else 0)
         caps = sorted(glob.glob(os.path.join(AQUI, "capturas", f, "*.regs")))
         if not caps:
             print(f"{f}: sin capturas")
