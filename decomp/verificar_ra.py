@@ -14,7 +14,7 @@ funciones originales funciona. Todos los simbolos externos se resuelven a sus di
 ELF que arma armar.sh).
 
 Las llamadas a la BIOS (0xA0, 0xB0, 0xC0) vuelven enseguida, y se compara su secuencia (tabla y numero de
-funcion, sin los argumentos): 05-10, un C sin el FlushCache() despues de parchear codigo pasaba la prueba de
+funcion, y los argumentos que dice ARGS_BIOS): 05-10, un C sin el FlushCache() despues de parchear codigo pasaba la prueba de
 mutantes, porque el modelo no hace nada en FlushCache y no queda rastro en la RAM.
 
 Se compara tambien como quedan el coprocesador geometrico (sus registros de datos y de control, en gte.py) y el
@@ -639,7 +639,9 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
-            bios.append((dirc, u.reg_read(UC_MIPS_REG_ZERO + 9)))
+            n_bios = u.reg_read(UC_MIPS_REG_ZERO + 9)
+            bios.append((dirc, n_bios) + tuple(u.reg_read(UC_MIPS_REG_A0 + i)
+                                               for i in range(ARGS_BIOS.get((dirc, n_bios), 0))))
             hecho = TARJETA and bios_tarjeta(u, dirc, u.reg_read(UC_MIPS_REG_ZERO + 9))
             if hecho:
                 if hecho != "v0":
@@ -721,8 +723,13 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             dest = ((dirc + 4) & 0xF0000000) | ((ins & 0x3FFFFFF) << 2)
         else:
             dest = u.reg_read(UC_MIPS_REG_ZERO + ((ins >> 21) & 31))
-        if not (ini_p <= dest < fin_p):
-            llamadas.append((dest, (dirc + 8) & 0xFFFFFFFF, u.reg_read(UC_MIPS_REG_SP)))
+        if ini_p <= dest < fin_p:
+            # dentro del C: si es la copia en C de una funcion del juego, cuenta como llamada a la original; si es
+            # algo solo del C (el cuerpo de un stub, una static), no se anota
+            dest = MAPA_C.get(dest) if codigo_c else None
+            if dest is None:
+                return
+        llamadas.append((dest, (dirc + 8) & 0xFFFFFFFF, u.reg_read(UC_MIPS_REG_SP)))
 
     for i in range(0, len(cod_p) - 3, 4):
         ins = struct.unpack_from("<I", cod_p, i)[0]
@@ -953,6 +960,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 PILA_LOCAL = {"bytes": 0x4000}
 # la funcion que se esta verificando (la pone verificar(); el modelo de VSync la mira)
 EN_PRUEBA = {"f": None}
+# direccion en el C -> direccion de la original, para las funciones del C que tienen nombre del juego (verificar())
+MAPA_C = {}
 
 
 def marco_original(funcion):
@@ -978,6 +987,36 @@ def marco_original(funcion):
     if m and "addu       $sp, $sp, $at" in texto:
         return 0x100000000 - int(m.group(1), 16)
     return 0
+
+
+# cuantos argumentos se comparan en cada llamada a la BIOS (tabla, funcion); las que no estan, ninguno. 05-10: los
+# borradores de m2c llamaban a open, TestEvent, DeliverEvent... sin argumentos (prototipos.h las declara void) y
+# pasaban, porque el modelo de la BIOS no hace nada con ellos.
+ARGS_BIOS = {
+    (0xA0, 0x39): 2, (0xA0, 0x49): 1, (0xA0, 0xAB): 1, (0xA0, 0xAC): 1,          # InitHeap, GPU_cw, _card_info/load
+    (0xB0, 0x07): 2, (0xB0, 0x08): 4, (0xB0, 0x09): 1, (0xB0, 0x0A): 1,          # Deliver/Open/Close/WaitEvent
+    (0xB0, 0x0B): 1, (0xB0, 0x0C): 1, (0xB0, 0x12): 4, (0xB0, 0x19): 1,          # Test/EnableEvent, InitPAD2, HookEntryInt
+    (0xB0, 0x32): 2, (0xB0, 0x33): 3, (0xB0, 0x34): 3, (0xB0, 0x35): 3,          # open, lseek, read, write
+    (0xB0, 0x36): 1, (0xB0, 0x42): 2, (0xB0, 0x43): 1, (0xB0, 0x45): 1,          # close, firstfile, nextfile, erase
+    (0xB0, 0x4A): 1, (0xB0, 0x4E): 3, (0xB0, 0x4F): 3, (0xB0, 0x5B): 1,          # InitCARD2, _card_write/read, ChangeClearPad
+    (0xB0, 0x5C): 1,                                                             # _card_status
+    (0xC0, 0x02): 2, (0xC0, 0x03): 2, (0xC0, 0x0A): 2,                           # SysEnq/DeqIntRP, ChangeClearRCnt
+}
+
+
+def bios_iguales(la, lb, ini_pila, fin_pila):
+    """Las llamadas a la BIOS, con sus argumentos; un argumento que en las dos apunta a la pila local vale igual (un
+    nombre de archivo armado en la pila queda en otro lugar del marco en el C)."""
+    if len(la) != len(lb):
+        return False
+    for x, y in zip(la, lb):
+        if x[:2] != y[:2]:
+            return False
+        for p, q in zip(x[2:], y[2:]):
+            if p != q and not (p >> 29 == 4 and q >> 29 == 4 and ini_pila <= p & 0x1FFFFF < fin_pila
+                               and ini_pila <= q & 0x1FFFFF < fin_pila):
+                return False
+    return True
 
 
 def comparar(a, b, sp, con_v0=True):
@@ -1010,7 +1049,7 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("escrituras al cop0 distintas")
     if a.get("criticas", []) != b.get("criticas", []):
         dif.append("secciones criticas distintas")
-    if a.get("bios", []) != b.get("bios", []):
+    if not bios_iguales(a.get("bios", []), b.get("bios", []), ini_pila, fin_pila):
         dif.append("llamadas a la BIOS distintas")
     if a.get("conservados") != b.get("conservados"):
         nombres = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "gp", "sp", "fp")
@@ -1032,6 +1071,8 @@ def verificar(c, funciones, n_variantes=int(os.environ.get("SABRINA_VARIANTES", 
     sim = simbolos()
     codigo_c, dirs = compilar(c, funciones)
     total_ok = True
+    MAPA_C.clear()
+    MAPA_C.update({dirs[n]: sim[n] for n in dirs if n in sim})
     for f in funciones:
         EN_PRUEBA["f"] = f
         PILA_LOCAL["bytes"] = 0x4000 + (marco_original(f) if marco_original(f) > 0x4000 else 0)

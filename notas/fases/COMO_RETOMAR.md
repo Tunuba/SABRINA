@@ -847,3 +847,28 @@ corra ninguna cola):**
   0 de 8: todo lo que hace es escribir ahi).
 - Prueba de func_800161D4, InitCARD y func_800163E4 con `verif/probar_ra.sh` -> build/probar_ra.txt.
   `verif/vfull_ra.sh` y `verif/mutantes_ra.sh` son vfull y mutantes con verificar_ra.
+- **func_800161D4 IGUAL con el arreglo de la espera: 8 de 8 capturas, 198 de 198 variantes.**
+
+**verificar.py YA ES EL NUEVO (05-10 tarde).** Se arma con `py verif/parche_ra.py build/verificar_antes_0510.py
+verificar.py` (copia vieja en build/, fuera de git; el parche esta en el repo). verificar_ra.py queda igual a
+verificar.py (solo para los *_ra.sh). Ademas de lo de arriba:
+- **Argumentos de la BIOS**: la secuencia de llamadas a la BIOS lleva los argumentos que dice `ARGS_BIOS` (cuantos
+  toma cada funcion de la BIOS que usa el juego); un argumento que en las dos apunta a la pila local vale igual (un
+  nombre armado en la pila queda en otro lugar del marco). Con eso func_80051D14 (TestEvent sin argumento) da 0 de 3.
+- **Llamadas a funciones del mismo .c**: en el C una llamada a la copia en C de una funcion del juego se anota como
+  llamada a la original (MAPA_C); si no, las listas de llamadas no coincidian y no se reubicaba nada.
+- `verif/depurar_ra.py src/x.c funcion [captura]` muestra las palabras distintas y las llamadas de las dos.
+
+**Borradores con la BIOS sin argumentos, reescritos en `src/varios/bios_eventos_g16.c`** (14): func_80014910,
+80014988 (SysEnq/DeqIntRP), 80016874 (HookEntryInt), 80029808/30/58 (DeliverEvent del CD), 8003E554 (DeliverEvent
+del SPU), 800515B0 (erase), 80051A84 (8 OpenEvent y EnableEvent), 80051C60 (CloseEvent), 80051D14/1E1C/1EF4
+(TestEvent), 80052350 (ChangeClearPAD). Cola `verif/lanzar_eventos16.sh` -> build/eventos16*.txt.
+OJO: `anotar.py` no baja un estado; si alguna de estas no da IGUAL con el archivo nuevo, hay que sacarla a mano de
+auditoria.tsv / progreso*.tsv (el borrador viejo ya no vale).
+
+**func_800163E4 (el setjmp de libetc)**: con el verificador nuevo solo diferian ra (se reubica) y s0, que el setjmp
+guarda: en la original s0 = D_80063918. Arreglo en libetc_g13.c: `register u8 *base asm("$16")` con asm volatile
+antes de la llamada, y `noinline` en func_800168EC, 80016AF4 y 80016DA0 (GCC las metia dentro y faltaban llamadas;
+solo las llama func_800163E4). Cola `verif/lanzar_limites0510.sh` -> build/limites0510*.txt (setjmp, InitGeom,
+InitCARD y mutantes). Cola `verif/lanzar_revisar.sh` -> build/revisar_real.txt / revisar_sint.txt: las 61 contadas
+que llaman a la BIOS o usan cop2/mtc0 (`verif/lista_revisar.py`), con el verificador nuevo.
