@@ -9,6 +9,7 @@ extern s32 D_800D52A4;
 extern s32 D_800D52A8;
 extern u8 D_800D52C0[];
 extern u8 D_800D52C4[];
+extern s32 D_800D52D0;
 extern s32 func_8004FD34();
 
 s32 func_80050034(u32 *arg0) {
@@ -62,7 +63,7 @@ block_25:
             *arg0 = 0x1E;
         case 30:                                    /* switch 1 */
             func_80051D14();
-            _card_load();
+            _card_load(D_800D52D0);
             var_v0 = *arg0 + 1;
             goto block_33;
         }
@@ -81,7 +82,7 @@ block_25:
                 goto block_25;
             case 4:                                 /* switch 3 */
                 func_80051D14();
-                _card_info();
+                _card_info(D_800D52D0);
                 var_v0 = 0x32;
                 goto block_33;
             case 2:                                 /* switch 3 */

@@ -4,8 +4,8 @@
 
 extern s32 D_80074EAC;
 extern void * D_80074EBC;
+extern s32 (*D_80074EE0)();
 
-extern M2C_UNK (*D_80074EE0)(M2C_UNK);
 
 void func_8003E554(void) {
     u32 var_v1;
@@ -28,5 +28,5 @@ loop_4:
         D_80074EE0(0xF0000000);
         return;
     }
-    DeliverEvent();
+    DeliverEvent(-0x0FFFFFF7, 0x20);
 }

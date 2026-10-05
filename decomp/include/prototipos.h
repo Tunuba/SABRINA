@@ -86,15 +86,15 @@ void SetDrawMode(s32, s32, s32, s32);
 s32 P41_OBJ_8C(void); /* ? */
 void InitHeap(void);
 s32 FlushCache(void); /* ? */
-void GPU_cw(void);
+void GPU_cw(s32);
 void _bu_init(void);
 void func_800142FC(void);
-s32 DeliverEvent(void); /* ? */
-s32 OpenEvent(void);
-void CloseEvent(void);
-void WaitEvent(void);
-s32 TestEvent(void);
-void EnableEvent(void);
+s32 DeliverEvent(s32, s32); /* ? */
+s32 OpenEvent(s32, s32, s32);
+void CloseEvent(s32);
+void WaitEvent(s32);
+s32 TestEvent(s32);
+void EnableEvent(s32);
 s32 InitPAD2(void); /* ? */
 s32 StartPAD2(void); /* ? */
 s32 StopPAD2(void); /* ? */
@@ -109,13 +109,13 @@ s32 lseek(void);
 s32 read(void);
 s32 write(void);
 void close(void);
-s32 firstfile2(void);
-s32 nextfile(void);
+s32 firstfile2(s32, s32);
+s32 nextfile(s32);
 s32 erase(void);
-void ChangeClearPAD(void);
+void ChangeClearPAD(s32);
 void SysEnqIntRP(void);
 void SysDeqIntRP(void);
-void ChangeClearRCnt(void);
+void ChangeClearRCnt(s32, s32);
 void func_800144C4(s32, s32, s32);
 s32 func_80014560(s32); /* ? */
 void func_80014598(s32);
@@ -225,7 +225,7 @@ s32 SPRINTF_OBJ_82C(void); /* ? */
 void puts(s32);
 s32 PUTS_OBJ_28(void); /* ? */
 s32 func_80016170(s32);
-s32 exit(void);
+s32 exit(s32);
 s32 func_800161BC(void);
 void func_800161C8(void);
 void func_800161D4(s32, s32);
@@ -1236,8 +1236,8 @@ s32 func_80051E1C(void);
 s32 func_80051EF4(void);
 s32 func_80051FCC(void);
 s32 func_80052008(void);
-void _card_info(void);
-void _card_load(void);
+void _card_info(s32);
+void _card_load(s32);
 void InitCARD2(void);
 void StartCARD2(void);
 void StopCARD2(void);
