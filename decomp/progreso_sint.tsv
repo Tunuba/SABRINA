@@ -247,7 +247,7 @@ func_80052240	112	NO_COMPILA	      |                                            
 func_800522B0	52	DISTINTO	func_800522B0: 0 de 1 capturas y 0 de 76 variantes iguales -> DISTINTO
 func_800522E4	0	TOPE_DE_TIEMPO	
 func_80052350	56	IGUAL_SINT	func_80052350: 1 de 1 capturas y 42 de 42 variantes iguales -> IGUAL
-func_80052388	40	IGUAL_SINT	func_80052388: 1 de 1 capturas y 0 de 0 variantes iguales -> IGUAL
+func_80052388	40	DISTINTO	func_80052388: limite (04-10 noche): func_800523B4 guarda su ra en D_800D53C0 y en el C apunta al C; el IGUAL de antes era sin variantes
 func_800523B4	112	NO_COMPILA	      |                         ^~~~~~~~~~
 func_80052434	324	NO_COMPILA	      |     ^~~~~~~
 func_80052578	524	DISTINTO	func_80052578: 0 de 1 capturas y 0 de 27 variantes iguales -> DISTINTO

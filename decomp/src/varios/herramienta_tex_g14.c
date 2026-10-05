@@ -69,28 +69,36 @@ extern void *func_8001B698(char *nombre);              /* lee y convierte un mod
  * bytes de cada uno, liberandolos. */
 void func_8001F524(s32 arch) {
     char **lista = D_8007C6BC[nivel_actual];
-    s32 n = 0;
     void **m;
-    s32 i;
+    volatile s32 i;
+    /* en la pila como en el original: asi solo usa s0-s2 y s3 llega intacto a func_8001B698, que lee el s3
+     * del que llama */
+    volatile s32 n;
+    volatile s32 desde;
 
+    n = 0;
     while (lista[n] != 0) {
         n++;
     }
-    m = Reservar((n + 1) * 4, D_8006886C, 0x21A);
+    m = Reservar((n + 1) * 4, DIR(D_8006886C), 0x21A);
     n = 0;
     do {
         if (lista[n] != 0) {
-            m[n] = func_8001B698(lista[n]);
+            void *t = func_8001B698(lista[n]);
+
+            m[n] = t;
         }
         n++;
-        if ((u32)n >= 0x32) {
-            Afirmar(0, D_8006886C, 0x220);
+        if ((u32) n >= 0x32) {
+            Afirmar(0, DIR(D_8006886C), 0x220);
         }
     } while (lista[n] != 0);
-    func_80029530(arch, &n, 2);
+    func_80029530(arch, (void *) &n, 2);
+    desde = 0;
     for (i = 0; i != n; i++) {
-        func_80029530(arch, m[i], 0x20);
-        Liberar(m[i]);
+        func_80029530(arch, *(void **) ((u8 *) m + desde), 0x20);
+        Liberar(*(void **) ((u8 *) m + desde));
+        desde += 4;
     }
     Liberar(m);
 }
