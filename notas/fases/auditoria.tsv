@@ -616,3 +616,5 @@ func_80051E1C	216	IGUAL	src/varios/bios_eventos_g16.c	3 de 3 capturas y 96 de 96
 func_80051EF4	216	IGUAL	src/varios/bios_eventos_g16.c	1 de 1 capturas y 32 de 32 variantes iguales
 func_80029830	40	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 24 de 24 variantes iguales
 func_800515B0	436	IGUAL_SINT	src/varios/bios_eventos_g16.c	3 de 3 capturas y 88 de 88 variantes iguales
+func_8004FD34	768	IGUAL	src/varios/tarjeta_evento_fd34_g16.c	3 de 3 capturas y 77 de 77 variantes iguales
+func_80050034	680	IGUAL	src/varios/tarjeta_evento_0034_g16.c	3 de 3 capturas y 73 de 73 variantes iguales

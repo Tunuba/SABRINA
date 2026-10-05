@@ -904,3 +904,23 @@ limite por guardar una direccion de vuelta: setjmp de libetc (func_800163E4, 8 d
 - `verif/lanzar_revisar.sh` sigue (reverificacion de las 61); los DISTINTO de borradores viejos de src/auto ya
   reemplazados (func_80014910, 80014988, 80016874, 80029808/30/58, 8003E554) no cuentan: las versiones de
   bios_eventos_g16.c son las que estan en auditoria.tsv.
+
+### 05-10 NOCHE: SE APAGO LA PC (EMPIEZA AQUI)
+
+**98.5 % (1017 de 1034), todo pusheado.** Meme apago la PC; las colas que corrian en WSL murieron.
+- La reverificacion destapo dos mas con la BIOS sin argumentos: func_8004FD34 y func_80050034 (callbacks de
+  eventos de la tarjeta) llamaban a `_card_info()` / `_card_load()` sin el puerto. Copias de los borradores con el
+  puerto en `src/varios/tarjeta_evento_fd34_g16.c` y `tarjeta_evento_0034_g16.c` (alias en asm
+  `extern void tarjeta_info(s32) __asm__("_card_info")` para no chocar con prototipos.h): **IGUAL 77 de 77 y 73 de 73**.
+- De la reverificacion de las 61 (`verif/lanzar_revisar.sh`) van 37: todas IGUAL salvo los borradores viejos ya
+  reemplazados (lista arriba), func_8001FD50 (pendiente, arriba) y las dos de la tarjeta de este punto (ya arregladas).
+  **Faltan 24, en `verif/revisar_falta.txt`.** Para seguir, desde WSL (los logs se agregan, no se borran):
+  `LISTA=/mnt/c/Proyectos/SABRINA/decomp/verif/revisar_falta.txt bash verif/lanzar_revisar.sh`, lanzado por WMI
+  (`Invoke-CimMethod Win32_Process Create` con `wsl.exe -d Ubuntu-24.04 -- bash ...`) para que no muera con el turno.
+  Un DISTINTO con "llamadas a la BIOS distintas" casi siempre es un borrador que llama a la BIOS sin argumentos:
+  mirar el asm de la original y pasarlos.
+- Murieron a medias: los mutantes de `lanzar_eventos16.sh` (iba en func_80051E1C; los de func_80051D14 dieron 3 de
+  8, los vivos son las cadenas b[3]=0... con banderas ya en 0, equivalentes con esas capturas), `lanzar_tarjeta16b.sh`
+  (la verificacion termino; faltaban los mutantes de 80050418, 80050AB8 y los de abrir_y_pasar) y la cola B.
+- Orden sugerido al volver: 1) revisar_falta.txt; 2) mutantes de tarjeta16b; 3) func_8001FD50; 4) cola B.
+  Con poca RAM (bajo 2 GB) correr de a una cola.

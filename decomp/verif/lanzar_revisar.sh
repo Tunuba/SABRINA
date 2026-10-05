@@ -5,7 +5,7 @@ d=/mnt/c/Proyectos/SABRINA/decomp
 cd $d
 export SABRINA_VARIANTES=8
 r=$d/build/revisar_real.txt; s=$d/build/revisar_sint.txt
-rm -f $r $s
+[ -z "$LISTA" ] && rm -f $r $s   # con LISTA (retomar) se agrega a los logs
 while IFS=$'\t' read -r tipo par; do
   par=${par%$'\r'}
   if [ "$tipo" = real ]; then
@@ -15,5 +15,5 @@ while IFS=$'\t' read -r tipo par; do
     echo "== ${par##*:} ${par%%:*}" >> $s
     timeout 3600 bash $d/verif/vsint.sh ${par%%:*} ${par##*:} >> $s 2>&1 < /dev/null
   fi
-done < $d/build/revisar.txt
+done < ${LISTA:-$d/build/revisar.txt}
 echo FIN >> $r; echo FIN >> $s
