@@ -657,3 +657,18 @@ lista, ya esta anotada). Las 3 nuevas (PIC, modelos, cuadricula) ya dieron IGUAL
 La prueba de mutantes de func_800502DC se corto por falta de memoria en Windows (no se repitio).
 Lo que queda despues es limite: video, BuclePrincipal, setjmp, InitCARD/InitGeom (ra dentro del C), func_80017D80,
 trampolines de la BIOS en asm (func_800161BC/C8, func_800142FC) y el manejador de excepciones (func_80017B8C).
+
+**CIERRE de esta sesion: reales 79.3 % + sinteticas 19.4 % = 98.7 % (1015 de 1034).** Toda la cadena anotada:
+func_8001B0C8, func_8001B698, func_80018CB8, func_80024450, HerramientaConvertirPIC, HerramientaArmarModelos,
+HerramientaArmarCuadricula y las 5 de la tarjeta, todas IGUAL_SINT.
+- func_80018CB8 tenia un error real del C (8 bytes por letra en vez de 12): lo escondia la fuente virtual que llegaba
+  rota antes del arreglo de los sectores.
+- Otro arreglo de fondo: los archivos virtuales ahora son de cada corrida (`Cd.__init__` los borra). Quedaban de la
+  corrida de la original y la del C encontraba con datos sectores que la original habia leido vacios (el lector lee
+  por delante): func_80024450 daba DISTINTO en el grupo 1 solo por eso.
+- Video confirmado como limite: func_8005D50C no termina ni con 1000 millones de instrucciones (22 min una corrida).
+Lo que queda (`py verif/cuenta.py --pendientes`) es todo limite: video (func_8005D50C, ReproducirSTR),
+BuclePrincipal (carga niveles enteros) y main (func_800106C8, no vuelve), ra guardado que cae dentro del C
+(func_800163E4 setjmp, func_800177B4 InitGeom, func_800522E4 InitCARD), func_80017D80 (687/689), y asm puro:
+trampolines de BIOS/PCdrv (func_800294F0/29518/29530, 800161BC/C8, 800142FC), func_80052114/40/84 (usan v1 del que
+llama o son datos), func_80016170 (setjmp) y func_80017B8C (manejador de excepciones).
