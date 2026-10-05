@@ -4,11 +4,16 @@
 import glob, os, struct, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import verificar as V
+if "--sint" in sys.argv:
+    sys.argv.remove("--sint")
+    import sint
+    V = sint.usar_sinteticas()
+    V.AQUI_CAPS = "capturas_sint"
 
 c, f = sys.argv[1], sys.argv[2]
 sim = V.simbolos()
 codigo_c, dirs = V.compilar(c, [f])
-caps = sorted(glob.glob(os.path.join(V.AQUI, "capturas", f, "*.regs")))
+caps = sorted(glob.glob(os.path.join(V.AQUI, getattr(V, "AQUI_CAPS", "capturas"), f, "*.regs")))
 cap = caps[int(sys.argv[3]) if len(sys.argv) > 3 else 0][:-5]
 V.EN_PRUEBA["f"] = f
 V.MAPA_C.update({dirs[n]: sim[n] for n in dirs if n in sim})
@@ -16,7 +21,7 @@ a = V.ejecutar(cap, sim[f], None)
 b = V.ejecutar(cap, dirs[f], codigo_c)
 print("error", a["error"], b["error"])
 for x, y in zip(a["llamadas"], b["llamadas"]):
-    print(f"  {x[0]:08x} ra {x[1]:08x} sp {x[2]:08x}  |  {y[0]:08x} ra {y[1]:08x} sp {y[2]:08x}")
+    print("  ", [None if v is None else hex(v) for v in x], "|", [None if v is None else hex(v) for v in y])
 print(len(a["llamadas"]), len(b["llamadas"]))
 for i in range(0, 0x200000, 4):
     if a["ram"][i:i + 4] != b["ram"][i:i + 4]:

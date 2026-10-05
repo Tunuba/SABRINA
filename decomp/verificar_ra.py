@@ -719,8 +719,14 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     def llamada(u, dirc, tam, _):
         ins = struct.unpack("<I", bytes(u.mem_read(dirc & 0x1FFFFFFF, 4)))[0]
-        if ins >> 26 == 3:
+        if ins >> 26 in (2, 3):
             dest = ((dirc + 4) & 0xF0000000) | ((ins & 0x3FFFFFF) << 2)
+            if ins >> 26 == 2:
+                # un j hacia afuera es una llamada de cola (GCC la usa para la ultima llamada; la original hace jal
+                # y vuelve): se anota sin direccion de vuelta. Un j dentro del codigo propio es un salto comun.
+                if not (ini_p <= dest < fin_p):
+                    llamadas.append((dest, None, None))
+                return
         else:
             dest = u.reg_read(UC_MIPS_REG_ZERO + ((ins >> 21) & 31))
         if ini_p <= dest < fin_p:
@@ -733,7 +739,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     for i in range(0, len(cod_p) - 3, 4):
         ins = struct.unpack_from("<I", cod_p, i)[0]
-        if ins >> 26 == 3 or (ins >> 26 == 0 and (ins & 0x3F) == 9 and (ins & 0x1F0000) == 0):
+        if ins >> 26 in (2, 3) or (ins >> 26 == 0 and (ins & 0x3F) == 9 and (ins & 0x1F0000) == 0):
             uc.hook_add(UC_HOOK_CODE, llamada, begin=ini_p + i, end=ini_p + i)
     if PCDRV:
         # Unicorn no avisa el break como interrupcion (salta al vector de excepciones): un gancho en cada uno
@@ -1034,7 +1040,7 @@ def comparar(a, b, sp, con_v0=True):
         malos = [i for i in range(0, 0x200000, 4) if ra[i:i + 4] != rb[i:i + 4] and not (ini_pila <= i < fin_pila)]
         la, lb = a.get("llamadas", []), b.get("llamadas", [])
         if malos and la and [x[0] for x in la] == [x[0] for x in lb]:
-            pares = {(x[1], y[1]) for x, y in zip(la, lb)} | {(x[2], y[2]) for x, y in zip(la, lb)}
+            pares = {(x[k], y[k]) for x, y in zip(la, lb) for k in (1, 2) if x[k] is not None and y[k] is not None}
             malos = [i for i in malos if (struct.unpack_from("<I", ra, i)[0], struct.unpack_from("<I", rb, i)[0])
                      not in pares]
         if malos:
