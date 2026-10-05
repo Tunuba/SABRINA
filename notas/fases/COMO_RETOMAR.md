@@ -815,3 +815,8 @@ El chat se cerro con tres colas a medias (bios en func_800161D4, mut5 en func_80
 func_800189A4) y murieron. `verif/lanzar_reanudar0510.sh` sigue cada una desde donde quedo, de a una, lanzada por
 WMI. Resumen en build/reanudar.txt; detalle en build/bios.txt, build/bios_sint.txt y build/mut_cuerpos.txt.
 Si una da "llamadas a la BIOS distintas", el C llama de mas o de menos a la BIOS: es un error real del C.
+
+Los otros vivos de mut5 en tarjeta_bios_g15.c (0x74 por 117, 0x9C8 por 2505, 0x70 por 113) son mutantes
+equivalentes: van dentro de `d[x / 4]` y la division entera da el mismo indice (29, 626, 28). No hay nada que cazar.
+Con la comparacion nueva, quitar `FlushCache();` ya muere en las dos: func_800521AC y func_800523B4 dan 7 de 8, y el
+unico vivo de cada una es el equivalente. Quedan 0 mutantes reales vivos en tarjeta_bios_g15.c.
