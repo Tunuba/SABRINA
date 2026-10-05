@@ -5,7 +5,7 @@
 extern s32 D_8006CFC4;
 extern s32 D_8006D018[];
 
-static M2C_UNK (*D_8006CF88)(s32, s32) = NULL;
+extern M2C_UNK (*D_8006CF88)(s32, s32);
 
 void func_800285FC(s32 arg0) {
     M2C_UNK (*var_v0)(s32, s32);

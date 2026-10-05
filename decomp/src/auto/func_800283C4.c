@@ -18,13 +18,13 @@ extern s32 func_8002805C();
 extern s32 func_800282D8();
 extern s32 func_80028354();
 
-static s32 (*D_8006CF84)(s32) = NULL;
-static s32 (*D_8006CF88)(s32) = NULL;
-static s32 (*D_8006CF8C)(s32, s32) = NULL;
-static s32 (*D_8006CF90)(s32) = NULL;
-static s32 (*D_8006CF94)(s32) = NULL;
-static s32 (*D_8006CF98)(s32) = NULL;
-static s32 (*D_8006CFA8)(s32) = NULL;
+extern s32 (*D_8006CF84)(s32);
+extern s32 (*D_8006CF88)(s32);
+extern s32 (*D_8006CF8C)(s32, s32);
+extern s32 (*D_8006CF90)(s32);
+extern s32 (*D_8006CF94)(s32);
+extern s32 (*D_8006CF98)(s32);
+extern s32 (*D_8006CFA8)(s32);
 
 void func_800283C4(s32 arg0, s32 arg1) {
     s32 *var_t7;

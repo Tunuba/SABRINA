@@ -103,6 +103,17 @@ def main():
             continue
         objs[arch] = o
 
+    # 1b. un dato del juego definido en el C (incluso static) es una copia nueva que las funciones originales
+    # nunca ven: el armado seria distinto del juego aunque la verificacion pase (capturas con el dato en 0)
+    for arch, o in list(objs.items()):
+        for l in run(["mipsel-linux-gnu-nm", o]).stdout.splitlines():
+            p = l.split()
+            if len(p) == 3 and p[1] in "dDbBgGsSCrR" and (p[2] in sim or re.fullmatch(r"D_[0-9A-F]{8}", p[2])):
+                informe.append(f"DATO_DEL_JUEGO	{arch}	{p[2]}")
+                del objs[arch]
+                break
+    elegidas = {f: a for f, a in elegidas.items() if a in objs}
+
     # 2. funciones que define cada objeto. Las que no son las elegidas para ese archivo (versiones viejas o
     # distintas de otra funcion ya hecha en otro archivo) se quitan del objeto: sus llamadas quedan sin
     # resolver y van a la direccion original, como en la verificacion. Las elegidas ganan el alias c__Nombre (las otras se debilitan, el enlace deja el nombre en la direccion original).

@@ -7,8 +7,8 @@ extern u8 D_80091450[];
 extern u8 * D_8006D2B0;
 extern u8 D_8006D2C9;
 
-static M2C_UNK (*D_8006D304)(u8, u8 *) = NULL;
-static M2C_UNK (*D_8006D308)(u8, u8 *) = NULL;
+extern M2C_UNK (*D_8006D304)(u8, u8 *);
+extern M2C_UNK (*D_8006D308)(u8, u8 *);
 
 void func_8002A5F8(void) {
     s32 temp_v0;

@@ -6,7 +6,7 @@
 extern s32 func_80026C18();
 extern s32 func_80026C34();
 
-static s32 (*D_8006CFA0)() = NULL;
+extern s32 (*D_8006CFA0)();
 
 s32 func_80027248(s32 arg0, s32 arg1) {
     s32 var_v0;

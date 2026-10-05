@@ -30,19 +30,8 @@ extern s32 func_80046BAC();
 extern s32 func_80046D54();
 extern s32 func_80046EA4();
 
-u8 D_80075690[0x28];                                /* unable to generate initializer: cannot parse D_80075628 as integer */
-static s32 (*D_800756B8[0xA])() = {
-    func_80046B90,
-    func_80046BAC,
-    func_80046D54,
-    func_80046D54,
-    func_80046BAC,
-    func_80046EA4,
-    func_80046EA4,
-    func_80046EA4,
-    func_80046BAC,
-    func_80046B90,
-};
+extern u8 D_80075690[0x28];
+extern s32 (*D_800756B8[0xA])();
 
 void func_8001981C(void) {
     s32 temp_a0;

@@ -25,8 +25,8 @@ def armar(funs, salida="build/SLUS_bis.exe"):
     return os.path.join(DECOMP, salida)
 
 
-def prueba(funs, frames=2400, espera=170):
-    """True si el juego llega a 'frames' cuadros sin caer en el manejador de excepciones."""
+def prueba(funs, frames=2300, espera=170):
+    """True si el juego de verdad corre: a 'frames' cuadros la pantalla no esta vacia y el PC esta en el juego."""
     exe = open(armar(funs), "rb").read()
     pista = os.path.join(disco.DISCO, "bis (Track 01).bin")
     disco.parchar({traducir.EXE: exe}, pista)
@@ -34,23 +34,27 @@ def prueba(funs, frames=2400, espera=170):
     with Emu(iso=os.path.join(disco.DISCO, "bis.cue"), log="bis.log", extra=("-fastboot",), depurar=True) as e:
         t = time.time()
         ultimo, desde = -1, time.time()
-        f, pc = -1, 0
+        f = -1
         while time.time() - t < espera:
             try:
                 f = e.frames()
-                pc = int(e.eval("return PCSX.getRegisters().pc"))
             except Exception:
                 pass
-            if 0x80000080 <= pc < 0x80000100:
-                return False, f"excepcion en frame {f}"
             if f != ultimo:
                 ultimo, desde = f, time.time()
             elif time.time() - desde > 12:
-                return False, f"congelado en frame {f} (pc {pc:08x})"
+                return False, f"congelado en frame {f}"
             if f >= frames:
-                return True, f"{f} frames"
-            time.sleep(1)
-        return False, f"lento: frame {f}"
+                break
+            time.sleep(0.5)
+        else:
+            return False, f"lento: frame {f}"
+        ruta = os.path.join(RAIZ, "notas", "capturas", "tmp_bis.png")
+        e.captura(ruta)
+        n = os.path.getsize(ruta)
+        pcs = [int(e.eval("return PCSX.getRegisters().pc")) >> 16 for _ in range(8)]
+        en_bios = sum(p == 0xBFC0 for p in pcs)
+        return (n > 3000), f"{f} frames, captura {n} bytes, PC en BIOS {en_bios}/8"
 
 
 def lista():

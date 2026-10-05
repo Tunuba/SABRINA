@@ -4,7 +4,7 @@
 
 
 
-static M2C_UNK (*D_8006CF88)(void *, u8 *, u32, u8) = NULL;
+extern M2C_UNK (*D_8006CF88)(void *, u8 *, u32, u8);
 
 void func_8002886C(void *arg0) {
     s32 (*temp_v0_4)(void *);

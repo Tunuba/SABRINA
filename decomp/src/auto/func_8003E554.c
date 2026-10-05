@@ -5,7 +5,7 @@
 extern s32 D_80074EAC;
 extern void * D_80074EBC;
 
-static M2C_UNK (*D_80074EE0)(M2C_UNK) = NULL;
+extern M2C_UNK (*D_80074EE0)(M2C_UNK);
 
 void func_8003E554(void) {
     u32 var_v1;

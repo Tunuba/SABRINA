@@ -4,7 +4,7 @@
 
 extern void * D_8006CF6C;
 
-static M2C_UNK (*D_8006CFAC)() = NULL;
+extern M2C_UNK (*D_8006CFAC)();
 
 s32 func_800259A8(void) {
     s32 var_v0;
