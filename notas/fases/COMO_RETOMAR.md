@@ -511,7 +511,7 @@ Si se cortaron (la PC se apago), relanzar desde la que no tiene FIN con `verif/f
 Escritas a mano en esta sesion y en esas tandas: cargar_ino, wrlddata, sonido_nivel, cd_datasync,
 mover_imagen, tabla_corrida, mando_cuadro, parche_bios (InitGeom), cd_stream_aviso (todas *_g14.c).
 Lo que queda sin salida conocida: video entero (DecDCTvlc2), basura de pila en cargas con nombre roto,
-tarjeta de memoria (func_80051298: falta modelo de la tarjeta), func_80018218 (montÃ³n lleno en la captura),
+tarjeta de memoria (func_80051298: falta modelo de la tarjeta), func_80018218 (montón lleno en la captura),
 setjmp, BuclePrincipal, herramientas que leen del PC.
   - Mas limites (04-10): InitGeom (func_800177B4) guarda en memoria la direccion de retorno del parche de la
     BIOS (D_80084CD0): apunta al codigo, distinto en C. func_8002D714 copia 4 bytes sin inicializar de su
@@ -738,7 +738,7 @@ las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
   seguian las otras 9 sinteticas del repaso, PantallasLegales, las criticas y los mutantes: relanzar como dice arriba.
   Las 10 sinteticas con stub tambien IGUAL con los registros conservados (anotadas). Falta PantallasLegales.
 
-### PAUSA 05-10 (Meme pidio pausar) â€” EMPIEZA AQUI
+### PAUSA 05-10 (Meme pidio pausar) — EMPIEZA AQUI
 
 **98.7 %: reales 79.3 % (701 fn) + sinteticas 19.4 % (313 fn) = 1014 de 1034. Todo pusheado.**
 Repaso de stubs con los registros conservados: 17 de 18 siguen IGUAL (7 reales y 10 sinteticas, anotadas).
@@ -752,3 +752,36 @@ La cola se paro a mano (`verif/parar_cola.sh`) con PantallasLegales a medias (ll
    HerramientaArmarModelos, Cuadricula y PIC, estas dos para confirmar que el mutante del sp ya se caza).
 Si algo da "al volver distintos" o "secciones criticas distintas", es un error real del C (stub o asm).
 Lo que queda sin verificar es limite conocido (`py verif/cuenta.py --pendientes`, explicado en "CIERRE de esta sesion").
+
+### 05-10 MANANA, SESION SOLA (EMPIEZA AQUI)
+
+**98.8 %: reales 79.4 % (702 fn) + sinteticas 19.4 % (313 fn) = 1015 de 1034.**
+
+**func_80017D80 (cargar un archivo entero del CD, 468 bytes) pasa a IGUAL: 6 de 6 capturas y 689 de 689 variantes.**
+No era limite. Las 2 variantes que fallaban (a0 = 0x10000 y 0x10001, el nombre apunta al codigo del juego) se
+trazaron con `verif/traza17d80.py` (gancho de codigo sobre printf, CdSearchFile y _putchar): con ese nombre
+CdSearchFile desborda su propia pila y al volver deja basura en los registros s del que llama. La original sale del
+bucle de reintentos a la primera llamada (la basura en s0, su contador, ya pasa de 10); el C repetia CdSearchFile
+2800 veces, porque GCC habia hecho una cuenta regresiva en s0 y guardaba el puntero al archivo en s1.
+Arreglo en `src/File/archivo_entero_g14.c`, con la misma asignacion de registros que la original:
+- `register s32 i asm("$16")` y `register s32 listo asm("$17")`, y un `__asm__ volatile("" : "+r"(i), "+r"(listo))`
+  despues de cada llamada (sin eso GCC vuelve a cambiar el bucle y no respeta el registro).
+- El archivo, la ruta y pos se leen de sp cada vez (`EN_PILA(t, off)`, un addiu sobre $sp en asm volatile), como la
+  original, en vez de llevarlos como argumentos en registros s. Vale porque el cuerpo corre con el sp de la original
+  (el stub de 0xA0 mas el marco de 0x28 del cuerpo dan los 0xC8 de la original).
+- Asi GCC quedo con s0 = i, s1 = listo, s2 = nombre y luego datos, s3 = primero, s4 = ultimo, y ra y s0-s4 en los
+  mismos lugares del marco.
+OJO: con `SABRINA_VARIANTES=8` (172 variantes) la version vieja tambien daba IGUAL; esas dos variantes solo salen
+con las 60 por defecto. Para confirmar un arreglo de una funcion con variantes raras, correr con las 60.
+
+**Truco nuevo (para otras con stub):** si una funcion llamada desborda o pisa los registros s del que llama, el
+C tiene que tener cada variable en el mismo registro s que la original: `register ... asm("$N")` mas el asm volatile
+vacio con "+r" despues de cada llamada, y los punteros al marco recalculados desde sp.
+
+Mutantes (`sint.py mutantes`, 8): 8 de 8 cazados, pero todos en el stub; la herramienta no muta el cuerpo `static`,
+que queda cubierto solo por las 689 variantes.
+
+Lo que queda (19 fn) sigue siendo limite: setjmp, InitGeom e InitCARD guardan en memoria una direccion de vuelta
+que en el C apunta al C (en un ejecutable rearmado en su direccion daria igual), video, BuclePrincipal, main y asm puro.
+Cola de la PAUSA 05-10 relanzada como `verif/lanzar_pausa0510.sh` (PantallasLegales, criticas, mutantes), por WMI
+para que no muera con el turno; resultado en build/pausa_pl.txt, build/criticas*.txt y build/mut5.txt.

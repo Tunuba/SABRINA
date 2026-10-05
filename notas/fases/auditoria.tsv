@@ -542,7 +542,7 @@ func_80017BC0	172	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 56 de 56 va
 CargarWRLDDATA	308	IGUAL	src/WobjCode/wrlddata_g14.c	6 de 6 capturas y 285 de 285 variantes iguales
 func_800189A4	352	IGUAL	src/File/archivo_entero_g14.c	8 de 8 capturas y 707 de 707 variantes iguales
 func_8002D56C	424	IGUAL	src/psyq/cd_stream_g14.c	2 de 2 capturas y 54 de 54 variantes iguales
-func_80017D80	468	DISTINTO	src/File/archivo_entero_g14.c	6 de 6 capturas y 687 de 689 variantes iguales
+func_80017D80	468	IGUAL	src/File/archivo_entero_g14.c	6 de 6 capturas y 689 de 689 variantes iguales
 func_8002B2BC	480	IGUAL	src/psyq/cd_play_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
 func_8002CF28	488	IGUAL	src/psyq/cd_play_g14.c	8 de 8 capturas y 374 de 374 variantes iguales
 func_8002F780	544	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 138 de 138 variantes iguales
