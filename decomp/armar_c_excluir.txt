@@ -1,3 +1,4 @@
 # funcion<TAB>motivo: se quedan con el ensamblador original en el armado con C (armar_c.py)
 func_80017BC0	parche de la BIOS en InitGeom: en C el juego cae al reinicio de la BIOS (frame 419, al llamar a GetC0Table por B0); verificada IGUAL en Unicorn pero no sirve en el emulador de verdad
 func_80017D80	cargar un archivo del CD: con C el juego cae en una tormenta de interrupciones del CD (frame ~497); IGUAL en Unicorn con su modelo del CD, pero no en el emulador de verdad; por investigar
+func_800189A4	bisecta automatica 05-10: con C el juego no arranca (congelado en frame 1237); por investigar
