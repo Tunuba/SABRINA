@@ -833,6 +833,13 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                     correr_siguiente(u)
                     return
                 r = estado["guardado"]
+                if r is None:
+                    # 05-10: se llego a la vuelta de las interrupciones sin ninguna en curso (una variante que
+                    # salta a donde no debe). Antes reventaba la verificacion entera con un TypeError; ahora es
+                    # un error de esa corrida, que se compara como cualquier otro
+                    interrupcion_mala.append(f"vuelta de interrupcion sin interrupcion (ra {u.reg_read(UC_MIPS_REG_RA):08x})")
+                    u.emu_stop()
+                    return
                 for i in range(1, 32):
                     u.reg_write(UC_MIPS_REG_ZERO + i, r[i])
                 u.reg_write(UC_MIPS_REG_HI, r[32])

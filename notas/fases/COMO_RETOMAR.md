@@ -905,7 +905,39 @@ limite por guardar una direccion de vuelta: setjmp de libetc (func_800163E4, 8 d
   reemplazados (func_80014910, 80014988, 80016874, 80029808/30/58, 8003E554) no cuentan: las versiones de
   bios_eventos_g16.c son las que estan en auditoria.tsv.
 
-### 05-10 NOCHE: SE APAGO LA PC (EMPIEZA AQUI)
+### 05-10 NOCHE 2: REVERIFICACION TERMINADA, DIBUJO DEL ESCENARIO PROBADO (EMPIEZA AQUI)
+
+Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB libres): una o dos colas a la vez.
+- **Las 24 de `verif/revisar_falta.txt` terminaron** (logs `build/revisar_real.txt` y `revisar_sint.txt`). IGUAL todas
+  salvo: los borradores de `src/auto/` de 800515B0, 80052350, 80051A84, 80051C60, 80051D14, 80051E1C, 80051EF4 (no
+  cuentan: la auditoria apunta a `bios_eventos_g16.c`), func_80050AB8 (se corto a la hora, ver abajo), func_80051764 y
+  los tres partidores (arreglados abajo).
+- **func_8001FD50 IGUAL, 22 de 22 capturas y 954 de 954 variantes.** No era la pila. Con a2 = 0xFF000000 el C se
+  saltaba las matrices: la original guarda la bandera con `sb` y la relee con `lbu` (se queda con el byte) y con `u8`
+  en la firma GCC da por hecho que quien llama ya la recorto. Ahora entra como s32 y se recorta adentro. Se barrieron
+  las demas funciones con parametros cortos (u8/s16...): en las otras cuatro el recorte sale igual (sb/sh, lhu de la pila).
+- **Lo mas importante: las 8 capturas viejas de func_8001FD50 no probaban el dibujo.** Eran de los primeros cuadros, con
+  la camara sin poner: un solo triangulo pasaba los descartes y caia fuera de pantalla (6 de 12 mutantes vivos, uno era
+  `D_8007CAC0 -= 0x28`). Nuevo `scripts/capt_dibujo.py` (entra a cada nivel, espera 1300 cuadros y captura en dos
+  puntos): 14 capturas mas de func_8001FD50 y de func_800204F0, con hasta 13 triangulos por captura llegando a AddPrim,
+  recorte y partidores. Lo mismo puede pasar con otras funciones de dibujo verificadas con capturas del arranque.
+- **verificar.py**: llegar a la vuelta de las interrupciones (VUELTA_INT) sin ninguna en curso ya no revienta la
+  verificacion entera con un TypeError; es un error de esa corrida y se compara como cualquier otro.
+- **func_80051764 IGUAL_SINT 136 de 136** (formatea la tarjeta, ahora en `bios_eventos_g16.c`): el borrador llamaba a
+  `_card_load()` sin el puerto y era void (sin el -1). Ademas el puerto se lee de D_800D52D0 como en la original: con
+  D_800D52C0[4] GCC usaba s1, el marco crecia a 0x20 y el bufer de pila de func_80052578 que va a `_card_read` quedaba 8
+  bytes mas abajo (el verificador compara ese argumento). Leccion: un argumento de pila distinto en la BIOS desde una
+  funcion llamada es un marco de otro tamano en el C.
+- **Partidores func_800589EC, 80058EE4, 800593E0**: con el GTE comparado daban DISTINTO en todo, solo por VXY2/VZ2. La
+  original manda a rtpt un tercer vector que nunca llena (sp+0x3C de su marco de 0x60) y el C mandaba su propia basura.
+  Pasaron a stub con el marco de la original + cuerpo en C que carga ese vector desde sp+0x3C (el truco de la basura de
+  pila); con la captura 0 el GTE ya sale igual en los tres. Cola `verif/lanzar_0510b.sh` (log `build/cola_0510b.txt`)
+  con la verificacion completa y los mutantes; anotar con `py verif/anotar.py build/cola_0510b.txt --solo ...`.
+- Pendiente: anotar los partidores cuando termine la cola; mutantes de func_8001FD50 con las capturas nuevas
+  (`build/fd50b_0510.txt`); func_80050AB8 (vsint pasa de una hora con 8 variantes: ver por que); reverificar
+  func_800204F0 y func_80020294 con las capturas nuevas; mutantes de tarjeta16b; cola B.
+
+### 05-10 NOCHE: SE APAGO LA PC
 
 **98.5 % (1017 de 1034), todo pusheado.** Meme apago la PC; las colas que corrian en WSL murieron.
 - La reverificacion destapo dos mas con la BIOS sin argumentos: func_8004FD34 y func_80050034 (callbacks de

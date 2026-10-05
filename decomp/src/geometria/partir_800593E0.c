@@ -15,12 +15,12 @@ extern u16 D_8007CA9C;               /* triangulos ya puestos en la lista de est
  * que van en las tres piezas siguientes a la de D_8007CAC0. La pieza original se queda sin usar, pero el
  * espacio se avanza igual: cuatro piezas. La rtpt pasa tambien un tercer vector que nadie llena (y cuyo
  * resultado no se usa), como el juego. */
-void func_800593E0(Triangulo *t, s32 fin, s32 z) {
+__attribute__((noinline, used)) static void cuerpo_800593E0(Triangulo *t, s32 fin, s32 z, Vertice *tercero) {
     TriTex *base = (TriTex *) D_8007CAC0;
     TriTex *a = base + 1;
     TriTex *b = base + 2;
     TriTex *c = base + 3;
-    Vertice medio[3];
+    Vertice medio[2];
     s16 orig[3][2];
     s16 nuevo[3][2];
     Vertice *v0 = t->v[0];
@@ -45,7 +45,7 @@ void func_800593E0(Triangulo *t, s32 fin, s32 z) {
 
     gte_poner_v0(&medio[0]);
     gte_poner_v1(&medio[1]);
-    gte_poner_v2(&medio[2]);
+    gte_poner_v2(tercero);           /* sin llenar: lo que haya en la pila de la original */
 
     base = (TriTex *) D_8007CAC0;
     medio[0].r = (base->r1 + base->r0) >> 1;
@@ -118,4 +118,26 @@ void func_800593E0(Triangulo *t, s32 fin, s32 z) {
     AddPrim(lista, c);
     D_8007CAC0 += 0xA0;
     D_8007CA9C += 3;
+}
+
+/* Stub con el marco de la original (0x60: s0-s2 en 0x10-0x18, ra en 0x1C). La original manda a rtpt un tercer
+ * vector que nunca llena (sp+0x3C de su marco) y el GTE se queda con esa basura de la pila; el cuerpo la carga
+ * desde el mismo lugar (05-10: con el GTE comparado, el C de un solo marco dejaba en VXY2/VZ2 su propia basura). */
+__attribute__((naked))
+void func_800593E0(Triangulo *t, s32 fin, s32 z) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x60\n"
+            "\tsw $16, 0x10($sp)\n"
+            "\tsw $17, 0x14($sp)\n"
+            "\tsw $18, 0x18($sp)\n"
+            "\tsw $31, 0x1C($sp)\n"
+            "\tjal cuerpo_800593E0\n"
+            "\taddiu $7, $sp, 0x3C\n"
+            "\tlw $31, 0x1C($sp)\n"
+            "\tlw $18, 0x18($sp)\n"
+            "\tlw $17, 0x14($sp)\n"
+            "\tlw $16, 0x10($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x60\n"
+            ".set reorder");
 }

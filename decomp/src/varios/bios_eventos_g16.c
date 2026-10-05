@@ -327,3 +327,40 @@ void func_80052350(void) {
     ChangeClearPAD(0);
     func_800143F4();
 }
+
+extern s32 func_80052578(s32 canal);     /* formatea la tarjeta, 1 si todo se escribio */
+extern s32 func_80051FCC(void);          /* 1 si llego un evento del hardware */
+extern s32 func_800507D4(s32 error);     /* pasa el resultado del evento a codigo de la tarjeta */
+extern void tarjeta_cargar(s32 puerto) __asm__("_card_load");
+extern s32 D_800D52D0;                  /* el puerto ([4] del estado de la tarjeta) */
+
+/* Formatea la tarjeta del canal. Con un evento ya abierto avisa y devuelve -1. Si el formato falla, mira el
+ * evento de la BIOS y reintenta mientras sea "tiempo" (4); si se escribio, recarga el directorio del puerto
+ * (_card_load) y espera el evento del hardware. Devuelve el codigo de la tarjeta.
+ * 05-10: el borrador de m2c (src/auto/func_80051764.c) llamaba a _card_load sin el puerto y era void (sin el -1).
+ * El puerto se lee de D_800D52D0 como en la original: con D_800D52C0[4] GCC guardaba la base en s1, el marco
+ * crecia a 0x20 y el bufer de la pila de func_80052578 que va a _card_read quedaba 8 bytes mas abajo. */
+s32 func_80051764(s32 canal) {
+    s32 r;
+
+    if (D_800D52C0[0] != 0) {
+        printf(D_80062360);
+        return -1;
+    }
+    for (;;) {
+        func_80051D14();
+        if (func_80052578(canal) != 0) {
+            func_80051D14();
+            tarjeta_cargar(D_800D52D0);
+            while (func_80051FCC() == 0) {
+            }
+            r = func_80051E1C();
+            break;
+        }
+        r = func_80051EF4();
+        if (!(r & 4)) {
+            break;
+        }
+    }
+    return func_800507D4(r);
+}
