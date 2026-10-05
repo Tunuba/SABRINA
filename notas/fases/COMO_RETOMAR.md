@@ -820,3 +820,30 @@ Los otros vivos de mut5 en tarjeta_bios_g15.c (0x74 por 117, 0x9C8 por 2505, 0x7
 equivalentes: van dentro de `d[x / 4]` y la division entera da el mismo indice (29, 626, 28). No hay nada que cazar.
 Con la comparacion nueva, quitar `FlushCache();` ya muere en las dos: func_800521AC y func_800523B4 dan 7 de 8, y el
 unico vivo de cada una es el equivalente. Quedan 0 mutantes reales vivos en tarjeta_bios_g15.c.
+
+**Resultado de la reverificacion con la BIOS (cola partida en `verif/reanudar_a.sh` y `reanudar_b.sh` para usar
+mas RAM):** 17 de 19 reales y 21 de 23 sinteticas siguen IGUAL. Salieron tres:
+- func_800161D4 (la espera de cuadros) DISTINTO, pero es del verificador: el modelo de VSync pone un gancho en la
+  ENTRADA de la original, asi que al verificar esa misma funcion la original salia enseguida y el C (en BASE_C, sin
+  gancho) esperaba hasta el limite y llamaba a puts/ChangeClearPAD. Arreglo: no poner ese gancho cuando la funcion
+  bajo prueba es func_800161D4 (`EN_PRUEBA`, en verificar_ra.py, ver abajo).
+- func_80050AB8 y func_800513B4 (sinteticas) DISTINTO, y esas SI eran errores del C: `include/prototipos.h` declara
+  `open(void)`, `close(void)`, `lseek(void)` y `write(void)`, y los borradores de m2c las llamaban sin argumentos
+  (sin nombre de archivo ni modo). Igual estaban func_80050418, 80050554, 80050694 y 80050C40 (IGUAL_SINT en falso).
+  Las seis reescritas a mano con los argumentos de la original en `src/varios/tarjeta_archivo_g16.c`; cola
+  `verif/lanzar_tarjeta16.sh` -> build/tarjeta16.txt (sinteticas y mutantes). func_800509E8 y 80050A50 solo
+  declaraban open, no la llaman: estan bien.
+
+**verificar_ra.py (copia de trabajo, se arma con un parche sobre verificar.py; pasarla a verificar.py cuando no
+corra ninguna cola):**
+- Direcciones de vuelta como reubicacion: se anotan las llamadas que la funcion hace hacia afuera de su codigo
+  (destino, ra y sp en el jal/jalr) y una palabra de RAM distinta vale si en la original es el ra o el sp de la
+  llamada k y en el C el de la llamada k, con los mismos destinos en el mismo orden. Es lo que daria un ejecutable
+  rearmado con el C en su lugar. Para InitGeom (func_800177B4), InitCARD (func_800522E4) y el setjmp de
+  func_800163E4.
+- Se compara el GTE al final (datos y control) y la secuencia de escrituras al cop0 (mtc0: registro y valor). El
+  registro de estado de Unicorn no sirve: no deja poner el bit 30 (CU2).
+- **InitGeom (func_800177B4) IGUAL, 32 de 32, y 8 de 8 mutantes cazados** (antes de comparar el GTE y el cop0 caian
+  0 de 8: todo lo que hace es escribir ahi).
+- Prueba de func_800161D4, InitCARD y func_800163E4 con `verif/probar_ra.sh` -> build/probar_ra.txt.
+  `verif/vfull_ra.sh` y `verif/mutantes_ra.sh` son vfull y mutantes con verificar_ra.
