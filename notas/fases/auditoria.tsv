@@ -594,3 +594,4 @@ func_8004EAAC	60	IGUAL_SINT	src/auto/func_8004EAAC.c	2 de 2 capturas y 110 de 11
 func_8004AAE4	64	IGUAL_SINT	src/auto/func_8004AAE4.c	2 de 2 capturas y 82 de 82 variantes iguales
 func_8005C8E0	76	IGUAL_SINT	src/auto/func_8005C8E0.c	2 de 2 capturas y 80 de 80 variantes iguales
 func_8003980C	404	IGUAL_V0_SINT	src/auto/func_8003980C.c	2 de 6 capturas y 183 de 439 variantes iguales
+func_800185A8	200	IGUAL_SINT	src/varios/armar_ino_g15.c	1 de 1 capturas y 15 de 15 variantes iguales
