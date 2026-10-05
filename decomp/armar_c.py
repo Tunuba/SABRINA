@@ -217,15 +217,25 @@ def main():
             libre = sum(h[1] - h[0] for h in huecos)
             # lo que no cabe se deja con la funcion original: se quitan las que poseen esas secciones
             quitar = set()
+            debilitar = {}                  # archivo -> simbolos que dejan de ser "los de este objeto"
             for arch_, nom_, t_ in sin_sitio:
                 if nom_.startswith(".text."):
-                    quitar.add(nom_[len(".text."):])
+                    nombre_f = nom_[len(".text."):]
+                    quitar.add(nombre_f)
+                    debilitar.setdefault(arch_, set()).add(nombre_f)
                 else:
-                    quitar |= {f for f in instalar if defin[f] == arch_}
-            quitar &= set(instalar)
-            if not quitar:
+                    for f in instalar:
+                        if defin[f] == arch_:
+                            quitar.add(f)
+                            debilitar.setdefault(arch_, set()).add(f)
+            # el simbolo se debilita en su objeto: asi sus llamadores van a la direccion original (el nombre
+            # lo fija el enlazador) y su seccion deja de hacer falta (--gc-sections)
+            for arch_, nombres_ in debilitar.items():
+                run(["mipsel-linux-gnu-objcopy", *[f"--weaken-symbol={n_}" for n_ in sorted(nombres_)], objs[arch_]])
+            nuevos = quitar & set(instalar)
+            if not debilitar:
                 sys.exit(f"no caben {len(sin_sitio)} secciones y no se sabe de quien: {sin_sitio[:3]}")
-            for f in sorted(quitar):
+            for f in sorted(nuevos):
                 informe.append(f"SIN_SITIO	{f}	{elegidas[f]}")
             instalar = [f for f in instalar if f not in quitar]
             continue
