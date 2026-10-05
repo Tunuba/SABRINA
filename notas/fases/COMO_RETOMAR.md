@@ -698,3 +698,10 @@ Las demas estaban bien escritas: solo les faltaban capturas con punteros validos
 
 **Para anotar al terminar:** `build/refuerzo.txt` (18 funciones) con `py verif/anotar.py build/refuerzo.txt --sint`,
 y func_800185A8 con `SABRINA_LIMITE=400000000` (la herramienta INO entera, ~1 min por corrida).
+
+**Mutantes (verif/lanzar_mut4.sh, 8 por funcion):** func_800502DC se paso del tope de 90 min sin resultado;
+HerramientaArmarCuadricula 7/8 y HerramientaConvertirPIC 7/8 (el vivo corria el sp que restaura el stub: hueco
+del verificador, ya cerrado comparando los registros conservados al volver); func_80018CB8 7/8 (el vivo cambia el
+numero de linea que se le pasa a Reservar, que Reservar no usa: equivalente). Se paro para ahorrar bateria; lo que
+falta esta en `verif/lanzar_mut5.sh`. Tambien `verif/lanzar_conservados.sh` (en cola tras la INO): repasa las 18
+funciones con stub en asm con la comparacion nueva de registros.
