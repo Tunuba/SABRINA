@@ -329,7 +329,7 @@ func_8001A4C0	352	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 cap
 func_80027BC8	212	IGUAL_SINT	src/psyq/mando_g13.c	sintetica: 1 de 1 capturas y 24 de 24 variantes iguales
 func_80027C9C	168	IGUAL_SINT	src/psyq/mando_g13.c	sintetica: 1 de 1 capturas y 75 de 75 variantes iguales
 func_800299E8	52	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 78 de 78 variantes iguales
-func_8002D540	44	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 1 de 1 variantes iguales
+func_8002D540	44	IGUAL_SINT	src/varios/sueltas_g13.c	5 de 5 capturas y 278 de 278 variantes iguales
 func_8003B4DC	96	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 103 de 103 variantes iguales
 func_8003BC04	176	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 98 de 98 variantes iguales
 func_8004E6C0	108	IGUAL_SINT	src/varios/arranque_g13.c	sintetica: 1 de 1 capturas y 37 de 37 variantes iguales
@@ -405,7 +405,7 @@ func_8005329C	332	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas
 func_8003BE38	396	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 58 de 58 variantes iguales
 func_8001A108	288	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 capturas y 50 de 50 variantes iguales
 func_80019FBC	332	IGUAL_SINT	src/libgpu/paletas_vram_g13.c	sintetica: 1 de 1 capturas y 55 de 55 variantes iguales
-func_800605C8	484	IGUAL_SINT	src/objetos/ruta_g13.c	sintetica: 1 de 1 capturas y 3 de 3 variantes iguales
+func_800605C8	484	IGUAL_SINT	src/objetos/ruta_g13.c	6 de 6 capturas y 363 de 363 variantes iguales
 func_8001951C	540	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 86 de 86 variantes iguales; mutantes muertos 4/6
 func_80039350	800	IGUAL_SINT	src/objetos/agarrable_g13.c	sintetica: 1 de 1 capturas y 49 de 49 variantes iguales; mutantes muertos 4/6
 func_80026820	1016	IGUAL_SINT	src/psyq/mando_g13.c	sintetica: 1 de 1 capturas y 34 de 34 variantes iguales; mutantes muertos 0/6 (DEBIL: depende de hardware o archivos)
@@ -460,16 +460,16 @@ func_80052434	324	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 6
 func_80013AE4	324	IGUAL_SINT	src/libgpu/imagen_g14.c	1 de 1 capturas y 50 de 50 variantes iguales (con el modelo de GPU desocupada)
 func_8002A6D0	640	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 514 de 514 variantes iguales
 func_8001A668	236	IGUAL_SINT	src/loadtga/voltear_g14.c	1 de 1 capturas y 35 de 35 variantes iguales
-func_800484CC	416	IGUAL_SINT	src/objetos/punto_al_azar_g14.c	1 de 1 capturas y 3 de 3 variantes iguales (pocas: casi todas hacen saltar la trampa de suma)
+func_800484CC	416	IGUAL_SINT	src/objetos/punto_al_azar_g14.c	4 de 4 capturas y 231 de 231 variantes iguales
 func_8002A950	712	IGUAL	src/psyq/cdsync_g14.c	8 de 8 capturas y 952 de 952 variantes iguales
 func_8001A228	664	IGUAL_SINT	src/libgpu/espacio_vram_g14.c	2 de 2 capturas y 62 de 62 variantes iguales; mutantes muertos 6/6
-func_8001F524	420	IGUAL_SINT	src/varios/herramienta_tex_g14.c	1 de 1 capturas y 0 de 0 variantes iguales
+func_8001F524	420	IGUAL_SINT	src/varios/herramienta_tex_g14.c	2 de 2 capturas y 48 de 48 variantes iguales
 func_8001ADD8	348	IGUAL_SINT	src/Font/glifos_g14.c	2 de 2 capturas y 137 de 137 variantes iguales
 func_8004AF50	508	IGUAL_SINT	src/auto/func_8004AF50.c	1 de 1 capturas y 28 de 28 variantes iguales
 func_80052578	524	IGUAL_SINT	src/varios/tarjeta_sector_g14.c	1 de 1 capturas y 22 de 22 variantes iguales; mutantes muertos 0/6 (DEBIL: depende de hardware o archivos)
 func_80013714	504	IGUAL_SINT	src/libgpu/drawenv_g14.c	1 de 1 capturas y 35 de 35 variantes iguales; mutantes muertos 6/6
 func_80039104	556	IGUAL_SINT	src/objetos/agarrar_g14.c	1 de 1 capturas y 34 de 34 variantes iguales; mutantes muertos 5/6
-func_8005359C	552	IGUAL_SINT	src/objetos/fuente_g14.c	1 de 1 capturas y 7 de 7 variantes iguales; mutantes muertos 2/6
+func_8005359C	552	IGUAL_SINT	src/objetos/fuente_g14.c	11 de 11 capturas y 800 de 800 variantes iguales
 func_8003B894	660	IGUAL_SINT	src/objetos/rayo_g14.c	1 de 1 capturas y 54 de 54 variantes iguales; mutantes muertos 5/6
 func_8005B52C	596	IGUAL_SINT	src/objetos/proyectil_g14.c	1 de 1 capturas y 48 de 48 variantes iguales; mutantes muertos 4/6
 func_8003C678	640	IGUAL_SINT	src/objetos/lanzado_g14.c	1 de 1 capturas y 6 de 6 variantes iguales (pocas); mutantes muertos 6/6
@@ -479,7 +479,7 @@ func_8003C9DC	1064	IGUAL_SINT	src/objetos/saltarin_g14.c	1 de 1 capturas y 66 de
 func_8001A754	1668	IGUAL_SINT	src/loadtga/paleta_g14.c	4 de 4 capturas y 66 de 66 variantes iguales
 func_8002CBB0	396	IGUAL	src/audio/cd_musica_g13.c	8 de 8 capturas y 885 de 885 variantes iguales
 func_800211D4	256	IGUAL	src/Screen/barra_g13.c	8 de 8 capturas y 309 de 309 variantes iguales
-func_8004FD04	48	IGUAL_SINT	src/auto/func_8004FD04.c	1 de 1 capturas y 0 de 0 variantes iguales (solo llama a tres funciones, sin logica propia)
+func_8004FD04	48	IGUAL_SINT	src/auto/func_8004FD04.c	1 de 1 capturas y 132 de 132 variantes iguales
 LeerNodoModelo	888	IGUAL	src/modelLoader/leer_nodo_g14.c	6 de 6 capturas y 429 de 429 variantes iguales (2 capturas donde la original no termina, sin comparar)
 func_8002A09C	1372	IGUAL	src/psyq/cd_irq_g14.c	8 de 8 capturas y 886 de 886 variantes iguales
 func_8002AC18	1036	IGUAL	src/psyq/cdsync_g14.c	5 de 5 capturas y 591 de 591 variantes iguales (3 capturas donde la original no termina, sin comparar)
@@ -559,7 +559,7 @@ func_8002153C	660	IGUAL	src/Screen/primitivas_g13.c	1 de 1 capturas y 128 de 128
 func_8003DEE8	264	IGUAL_SINT	src/auto/func_8003DEE8.c	1 de 1 capturas y 109 de 109 variantes iguales
 func_8002B704	236	IGUAL_SINT	src/auto/func_8002B704.c	1 de 1 capturas y 79 de 79 variantes iguales
 func_8001B000	200	IGUAL_SINT	src/varios/cache_tex_g15.c	1 de 1 capturas y 58 de 58 variantes iguales
-func_8001B600	152	IGUAL_SINT	src/auto/func_8001B600.c	1 de 1 capturas y 0 de 0 variantes iguales
+func_8001B600	152	IGUAL_SINT	src/varios/textura_por_nombre_g15.c	3 de 3 capturas y 225 de 225 variantes iguales
 func_80018CB8	132	IGUAL_SINT	src/varios/fuente_a_pc_g15.c	1 de 1 capturas y 86 de 86 variantes iguales
 func_8003DFF0	112	IGUAL_SINT	src/auto/func_8003DFF0.c	1 de 1 capturas y 112 de 112 variantes iguales
 func_80029948	108	IGUAL_SINT	src/auto/func_80029948.c	1 de 1 capturas y 76 de 76 variantes iguales
@@ -582,3 +582,14 @@ func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 9
 HerramientaConvertirPIC	452	IGUAL_SINT	src/varios/convertir_pic_g15.c	1 de 1 capturas y 85 de 85 variantes iguales
 HerramientaArmarCuadricula	432	IGUAL_SINT	src/varios/armar_cuadricula_g15.c	1 de 1 capturas y 86 de 86 variantes iguales
 HerramientaArmarModelos	680	IGUAL_SINT	src/varios/armar_modelos_g15.c	1 de 1 capturas y 16 de 16 variantes iguales (1 capturas donde la original no termina, sin comparar)
+func_8001CB4C	704	IGUAL_SINT	src/varios/leer_bud_g15.c	2 de 2 capturas y 185 de 185 variantes iguales (1 capturas donde la original no termina, sin comparar)
+HerramientaConvertirTEX	204	IGUAL_SINT	src/varios/convertir_tex_g15.c	1 de 1 capturas y 107 de 107 variantes iguales
+func_8001A620	72	IGUAL_SINT	src/varios/subir_textura_g15.c	1 de 1 capturas y 99 de 99 variantes iguales
+func_8001C280	80	IGUAL_SINT	src/auto/func_8001C280.c	5 de 5 capturas y 328 de 328 variantes iguales
+func_800171CC	312	IGUAL_SINT	src/varios/rect_color_g15.c	5 de 5 capturas y 371 de 371 variantes iguales
+func_8004AB24	652	IGUAL_V0_SINT	src/objetos/recogible_vuela_g15.c	0 de 3 capturas y 0 de 270 variantes iguales
+func_80055FC0	720	IGUAL_V0_SINT	src/auto/func_80055FC0.c	5 de 6 capturas y 287 de 538 variantes iguales
+func_800533E8	24	IGUAL_SINT	src/auto/func_800533E8.c	2 de 2 capturas y 62 de 62 variantes iguales
+func_8004EAAC	60	IGUAL_SINT	src/auto/func_8004EAAC.c	2 de 2 capturas y 110 de 110 variantes iguales
+func_8004AAE4	64	IGUAL_SINT	src/auto/func_8004AAE4.c	2 de 2 capturas y 82 de 82 variantes iguales
+func_8005C8E0	76	IGUAL_SINT	src/auto/func_8005C8E0.c	2 de 2 capturas y 80 de 80 variantes iguales
