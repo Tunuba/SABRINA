@@ -870,7 +870,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         error = interrupcion_mala[0]
     if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN:
         error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
-    return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1),
+    # los registros que la convencion obliga a conservar (s0-s7, gp, sp, fp), como quedan al volver (04-10 noche: un
+    # stub en asm que restauraba mal sp pasaba, porque la corrida termina al volver y nadie lo miraba)
+    conservados = [uc.reg_read(UC_MIPS_REG_ZERO + r) for r in (16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30)]
+    return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1), conservados=conservados,
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 tarjeta=sorted(tarjeta.items()),
@@ -929,6 +932,10 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("scratchpad distinto")
     if a.get("monton", b"") != b.get("monton", b""):
         dif.append("monton de la BIOS distinto")
+    if a.get("conservados") != b.get("conservados"):
+        nombres = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "gp", "sp", "fp")
+        malos = [n for n, x, y in zip(nombres, a.get("conservados") or [], b.get("conservados") or []) if x != y]
+        dif.append("al volver distintos " + ",".join(malos))
     if a.get("tablas", b"") != b.get("tablas", b""):
         dif.append("tablas de la BIOS distintas")
     if a.get("tarjeta", []) != b.get("tarjeta", []):
