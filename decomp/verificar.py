@@ -623,8 +623,12 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         u.mem_write(ev_hw, struct.pack("<I", 1))
         return True
 
+    bios = []           # llamadas a la BIOS en orden: (tabla, numero, a0..a3); se comparan (ver ARIDAD_BIOS)
+
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
+            bios.append((dirc, u.reg_read(UC_MIPS_REG_ZERO + 9)) +
+                        tuple(u.reg_read(UC_MIPS_REG_A0 + k) for k in range(4)))
             hecho = TARJETA and bios_tarjeta(u, dirc, u.reg_read(UC_MIPS_REG_ZERO + 9))
             if hecho:
                 if hecho != "v0":
@@ -880,7 +884,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     # stub en asm que restauraba mal sp pasaba, porque la corrida termina al volver y nadie lo miraba)
     conservados = [uc.reg_read(UC_MIPS_REG_ZERO + r) for r in (16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30)]
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1), conservados=conservados,
-                criticas=criticas,
+                criticas=criticas, bios=bios,
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 tarjeta=sorted(tarjeta.items()),
@@ -920,6 +924,12 @@ def marco_original(funcion):
     return 0
 
 
+# Cuantos argumentos recibe cada funcion de la BIOS que llama el juego; lo que no esta aqui se compara con a0-a3.
+ARIDAD_BIOS = {(0xB0, 0x07): 2, (0xB0, 0x08): 3, (0xB0, 0x09): 1, (0xB0, 0x0A): 1, (0xB0, 0x0B): 1,
+               (0xB0, 0x0C): 1, (0xB0, 0x0D): 1, (0xB0, 0x17): 0, (0xA0, 0x44): 0, (0xA0, 0x45): 0,
+               (0xB0, 0x56): 0, (0xB0, 0x57): 0, (0xA0, 0x33): 1, (0xA0, 0x34): 1}
+
+
 def comparar(a, b, sp, con_v0=True):
     dif = []
     if a["error"] or b["error"]:
@@ -941,6 +951,18 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("monton de la BIOS distinto")
     if a.get("criticas", []) != b.get("criticas", []):
         dif.append("secciones criticas distintas")
+    # llamadas a la BIOS (05-10: DeliverEvent(0xF0000009, 0x20) salio del C como DeliverEvent() y el original
+    # y el C pasaban igual porque nadie miraba los argumentos; con el juego de verdad se colgaba)
+    ba, bb = a.get("bios", []), b.get("bios", [])
+    if len(ba) != len(bb):
+        dif.append(f"llamadas a la BIOS distintas: {len(ba)} contra {len(bb)}")
+    else:
+        for x, y in zip(ba, bb):
+            n = ARIDAD_BIOS.get(x[:2], 4)
+            if x[:2] != y[:2] or x[2:2 + n] != y[2:2 + n]:
+                dif.append("llamada a la BIOS " + f"{x[0]:02X}:{x[1]:02X}" + " con argumentos " +
+                           ",".join(f"{v:x}" for v in x[2:2 + n]) + " contra " + ",".join(f"{v:x}" for v in y[2:2 + n]))
+                break
     if a.get("conservados") != b.get("conservados"):
         nombres = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "gp", "sp", "fp")
         malos = [n for n, x, y in zip(nombres, a.get("conservados") or [], b.get("conservados") or []) if x != y]
