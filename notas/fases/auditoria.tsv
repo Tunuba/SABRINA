@@ -578,3 +578,4 @@ func_800521AC	148	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136
 func_80052240	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_800523B4	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_8001B0C8	972	IGUAL_SINT	src/varios/textura_tga_g15.c	2 de 2 capturas y 111 de 111 variantes iguales
+func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 91 de 91 variantes iguales
