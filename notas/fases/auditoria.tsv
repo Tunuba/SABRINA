@@ -95,9 +95,9 @@ func_80055CAC	320	IGUAL	src/sabrina/objetos_g12.c	9 de 9 capturas y 696 de 696 v
 func_80057F34	920	IGUAL	src/geometria/partir_80057F34.c	9 de 9 capturas y 632 de 632 variantes iguales
 func_800582CC	912	IGUAL	src/geometria/partir_800582CC.c	9 de 9 capturas y 633 de 633 variantes iguales
 func_8005865C	912	IGUAL	src/geometria/partir_8005865C.c	9 de 9 capturas y 636 de 636 variantes iguales
-func_800589EC	1272	IGUAL	src/geometria/partir_800589EC.c	9 de 9 capturas y 643 de 643 variantes iguales
-func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	9 de 9 capturas y 637 de 637 variantes iguales
-func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	9 de 9 capturas y 643 de 643 variantes iguales
+func_800589EC	1272	IGUAL	src/geometria/partir_800589EC.c	2 de 2 capturas y 139 de 139 variantes iguales
+func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	2 de 2 capturas y 142 de 142 variantes iguales
+func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	2 de 2 capturas y 141 de 141 variantes iguales
 func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 de 646 variantes iguales
 DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
 func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales

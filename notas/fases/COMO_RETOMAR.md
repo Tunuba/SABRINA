@@ -933,9 +933,20 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
   Pasaron a stub con el marco de la original + cuerpo en C que carga ese vector desde sp+0x3C (el truco de la basura de
   pila); con la captura 0 el GTE ya sale igual en los tres. Cola `verif/lanzar_0510b.sh` (log `build/cola_0510b.txt`)
   con la verificacion completa y los mutantes; anotar con `py verif/anotar.py build/cola_0510b.txt --solo ...`.
-- Pendiente: anotar los partidores cuando termine la cola; mutantes de func_8001FD50 con las capturas nuevas
-  (`build/fd50b_0510.txt`); func_80050AB8 (vsint pasa de una hora con 8 variantes: ver por que); reverificar
-  func_800204F0 y func_80020294 con las capturas nuevas; mutantes de tarjeta16b; cola B.
+- La cola `lanzar_0510b.sh` dio **IGUAL a los tres partidores** (139, 142 y 141 variantes, con 2 capturas) y 8 de 8
+  mutantes muertos en func_80051764; sigue con los mutantes de los partidores. Despues se capturaron con
+  `py capt_dibujo.py 1,3,5,7,9,11,13 func_80057F34,...,func_80020294` entre 11 y 14 capturas de juego para los siete
+  partidores y func_80020294.
+- **Cola encadenada `verif/lanzar_dibujo.sh`** (log `build/cola_dibujo.txt`), lanzada por WMI: espera el "TODO FIN" de
+  `cola_0510b.txt` y reverifica con las capturas nuevas func_800204F0, func_80020294 y los siete partidores, y al final
+  los mutantes de func_8001FD50 (los primeros se pararon a mano por RAM: Windows llego a 0.9 GB libres por las otras
+  sesiones; WSL solo ocupaba 0.5 GB). Al terminar: `py verif/anotar.py build/cola_dibujo.txt` y
+  `py verif/anotar.py build/cola_0510b.txt --solo func_800589EC,func_80058EE4,func_800593E0`.
+- func_80050AB8: no es un error, es costo. Cuando el modelo de la tarjeta responde 3 la original reintenta sin fin y
+  esa variante gasta el tope de instrucciones en las dos versiones; con 8 variantes pasa de una hora. Correrla sola
+  con `timeout` largo (4 h) cuando la PC este libre.
+- Pendiente ademas: mutantes de tarjeta16b; cola B; revisar si otras funciones de dibujo tienen solo capturas del
+  arranque (como func_8001FD50) y darles capturas con `capt_dibujo.py`.
 
 ### 05-10 NOCHE: SE APAGO LA PC
 
