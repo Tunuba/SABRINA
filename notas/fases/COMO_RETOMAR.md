@@ -872,3 +872,35 @@ antes de la llamada, y `noinline` en func_800168EC, 80016AF4 y 80016DA0 (GCC las
 solo las llama func_800163E4). Cola `verif/lanzar_limites0510.sh` -> build/limites0510*.txt (setjmp, InitGeom,
 InitCARD y mutantes). Cola `verif/lanzar_revisar.sh` -> build/revisar_real.txt / revisar_sint.txt: las 61 contadas
 que llaman a la BIOS o usan cop2/mtc0 (`verif/lista_revisar.py`), con el verificador nuevo.
+
+### 05-10 TARDE: RESULTADOS (EMPIEZA AQUI)
+
+**98.5 %: reales 79.1 % (703 fn) + sinteticas 19.4 % (314 fn) = 1017 de 1034.** Pasaron a IGUAL las que eran
+limite por guardar una direccion de vuelta: setjmp de libetc (func_800163E4, 8 de 8 mutantes), InitGeom
+(func_800177B4, 8 de 8) e InitCARD (func_800522E4, sintetica, 8 de 8). Bajo func_8001FD50 (ver abajo).
+- Eventos (bios_eventos_g16.c): las 8 reales y las 6 sinteticas IGUAL con los argumentos de la BIOS. Mutantes:
+  func_80051A84 8 de 8; func_8003E554 3 de 8 con la captura sintetica de la funcion de usuario (los 5 vivos son
+  equivalentes: el bucle de espera de func_8003EA90 no deja rastro y el bucle del SPU ocupado no se puede activar).
+- Tarjeta (tarjeta_archivo_g16.c) con capturas a mano (`verif/capturas_tarjeta16.sh`): func_80050418 176 de 176,
+  func_80050554 y 80050694 254 de 254, func_800513B4 84 de 84 y **8 de 8 mutantes** (antes 0 de 8).
+- **Truco de stub para funciones con un bufer en la pila**: func_800513B4 (crear) y func_800515B0 (borrar) arman
+  ruta[32] en sp+0x10 y guardan resultado en sp+0x30, justo despues; un nombre de mas de 32 letras (variante con
+  a1 = 0x200) desborda ruta y pisa resultado y los registros guardados. Con el marco de GCC daba otro nombre de
+  archivo. Ahora un stub en asm arma el marco de la original (registros en los mismos lugares) y el cuerpo en C usa
+  `ruta + 32` como resultado. El atributo optimize("no-move-loop-invariants") NO sirve (cambia el lugar de los
+  registros guardados y queda peor).
+- **gte.py**: los registros de datos de 16 bits guardan solo eso (VZ0-2, IR0-3 con signo; OTZ, SZ0-3 sin signo),
+  como la consola. func_80024A48 daba "coprocesador geometrico distinto" por un lw contra un lhu del mismo dato:
+  ahora 149 de 149.
+- **mutantes.py** ya no muta los comentarios (un "05-10" en un comentario lo hacia caer).
+- **func_8001FD50 bajo a DISTINTO** (1348 bytes): 2 de 162 variantes con fin = 0xA3C20040. Con
+  `verif/depurar_args.py src/geometria/arbol.c func_8001FD50 1 800178cc 801074ac a3c20040 2c40000 ff000000` se ve
+  que el C deja de recorrer los hermanos despues del nodo 30 (visible, entra al dibujo) y la original sigue con 210
+  mas; la RAM queda igual y solo difiere el GTE. Lo mas probable: con ese fin, los partidores (D_80068878[corte]) o
+  AddPrim escriben en la pila del que llama y pisan otra cosa en el marco de GCC que en el de la original (0x70).
+  Siguiente paso: confirmar con un gancho de escritura en la pila del C, y si es eso, stub con el marco de la original.
+- Cola B (`reanudar_b.sh`) PARADA a mano por falta de RAM, en los mutantes de func_80024450 (85 min). Faltan el
+  resto de mut5 y mut_cuerpos desde func_800189A4: relanzar `verif/reanudar_b.sh` cuando haya memoria.
+- `verif/lanzar_revisar.sh` sigue (reverificacion de las 61); los DISTINTO de borradores viejos de src/auto ya
+  reemplazados (func_80014910, 80014988, 80016874, 80029808/30/58, 8003E554) no cuentan: las versiones de
+  bios_eventos_g16.c son las que estan en auditoria.tsv.

@@ -31,7 +31,7 @@ func_8001ED9C	72	IGUAL	src/Object/lista_g04.c	3 de 3 capturas y 180 de 180 varia
 func_8001F23C	196	IGUAL	src/Object/lista_g04.c	7 de 7 capturas y 301 de 301 variantes iguales
 func_8001F6C8	884	IGUAL	src/objetos/particulas.c	9 de 9 capturas y 900 de 900 variantes iguales
 func_8001FA3C	544	IGUAL	src/geometria/camara.c	9 de 9 capturas y 1224 de 1224 variantes iguales
-func_8001FD50	1348	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 165 de 165 variantes iguales
+func_8001FD50	1348	DISTINTO	src/geometria/arbol.c	8 de 8 capturas y 160 de 162 variantes iguales (05-10, verificador con GTE): en 2 variantes con fin=0xA3C20040 la original sigue recorriendo nodos (cientos de MulMatrix0 mas) y el C no; la RAM queda igual, solo difiere el GTE al final. Sin explicar todavia (func_8001FC5C es hoja, no pisa registros). Antes IGUAL sin comparar el GTE
 func_800204F0	496	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 212 de 212 variantes iguales
 func_800206F0	116	IGUAL	src/Particle/nodos_g04.c	7 de 7 capturas y 196 de 196 variantes iguales
 func_80020764	72	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 175 de 175 variantes iguales
@@ -42,7 +42,7 @@ func_80021F70	236	IGUAL	src/StratTools/girar_g05.c	9 de 9 capturas y 809 de 809 
 func_80022104	136	IGUAL	src/geometria/angulos.c	9 de 9 capturas y 656 de 656 variantes iguales
 func_800223E8	100	IGUAL	src/colision/suelo.c	7 de 7 capturas y 689 de 689 variantes iguales
 func_80024300	40	IGUAL	src/WobjCode/objetos_g06.c	9 de 9 capturas y 955 de 955 variantes iguales
-func_80024A48	316	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 268 de 268 variantes iguales
+func_80024A48	316	IGUAL	src/geometria/arbol.c	6 de 6 capturas y 149 de 149 variantes iguales
 func_80027A04	204	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 1062 de 1062 variantes iguales
 func_80027F08	68	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 916 de 916 variantes iguales
 func_8002BAD4	164	IGUAL	src/varios/tabla_nombres_g07.c	9 de 9 capturas y 1130 de 1130 variantes iguales
@@ -607,7 +607,7 @@ func_80050418	316	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 
 func_80050554	320	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 26 de 26 variantes iguales
 func_80050694	320	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 26 de 26 variantes iguales
 func_80050AB8	392	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 27 de 27 variantes iguales
-func_800513B4	508	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_800513B4	508	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	3 de 3 capturas y 84 de 84 variantes iguales
 func_80029808	40	IGUAL	src/varios/bios_eventos_g16.c	8 de 8 capturas y 192 de 192 variantes iguales
 func_80029858	40	IGUAL	src/varios/bios_eventos_g16.c	8 de 8 capturas y 192 de 192 variantes iguales
 func_8003E554	188	IGUAL	src/varios/bios_eventos_g16.c	6 de 6 capturas y 192 de 192 variantes iguales

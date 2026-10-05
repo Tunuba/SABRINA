@@ -42,3 +42,9 @@ python3 sint.py crear_con $F a0=0,a1=0x80075938,a2=2,m800D52D4=03000000
 F=func_800515B0
 python3 sint.py crear_con $F a0=0,a1=0x80075938,m800D52C0=00000000
 python3 sint.py crear_con $F a0=0x10,a1=0x80075938,m800D52C0=00000000,m800D52CC=05000000,m800D52D0=01000000
+
+# func_8003E554 (fin de transferencia del SPU): con funcion de usuario en D_80074EE0 (func_80050A50, que guarda su
+# argumento en D_800D52C0[4] si no hay evento abierto: deja rastro de la llamada y de su argumento)
+F=func_8003E554
+python3 sint.py crear_con $F m80074EE0=500A0580,m800D52C0=00000000
+python3 sint.py crear_con $F m80074EE0=500A0580,m800D52C0=00000000,m80074EAC=00000000
