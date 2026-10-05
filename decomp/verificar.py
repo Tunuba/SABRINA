@@ -13,7 +13,9 @@ en 0x80400000, fuera de los 2 MB de RAM de la PS1 pero en la misma region de 256
 funciones originales funciona. Todos los simbolos externos se resuelven a sus direcciones reales (los del
 ELF que arma armar.sh).
 
-Las llamadas a la BIOS (0xA0, 0xB0, 0xC0) vuelven enseguida. Las instrucciones del coprocesador geometrico
+Las llamadas a la BIOS (0xA0, 0xB0, 0xC0) vuelven enseguida, y se compara su secuencia (tabla y numero de
+funcion, sin los argumentos): 05-10, un C sin el FlushCache() despues de parchear codigo pasaba la prueba de
+mutantes, porque el modelo no hace nada en FlushCache y no queda rastro en la RAM. Las instrucciones del coprocesador geometrico
 (cop2) no las ejecuta Unicorn: se emulan en Python (gte.py) con un gancho en la direccion de cada una.
 
 Uso: python3 verificar.py src/Archivo.c Funcion [Funcion...]
@@ -625,6 +627,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
 
     def codigo(u, dirc, tam, _):
         if dirc in (0xA0, 0xB0, 0xC0):                 # llamada a la BIOS: volver sin hacer nada
+            bios.append((dirc, u.reg_read(UC_MIPS_REG_ZERO + 9)))
             hecho = TARJETA and bios_tarjeta(u, dirc, u.reg_read(UC_MIPS_REG_ZERO + 9))
             if hecho:
                 if hecho != "v0":
@@ -671,6 +674,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             u.emu_stop()
 
     criticas = []       # los syscall de Enter/ExitCriticalSection, en orden (04-10 noche: sacar uno pasaba)
+    bios = []           # las llamadas a la BIOS, (tabla, funcion) en orden (05-10: sacar un FlushCache pasaba)
 
     def interrupcion(u, intno, _):
         # unico uso de "syscall" en el juego: EnterCriticalSection/ExitCriticalSection (psyq_g01.c), que
@@ -880,7 +884,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     # stub en asm que restauraba mal sp pasaba, porque la corrida termina al volver y nadie lo miraba)
     conservados = [uc.reg_read(UC_MIPS_REG_ZERO + r) for r in (16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30)]
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1), conservados=conservados,
-                criticas=criticas,
+                criticas=criticas, bios=bios,
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 tarjeta=sorted(tarjeta.items()),
@@ -941,6 +945,8 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("monton de la BIOS distinto")
     if a.get("criticas", []) != b.get("criticas", []):
         dif.append("secciones criticas distintas")
+    if a.get("bios", []) != b.get("bios", []):
+        dif.append("llamadas a la BIOS distintas")
     if a.get("conservados") != b.get("conservados"):
         nombres = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "gp", "sp", "fp")
         malos = [n for n, x, y in zip(nombres, a.get("conservados") or [], b.get("conservados") or []) if x != y]

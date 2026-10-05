@@ -801,3 +801,17 @@ Lo que queda (19 fn) sigue siendo limite: setjmp, InitGeom e InitCARD guardan en
 que en el C apunta al C (en un ejecutable rearmado en su direccion daria igual), video, BuclePrincipal, main y asm puro.
 Cola de la PAUSA 05-10 relanzada como `verif/lanzar_pausa0510.sh` (PantallasLegales, criticas, mutantes), por WMI
 para que no muera con el turno; resultado en build/pausa_pl.txt, build/criticas*.txt y build/mut5.txt.
+
+### 05-10 MEDIODIA, EL CHAT SE CERRO A MEDIAS (EMPIEZA AQUI)
+
+**Llamadas a la BIOS en la comparacion.** En mut5 sobrevivio quitar `FlushCache();` en func_800521AC y func_800523B4
+(parchean codigo de la BIOS y luego vacian la cache): el modelo no hace nada en FlushCache y no queda rastro en la RAM.
+verificar.py ahora guarda la secuencia de llamadas a la BIOS (tabla 0xA0/0xB0/0xC0 y numero de funcion en t1, sin
+argumentos) y la compara: "llamadas a la BIOS distintas". Las que llaman a una envoltura de la BIOS estan en
+build/llaman_bios.txt y se reverifican con eso (`verif/lanzar_bios.sh`): Afirmar, Liberar, func_80012B0C y
+func_80014774 siguen IGUAL.
+
+El chat se cerro con tres colas a medias (bios en func_800161D4, mut5 en func_80024450, mut_cuerpos en
+func_800189A4) y murieron. `verif/lanzar_reanudar0510.sh` sigue cada una desde donde quedo, de a una, lanzada por
+WMI. Resumen en build/reanudar.txt; detalle en build/bios.txt, build/bios_sint.txt y build/mut_cuerpos.txt.
+Si una da "llamadas a la BIOS distintas", el C llama de mas o de menos a la BIOS: es un error real del C.
