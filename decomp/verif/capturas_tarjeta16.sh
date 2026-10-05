@@ -37,3 +37,8 @@ F=func_80050AB8
 python3 sint.py crear_con $F a0=0,a1=0x80075938,a2=2,m800D52C0=00000000
 python3 sint.py crear_con $F a0=0,a1=0x80075938,a2=2,m800D52C0=01000000
 python3 sint.py crear_con $F a0=0,a1=0x80075938,a2=2,m800D52D4=03000000
+
+# func_800515B0 (borrar), agregadas despues: sin evento abierto y con nombre
+F=func_800515B0
+python3 sint.py crear_con $F a0=0,a1=0x80075938,m800D52C0=00000000
+python3 sint.py crear_con $F a0=0x10,a1=0x80075938,m800D52C0=00000000,m800D52CC=05000000,m800D52D0=01000000

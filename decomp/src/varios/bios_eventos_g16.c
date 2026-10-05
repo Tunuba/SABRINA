@@ -136,9 +136,10 @@ extern char D_80062360[];
 
 /* Borra bu<puerto>:<nombre>. Devuelve 0 si se borro, -1 si habia un evento abierto, o el codigo de la tarjeta
  * (reintenta con 3 enseguida y con 2 hasta 4 veces; 0 pasa a 5). */
-s32 func_800515B0(s32 puerto, char *nombre) {
-    char ruta[32];
-    s32 resultado;
+/* El cuerpo de func_800515B0. ruta en el marco del stub (sp+0x10 de la original) y resultado en ruta+32, como la
+ * original (guarda ahi lo que devuelve erase en cada vuelta): un nombre de mas de 32 letras desborda ruta igual. */
+__attribute__((noinline, used)) static s32 borrar_cuerpo(s32 puerto, char *nombre, char *ruta) {
+    volatile s32 *resultado = (volatile s32 *) (ruta + 32);
     s32 veces = 0;
     volatile s32 *tarjeta = D_800D52C0;
 
@@ -150,8 +151,8 @@ s32 func_800515B0(s32 puerto, char *nombre) {
     strcat(ruta, nombre);
     D_800D52C0[3] |= 1 << D_800D52C0[4];
     for (;;) {
-        resultado = erase(ruta);
-        if (resultado != 0) {
+        *resultado = erase(ruta);
+        if (*resultado != 0) {
             return 0;
         }
         D_800D5318 = func_80051284(0);
@@ -171,21 +172,43 @@ s32 func_800515B0(s32 puerto, char *nombre) {
                 while (tarjeta[2] == 0) {
                 }
             }
-            resultado = D_800D52B4;
+            *resultado = D_800D52B4;
             tarjeta[2] = 0;
         }
         func_80051284(D_800D5318);
-        if (resultado == 3) {
+        if (*resultado == 3) {
             continue;
         }
-        if (resultado != 2 || ++veces >= 4) {
+        if (*resultado != 2 || ++veces >= 4) {
             break;
         }
     }
-    if (resultado == 0) {
-        resultado = 5;
+    if (*resultado == 0) {
+        *resultado = 5;
     }
-    return resultado;
+    return *resultado;
+}
+
+/* Stub con el marco de la original (0x50): s0-s3 en 0x38-0x44, ra en 0x48, ruta en 0x10. */
+__attribute__((naked))
+s32 func_800515B0(s32 puerto, char *nombre) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x50\n"
+            "\tsw $16, 0x38($sp)\n"
+            "\tsw $17, 0x3C($sp)\n"
+            "\tsw $18, 0x40($sp)\n"
+            "\tsw $19, 0x44($sp)\n"
+            "\tsw $31, 0x48($sp)\n"
+            "\tjal borrar_cuerpo\n"
+            "\taddiu $6, $sp, 0x10\n"
+            "\tlw $31, 0x48($sp)\n"
+            "\tlw $19, 0x44($sp)\n"
+            "\tlw $18, 0x40($sp)\n"
+            "\tlw $17, 0x3C($sp)\n"
+            "\tlw $16, 0x38($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x50\n"
+            ".set reorder");
 }
 
 /* Los 8 eventos de la tarjeta: 4 de la BIOS (SwCARD 0xF4000001) y 4 del hardware (HwCARD 0xF0000011), uno por
