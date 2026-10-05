@@ -672,3 +672,29 @@ BuclePrincipal (carga niveles enteros) y main (func_800106C8, no vuelve), ra gua
 (func_800163E4 setjmp, func_800177B4 InitGeom, func_800522E4 InitCARD), func_80017D80 (687/689), y asm puro:
 trampolines de BIOS/PCdrv (func_800294F0/29518/29530, 800161BC/C8, 800142FC), func_80052114/40/84 (usan v1 del que
 llama o son datos), func_80016170 (setjmp) y func_80017B8C (manejador de excepciones).
+
+### 04-10 NOCHE, REPASO DE SINTETICAS DEBILES (EMPIEZA AQUI)
+
+Se buscaron las IGUAL_SINT que pasaron con menos de 10 variantes (`progreso_sint.tsv` y la auditoria). Varias eran
+**falsos verdes**: borradores de m2c o C a mano con errores que la unica captura no recorria.
+- func_8001CB4C (lector de .bud): restaba los hijos antes de mirarlos (con 0 hijos, 65535 vueltas).
+- func_8001B600: no pasaba el nombre al gancho D_8007CA44 ni la linea a Reservar.
+- func_800185A8 y HerramientaConvertirTEX: argumentos de mas o de menos (41 inventados en TEX).
+- func_800171CC: m2c declaro las globales u8[] y las escrituras de 16 bits guardaban solo el byte bajo.
+- func_8004AB24: faltaba recortar a 16 bits un argumento; su donante traia a0 = 0xD (objeto en la direccion 13).
+- func_8001F524 (a mano): usaba s3 y func_8001B698 lee el s3 del que llama.
+- func_8001A620: el rectangulo en otro lugar de la pila (SubirAVRAM guarda su direccion en la cola del GPU).
+- func_80052388 bajo a limite (func_800523B4 guarda su ra y en el C apunta al C).
+Las demas estaban bien escritas: solo les faltaban capturas con punteros validos (donantes con a0 = 3, a1 = 0...).
+
+**Herramientas nuevas:**
+- `verif/cascada.py padre captura hija [n]`: corre la original del padre y guarda la captura al entrar a la hija
+  (argumentos de verdad: un .bud abierto, una textura pedida por nombre).
+- verificar: no se compara el marco de pila entero de la original (+0x4000) cuando pasa de 0x4000
+  (`marco_original`); el de HerramientaConvertirTEX es 0x800A0 con un bufer de media VRAM.
+- Truco: `__attribute__((optimize("no-optimize-sibling-calls")))` en el cuerpo de un stub, o GCC lo convierte en un
+  salto y el sp queda corrido. Y separar `t = f(); m[n] = t;` para que GCC no precalcule &m[n] en un s-registro.
+- Capturas armadas con `sint.crear_con` (objeto real en 0x80180000, cada estado del switch, cada rama).
+
+**Para anotar al terminar:** `build/refuerzo.txt` (18 funciones) con `py verif/anotar.py build/refuerzo.txt --sint`,
+y func_800185A8 con `SABRINA_LIMITE=400000000` (la herramienta INO entera, ~1 min por corrida).
