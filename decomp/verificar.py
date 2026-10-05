@@ -527,6 +527,9 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x18, struct.pack("<I", TABLA_C0 + 0x100))
         uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x128, struct.pack("<6I", *C0_VIEJO))
         uc.mem_write((TABLA_B0 & 0x1FFFFFFF) + 0x5B * 4, struct.pack("<I", TABLA_C0 + 0x400))
+        # y en +0x70/+0x74 del manejador un lui/ori que arman una direccion (libcard, func_800521AC, la lee de los
+        # inmediatos): con ceros ahi su cuenta daba lo mismo con cualquier mascara (un mutante pasaba)
+        uc.mem_write((TABLA_C0 & 0x1FFFFFFF) + 0x170, struct.pack("<2I", 0x3C1A801F, 0x375A6000))
     uc.mem_write(0x00000000, ram)
     uc.mem_write(0x1F800000, spad)
     if cd:
@@ -667,6 +670,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
             interrupcion_mala.append(f"PCdrv {codigo_break:x} sin modelo")
             u.emu_stop()
 
+    criticas = []       # los syscall de Enter/ExitCriticalSection, en orden (04-10 noche: sacar uno pasaba)
+
     def interrupcion(u, intno, _):
         # unico uso de "syscall" en el juego: EnterCriticalSection/ExitCriticalSection (psyq_g01.c), que
         # apagan/prenden las interrupciones de la CPU real; Unicorn no modela eso. Al llegar aca el pc ya
@@ -675,6 +680,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         d = u.reg_read(UC_MIPS_REG_PC)
         previa = struct.unpack_from("<I", u.mem_read((d - 4) & 0x1FFFFFFF, 4))[0]
         if (previa >> 26) == 0 and (previa & 0x3F) == 0x0C:
+            criticas.append(u.reg_read(UC_MIPS_REG_A0))     # 1 entra, 2 sale: la secuencia se compara
             u.reg_write(UC_MIPS_REG_V0, 1)
         else:
             interrupcion_mala.append(f"interrupcion no manejada en {d:08x}")
@@ -874,6 +880,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     # stub en asm que restauraba mal sp pasaba, porque la corrida termina al volver y nadie lo miraba)
     conservados = [uc.reg_read(UC_MIPS_REG_ZERO + r) for r in (16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30)]
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1), conservados=conservados,
+                criticas=criticas,
                 ram=bytes(uc.mem_read(0x00000000, 0x200000)), spad=bytes(uc.mem_read(0x1F800000, 0x400)),
                 monton=bytes(uc.mem_read(MONTON_BIOS & 0x1FFFFFFF, monton["usado"])) if monton["usado"] else b"",
                 tarjeta=sorted(tarjeta.items()),
@@ -932,6 +939,8 @@ def comparar(a, b, sp, con_v0=True):
         dif.append("scratchpad distinto")
     if a.get("monton", b"") != b.get("monton", b""):
         dif.append("monton de la BIOS distinto")
+    if a.get("criticas", []) != b.get("criticas", []):
+        dif.append("secciones criticas distintas")
     if a.get("conservados") != b.get("conservados"):
         nombres = ("s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "gp", "sp", "fp")
         malos = [n for n, x, y in zip(nombres, a.get("conservados") or [], b.get("conservados") or []) if x != y]
