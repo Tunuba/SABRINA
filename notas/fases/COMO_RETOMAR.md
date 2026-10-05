@@ -705,3 +705,21 @@ del verificador, ya cerrado comparando los registros conservados al volver); fun
 numero de linea que se le pasa a Reservar, que Reservar no usa: equivalente). Se paro para ahorrar bateria; lo que
 falta esta en `verif/lanzar_mut5.sh`. Tambien `verif/lanzar_conservados.sh` (en cola tras la INO): repasa las 18
 funciones con stub en asm con la comparacion nueva de registros.
+
+### CIERRE DE LA NOCHE 04-10 (EMPIEZA AQUI EL CHAT SIGUIENTE)
+
+**98.7 %: reales 79.3 % (701 fn) + sinteticas 19.4 % (313 fn) = 1014 de 1034.** Todo pusheado.
+Lo que queda (20 fn) es limite conocido; ver "CIERRE de esta sesion" mas arriba y `py verif/cuenta.py --pendientes`.
+Esta noche, ademas de lo de arriba:
+- func_800185A8 (la herramienta INO entera, con SABRINA_LIMITE=400M) IGUAL_SINT.
+- verificar endurecido: registros conservados al volver, secciones criticas (syscall) y el manejador de la BIOS con
+  lui/ori de verdad. func_800521AC/523B4/80017BC0 se reverificaron y siguen IGUAL.
+- La laptop estaba a bateria (sin cargador) al dormir Meme: la cola quedo en WSL y cada resultado se pusheo.
+
+**Cola que quedo corriendo (de a una, en WSL; si la PC se apago, relanzar desde la que falte):**
+1. `verif/lanzar_conservados.sh` -> build/conservados.txt y conservados_sint.txt (18 con stub en asm);
+2. `verif/lanzar_criticas.sh` -> build/criticas.txt y criticas_sint.txt (13 con secciones criticas);
+3. `verif/lanzar_mut5_log.sh` -> build/mut5.txt (mutantes que faltaron).
+Relanzar con `verif/fondo.sh verif/lanzar_X.sh /dev/null`. Revisar: cualquier "DISTINTO" con "al volver distintos" o
+"secciones criticas distintas" es un error real del C nuevo de detectar; las sint se anotan con
+`py verif/anotar.py build/X_sint.txt --sint` (las reales ya estaban IGUAL en la auditoria; solo hay que confirmar).
