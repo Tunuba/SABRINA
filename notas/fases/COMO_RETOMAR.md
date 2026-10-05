@@ -732,3 +732,5 @@ A 18 % de bateria el repaso iba por CargarWRLDDATA (4 de 17). Si la PC se apago:
 y relanzar `verif/fondo.sh verif/lanzar_conservados.sh /dev/null` (empieza de cero, ~1-2 h), despues
 `verif/lanzar_criticas.sh` y `verif/lanzar_mut5_log.sh`. Hasta aqui ninguna funcion repasada cambio de estado:
 las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
+  Las 7 reales del repaso de stubs IGUAL con los registros conservados: func_800189A4, func_8002D714, CargarANI,
+  CargarWRLDDATA, CrearRecogible, ImprimirDepuracion, func_8005ED8C. Siguen las 10 sinteticas y PantallasLegales.
