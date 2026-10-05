@@ -737,3 +737,18 @@ las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
   HerramientaArmarCuadricula (sint) IGUAL con los registros conservados (la del mutante del sp). A 9 % de bateria
   seguian las otras 9 sinteticas del repaso, PantallasLegales, las criticas y los mutantes: relanzar como dice arriba.
   Las 10 sinteticas con stub tambien IGUAL con los registros conservados (anotadas). Falta PantallasLegales.
+
+### PAUSA 05-10 (Meme pidio pausar) — EMPIEZA AQUI
+
+**98.7 %: reales 79.3 % (701 fn) + sinteticas 19.4 % (313 fn) = 1014 de 1034. Todo pusheado.**
+Repaso de stubs con los registros conservados: 17 de 18 siguen IGUAL (7 reales y 10 sinteticas, anotadas).
+La cola se paro a mano (`verif/parar_cola.sh`) con PantallasLegales a medias (llevaba ~1 h de ~2 h).
+
+**Lo que falta, en este orden** (cada uno con `bash verif/fondo.sh verif/X.sh /dev/null` desde WSL, de a uno):
+1. PantallasLegales con los registros conservados: `SABRINA_VARIANTES=8 SABRINA_LIMITE=300000000 bash verif/vfull.sh
+   src/Screen/pantallas_legales_g14.c PantallasLegales` (~2 h; ya era IGUAL, solo confirma el stub).
+2. `verif/lanzar_criticas.sh` (13 que usan Enter/ExitCriticalSection, con la comparacion nueva; 8 variantes).
+3. `verif/lanzar_mut5_log.sh` (mutantes que faltaron; func_800521AC, 80052240, 800523B4, 80024450,
+   HerramientaArmarModelos, Cuadricula y PIC, estas dos para confirmar que el mutante del sp ya se caza).
+Si algo da "al volver distintos" o "secciones criticas distintas", es un error real del C (stub o asm).
+Lo que queda sin verificar es limite conocido (`py verif/cuenta.py --pendientes`, explicado en "CIERRE de esta sesion").
