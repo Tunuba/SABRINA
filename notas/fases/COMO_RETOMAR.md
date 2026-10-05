@@ -736,3 +736,4 @@ las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
   CargarWRLDDATA, CrearRecogible, ImprimirDepuracion, func_8005ED8C. Siguen las 10 sinteticas y PantallasLegales.
   HerramientaArmarCuadricula (sint) IGUAL con los registros conservados (la del mutante del sp). A 9 % de bateria
   seguian las otras 9 sinteticas del repaso, PantallasLegales, las criticas y los mutantes: relanzar como dice arriba.
+  Las 10 sinteticas con stub tambien IGUAL con los registros conservados (anotadas). Falta PantallasLegales.

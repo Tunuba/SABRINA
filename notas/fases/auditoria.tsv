@@ -566,7 +566,7 @@ func_80029948	108	IGUAL_SINT	src/auto/func_80029948.c	1 de 1 capturas y 76 de 76
 func_8004F50C	92	IGUAL_V0_SINT	src/varios/tarjeta_cerrar_g15.c	0 de 2 capturas y 0 de 272 variantes iguales
 func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
-func_8004EBD0	396	IGUAL_SINT	src/varios/tarjeta_iconos_g15.c	1 de 1 capturas y 134 de 134 variantes iguales
+func_8004EBD0	396	IGUAL_SINT	src/varios/tarjeta_iconos_g15.c	2 de 2 capturas y 64 de 64 variantes iguales
 func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 132 variantes iguales
 func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
@@ -577,14 +577,14 @@ func_800502DC	316	IGUAL_SINT	src/varios/tarjeta_leer_g15.c	5 de 5 capturas y 493
 func_800521AC	148	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_80052240	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_800523B4	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
-func_8001B0C8	972	IGUAL_SINT	src/varios/textura_tga_g15.c	2 de 2 capturas y 111 de 111 variantes iguales
-func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 91 de 91 variantes iguales
-HerramientaConvertirPIC	452	IGUAL_SINT	src/varios/convertir_pic_g15.c	1 de 1 capturas y 85 de 85 variantes iguales
-HerramientaArmarCuadricula	432	IGUAL_SINT	src/varios/armar_cuadricula_g15.c	1 de 1 capturas y 86 de 86 variantes iguales
-HerramientaArmarModelos	680	IGUAL_SINT	src/varios/armar_modelos_g15.c	1 de 1 capturas y 16 de 16 variantes iguales (1 capturas donde la original no termina, sin comparar)
+func_8001B0C8	972	IGUAL_SINT	src/varios/textura_tga_g15.c	2 de 2 capturas y 35 de 35 variantes iguales
+func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 31 de 31 variantes iguales
+HerramientaConvertirPIC	452	IGUAL_SINT	src/varios/convertir_pic_g15.c	1 de 1 capturas y 27 de 27 variantes iguales
+HerramientaArmarCuadricula	432	IGUAL_SINT	src/varios/armar_cuadricula_g15.c	1 de 1 capturas y 22 de 22 variantes iguales
+HerramientaArmarModelos	680	IGUAL_SINT	src/varios/armar_modelos_g15.c	1 de 1 capturas y 13 de 13 variantes iguales (1 capturas donde la original no termina, sin comparar)
 func_8001CB4C	704	IGUAL_SINT	src/varios/leer_bud_g15.c	2 de 2 capturas y 185 de 185 variantes iguales (1 capturas donde la original no termina, sin comparar)
-HerramientaConvertirTEX	204	IGUAL_SINT	src/varios/convertir_tex_g15.c	1 de 1 capturas y 107 de 107 variantes iguales
-func_8001A620	72	IGUAL_SINT	src/varios/subir_textura_g15.c	1 de 1 capturas y 99 de 99 variantes iguales
+HerramientaConvertirTEX	204	IGUAL_SINT	src/varios/convertir_tex_g15.c	1 de 1 capturas y 29 de 29 variantes iguales
+func_8001A620	72	IGUAL_SINT	src/varios/subir_textura_g15.c	1 de 1 capturas y 23 de 23 variantes iguales
 func_8001C280	80	IGUAL_SINT	src/auto/func_8001C280.c	5 de 5 capturas y 328 de 328 variantes iguales
 func_800171CC	312	IGUAL_SINT	src/varios/rect_color_g15.c	5 de 5 capturas y 371 de 371 variantes iguales
 func_8004AB24	652	IGUAL_V0_SINT	src/objetos/recogible_vuela_g15.c	0 de 3 capturas y 0 de 270 variantes iguales
