@@ -245,10 +245,10 @@ def main():
             fh.write(f"{n} = 0x{sim[n]:08X};\n")
         fh.write("SECTIONS {\n")
         for i, ((arch, nom), dirc) in enumerate(sorted(colocadas.items(), key=lambda kv: kv[1])):
-            fh.write(f'  .p{i} 0x{dirc:08X} : {{ "{objs[arch]}"({nom}) }}\n')
+            fh.write(f'  .p{i} 0x{dirc:08X} : {{ KEEP("{objs[arch]}"({nom})) }}\n')
         fh.write("}\n")
     elf = os.path.join(tmp, "c.elf")
-    r = run(["mipsel-linux-gnu-ld", "-EL", "-T", ld, "--no-check-sections", "-nostdlib", "-o", elf] +
+    r = run(["mipsel-linux-gnu-ld", "-EL", "-T", ld, "--no-check-sections", "--gc-sections", "-nostdlib", "-o", elf] +
              [x for f in instalar for x in ("-u", "c__" + f)] + list(objs.values()))
     if r.returncode:
         sys.exit("no enlaza:\n" + r.stderr)
@@ -263,6 +263,8 @@ def main():
         m = re.match(r"\s*\[\s*\d+\]\s+\.p\d+\s+(\w+)\s+([0-9a-f]+)\s+[0-9a-f]+\s+([0-9a-f]+)", l)
         if m:
             secs.append((int(m.group(2), 16), int(m.group(3), 16), m.group(1)))
+    if not secs:
+        sys.exit('no quedo ninguna seccion colocada (las funciones elegidas no caben solas en sus huecos)')
     base = min(s[0] for s in secs)
     # primero se matan los cuerpos viejos (break) para que un salto perdido se note enseguida
     for f in instalar:
