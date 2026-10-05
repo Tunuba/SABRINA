@@ -54,7 +54,7 @@ def prueba(funs, frames=2300, espera=170):
         n = os.path.getsize(ruta)
         pcs = [int(e.eval("return PCSX.getRegisters().pc")) >> 16 for _ in range(8)]
         en_bios = sum(p == 0xBFC0 for p in pcs)
-        return (n > 3000), f"{f} frames, captura {n} bytes, PC en BIOS {en_bios}/8"
+        return (n > 50000), f"{f} frames, captura {n} bytes, PC en BIOS {en_bios}/8"
 
 
 def lista():

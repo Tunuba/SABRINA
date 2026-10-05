@@ -793,3 +793,38 @@ Lo que queda (19 fn) sigue siendo limite: setjmp, InitGeom e InitCARD guardan en
 que en el C apunta al C (en un ejecutable rearmado en su direccion daria igual), video, BuclePrincipal, main y asm puro.
 Cola de la PAUSA 05-10 relanzada como `verif/lanzar_pausa0510.sh` (PantallasLegales, criticas, mutantes), por WMI
 para que no muera con el turno; resultado en build/pausa_pl.txt, build/criticas*.txt y build/mut5.txt.
+
+### 05-10 TARDE, ARMADO CON C (EMPIEZA AQUI) — Meme apago la PC antes de que terminara
+
+**Que se hizo hoy:** se escribio el armado "movible": `decomp/armar_c.py` compila el C verificado y lo coloca en los huecos
+de las propias funciones originales (el .exe no puede crecer: `disco.parchar` exige el mismo tamano), dejando en cada entrada
+`j c__Nombre; nop`. Salida `decomp/build/SLUS_C.exe`; `scripts/armar_disco_c.py` arma `disco/sabrina_c.cue`.
+Con 5 funciones el juego llego al HUB. Con 698 (205 KB de C) arranca pero se CUELGA en el frame ~1240, cerca del titulo.
+No hay todavia una version jugable con todo el C.
+
+**Lo que se aprendio (la verificacion tenia puntos ciegos, el 98,8 % era optimista):**
+- Borradores de m2c con `static ... (*D_xxxx)() = NULL;` (19 archivos, ya cambiados a `extern`): era una copia propia de una
+  variable del juego, los callbacks reales nunca se llamaban. El armado ahora rechaza cualquier objeto que defina un D_ del juego.
+- m2c se come los argumentos de las llamadas a la BIOS (`DeliverEvent(0xF0000009, 0x20)` salia como `DeliverEvent()`) porque los
+  stubs `li t2,0xB0; jr t2; li t1,N` no leen a0-a3. `aridad.py` tiene ahora `ARIDAD_NOMBRE` (OpenEvent = 4, no 3) y `verificar.py`
+  compara las llamadas a la BIOS en orden (`ARIDAD_BIOS`). 10 funciones regeneradas con auto.py --solo y de vuelta a IGUAL.
+- func_800164BC (despachador de interrupciones) leia el puntero a callback con lbu en vez de lw; corregida.
+- func_800161D4 da DISTINTO con los modelos del verificador porque el modelo de VSync engancha su entrada; con
+  `SABRINA_SIN_MODELOS=1` da IGUAL (no es un error del C).
+
+**Fuera del armado por ahora** (`decomp/armar_c_excluir.txt`, con el motivo): func_80017BC0 (parche de la BIOS en InitGeom: cae
+al reinicio de la BIOS al llamar a GetC0Table), func_80017D80 y func_800189A4 (cargan del CD; tormenta de interrupciones del CD en
+el emulador real aunque Unicorn dice IGUAL). Siguen sin entender: por que fallan. Pista: la traza de entradas a funciones
+(`scripts/traza_llamadas.py`) muestra func_80016A2C repetida sin parar (tormenta de IRQ).
+
+**Como seguir:**
+1. `python scripts/lazo_armado_c.py 12` (desde Windows, tarda ~10 min por vuelta): arma, prueba que el juego ARRANQUE DE VERDAD,
+   bisecta la funcion que lo rompe y la anota en `armar_c_excluir.txt`. Termina cuando arranca. Criterio de "arranca" en
+   `scripts/biseccion_c.py` (`prueba`): a los 2300 cuadros la captura pesa > 50000 bytes (el titulo pesa ~142 KB). OJO: una
+   captura de ~63 bytes es pantalla vacia = el juego esta en la BIOS; contar cuadros NO sirve (la BIOS tambien los cuenta).
+2. Al terminar: `python scripts/prueba_juego_c.py sabrina_c.cue c` (titulo, HUB, 6 niveles; ojo, hay que arrancar desde cero, un
+   estado guardado trae el ejecutable viejo en la RAM).
+3. Investigar las excluidas, de a una, con `scripts/traza_llamadas.py` (compara entradas a funciones original contra C).
+Trampas: un emulador sin cerrar deja el puerto 8091 ocupado y el siguiente Emu habla con el viejo (`taskkill /F /IM pcsx-redux.exe`);
+`open(p,'w')` de Python en Windows convierte los saltos de linea a CRLF; una funcion sola no cabe en su propio hueco (el C ocupa mas
+que el original), por eso no se puede probar de a una: se prueba "todas menos algunas".
