@@ -62,6 +62,11 @@ def elegir(sint, solo):
                 esc[r["funcion"]] = f
     if solo:
         esc = {f: a for f, a in esc.items() if f in solo}
+    # las que se dejan en ensamblador a proposito (armar_c_excluir.txt)
+    if os.path.exists("armar_c_excluir.txt"):
+        for l in open("armar_c_excluir.txt", encoding="utf-8"):
+            if l.strip() and not l.startswith("#"):
+                esc.pop(l.split("	")[0].strip(), None)
     return esc
 
 

@@ -1,0 +1,2 @@
+# funcion<TAB>motivo: se quedan con el ensamblador original en el armado con C (armar_c.py)
+func_80017BC0	parche de la BIOS en InitGeom: en C el juego cae al reinicio de la BIOS (frame 419, al llamar a GetC0Table por B0); verificada IGUAL en Unicorn pero no sirve en el emulador de verdad
