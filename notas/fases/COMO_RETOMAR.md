@@ -734,3 +734,5 @@ y relanzar `verif/fondo.sh verif/lanzar_conservados.sh /dev/null` (empieza de ce
 las tres que llegaron siguen IGUAL con la comparacion nueva de registros.
   Las 7 reales del repaso de stubs IGUAL con los registros conservados: func_800189A4, func_8002D714, CargarANI,
   CargarWRLDDATA, CrearRecogible, ImprimirDepuracion, func_8005ED8C. Siguen las 10 sinteticas y PantallasLegales.
+  HerramientaArmarCuadricula (sint) IGUAL con los registros conservados (la del mutante del sp). A 9 % de bateria
+  seguian las otras 9 sinteticas del repaso, PantallasLegales, las criticas y los mutantes: relanzar como dice arriba.
