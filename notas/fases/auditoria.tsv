@@ -560,7 +560,7 @@ func_8003DEE8	264	IGUAL_SINT	src/auto/func_8003DEE8.c	1 de 1 capturas y 109 de 1
 func_8002B704	236	IGUAL_SINT	src/auto/func_8002B704.c	1 de 1 capturas y 79 de 79 variantes iguales
 func_8001B000	200	IGUAL_SINT	src/varios/cache_tex_g15.c	1 de 1 capturas y 58 de 58 variantes iguales
 func_8001B600	152	IGUAL_SINT	src/auto/func_8001B600.c	1 de 1 capturas y 0 de 0 variantes iguales
-func_80018CB8	132	NO_TERMINA	src/auto/func_80018CB8.c	la original no termina en el emulador (espera al hardware)
+func_80018CB8	132	IGUAL_SINT	src/varios/fuente_a_pc_g15.c	1 de 1 capturas y 86 de 86 variantes iguales
 func_8003DFF0	112	IGUAL_SINT	src/auto/func_8003DFF0.c	1 de 1 capturas y 112 de 112 variantes iguales
 func_80029948	108	IGUAL_SINT	src/auto/func_80029948.c	1 de 1 capturas y 76 de 76 variantes iguales
 func_8004F50C	92	IGUAL_V0_SINT	src/varios/tarjeta_cerrar_g15.c	0 de 2 capturas y 0 de 272 variantes iguales
@@ -579,3 +579,5 @@ func_80052240	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136
 func_800523B4	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_8001B0C8	972	IGUAL_SINT	src/varios/textura_tga_g15.c	2 de 2 capturas y 111 de 111 variantes iguales
 func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 91 de 91 variantes iguales
+HerramientaConvertirPIC	452	IGUAL_SINT	src/varios/convertir_pic_g15.c	1 de 1 capturas y 85 de 85 variantes iguales
+HerramientaArmarCuadricula	432	IGUAL_SINT	src/varios/armar_cuadricula_g15.c	1 de 1 capturas y 86 de 86 variantes iguales

@@ -143,6 +143,11 @@ DOS_PASOS = {0x07, 0x08, 0x09, 0x0A, 0x15, 0x16, 0x1A, 0x1E}
 
 class Cd:
     def __init__(self):
+        # los archivos virtuales son de cada corrida: se reparten en el orden en que se buscan y el lector lee
+        # por delante del ultimo sector pedido; si quedaran de la corrida anterior (la de la original), la del
+        # C encontraria con datos sectores que la original leyo vacios (func_80024450 daba DISTINTO por eso)
+        _virtuales.clear()
+        _sectores_virtuales.clear()
         self.indice = 0
         self.param = []
         self.respuesta = []          # la respuesta de la interrupcion pendiente
