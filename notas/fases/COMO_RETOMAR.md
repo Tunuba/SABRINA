@@ -784,6 +784,11 @@ cuerpo de func_80017D80 sobrevivio `<` por `<=` (linea 60, `ultimo < primero`): 
 un solo sector. `verif/caso17d80.py` corre la captura 00 con WRLDDATA\FRONT\FRW.BIN (368 bytes): el C IGUAL y el
 mutante DISTINTO. (La original devuelve 0 con un archivo de un sector: pide leer 0 sectores, falla 10 veces y lo
 libera. Error del juego, el C lo copia.)
+Tambien sobrevivio quitar cada `Liberar(datos)` de los caminos de error (el modelo del CD nunca falla). caso17d80.py
+suma "CdControl falla" (su primera instruccion cambiada por `jr ra; move v0, zero` en la RAM, igual para las dos):
+mata el de la linea 73; el de un sector mata el de la linea 86. El C da IGUAL en los cuatro casos. "CdRead falla" no
+sirve: CdSearchFile tambien usa CdRead para leer el directorio y la busqueda falla antes.
+PantallasLegales con los registros conservados: IGUAL (26 de 26). Las 18 con stub siguen IGUAL.
 Cola `verif/lanzar_mut_cuerpos.sh` -> build/mut_cuerpos.txt: mutantes en el cuerpo de las 15 funciones con stub.
 
 Trampa: un `open(p, "w")` de python en Windows sin `encoding="utf-8"` escribe en cp1252 y rompe los acentos de este
