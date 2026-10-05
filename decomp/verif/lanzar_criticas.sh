@@ -1,6 +1,7 @@
 # repaso de las que llaman a Enter/ExitCriticalSection con la comparacion nueva de secciones criticas (04-10 noche)
 d=/mnt/c/Proyectos/SABRINA/decomp
 cd $d
+export SABRINA_VARIANTES=8
 for par in src/psyq/parche_bios_g14.c:func_80017BC0 src/auto/func_8002D170.c:func_8002D170 src/audio/tempo_g13.c:func_80041CD8 src/auto/func_80051A84.c:func_80051A84 src/auto/func_80051C60.c:func_80051C60; do
   echo "== ${par##*:} ${par%%:*}" >> $d/build/criticas.txt
   timeout 3600 bash $d/verif/vfull.sh ${par%%:*} ${par##*:} >> $d/build/criticas.txt 2>&1
