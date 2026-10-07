@@ -697,6 +697,8 @@ static void mirar(Objeto *o) {
     D_8007CAE4 = o->rot[0];
 }
 
+#define MIRA_ARRIBA 0x6000 /* MOD: cuanto sube el punto de mira (16.16; 0x10000 = 1 unidad) */
+
 /* El paso de la camara. Mientras corre no ignora ningun tipo de triangulo. Estados: 0 sigue a Sabrina
  * desde atras (girando con los botones 1 y 2 o sola), 1 se aparta mirando a Sabrina, 2 se acerca a la
  * nuca de Sabrina, 3 vuelve atras, 4 y 5 una escena entre D_8007CBAC y D_8007CBB0, 6 y 8 se mueve hacia
@@ -834,9 +836,9 @@ s32 func_80035314(Objeto *o) {
         }
         v[0] >>= 4;
         v[2] >>= 4;
-        e->ojo[0] = e->mira[0] + ((v[0] * 7) << 8);
-        e->ojo[2] = e->mira[2] + ((v[2] * 7) << 8);
-        e->ojo[1] = e->mira[1] + 0x11999 - 0x23333 - 0x60000;
+        e->ojo[0] = e->mira[0] + ((v[0] * 3) << 8);
+        e->ojo[2] = e->mira[2] + ((v[2] * 3) << 8);
+        e->ojo[1] = e->mira[1] + 0x11999 - 0x23333;
         w[0] = (e->mira[0] - e->ojo[0]) >> 8;
         w[1] = 0;
         w[2] = (e->mira[2] - e->ojo[2]) >> 8;
@@ -844,6 +846,8 @@ s32 func_80035314(Objeto *o) {
         if (r <= 0) {
             e->ojo[1] += r * 64;
         }
+        /* MOD: la camara mira un poco por encima de Sabrina (la posicion del ojo ya esta calculada). */
+        e->mira[1] -= MIRA_ARRIBA;
         func_80036410(o, e->ojo[0], e->ojo[1], e->ojo[2], e->mira[0], e->mira[1], e->mira[2], 3);
         func_80036524(o, e->mira[0], e->mira[1], e->mira[2]);
         if ((s8)ps[0x1D] == 13) {
