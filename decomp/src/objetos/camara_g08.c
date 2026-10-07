@@ -708,34 +708,20 @@ extern s32 D_8007CA54, D_8007CA58;   /* botones de arriba / recien apretados */
 static void __attribute__((noinline)) camara_libre(Objeto *o) {
     s32 b = D_8007CA50;
     s32 vel = (b & 0x80) ? 4 : 2;
-    s32 d[3], l[3];
+    s32 d[3], l[3], av, la, p;
 
-    if (b & 0x8000) o->rot[1] -= 24;
-    if (b & 0x2000) o->rot[1] += 24;
-    if ((b & 0x10) && o->rot[0] > -1000) o->rot[0] -= 20;
-    if ((b & 0x40) && o->rot[0] < 1000) o->rot[0] += 20;
+    o->rot[1] += (((b >> 13) & 1) - ((b >> 15) & 1)) * 24;
+    p = o->rot[0] + (((b >> 6) & 1) - ((b >> 4) & 1)) * 20;
+    if (p > -1000 && p < 1000) {
+        o->rot[0] = p;
+    }
     func_8002205C(d, o->rot[0], o->rot[1]);
     func_8002205C(l, 0, o->rot[1] + 0x400);
-    if (b & 0x1000) {
-        o->x += d[0] << vel;
-        o->y += d[1] << vel;
-        o->z += d[2] << vel;
-    }
-    if (b & 0x4000) {
-        o->x -= d[0] << vel;
-        o->y -= d[1] << vel;
-        o->z -= d[2] << vel;
-    }
-    if (b & 0x2) {
-        o->x += l[0] << vel;
-        o->z += l[2] << vel;
-    }
-    if (b & 0x1) {
-        o->x -= l[0] << vel;
-        o->z -= l[2] << vel;
-    }
-    if (b & 0x4) o->y -= 0x1000 << vel;
-    if (b & 0x8) o->y += 0x1000 << vel;
+    av = ((b >> 12) & 1) - ((b >> 14) & 1);
+    la = ((b >> 1) & 1) - (b & 1);
+    o->x += (d[0] * av + l[0] * la) << vel;
+    o->y += (d[1] * av + (((b >> 3) & 1) - ((b >> 2) & 1)) * 0x1000) << vel;
+    o->z += (d[2] * av + l[2] * la) << vel;
     ojo_camara(o);
     mirar(o);
     D_8007CA50 = 0;
