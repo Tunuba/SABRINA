@@ -828,3 +828,45 @@ el emulador real aunque Unicorn dice IGUAL). Siguen sin entender: por que fallan
 Trampas: un emulador sin cerrar deja el puerto 8091 ocupado y el siguiente Emu habla con el viejo (`taskkill /F /IM pcsx-redux.exe`);
 `open(p,'w')` de Python en Windows convierte los saltos de linea a CRLF; una funcion sola no cabe en su propio hueco (el C ocupa mas
 que el original), por eso no se puede probar de a una: se prueba "todas menos algunas".
+
+### 07-10 MANANA, PARADO A MANO (Meme apaga la PC) — EMPIEZA AQUI
+
+**Que se hizo:** se retomo `scripts/lazo_armado_c.py` (armado con todo el C + prueba de arranque + bisecta). Resultado parcial:
+- **func_800218D4 rompia el arranque y ya esta arreglada.** `D_8007CAE6` estaba como `extern u8` sin volatile en
+  `src/auto/func_800218D4.c`: GCC saca la lectura del `do { } while (D_8007CAE6 < 2)` y espera para siempre. Unicorn no
+  lo ve porque el modelo de VBlank corre dentro de la llamada a VSync. Ahora es `extern volatile u8` y se quito de
+  `decomp/armar_c_excluir.txt` (quedan excluidas solo func_80017BC0, func_80017D80 y func_800189A4).
+- **Sigue habiendo AL MENOS otra funcion que congela el arranque.** Con las 698 funciones el juego se queda en el frame 1241.
+  La bisecta (sobre `build/armado_c_completo.txt`, 698 filas OK) dio: "sin las primeras 349" ARRANCA y "sin las primeras 174"
+  se congela, pero en el frame 1883 (otro punto, asi que puede haber DOS culpables). Culpable ubicado entre la fila 175
+  (CrearObjetoMundo) y la 349 (func_8002BB78). Se paro antes de seguir.
+- **Patron a buscar (lo mas probable):** esperas sobre variables que cambia una interrupcion y estan declaradas SIN volatile
+  (el verificador no las ve). Sospechosas por grep: D_80063914/D_80063904 (func_8001626C), D_8007CC40, D_800D52C8
+  (func_800513B4/func_800515B0), D_8006D2C8 (cdsync_g14.c), D_8006CFD8/D_8006CFC4 (mando), D_80063818/D_8006381C (cola GPU),
+  D_8007CA58, D_800D5848. OJO: no tocarlas a ciegas; confirmarlas con la bisecta o mirando el asm de la original.
+- func_8001626C y las de psyq/libetc tambien tocan contadores de interrupcion: revisar que sus globales sean volatile.
+
+**Como seguir (en este orden):**
+1. Desde PowerShell: `cd scripts; py lazo_armado_c.py 12`. Cada vuelta ~10 min, el log esta en `decomp/build/lazo_armado_c.txt`
+   (los pasos de la bisecta salen ahi). Antes: `taskkill /F /IM pcsx-redux.exe` por si quedo uno (solo puede haber UN emulador).
+   Si el log no avanza en mas de 3 min, `armar_c.py` en WSL se cuelga (dormido en poll, sin hijos): matar `py`/`python`
+   en Windows y `pkill -f armar_c.py` en WSL (`wsl -d Ubuntu`) y relanzar. Paso en la bisecta de las 10:38.
+2. Cuando el lazo anote una funcion culpable: antes de dejarla excluida, mirar su C (casi siempre falta un volatile o hay
+   una espera sobre algo de interrupcion). Si se arregla, quitarla de `armar_c_excluir.txt` y volver a correr el lazo.
+3. Al arrancar con todo: `python scripts/prueba_juego_c.py sabrina_c.cue c` (titulo, HUB y 6 niveles, desde cero).
+
+**IDEA para cambiar el juego sin esperar al armado completo (pregunta de Meme):** el armado SI se puede hacer con un grupo
+chico: `python3 armar_c.py --solo f1,f2,... --salida build/SLUS_X.exe` (en WSL, carpeta decomp). Cada funcion en C conserva las
+direcciones de datos y se llama por su direccion original, asi que convive con el resto en ensamblador (por eso la bisecta
+funciona con subconjuntos; con 5 funciones llego al HUB). Limites: (a) el exe no puede crecer: el C va en los huecos de las
+propias funciones reemplazadas y lo que no cabe se queda con la original (incluir vecinas para dar hueco); (b) los structs y
+globales tienen direccion y tamano fijos: no cambiar el tamano de un campo que leen funciones en ensamblador; (c) las pocas
+con basura de pila (ver arriba) no se pueden tocar.
+Plan propuesto: armar SOLO la camara (func_80035314, func_80036880, func_80036D58, func_80037A18, `src/objetos/camara_g08.c`)
+con `biseccion_c.prueba([...])` (arma, parcha una pista `bis`, arranca y mide), y si arranca, cambiar algo visible del C
+(distancia/altura de la camara) para ver el efecto. Despues lo mismo con la construccion de niveles. Hacerlo cuando el lazo
+no este usando el emulador.
+
+**Trampas de hoy:** `Add-Content` falla ("archivo en uso") mientras el lazo tiene abierto su log; escribir al log solo con el lazo parado.
+`sleep` largo en Bash esta bloqueado en Claude Code: usar Monitor sobre el log. El autorespaldo (commit cada ~15 min) ya subio
+el arreglo de func_800218D4 (commit 899fa66).
