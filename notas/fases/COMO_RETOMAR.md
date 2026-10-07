@@ -870,3 +870,26 @@ no este usando el emulador.
 **Trampas de hoy:** `Add-Content` falla ("archivo en uso") mientras el lazo tiene abierto su log; escribir al log solo con el lazo parado.
 `sleep` largo en Bash esta bloqueado en Claude Code: usar Monitor sobre el log. El autorespaldo (commit cada ~15 min) ya subio
 el arreglo de func_800218D4 (commit 899fa66).
+
+### PLAN SIGUIENTE (acordado con Meme el 07-10): modificar el juego por grupos chicos, EMPEZAR POR LA CAMARA
+
+Idea: no esperar al armado con las 698. Armar solo un grupo (`armar_c.py --solo ...`), comprobar que arranca y llega al HUB, y
+despues cambiar una constante del C para ver el efecto en el juego (cambio de codigo real en el .exe, no de RAM).
+Pasos por grupo: (1) armar solo ese grupo, (2) `biseccion_c.prueba([...])` o `prueba_juego_c.py` para ver que arranca,
+(3) cambiar una constante visible, rearmar y mirar. Si el C no cabe en sus huecos, sumar funciones vecinas. Un solo emulador a la vez
+(parar el lazo grande antes).
+
+Grupos, de mas facil a mas dificil (los nombres salen de estas notas; el efecto exacto de cada funcion hay que confirmarlo al probar):
+1. **Camara (EMPEZAR AQUI):** func_80035314 (la camara, 3900 bytes), func_80036880, func_80036D58, func_80037A18 en
+   `src/objetos/camara_g08.c`. Cambiar distancia, altura, suavizado, seguimiento.
+2. **Dano y vida:** ActualizarBarraVida (`sabrina/vida_g13.c`), DanoPorEnemigo, DanoPorSuelo, func_80031698 y func_800349F0 (reaparicion).
+3. **Hechizos:** func_80032B98, func_8005C358 (selector), func_80038318 (carga).
+4. **Recogibles:** CrearRecogible (ojo: marco de pila a mano), RegistrarRecogible, `objetos/agarrable_g13.c`.
+5. **Construccion de niveles:** ActivarObjetosCercanos, CrearObjetoMundo, func_800252A0 (`objetos/crear_g13.c`). Los datos de cada
+   nivel (donde esta cada objeto) siguen en los archivos del disco (`notas/OBJETOS.md`, `scripts/nivel_fantasma.py`).
+6. **Movimiento de Sabrina (lo mas delicado):** func_800318F4, func_80030208, FisicaObjeto; van juntas porque func_80030208 depende de
+   la basura de pila de FisicaObjeto.
+
+Despues de la camara, seguir con el 2 y asi. Para una version de PC (idea de Meme) haria falta TODO el juego en C mas una capa nueva
+de GPU/GTE/SPU/CD/mandos y quitar los trucos de MIPS (marcos a mano, naked, registros fijos); por eso conviene terminar tambien el
+armado completo en PlayStation como prueba de que el C esta completo.
