@@ -699,6 +699,50 @@ static void mirar(Objeto *o) {
 
 #define MIRA_ARRIBA 0x6000 /* MOD: cuanto sube el punto de mira (16.16; 0x10000 = 1 unidad) */
 
+extern s32 D_8007CA54, D_8007CA58;   /* botones de arriba / recien apretados */
+
+/* MOD: camara libre. SELECT la prende y la apaga (al apagarla vuelve a seguir a Sabrina). Mientras esta
+ * prendida el mando no llega a Sabrina (solo START): flechas arriba/abajo avanzan y retroceden hacia donde
+ * mira, izquierda/derecha giran, triangulo/equis miran arriba/abajo, L2/R2 van de lado, L1/R1 suben y
+ * bajan y cuadrado va 4 veces mas rapido. */
+static void __attribute__((noinline)) camara_libre(Objeto *o) {
+    s32 b = D_8007CA50;
+    s32 vel = (b & 0x80) ? 4 : 2;
+    s32 d[3], l[3];
+
+    if (b & 0x8000) o->rot[1] -= 24;
+    if (b & 0x2000) o->rot[1] += 24;
+    if ((b & 0x10) && o->rot[0] > -1000) o->rot[0] -= 20;
+    if ((b & 0x40) && o->rot[0] < 1000) o->rot[0] += 20;
+    func_8002205C(d, o->rot[0], o->rot[1]);
+    func_8002205C(l, 0, o->rot[1] + 0x400);
+    if (b & 0x1000) {
+        o->x += d[0] << vel;
+        o->y += d[1] << vel;
+        o->z += d[2] << vel;
+    }
+    if (b & 0x4000) {
+        o->x -= d[0] << vel;
+        o->y -= d[1] << vel;
+        o->z -= d[2] << vel;
+    }
+    if (b & 0x2) {
+        o->x += l[0] << vel;
+        o->z += l[2] << vel;
+    }
+    if (b & 0x1) {
+        o->x -= l[0] << vel;
+        o->z -= l[2] << vel;
+    }
+    if (b & 0x4) o->y -= 0x1000 << vel;
+    if (b & 0x8) o->y += 0x1000 << vel;
+    ojo_camara(o);
+    mirar(o);
+    D_8007CA50 = 0;
+    D_8007CA54 = 0;
+    D_8007CA58 &= 0x800;
+}
+
 /* El paso de la camara. Mientras corre no ignora ningun tipo de triangulo. Estados: 0 sigue a Sabrina
  * desde atras (girando con los botones 1 y 2 o sola), 1 se aparta mirando a Sabrina, 2 se acerca a la
  * nuca de Sabrina, 3 vuelve atras, 4 y 5 una escena entre D_8007CBAC y D_8007CBB0, 6 y 8 se mueve hacia
@@ -729,6 +773,16 @@ s32 func_80035314(Objeto *o) {
     d = func_8001BF8C(0, 0, v[0], v[2]);
     func_8001C45C(v);
     d = (d - 0x40000) >> 4;
+    if (D_8007CA58 & 0x100) {
+        e->_20 ^= 1;
+        if (!e->_20) {
+            o->estado = 0;
+        }
+    }
+    if (e->_20) {
+        camara_libre(o);
+        goto fin;
+    }
     switch ((u16)o->estado) {
     case 6:
         func_80036410(o, D_800C6508[0], D_800C6508[1], D_800C6508[2], D_800C64FC[0], D_800C64FC[1],
@@ -951,6 +1005,7 @@ s32 func_80035314(Objeto *o) {
         ojo_camara(o);
         break;
     }
+fin:
     D_8007CBD4 = D_8007CBC0;
     return (u16)D_8007CBC0;
 }
