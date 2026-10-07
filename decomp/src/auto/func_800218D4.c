@@ -4,7 +4,7 @@
 
 extern void * D_8007C9E8;
 extern u16 D_8007C9EC;
-extern u8 D_8007CAE6;
+extern volatile u8 D_8007CAE6;   /* cuadros de VBlank: sube en la interrupcion, la espera tiene que releerlo */
 extern u8 D_8007CCBC[];
 extern u8 D_8007CD74[];
 extern u8 D_8007CD9C[];
