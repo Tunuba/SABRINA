@@ -178,13 +178,14 @@ def celdas_de_paredes(nodo, ancho, alto, margen=400):
     return reparto
 
 
-def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=False):
+def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=False, reemplazos=None):
     """El H1W.INO modificado, del mismo tamano que el original (relleno con ceros al final, que el
     juego no llega a leer). armar_nodo(nodo_original) -> el nodo del mundo (por defecto el piso plano
     con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR); sin_objetos =
     ninguna celda lista objetos (el ropero, los engranajes y el cielo no se crean; la camara y Sabrina no
     van por las celdas, el juego las crea siempre). Lo usa mini_nivel.py. paredes = los triangulos no horizontales
-    tambien entran en la colision (necesitan su normal, ejes y tipo bien puestos: nivel_plataformas.cola_cara)."""
+    tambien entran en la colision (necesitan su normal, ejes y tipo bien puestos: nivel_plataformas.cola_de_triangulo).
+    reemplazos = {indice de modelo: armar(nodo_original) -> nodo nuevo}: sustituye ese modelo (por ejemplo el cielo)."""
     s = ino.leer_ino(NIVEL)
     g = s["cuadricula"]
     conservar = CONSERVAR if conservar is None else conservar
@@ -199,7 +200,9 @@ def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=
             agregar_cubo(nodo, **CUBO)
     s["modelos"][idx_mundo] = (nombre_mundo, [nodo])
     for i, (nom, nodos) in enumerate(s["modelos"]):
-        if i != idx_mundo and i not in conservar:
+        if reemplazos and i in reemplazos:
+            s["modelos"][i] = (nom, [reemplazos[i](nodos[0])])
+        elif i != idx_mundo and i not in conservar:
             s["modelos"][i] = (nom, [])
 
     # Los triangulos van ordenados por celda, como en un nivel real: asi cada celda puede declarar su
