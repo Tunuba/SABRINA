@@ -155,20 +155,26 @@ def celdas_de_triangulos(nodo, ancho, alto):
     return reparto
 
 
-def construir_bytes():
+def construir_bytes(armar_nodo=None, conservar=None):
     """El H1W.INO modificado, del mismo tamano que el original (relleno con ceros al final, que el
-    juego no llega a leer)."""
+    juego no llega a leer). armar_nodo(nodo_original) -> el nodo del mundo (por defecto el piso plano
+    con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR). Lo usa
+    mini_nivel.py."""
     s = ino.leer_ino(NIVEL)
     g = s["cuadricula"]
+    conservar = CONSERVAR if conservar is None else conservar
 
     idx_mundo = next(i for i, (nom, _nd) in enumerate(s["modelos"]) if nom.upper().endswith(NIVEL + ".BUD"))
     nombre_mundo, nodos_mundo = s["modelos"][idx_mundo]
-    nodo = nodo_plano(nodos_mundo[0])
-    if CUBO:
-        agregar_cubo(nodo, **CUBO)
+    if armar_nodo:
+        nodo = armar_nodo(nodos_mundo[0])
+    else:
+        nodo = nodo_plano(nodos_mundo[0])
+        if CUBO:
+            agregar_cubo(nodo, **CUBO)
     s["modelos"][idx_mundo] = (nombre_mundo, [nodo])
     for i, (nom, nodos) in enumerate(s["modelos"]):
-        if i != idx_mundo and i not in CONSERVAR:
+        if i != idx_mundo and i not in conservar:
             s["modelos"][i] = (nom, [])
 
     # Los triangulos van ordenados por celda, como en un nivel real: asi cada celda puede declarar su
