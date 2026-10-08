@@ -16,6 +16,7 @@ a altura 0 debajo. Las plataformas rojas no son alcanzables saltando (hueco > 25
 Probar cierra el juego anterior; "Ir a la seleccionada" teletransporta a Sabrina en el juego abierto.
 """
 import os
+import queue
 import sys
 import threading
 import tkinter as tk
@@ -49,7 +50,9 @@ class Editor(tk.Tk):
         self.emu = None
         self.ocupado = False
         self.alcanzables = set()
+        self.cola = queue.Queue()         # lo que los hilos del juego piden hacer en la ventana
         self._armar_ui()
+        self.after(100, self._vaciar_cola)
         self.protocol("WM_DELETE_WINDOW", self.salir)
         self.cargar_archivo(ruta or np_.NIVEL_POR_DEFECTO)
 
@@ -434,8 +437,20 @@ class Editor(tk.Tk):
         return self.guardar()
 
     # ------------------------------------------------------------ juego
+    def _vaciar_cola(self):
+        """Tk solo se toca desde el hilo principal: los hilos del juego dejan aqui lo que quieren mostrar."""
+        try:
+            while True:
+                self.cola.get_nowait()()
+        except queue.Empty:
+            pass
+        self.after(100, self._vaciar_cola)
+
     def _msg(self, texto, malo=False):
-        self.after(0, lambda: self.estado.config(text=texto, fg=estilo.MALO if malo else estilo.BUENO))
+        self.cola.put(lambda: self.estado.config(text=texto, fg=estilo.MALO if malo else estilo.BUENO))
+
+    def _probar_libre(self):
+        self.cola.put(lambda: self.btn_probar.config(state="normal"))
 
     def probar(self):
         if self.ocupado:
@@ -462,14 +477,14 @@ class Editor(tk.Tk):
             recorrer(e, "editor_arranque", PASOS_HASTA_EL_HUB)
             e.eval("PCSX.settings.spu.Mute = false; return 'ok'")     # Emu lo deja mudo para las rondas automaticas
             self._msg("Listo, a jugar. Cierra la ventana del juego (o el boton) para volver a probar.")
-            self.after(0, self.btn_probar.config, {"state": "normal"})
+            self._probar_libre()
             self.ocupado = False
             e.p.wait()
         except Exception as ex:           # noqa: BLE001 - se muestra al usuario
             self._msg(f"No se pudo probar: {ex}", malo=True)
         finally:
             self.ocupado = False
-            self.after(0, self.btn_probar.config, {"state": "normal"})
+            self._probar_libre()
             self._cerrar_emu()
 
     def _cerrar_emu(self):
