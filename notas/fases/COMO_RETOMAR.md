@@ -995,3 +995,18 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
   gancho en 0x8005CEF0 (vuelta de StGetNext en func_8005CEBC) y ver el numero de cuadro y trozo de cada uno.
 - Truco escondido del juego (para la seccion de secretos): `truco_invencible` en 0x8007CB74 (nadie lo enciende),
   hechizos 6 y 7 vacios en la tabla D_80074BC4, selector de niveles por 0x8007CA00.
+
+### 08-10: VIDEO IGUAL (EMPIEZA AQUI)
+
+**99.3 % (1020 de 1034).** GitHub no tenia nada nuevo del amigo (7bbb749 era lo ultimo).
+- Con el modelo del CD que salta el audio XA, **func_8005D50C IGUAL** (1 de 1 capturas, 10 de 10 variantes) y
+  **ReproducirSTR IGUAL** (1 de 1, 22 de 22), con `SABRINA_LIMITE=300000000` y la captura real. Anotadas.
+- El audio XA del disco esta solo en FMV (LBA 14140 a 40596). La musica va en las pistas de CD-DA 2 a 7 y los .WAV
+  de AUDIO1-4 apuntan a esas pistas, asi que el cambio del 07-10 solo toca al reproductor de video.
+- Colas encadenadas en WSL, lanzadas por WMI, una a la vez (2.9 GB libres):
+  `verif/lanzar_0810.sh` (log `build/cola_0810.txt`: video, mutantes de func_800593E0, dibujo con capturas nuevas,
+  mutantes de func_8001FD50); `verif/lanzar_0810b.sh` (log `cola_0810b.txt`: reverifica las 17 del reproductor de
+  video); `verif/lanzar_0810c.sh` (log `cola_0810c.txt`: mutantes de las dos del video). Cada una espera el
+  "TODO FIN" de la anterior. Al terminar: `py verif/anotar.py build/cola_0810.txt` y lo mismo con `cola_0810b.txt`.
+- Lo que queda (14) es limite ya documentado: BuclePrincipal y main no vuelven, setjmp y manejador de excepciones en
+  asm, trampolines de BIOS/PCdrv, func_80052114/40/84 (usan v1 del que llama), func_80052388.

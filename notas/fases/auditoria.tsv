@@ -247,7 +247,7 @@ func_80016DA0	76	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 72 de 72 variante
 func_800190C0	280	IGUAL	src/Font/textos_g13.c	1 de 1 capturas y 93 de 93 variantes iguales
 func_800193F8	108	IGUAL	src/Font/textos_g13.c	2 de 2 capturas y 158 de 158 variantes iguales
 func_800163E4	216	IGUAL	src/psyq/libetc_g13.c	2 de 2 capturas y 62 de 62 variantes iguales
-ReproducirSTR	184	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
+ReproducirSTR	184	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
 PantallasLegales	456	IGUAL	src/Screen/pantallas_legales_g14.c	1 de 1 capturas y 26 de 26 variantes iguales
 func_800144C4	156	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 58 de 58 variantes iguales
 func_80014598	52	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 56 de 56 variantes iguales
@@ -551,7 +551,7 @@ func_8002F9A0	604	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 83 de 83 
 func_80051024	608	IGUAL	src/varios/tarjeta_dir_g14.c	1 de 1 capturas y 15 de 15 variantes iguales
 func_8002FBFC	616	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 83 de 83 variantes iguales
 func_8002F298	652	IGUAL	src/varios/animaciones_g14.c	6 de 6 capturas y 277 de 277 variantes iguales
-func_8005D50C	824	NO_TERMINA	src/Screen/video_reproductor_g14.c	la original no termina en el emulador (espera al hardware)
+func_8005D50C	824	IGUAL	src/Screen/video_reproductor_g14.c	1 de 1 capturas y 10 de 10 variantes iguales
 func_800275F8	916	IGUAL	src/psyq/mando_envio_g14.c	8 de 8 capturas y 252 de 252 variantes iguales
 func_8002D714	2332	IGUAL_V0	src/psyq/cd_stream_g14.c	2 de 2 capturas y 12 de 14 variantes iguales
 func_800177B4	128	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 32 de 32 variantes iguales
