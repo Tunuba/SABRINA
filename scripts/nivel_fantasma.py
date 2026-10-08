@@ -158,12 +158,33 @@ def celdas_de_triangulos(nodo, ancho, alto, invertida=True):
     return reparto
 
 
-def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False):
+def celdas_de_paredes(nodo, ancho, alto, margen=400):
+    """{(fila, columna): [indices de triangulo]} de los triangulos NO horizontales (paredes), en la numeracion de
+    la colision (fila derecha). El choque de lado (FisicaObjeto -> func_8003AE84 -> func_8003A94C) solo mira la
+    lista de la celda donde EMPIEZA el segmento, unas decenas de unidades detras de Sabrina, asi que cada pared va
+    en todas las celdas que toque su caja agrandada en 'margen' (unidades del modelo; celda = 1024)."""
+    verts_xyz = [struct.unpack_from("<3h", v, 0) for v in nodo["verts"]]
+    reparto = {}
+    for i, t in enumerate(nodo["tris"]):
+        pts = [verts_xyz[v] for v in t[:3]]
+        if len({p[1] for p in pts}) == 1:
+            continue
+        xs, zs = [p[0] for p in pts], [p[2] for p in pts]
+        c0, c1 = (min(xs) - margen + 32768) // 1024, (max(xs) + margen + 32768) // 1024
+        f0, f1 = (min(zs) - margen + 32768) // 1024, (max(zs) + margen + 32768) // 1024
+        for fila in range(max(0, f0), min(alto - 1, f1) + 1):
+            for col in range(max(0, c0), min(ancho - 1, c1) + 1):
+                reparto.setdefault((fila, col), []).append(i)
+    return reparto
+
+
+def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=False):
     """El H1W.INO modificado, del mismo tamano que el original (relleno con ceros al final, que el
     juego no llega a leer). armar_nodo(nodo_original) -> el nodo del mundo (por defecto el piso plano
     con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR); sin_objetos =
     ninguna celda lista objetos (el ropero, los engranajes y el cielo no se crean; la camara y Sabrina no
-    van por las celdas, el juego las crea siempre). Lo usa mini_nivel.py."""
+    van por las celdas, el juego las crea siempre). Lo usa mini_nivel.py. paredes = los triangulos no horizontales
+    tambien entran en la colision (necesitan su normal, ejes y tipo bien puestos: nivel_plataformas.cola_cara)."""
     s = ino.leer_ino(NIVEL)
     g = s["cuadricula"]
     conservar = CONSERVAR if conservar is None else conservar
@@ -195,6 +216,9 @@ def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False):
     nodo["tris"] = tris
     reparto = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto.items()}
     reparto_col = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto_col.items()}
+    if paredes:
+        for fc, idxs in celdas_de_paredes(nodo, g["ancho"], g["alto"]).items():
+            reparto_col.setdefault(fc, []).extend(idxs)
 
     # tabla de indices: cada celda con triangulos se lleva un tramo propio y contiguo
     indices = []

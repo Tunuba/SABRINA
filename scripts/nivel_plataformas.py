@@ -120,11 +120,25 @@ def se_pisan(a, b):
     return a["x0"] < b["x1"] and b["x0"] < a["x1"] and a["z0"] < b["z1"] and b["z0"] < a["z1"]
 
 
+def cola_cara(nx, ny, nz):
+    """Los 6 bytes finales de un triangulo del .INO (tipo u16, normal x/y/z, ejes), como en los triangulos reales
+    del HUB: la normal de salida (hacia donde se ve la cara) en bytes con escala 126 (-Y = 130), tipo 0 en el suelo y 1 en
+    las paredes, y los dos ejes que mira PuntoEnTriangulo (8 = x,z en el suelo; 4 = x,y en paredes que miran a Z; 9 = y,z
+    en las que miran a X). Con la normal horizontal el suelo (func_8003A524) descarta el triangulo, asi que una pared
+    no hace de suelo; el choque de lado lo usa de frente."""
+    suelo = ny != 0
+    return (0 if suelo else 1, 0, round(nx * 126) & 255, round(ny * 126) & 255, round(nz * 126) & 255,
+            8 if suelo else 4 if nz != 0 else 9)
+
+
 def profundidades(plats):
-    """Cuanto cuelga la pared de cada plataforma: PROFUNDO, o menos si debajo (se pisan en planta) hay otra, para
-    que no la atraviese. Solo dibujo."""
+    """Cuanto baja cada bloque desde su tapa: su campo 'prof' si lo tiene; si no, PROFUNDO o menos si debajo (se
+    pisan en planta) hay otra plataforma, para que no la atraviese."""
     res = []
     for p in plats:
+        if p.get("prof"):
+            res.append(p["prof"])
+            continue
         debajo = [q["h"] - p["h"] for q in plats if q is not p and se_pisan(p, q) and q["h"] > p["h"]]
         res.append(min([PROFUNDO] + debajo))
     return res
@@ -138,14 +152,15 @@ def agregar_plataforma(verts, tris, p, textura, uv, cola, profundo=PROFUNDO):
     lx, lz = x1 - x0, z1 - z0
     X, Y, Z = (1, 0, 0), (0, 1, 0), (0, 0, 1)
     sombra = lambda k: (min(255, r * k // 128), min(255, g * k // 128), min(255, b * k // 128))
-    caras = [  # origen, u, largo de u, v, largo de v, color
-        ((x0, h, z0), X, lx, Z, lz, sombra(128)),             # tapa: cross(X, Z) = -Y
-        ((x1, h, z0), Y, profundo, Z, lz, sombra(80)),        # +X: cross(Y, Z) = +X
-        ((x0, h, z0), Z, lz, Y, profundo, sombra(80)),        # -X: cross(Z, Y) = -X
-        ((x0, h, z1), X, lx, Y, profundo, sombra(100)),       # +Z: cross(X, Y) = +Z
-        ((x0, h, z0), Y, profundo, X, lx, sombra(100)),       # -Z: cross(Y, X) = -Z
+    caras = [  # origen, u, largo de u, v, largo de v, color, normal de salida
+        ((x0, h, z0), X, lx, Z, lz, sombra(128), (0, -1, 0)),           # tapa: cross(X, Z) = -Y
+        ((x1, h, z0), Y, profundo, Z, lz, sombra(80), (1, 0, 0)),       # +X: cross(Y, Z) = +X
+        ((x0, h, z0), Z, lz, Y, profundo, sombra(80), (-1, 0, 0)),      # -X: cross(Z, Y) = -X
+        ((x0, h, z1), X, lx, Y, profundo, sombra(100), (0, 0, 1)),      # +Z: cross(X, Y) = +Z
+        ((x0, h, z0), Y, profundo, X, lx, sombra(100), (0, 0, -1)),     # -Z: cross(Y, X) = -Z
     ]
-    for n, (o, u, lu, v, lv, color) in enumerate(caras):
+    for n, (o, u, lu, v, lv, color, normal) in enumerate(caras):
+        cola_c = cola_cara(*normal)
         if n == 0:     # la tapa: cortes en los multiplos de 'paso' (que lo son de 1024/4) mas los bordes
             cu = [c - x0 for c in cortes(x0, x1, paso_tapa(p))]
             cv = [c - z0 for c in cortes(z0, z1, paso_tapa(p))]
@@ -162,8 +177,8 @@ def agregar_plataforma(verts, tris, p, textura, uv, cola, profundo=PROFUNDO):
             for j in range(nv):
                 a, b_ = base + i * (nv + 1) + j, base + (i + 1) * (nv + 1) + j
                 c, d = b_ + 1, a + 1                       # p00, p10, p11, p01
-                tris.append((a, b_, d, textura) + uv + cola)
-                tris.append((b_, c, d, textura) + uv + cola)
+                tris.append((a, b_, d, textura) + uv + cola_c)
+                tris.append((b_, c, d, textura) + uv + cola_c)
 
 
 def nodo_de(plats):
@@ -252,7 +267,7 @@ def armar_disco(plats=None, nombre="plataformas"):
     if errores:
         raise ValueError("nivel invalido: " + "; ".join(errores))
     cue, pista = rutas(nombre)
-    nuevo = nf.construir_bytes(nodo_de(plats), CONSERVAR_PLAT, sin_objetos=True)
+    nuevo = nf.construir_bytes(nodo_de(plats), CONSERVAR_PLAT, sin_objetos=True, paredes=True)
     disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista)
     disco.cue_mod(cue, pista)
     return cue
