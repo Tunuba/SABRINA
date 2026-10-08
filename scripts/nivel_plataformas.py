@@ -433,8 +433,12 @@ def validar(plats):
 
 # ---------------------------------------------------------------- disco
 
-def armar_disco(plats=None, nombre="plataformas", cielo=None):
-    """Arma disco\\sabrina_<nombre>.cue (siempre de cero). Por defecto: niveles\\plataformas.json."""
+PISTA_CAMARA_LIBRE = os.path.join(disco.DISCO, "libre (Track 01).bin")    # disco con el ejecutable con camara libre
+
+
+def armar_disco(plats=None, nombre="plataformas", cielo=None, camara_libre=False):
+    """Arma disco\\sabrina_<nombre>.cue (siempre de cero). Por defecto: niveles\\plataformas.json. camara_libre = parte
+    del disco con el ejecutable que trae la camara libre (SELECT la prende; se arma con scripts\\jugar.py camara)."""
     if plats is None:
         plats, cielo_json = cargar_nivel()
         cielo = cielo or cielo_json
@@ -445,7 +449,12 @@ def armar_disco(plats=None, nombre="plataformas", cielo=None):
     cue, pista = rutas(nombre)
     nuevo = nf.construir_bytes(nodo_de(plats), CONSERVAR_PLAT, sin_objetos=True, paredes=True,
                                reemplazos={INDICE_CIELO: nodo_cielo(cielo)})
-    disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista)
+    if camara_libre:
+        if not os.path.exists(PISTA_CAMARA_LIBRE):
+            raise FileNotFoundError(f"falta {PISTA_CAMARA_LIBRE}: se arma con 'python jugar.py camara'")
+        disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista, PISTA_CAMARA_LIBRE)
+    else:
+        disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista)
     disco.cue_mod(cue, pista)
     return cue
 
@@ -453,12 +462,22 @@ def armar_disco(plats=None, nombre="plataformas", cielo=None):
 P_SABRINA = 0x8007CAF8     # puntero al objeto de Sabrina; +0x24 x, +0x28 y, +0x2C z (posicion = modelo * 256)
 
 
-def punto_de_prueba(p):
-    """Un punto dentro del bloque, cerca del centro y que (casi siempre) no cae en un borde de cuadro, donde
-    Sabrina se cae."""
-    cx = min((p["x0"] + p["x1"]) // 2 + 37, p["x1"] - 64)
-    cz = min((p["z0"] + p["z1"]) // 2 + 53, p["z1"] - 64)
-    return cx, cz
+def punto_de_prueba(p, plats=()):
+    """Un punto dentro del bloque, cerca del centro y que (casi siempre) no cae en un borde de cuadro, donde Sabrina
+    se cae, ni dentro de otro bloque macizo que se apoye encima (una estatua sobre un estanque, un muro sobre el
+    suelo)."""
+    profs = dict(zip(map(id, plats), profundidades(plats))) if plats else {}
+    candidatos = [((p["x0"] + p["x1"]) // 2 + 37, (p["z0"] + p["z1"]) // 2 + 53)]
+    for dx, dz in ((192, 192), (-192, -192), (192, -192), (-192, 192)):
+        candidatos.append(((p["x0"] + 192 if dx > 0 else p["x1"] - 192) + 37, (p["z0"] + 192 if dz > 0 else p["z1"] - 192) + 53))
+    for cx, cz in candidatos:
+        cx, cz = min(cx, p["x1"] - 64), min(cz, p["z1"] - 64)
+        y = y_tapa(p, cx, cz)
+        dentro = any(q is not p and q["x0"] <= cx <= q["x1"] and q["z0"] <= cz <= q["z1"] and y_tapa(q, cx, cz) < y
+                     and h_max(q) + profs.get(id(q), PROFUNDO) >= y - 5 for q in plats)
+        if not dentro:
+            return cx, cz
+    return candidatos[0]
 
 
 def suelo_esperado(plats, p, cx, cz):
@@ -477,7 +496,7 @@ def teletransportar(e, p, plats=()):
     """Pone a Sabrina sobre el bloque p (un poco por encima: cae sola) en un emulador ya arrancado. Si otro bloque
     esta justo encima de ese punto, empieza casi a ras de suelo (si no, caeria sobre el de arriba)."""
     obj = int(float(e.eval(f"return rd32({P_SABRINA})")))
-    cx, cz = punto_de_prueba(p)
+    cx, cz = punto_de_prueba(p, plats)
     y0 = y_tapa(p, cx, cz)
     arriba = [y_tapa(q, cx, cz) for q in plats if q is not p and y_tapa(q, cx, cz) < y0
               and q["x0"] <= cx <= q["x1"] and q["z0"] <= cz <= q["z1"]]
@@ -503,7 +522,7 @@ def ver(plats, cielo=None):
             obj = teletransportar(e, p, plats)
             e.esperar(90)
             y = s(int(float(e.eval(f"return rd32({obj + 0x28})")))) / 256
-            esperada = suelo_esperado(plats, p, *punto_de_prueba(p))
+            esperada = suelo_esperado(plats, p, *punto_de_prueba(p, plats))
             bien = abs(y - esperada) < 8
             fallos += not bien
             print(f"{p['nombre']:8s} esperada y={esperada:6d}  medida y={y:8.1f}  {'ok' if bien else 'FALLA'}", flush=True)
