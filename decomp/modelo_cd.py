@@ -8,7 +8,8 @@ Las interrupciones del CD no llegan en cualquier momento: el acuse de una orden 
 la orden (el juego puede leerlo sondeando), y lo demas (la respuesta completa, el sector siguiente) se
 entrega en la proxima llamada a VSync, corriendo la rutina de interrupcion del CD de libcd (func_8002A5F8).
 La original y el C llaman a la misma VSync, asi que ven lo mismo en el mismo orden.
-Lo que no se modela: el audio (Play suena "en silencio"), los errores de lectura y la tapa abierta.
+Lo que no se modela: el audio (Play suena "en silencio"), los errores de lectura y la tapa abierta. Los sectores
+de audio XA (con el modo 0x40) se saltan sin interrupcion, como en la consola, donde van al sonido (07-10).
 """
 import mmap
 import struct
@@ -304,6 +305,16 @@ class Cd:
                 self.log.append("I%d" % self.tipo)
             elif self.leyendo and self.sectores < 20000:
                 raw = sector(self.lba)
+                if self.modo & 0x40 and raw[15] == 2 and raw[18] & 0x04:
+                    # audio XA con el modo XA-ADPCM puesto (07-10): en la consola el sector va al sonido y no
+                    # llega como datos (sin INT1). Los .STR traen uno de audio cada 8 de video; entregados como
+                    # datos, la biblioteca de video no armaba ningun cuadro y el video no terminaba nunca
+                    self.lba += 1
+                    self.sectores += 1
+                    self.log.append("A%d" % (self.lba - 1))
+                    self.log.append("v0%s" % ("" if self.tipo & self.ie else "x"))
+                    return False
+
                 self.sector = self._datos_del_sector(raw)
                 self.lba += 1
                 self.sectores += 1

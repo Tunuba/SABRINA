@@ -972,3 +972,26 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
   (la verificacion termino; faltaban los mutantes de 80050418, 80050AB8 y los de abrir_y_pasar) y la cola B.
 - Orden sugerido al volver: 1) revisar_falta.txt; 2) mutantes de tarjeta16b; 3) func_8001FD50; 4) cola B.
   Con poca RAM (bajo 2 GB) correr de a una cola.
+
+### 07-10: VIDEO DESTRABADO, PARADO A MANO (EMPIEZA AQUI)
+
+**Sigue 99.0 % (1018 de 1034).** Meme pidio apagar todo; colas muertas y WSL apagado.
+- **El video no era limite.** `func_8005D50C` no se colgaba: el modelo del CD entregaba como datos los sectores de
+  audio XA que los .STR traen cada 8 de video (submodo 0x64) y la biblioteca de video no armaba los cuadros.
+  `modelo_cd.py` ahora los salta sin INT1 cuando el modo tiene 0x40 (XA-ADPCM), como la consola que los manda al
+  sonido. Con eso la original termina, tambien con la captura real (`capturas/func_8005D50C/00`).
+- Queda un detalle del modelo: el video corta en el cuadro 4 (el 3 llega desde el trozo 2: se pierden dos sectores,
+  14003 y 14004) y termina por "cuadro menor que la cuenta". En la consola no pasa. Original y C ven lo mismo, asi
+  que la comparacion es justa, pero no recorre el video entero.
+- Capturas sinteticas armadas (fuera de git, `decomp/capturas_sint/`): func_8005D50C con el cuadro final del pedido
+  (`m801FFDE4`) en 12, 30 y 40 (esta con fundido D_8007CC94=0x80); ReproducirSTR con a1 = 0x10 y 0x22 (el cuadro final
+  es a1 - 4). Ojo: si la real ya termina, verificar primero con la real (`vfull.sh`), que cuenta como real.
+- Al volver: 1) `SABRINA_LIMITE=300000000 bash verif/vfull.sh src/Screen/video_reproductor_g14.c func_8005D50C`
+  (y `vsint.sh` si no); lo mismo con ReproducirSTR (src/Screen/video_g13.c); 2) reverificar lo que lee audio XA
+  (la musica de los niveles, CdRead con modo 0x40) porque el cambio del modelo les toca; 3) `verif/lanzar_0710.sh`
+  sin los mutantes de func_80058EE4 (ya dieron 5 de 8; los vivos cambian m[0]/m[1] y sxy[1]/sxy[2] en las lineas
+  69-71 de partir_80058EE4.c: vertices que coinciden en las capturas, cobertura y no error del C).
+- Herramientas de diagnostico usadas (en el scratchpad, no en el repo): parchear `V.Uc.emu_start` para poner un
+  gancho en 0x8005CEF0 (vuelta de StGetNext en func_8005CEBC) y ver el numero de cuadro y trozo de cada uno.
+- Truco escondido del juego (para la seccion de secretos): `truco_invencible` en 0x8007CB74 (nadie lo enciende),
+  hechizos 6 y 7 vacios en la tabla D_80074BC4, selector de niveles por 0x8007CA00.
