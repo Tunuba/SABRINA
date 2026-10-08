@@ -58,9 +58,12 @@ def nodo_cubo(nodo_original):
         for i in range(nu):
             for j in range(nv):
                 a, b = base + i * (nv + 1) + j, base + (i + 1) * (nv + 1) + j
-                c, d = b + 1, a + 1
-                tris.append((a, b, c, textura) + uv + cola)
-                tris.append((a, c, d, textura) + uv + cola)
+                c, d = b + 1, a + 1                       # p00, p10, p11, p01
+                # Diagonal p10-p01 (x + z = constante), NO la p00-p11: Sabrina aparece en (128, -896), justo sobre
+                # esa diagonal (z = x - 1024) y el cruce de lados de PuntoEnTriangulo falla en el borde exacto
+                # entre los dos triangulos: ninguno la "tenia" y caia sin parar (era el fallo del nivel fantasma).
+                tris.append((a, b, d, textura) + uv + cola)
+                tris.append((b, c, d, textura) + uv + cola)
     return dict(nombre="CUBO\0", matriz=nodo_original["matriz"], tras=nodo_original["tras"],
                 hijos=[], tris=tris, verts=verts)
 
