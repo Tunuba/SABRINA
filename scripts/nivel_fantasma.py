@@ -129,7 +129,7 @@ def agregar_cubo(nodo, x, z, lado, alto):
                 nodo["tris"].append((a, c, d, textura) + uv + cola)
 
 
-def celdas_de_triangulos(nodo, ancho, alto, invertida=True):
+def celdas_de_triangulos(nodo, ancho, alto, invertida=True, solo_horizontales=True):
     """{(fila, columna): [indices de triangulo]} segun donde cae el centro de cada triangulo, con
     la posicion pasada a la escala de Sabrina (CeldaDePosicion trabaja en esa escala, no en la del
     modelo -confirmado con las pruebas de colision en vivo de antes)."""
@@ -143,7 +143,7 @@ def celdas_de_triangulos(nodo, ancho, alto, invertida=True):
         # Solo triangulos horizontales (piso y tapa del cubo): uno vertical (pared) en la colision de
         # suelo hace que la altura calculada salga mal y Sabrina atraviese el piso y se caiga. Las
         # paredes quedan solo para dibujar.
-        if len({verts_xyz[v][1] for v in (v0, v1, v2)}) != 1:
+        if solo_horizontales and len({verts_xyz[v][1] for v in (v0, v1, v2)}) != 1:
             continue
         cx = sum(verts_xz[v][0] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         cz = sum(verts_xz[v][1] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
@@ -178,7 +178,10 @@ def celdas_de_paredes(nodo, ancho, alto, margen=400):
     return reparto
 
 
-def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=False, reemplazos=None):
+ULTIMO = {}      # ULTIMO['tamano']: bytes del ultimo .INO calculado (aunque no cupiera)
+
+
+def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=False, reemplazos=None, callar=False):
     """El H1W.INO modificado, del mismo tamano que el original (relleno con ceros al final, que el
     juego no llega a leer). armar_nodo(nodo_original) -> el nodo del mundo (por defecto el piso plano
     con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR); sin_objetos =
@@ -207,7 +210,9 @@ def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=
 
     # Los triangulos van ordenados por celda, como en un nivel real: asi cada celda puede declarar su
     # tramo contiguo de suelo en 'celdas' (primer triangulo, cuantos).
-    reparto = celdas_de_triangulos(nodo, g["ancho"], g["alto"])
+    # Con paredes=True TODOS los triangulos entran en el rango de su celda (medido en el juego: el mundo se dibuja por
+    # los rangos de 'celdas'; un triangulo fuera de todo rango, como las paredes de antes, no se dibuja nunca).
+    reparto = celdas_de_triangulos(nodo, g["ancho"], g["alto"], solo_horizontales=not paredes)
     reparto_col = celdas_de_triangulos(nodo, g["ancho"], g["alto"], invertida=False)
     orden = sorted(reparto, key=lambda fc: fc[0] * g["ancho"] + fc[1])
     viejo_a_nuevo, tris = {}, []
@@ -255,13 +260,16 @@ def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=
         listas=listas_bytes,
         indices=indices_bytes,
     )
-    print(f"piso repartido en {len(reparto)} celda(s) reales de las {g['B']} de la cuadricula "
-          f"({len(nodo['tris'])} triangulos en total)")
+    if not callar:
+        print(f"piso repartido en {len(reparto)} celda(s) reales de las {g['B']} de la cuadricula "
+              f"({len(nodo['tris'])} triangulos en total)")
 
     nuevo = escribir_ino(s)
     tam_original = os.path.getsize(os.path.join(ino.RAIZ, "extraido", "GRAPHICS", "HUB", "H1W.INO"))
+    ULTIMO["tamano"] = len(nuevo)
     if len(nuevo) > tam_original:
-        raise ValueError("el .INO reescrito se paso del tamano original; disco.parchar() no lo va a aceptar")
+        raise ValueError(f"el .INO reescrito se paso del tamano original ({len(nuevo)} > {tam_original} bytes, "
+                         f"{len(nuevo) - tam_original} de mas); disco.parchar() no lo va a aceptar")
     return nuevo + b"\0" * (tam_original - len(nuevo))
 
 

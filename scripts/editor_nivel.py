@@ -182,7 +182,8 @@ class Editor(tk.Tk):
         self.campos = {}
         campos = [("nombre", "Nombre"), ("x0", "X desde"), ("z0", "Z desde"), ("x1", "X hasta"), ("z1", "Z hasta"),
                   ("alto", "Altura (+ = arriba)"), ("grosor", "Grosor (vacio = auto)"),
-                  ("alto2", "Rampa: altura final"), ("eje", "Rampa: eje (x o z)")]
+                  ("alto2", "Rampa: altura final"), ("eje", "Rampa: eje (x o z)"),
+                  ("paso", "Cuadro tapa (256 o 512)"), ("paso_lado", "Cuadro lados (vacio = 512)")]
         for i, (clave, texto) in enumerate(campos):
             tk.Label(fila, text=texto, bg=estilo.BG, fg=estilo.FG_MUTED, font=estilo.TEXTO_CHICO).grid(
                 row=i, column=0, sticky="w", pady=1)
@@ -193,6 +194,13 @@ class Editor(tk.Tk):
             e.bind("<FocusOut>", lambda _e: self.aplicar_campos())
             self.campos[clave] = e
         fila.columnconfigure(1, weight=1)
+        flags = tk.Frame(lado, bg=estilo.BG)
+        flags.pack(fill="x", pady=(4, 0))
+        self.var_techo, self.var_pared = tk.BooleanVar(), tk.BooleanVar()
+        for var, texto in ((self.var_techo, "Con techo (cara inferior)"), (self.var_pared, "Es pared (sin aviso)")):
+            tk.Checkbutton(flags, text=texto, variable=var, command=self.aplicar_flags, bg=estilo.BG, fg=estilo.FG,
+                           selectcolor=estilo.BG_TARJETA, activebackground=estilo.BG, activeforeground=estilo.FG,
+                           font=estilo.TEXTO_CHICO).pack(side="left", padx=2)
         mats = tk.Frame(lado, bg=estilo.BG)
         mats.pack(fill="x", pady=(6, 0))
         self.boton_color = self._boton(mats, "Color", self.elegir_color, pack=False)
@@ -220,7 +228,12 @@ class Editor(tk.Tk):
             b.grid(row=i // 3, column=i % 3, sticky="ew", padx=2, pady=2)
         botones.columnconfigure((0, 1, 2), weight=1)
 
+        self.var_libre = tk.BooleanVar()
+        tk.Checkbutton(lado, text="Probar con camara libre (SELECT)", variable=self.var_libre, bg=estilo.BG, fg=estilo.FG,
+                       selectcolor=estilo.BG_TARJETA, activebackground=estilo.BG, activeforeground=estilo.FG,
+                       font=estilo.TEXTO_CHICO).pack(anchor="w", pady=(6, 0))
         self.btn_probar = self._boton(lado, "▶ Probar en el juego", self.probar, acento=True)
+        self.btn_tam = self._boton(lado, "Medir el tamano del nivel (.INO)", self.medir_tamano)
         self.btn_ir = self._boton(lado, "Ir a la seleccionada (juego abierto)", self.ir_a_seleccionada)
         self.btn_cerrar = self._boton(lado, "Cerrar el juego", self.cerrar_juego)
 
@@ -511,11 +524,16 @@ class Editor(tk.Tk):
             e.delete(0, "end")
         for b, t in ((self.boton_tapa, "Tapa: ..."), (self.boton_lado, "Lado: ...")):
             b.config(text=t)
+        self.var_techo.set(False)
+        self.var_pared.set(False)
         if self.sel is None or self.sel >= len(self.plats):
             return
         p = self.plats[self.sel]
         valores = dict(p, alto=-p["h"], grosor=p.get("prof", ""), alto2="" if p.get("h2") is None else -p["h2"],
-                       eje=p.get("eje", "x") if p.get("h2") is not None else "")
+                       eje=p.get("eje", "x") if p.get("h2") is not None else "", paso=p.get("paso", ""),
+                       paso_lado=p.get("paso_lado", ""))
+        self.var_techo.set(bool(p.get("techo")))
+        self.var_pared.set(bool(p.get("pared")))
         for k, e in self.campos.items():
             e.insert(0, str(valores[k]))
         self.boton_color.config(text="Color", bg=hex_color(p["color"]), fg="#000000" if sum(p["color"]) > 300 else "#ffffff")
@@ -534,7 +552,8 @@ class Editor(tk.Tk):
                                    int(self.campos["x0"].get()), int(self.campos["z0"].get()),
                                    int(self.campos["x1"].get()), int(self.campos["z1"].get()),
                                    -int(self.campos["alto"].get()), p["color"]))
-            for clave, campo, signo in (("prof", "grosor", 1), ("h2", "alto2", -1)):
+            for clave, campo, signo in (("prof", "grosor", 1), ("h2", "alto2", -1), ("paso", "paso", 1),
+                                        ("paso_lado", "paso_lado", 1)):
                 txt = self.campos[campo].get().strip()
                 if txt:
                     nuevo[clave] = signo * int(txt)
@@ -555,6 +574,33 @@ class Editor(tk.Tk):
             self._llenar_lista()
             self._llenar_campos()
             self.dibujar()
+
+    def aplicar_flags(self):
+        if self.sel is None or self.sel >= len(self.plats):
+            return
+        p = self.plats[self.sel]
+        for clave, var in (("techo", self.var_techo), ("pared", self.var_pared)):
+            if var.get():
+                p[clave] = True
+            else:
+                p.pop(clave, None)
+        self.cambio()
+        self.dibujar()
+
+    def medir_tamano(self):
+        """El .INO del disco tiene un tamano fijo; dice cuanto de el usa este nivel (tarda un par de segundos)."""
+        self.estado.config(text="Midiendo...", fg=estilo.FG_MUTED)
+        self.update_idletasks()
+        errores, _ = np_.validar(self.plats)
+        if errores:
+            self.estado.config(text="Hay errores; corrigelos antes de medir.", fg=estilo.MALO)
+            return
+        usado, maximo = np_.tamano_ino(self.plats, self.cielo)
+        pct = 100 * usado / maximo
+        self.estado.config(text=f"Tamano del nivel: {usado:,} de {maximo:,} bytes ({pct:.0f}%)."
+                                + ("" if usado <= maximo else "\nNO CABE: usa cuadros mas grandes (paso_lado 512), "
+                                                           "menos bloques o quita techos."),
+                           fg=estilo.BUENO if usado <= maximo else estilo.MALO)
 
     def elegir_textura(self, clave):
         """Galeria con las texturas de arquitectura (PALETA): un clic en una la pone en la tapa o en los lados."""
@@ -742,14 +788,14 @@ class Editor(tk.Tk):
         self.ocupado = True
         self.btn_probar.config(state="disabled")
         self._msg("Armando el disco...")
-        threading.Thread(target=self._jugar, args=(plats, dict(self.cielo)), daemon=True).start()
+        threading.Thread(target=self._jugar, args=(plats, dict(self.cielo), self.var_libre.get()), daemon=True).start()
 
-    def _jugar(self, plats, cielo):
+    def _jugar(self, plats, cielo, libre=False):
         from emu import Emu
         from explorar import recorrer
         try:
             self._cerrar_emu()
-            cue = np_.armar_disco(plats, "editor", cielo)
+            cue = np_.armar_disco(plats, "editor", cielo, camara_libre=libre)
             self._msg("Abriendo el juego; unos 40 segundos hasta poder jugar...")
             e = Emu(iso=cue, log="editor.log", extra=("-fastboot",), puerto=PUERTO, ui=True)
             self.emu = e

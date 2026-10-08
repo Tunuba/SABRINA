@@ -2,7 +2,8 @@
 
 Uso: python jugar.py camara     camara libre (disco\\libre.cue, el ejecutable en C decomp\\build\\SLUS_libre.exe)
      python jugar.py nivel      nivel de plataformas (disco\\sabrina_plataformas.cue)
-  --rearmar   vuelve a armar el disco aunque ya exista
+     python jugar.py nivel niveles\\castillo.json [--libre]    cualquier nivel del editor (--libre: con la camara libre)
+  --rearmar  vuelve a armar el disco aunque ya exista
 
 Camara libre: SELECT la prende y la apaga; con ella prendida las flechas arriba/abajo avanzan, izquierda/derecha
 giran, triangulo/equis miran arriba/abajo, L2/R2 van de lado, L1/R1 suben/bajan y cuadrado va mas rapido.
@@ -30,8 +31,11 @@ def disco_camara(rearmar):
     return cue
 
 
-def disco_nivel(rearmar):
+def disco_nivel(rearmar, ruta_json=None, libre=False):
     import nivel_plataformas
+    if ruta_json:             # un nivel del editor: se rearma siempre (cuesta unos segundos)
+        plats, cielo = nivel_plataformas.cargar_nivel(ruta_json)
+        return nivel_plataformas.armar_disco(plats, "mapa", cielo, camara_libre=libre)
     if rearmar or not os.path.exists(nivel_plataformas.CUE_PLAT):
         nivel_plataformas.armar_disco()
     return nivel_plataformas.CUE_PLAT
@@ -43,7 +47,11 @@ if __name__ == "__main__":
         print(__doc__)
         sys.exit(1)
     modo = sys.argv[1]
-    cue = modos[modo]("--rearmar" in sys.argv)
+    jsons = [a for a in sys.argv[2:] if a.lower().endswith(".json")]
+    if modo == "nivel" and jsons:
+        cue = disco_nivel("--rearmar" in sys.argv, os.path.abspath(jsons[0]), "--libre" in sys.argv)
+    else:
+        cue = modos[modo]("--rearmar" in sys.argv)
     print(f"abriendo {os.path.basename(cue)}; espera unos 40 segundos a que pase la intro...", flush=True)
     with Emu(iso=cue, log=f"jugar_{modo}.log", extra=("-fastboot",), puerto=8095, ui=True) as e:
         recorrer(e, f"jugar_{modo}", PASOS_HASTA_EL_HUB)

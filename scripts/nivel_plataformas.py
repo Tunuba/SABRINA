@@ -10,6 +10,8 @@ Un bloque es un dict: nombre, x0, z0, x1, z1 (rectangulo en unidades del modelo;
   pared      true: es un muro o columna, no hace falta poder subirse (no da aviso de "no alcanzable")
   techo      true: el bloque tambien tiene cara inferior (se ve desde abajo; no hace de suelo): para salas cubiertas
   paso       tamano de los cuadros de la tapa y el techo (256 por defecto, 512 para suelos grandes)
+  paso_lado  tamano de los cuadros de los lados (512 por defecto; 256 da mas detalle de textura y menos distorsion, a
+             costa de 4 veces los triangulos: el .INO tiene un tamano fijo, ver tamano_ino)
 Nivel = {"cielo": {...}, "plataformas": [bloques]}; el cielo son tres colores (cenit, horizonte, nadir).
 
 Colision (medida en el juego, ver la memoria niveles-propios-cuadricula-colision):
@@ -41,7 +43,7 @@ NIVEL_POR_DEFECTO = os.path.join(NIVELES, "plataformas.json")
 SALIDA = (128, -896)                 # donde aparece Sabrina (y reaparece al caer), a altura 0
 LIMITE = 30000                       # coordenadas del modelo: int16 de los vertices y cuadricula de colision
 PROFUNDO = 768                       # cuanto baja un bloque por defecto desde su tapa
-PASO_PARED = nf.SPACING              # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja)
+PASO_PARED = nf.SPACING              # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja); 'paso_lado' lo cambia por bloque
 SALTO_HUECO, SALTO_SUBIDA = 256, 250  # lo que se considera alcanzable (avisos de validar)
 SEPARACION_MIN = 64                  # dos tapas que se pisan en planta tienen que diferir al menos esto de altura
 AGARRE = 370                         # medido: una tapa hasta ~360 por encima de los pies de Sabrina la sube a ella
@@ -286,10 +288,11 @@ def agregar_bloque(verts, tris, p, profundo=PROFUNDO):
     malla(verts, tris, lambda x, z: (x, yt(x, z), z), cortes(x0, x1, paso_tapa(p)), cortes(z0, z1, paso_tapa(p)),
           sombra(128), tex_t, False)
     # los lados: t baja de la tapa al fondo; los cuadros son de unos 512 (un triangulo muy grande no se dibuja)
-    nz_ = max(1, round((z1 - z0) / PASO_PARED))
-    nx_ = max(1, round((x1 - x0) / PASO_PARED))
+    paso_l = p.get("paso_lado", PASO_PARED)
+    nz_ = max(1, round((z1 - z0) / paso_l))
+    nx_ = max(1, round((x1 - x0) / paso_l))
     alto = yb - min(p["h"], p["h2"]) if p.get("h2") is not None else profundo
-    nt = max(1, round(max(256, alto) / PASO_PARED))
+    nt = max(1, round(max(256, alto) / paso_l))
     ct = [i / nt for i in range(nt + 1)]
     cz = [z0 + (z1 - z0) * i // nz_ for i in range(nz_ + 1)]
     cx = [x0 + (x1 - x0) * i // nx_ for i in range(nx_ + 1)]
@@ -375,6 +378,8 @@ def validar(plats):
             errores.append(f"{n}: se sale del mapa (maximo {LIMITE})")
         if p.get("paso", 256) not in (256, 512):
             errores.append(f"{n}: paso {p['paso']} no vale (256 o 512)")
+        if not 128 <= p.get("paso_lado", PASO_PARED) <= 1024:
+            errores.append(f"{n}: paso_lado {p['paso_lado']} no vale (128 a 1024)")
         for k in ("tex_tapa", "tex_lado"):
             if p.get(k, TEX_DEFECTO) not in tex:
                 errores.append(f"{n}: {k} {p[k]} no existe (0 a {max(tex)})")
@@ -543,3 +548,17 @@ if __name__ == "__main__":
         ver(nivel, cielo_)
     else:
         print(__doc__)
+
+
+def tamano_ino(plats, cielo=None):
+    """(bytes que ocupa el .INO del nivel, bytes que caben). El archivo del disco tiene un tamano fijo: si se pasa, el
+    nivel no se puede armar (quitar triangulos: cuadros mas grandes, menos bloques, menos 'techo')."""
+    import ino
+    cielo = dict(CIELO_DEFECTO, **(cielo or {}))
+    maximo = os.path.getsize(os.path.join(ino.RAIZ, "extraido", "GRAPHICS", "HUB", "H1W.INO"))
+    try:
+        nf.construir_bytes(nodo_de(plats), CONSERVAR_PLAT, sin_objetos=True, paredes=True,
+                           reemplazos={INDICE_CIELO: nodo_cielo(cielo)}, callar=True)
+    except ValueError:
+        pass                                                  # se paso: el tamano exacto queda en nf.ULTIMO
+    return nf.ULTIMO["tamano"], maximo
