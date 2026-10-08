@@ -2,13 +2,14 @@
 espiral, de la zona de salida (verde) hasta la meta (dorada), en un cuarto negro. Usa el mismo mecanismo que
 mini_nivel.py (nivel_fantasma.construir_bytes), con varias piezas a distintas alturas.
 
-Medido con observar_fantasma.py: Sabrina salta ~360 unidades de alto y, corriendo, cae a ~330 de distancia, asi
-que la ruta usa saltos de 256 de hueco y subidas de 128 por plataforma. Si cae, reaparece en la salida.
+Medido con observar_fantasma.py: Sabrina salta ~380 unidades de alto pero corriendo solo avanza ~150-200 de
+distancia (en el aire ~8 cuadros), asi que la ruta usa saltos de 128 de hueco y subidas de 96 por plataforma. Si
+cae, reaparece en la salida.
 Con UP Sabrina avanza hacia +X +Z (camara en diagonal).
 
 Reglas que cumple cada plataforma (las mismas del mini nivel):
-- bordes en multiplos de 256 y cuadros de 256 (512 en la salida): como la celda de colision mide 1024, ningun
-  triangulo cruza el borde de dos celdas;
+- la tapa se parte en los multiplos de 256 (512 en la salida) mas sus propios bordes, que pueden caer en
+  multiplos de 128: como la celda de colision mide 1024, ningun triangulo cruza el borde de dos celdas;
 - solo las tapas (triangulos horizontales) entran en la colision; las paredes laterales son solo dibujo y no
   llevan fondo (seria un segundo suelo);
 - la salida usa cuadros de 512 con la diagonal x + z = const: Sabrina aparece en (128, -896), el centro de un
@@ -32,16 +33,16 @@ import nivel_fantasma as nf
 VERDE, GRIS, AZUL, DORADO = (70, 150, 70), (128, 128, 128), (90, 110, 170), (255, 200, 60)
 PLATAFORMAS = [
     ("salida", -512, -1536, 1024, 0, 0, VERDE, 512),
-    ("p1", 1280, -1536, 2048, -768, -128, GRIS, 256),
-    ("p2", 2304, -1536, 3328, -768, -256, AZUL, 256),
-    ("p3", 2304, -512, 3072, 256, -384, GRIS, 256),
-    ("p4", 2304, 512, 3072, 1280, -512, AZUL, 256),
-    ("p5", 1280, 512, 2048, 1280, -640, GRIS, 256),
-    ("p6", 256, 512, 1024, 1280, -768, AZUL, 256),
-    ("p7", 256, 1536, 1024, 2304, -896, GRIS, 256),
-    ("p8", 1280, 1536, 2048, 2304, -1024, AZUL, 256),
-    ("p9", 2304, 1536, 3584, 2304, -1152, GRIS, 256),
-    ("meta", 3840, 1536, 5120, 2560, -1280, DORADO, 256),
+    ("p1", 1152, -1536, 1920, -768, -96, GRIS, 256),
+    ("p2", 2048, -1536, 3072, -768, -192, AZUL, 256),
+    ("p3", 2048, -640, 2816, 128, -288, GRIS, 256),
+    ("p4", 2048, 256, 2816, 1024, -384, AZUL, 256),
+    ("p5", 1152, 256, 1920, 1024, -480, GRIS, 256),
+    ("p6", 256, 256, 1024, 1024, -576, AZUL, 256),
+    ("p7", 256, 1152, 1024, 1920, -672, GRIS, 256),
+    ("p8", 1152, 1152, 1920, 1920, -768, AZUL, 256),
+    ("p9", 2048, 1152, 3328, 1920, -864, GRIS, 256),
+    ("meta", 3456, 1152, 4736, 2176, -960, DORADO, 256),
 ]
 PROFUNDO = 768             # cuanto cuelga cada plataforma por debajo de su tapa (solo dibujo)
 PASO_PARED = nf.SPACING    # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja)
@@ -49,6 +50,12 @@ PASO_PARED = nf.SPACING    # cuadros de 512 en las paredes (un triangulo muy gra
 CUE_PLAT = os.path.join(disco.DISCO, "sabrina_plataformas.cue")
 PISTA_PLAT = os.path.join(disco.DISCO, "sabrina_plataformas (Track 01).bin")
 CONSERVAR_PLAT = {1, 2, 11, 12, 19}   # Sabrina, su sombra y el cielo (ver mini_nivel.py)
+
+
+def cortes(a, b, paso):
+    """Cortes de la rejilla de una tapa entre a y b: los bordes y todos los multiplos de 'paso' de por medio. Asi
+    ningun cuadro cruza un multiplo de 1024 (borde de celda de colision) aunque a o b no sean multiplos de 'paso'."""
+    return [a] + [c for c in range((a // paso + 1) * paso, b, paso)] + [b]
 
 
 def agregar_plataforma(verts, tris, plat, textura, uv, cola):
@@ -65,12 +72,18 @@ def agregar_plataforma(verts, tris, plat, textura, uv, cola):
         ((x0, h, z1), X, lx, Y, PROFUNDO, sombra(100), PASO_PARED),  # +Z: cross(X, Y) = +Z
         ((x0, h, z0), Y, PROFUNDO, X, lx, sombra(100), PASO_PARED),  # -Z: cross(Y, X) = -Z
     ]
-    for o, u, lu, v, lv, color, tam in caras:
-        nu, nv = max(1, round(lu / tam)), max(1, round(lv / tam))
+    for n, (o, u, lu, v, lv, color, tam) in enumerate(caras):
+        if n == 0:     # la tapa: cortes en los multiplos de 'tam' (que lo son de 1024/4) mas los bordes
+            cu, cv = cortes(x0, x1, tam), cortes(z0, z1, tam)
+            cu, cv = [c - x0 for c in cu], [c - z0 for c in cv]
+        else:
+            nu, nv = max(1, round(lu / tam)), max(1, round(lv / tam))
+            cu, cv = [lu * i // nu for i in range(nu + 1)], [lv * j // nv for j in range(nv + 1)]
+        nu, nv = len(cu) - 1, len(cv) - 1
         base = len(verts)
         for i in range(nu + 1):
             for j in range(nv + 1):
-                p = [o[k] + u[k] * lu * i // nu + v[k] * lv * j // nv for k in range(3)]
+                p = [o[k] + u[k] * cu[i] + v[k] * cv[j] for k in range(3)]
                 verts.append(struct.pack("<3hh3Bx", *p, 0, *color))
         for i in range(nu):
             for j in range(nv):
