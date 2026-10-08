@@ -7,6 +7,9 @@ Un bloque es un dict: nombre, x0, z0, x1, z1 (rectangulo en unidades del modelo;
   prof       cuanto baja el bloque desde su tapa (por defecto PROFUNDO, o hasta el bloque de debajo)
   tex_tapa, tex_lado    textura (indice de la tabla del .INO, ver tabla_texturas); por defecto TEX_DEFECTO
   h2, eje    rampa: la tapa sube de h (en x0 o z0) a h2 (en x1 o z1) a lo largo de eje "x" o "z"
+  pared      true: es un muro o columna, no hace falta poder subirse (no da aviso de "no alcanzable")
+  techo      true: el bloque tambien tiene cara inferior (se ve desde abajo; no hace de suelo): para salas cubiertas
+  paso       tamano de los cuadros de la tapa y el techo (256 por defecto, 512 para suelos grandes)
 Nivel = {"cielo": {...}, "plataformas": [bloques]}; el cielo son tres colores (cenit, horizonte, nadir).
 
 Colision (medida en el juego, ver la memoria niveles-propios-cuadricula-colision):
@@ -85,6 +88,55 @@ def tabla_texturas():
     return _TEX
 
 
+# Texturas que sirven para arquitectura (indice, nombre). Las demas (zodiaco 2-14, ropa de Sabrina...) existen pero
+# no se ofrecen en la galeria del editor.
+PALETA = [(16, "Piedra"), (1, "Piedra veteada"), (13, "Piedra lisa"), (67, "Piedra 3"), (71, "Piedra 4"),
+          (98, "Piedra 5"), (69, "Marmol azul"), (66, "Agua turquesa"), (88, "Ladrillo claro"), (96, "Tejas"),
+          (97, "Tablones"), (108, "Madera puerta"), (110, "Madera paneles"), (109, "Arco de madera"),
+          (100, "Valla verde"), (81, "Hierba"), (77, "Oro bloques"), (78, "Azulejo turquesa"),
+          (79, "Glifo dorado"), (90, "Puerta dorada"), (76, "Jeroglifos"), (75, "Mural"), (70, "Banda dorada"),
+          (73, "Cuentas"), (80, "Vendas"), (89, "Disco rojo"), (106, "Tela roja"), (107, "Tela verde"),
+          (101, "Remolino azul"), (94, "Letrero"), (95, "Letrero 2"), (2, "Zodiaco 1"), (14, "Zodiaco balanza")]
+
+_IMG, _COL, _OBJ = {}, {}, []
+
+
+def imagen_textura(k):
+    """La ventana de la textura k (PIL RGB de (W+1)x(H+1)) o None si su pagina no esta en el .TEX."""
+    if k not in _IMG:
+        import numpy as np
+        from PIL import Image
+        import ino
+        from ino_obj import Texturas
+        if not _OBJ:
+            s = ino.leer_ino("H1W")
+            _OBJ.append(Texturas("H1W", s["texturas"]))
+        tex = _OBJ[0]
+        tpage, clut, uo, vo = tex.de_triangulo(k)
+        W, H = tabla_texturas().get(k, (63, 63))
+        pag = tex.pagina(tpage, clut)
+        if pag is None:
+            _IMG[k] = None
+        else:
+            rgb, _ = pag
+            filas = [(vo + j) & 255 for j in range(H + 1)]
+            cols = [(uo + i) & 255 for i in range(W + 1)]
+            _IMG[k] = Image.fromarray(rgb[np.ix_(filas, cols)].astype("uint8"))
+    return _IMG[k]
+
+
+def color_medio(k):
+    """El color medio de la textura k (para colorear el bloque en las vistas del editor)."""
+    if k not in _COL:
+        im = imagen_textura(k)
+        if im is None:
+            _COL[k] = (128, 128, 128)
+        else:
+            px = list(im.getdata())
+            _COL[k] = tuple(sum(p[c] for p in px) // len(px) for c in range(3))
+    return _COL[k]
+
+
 # ---------------------------------------------------------------- datos
 
 def nueva(nombre, x0, z0, x1, z1, h, color=(128, 128, 128), **extra):
@@ -144,7 +196,8 @@ def cortes(a, b, paso):
 
 
 def paso_tapa(p):
-    return 512 if contiene_salida(p) else 256
+    """Tamano de los cuadros de la tapa. El bloque de la salida lleva 512 siempre (ver salida_en_limite)."""
+    return 512 if contiene_salida(p) else p.get("paso", 256)
 
 
 def salida_en_limite(p):
@@ -245,6 +298,9 @@ def agregar_bloque(verts, tris, p, profundo=PROFUNDO):
     malla(verts, tris, lambda z, t: (x0, fr(yt(x0, z), t), z), cz, ct, sombra(80), tex_l, False)
     malla(verts, tris, lambda x, t: (x, fr(yt(x, z1), t), z1), cx, ct, sombra(100), tex_l, False)
     malla(verts, tris, lambda t, x: (x, fr(yt(x, z0), t), z0), ct, cx, sombra(100), tex_l, True)
+    if p.get("techo"):       # cara inferior: u = Z, v = X, cross(Z, X) = +Y (hacia abajo); el suelo la descarta
+        malla(verts, tris, lambda z, x: (x, yb, z), cortes(z0, z1, paso_tapa(p)), cortes(x0, x1, paso_tapa(p)),
+              sombra(90), tex_l, False)
 
 
 def nodo_de(plats):
@@ -317,6 +373,8 @@ def validar(plats):
             errores.append(f"{n}: mide menos de 256 de lado")
         if max(abs(p[k]) for k in ("x0", "z0", "x1", "z1")) > LIMITE or abs(p["h"]) > LIMITE - PROFUNDO:
             errores.append(f"{n}: se sale del mapa (maximo {LIMITE})")
+        if p.get("paso", 256) not in (256, 512):
+            errores.append(f"{n}: paso {p['paso']} no vale (256 o 512)")
         for k in ("tex_tapa", "tex_lado"):
             if p.get(k, TEX_DEFECTO) not in tex:
                 errores.append(f"{n}: {k} {p[k]} no existe (0 a {max(tex)})")
@@ -367,7 +425,7 @@ def validar(plats):
             if (hueco(a_, b_) <= SALTO_HUECO and sube <= (SALTO_APILADA if apilada else SALTO_SUBIDA)):
                 pila.append(j)
     for i, p in enumerate(plats):
-        if i not in vistos:
+        if i not in vistos and not p.get("pared"):
             avisos.append(f"{p['nombre']}: no se alcanza desde la salida (hueco > {SALTO_HUECO} o subida > "
                           f"{SALTO_SUBIDA} desde todas las vecinas)")
     return errores, avisos

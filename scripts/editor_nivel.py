@@ -5,11 +5,15 @@ la salida. Los niveles se guardan en niveles\\*.json. La logica (validar, armar 
 Uso: python editor_nivel.py [nivel.json]        (o doble clic en EDITOR_NIVEL.bat)
 
 Ratón (vista desde arriba: derecha = +X, abajo = +Z; en el juego UP avanza hacia +X +Z, o sea abajo a la derecha):
-  arrastrar en vacio       crea una plataforma (se ajusta a la cuadricula de 128)
+  arrastrar en vacio       crea un bloque del tipo elegido en "Al crear" (se ajusta a la cuadricula de 128)
+  Mayus + arrastrar        lo mismo pero sobre otro bloque (paredes encima de un suelo, rampas sobre un piso...)
   clic / arrastrar         selecciona / mueve la plataforma
   arrastrar una esquina    cambia su tamano
   rueda                    zoom
   boton derecho o central  desplaza la vista
+Tipos de bloque (arriba del panel, "Al crear"): plataforma, pared (alta y maciza, para salas y pasillos) y rampa.
+Cada bloque tiene su grosor (cuanto baja desde la tapa), su textura de tapa y de lado (galeria de texturas) y, si es
+rampa, la altura final y el eje. El cielo (cenit, horizonte, nadir) es del nivel y se ve de fondo en la vista 3D.
 Teclado: Supr borra, Ctrl+D duplica, Ctrl+S guarda, flechas mueven la seleccionada 128.
 Vista 3D (abajo): arrastrar gira y inclina, rueda hace zoom, doble clic la reinicia, clic selecciona. Arranca con la
 vista del juego (la camara mira hacia +X +Z). Dos plataformas pueden estar una sobre otra (ver nivel_plataformas.py);
@@ -24,7 +28,9 @@ import queue
 import sys
 import threading
 import tkinter as tk
-from tkinter import colorchooser, filedialog, messagebox, simpledialog
+from tkinter import colorchooser, filedialog, messagebox, ttk
+
+from PIL import ImageTk
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "panel_color"))
 import estilo  # noqa: E402
@@ -42,8 +48,16 @@ def hex_color(c):
 SOMBRA_LADO = {"+x": 0.62, "-x": 0.62, "+z": 0.78, "-z": 0.78}   # los lados, mas oscuros que la tapa
 
 
+def color_bloque(p, lado):
+    """El color con que se ve un bloque en las vistas del editor: el medio de su textura por el color del bloque (como
+    el juego: textura * color / 128), aclarado para que se distinga sobre el fondo oscuro."""
+    tex = p.get("tex_lado" if lado else "tex_tapa", np_.TEX_DEFECTO)
+    medio = np_.color_medio(tex)
+    return [min(255, m * c / 128 * 1.7) for m, c in zip(medio, p["color"])]
+
+
 def proyectar_caras(plats, profs, yaw, pitch, ancho, alto, zoom=1.0, sel=None, inalcanzables=()):
-    """Proyeccion ortogonal de las plataformas como cajas (la tapa y los lados que miran a la camara), de lo mas
+    """Proyeccion ortogonal de los bloques (la tapa, plana o rampa, y los lados que miran a la camara), de lo mas
     lejano a lo mas cercano (algoritmo del pintor). Devuelve (caras, (escala, mu, mv)) con caras = lista de
     dict(poly, relleno, borde, grosor, idx). Arriba = -h. Va aparte del Canvas para poder probarla sin ventana."""
     cy_, sy_ = math.cos(yaw), math.sin(yaw)
@@ -57,16 +71,19 @@ def proyectar_caras(plats, profs, yaw, pitch, ancho, alto, zoom=1.0, sel=None, i
 
     crudas = []                                                         # (4 esquinas 3D, color, sombra, idx)
     for i, (p, prof) in enumerate(zip(plats, profs)):
-        x0, z0, x1, z1, h = p["x0"], p["z0"], p["x1"], p["z1"], p["h"]
-        col = p["color"]
-        crudas.append(([(x0, h, z0), (x1, h, z0), (x1, h, z1), (x0, h, z1)], col, 1.0, i))
-        lados = {"+x": (1, 0, [(x1, h, z0), (x1, h, z1), (x1, h + prof, z1), (x1, h + prof, z0)]),
-                 "-x": (-1, 0, [(x0, h, z0), (x0, h, z1), (x0, h + prof, z1), (x0, h + prof, z0)]),
-                 "+z": (0, 1, [(x0, h, z1), (x1, h, z1), (x1, h + prof, z1), (x0, h + prof, z1)]),
-                 "-z": (0, -1, [(x0, h, z0), (x1, h, z0), (x1, h + prof, z0), (x0, h + prof, z0)])}
+        x0, z0, x1, z1 = p["x0"], p["z0"], p["x1"], p["z1"]
+        yt = lambda x, z, p=p: np_.y_tapa(p, x, z)
+        yb = np_.h_max(p) + prof
+        ct, cl = color_bloque(p, False), color_bloque(p, True)
+        crudas.append(([(x0, yt(x0, z0), z0), (x1, yt(x1, z0), z0), (x1, yt(x1, z1), z1), (x0, yt(x0, z1), z1)],
+                       ct, 1.0, i))
+        lados = {"+x": (1, 0, [(x1, yt(x1, z0), z0), (x1, yt(x1, z1), z1), (x1, yb, z1), (x1, yb, z0)]),
+                 "-x": (-1, 0, [(x0, yt(x0, z0), z0), (x0, yt(x0, z1), z1), (x0, yb, z1), (x0, yb, z0)]),
+                 "+z": (0, 1, [(x0, yt(x0, z1), z1), (x1, yt(x1, z1), z1), (x1, yb, z1), (x0, yb, z1)]),
+                 "-z": (0, -1, [(x0, yt(x0, z0), z0), (x1, yt(x1, z0), z0), (x1, yb, z0), (x0, yb, z0)])}
         for k, (nx, nz, esq) in lados.items():
             if nx * sy_ - nz * cy_ > 0:                                 # la normal mira hacia la camara
-                crudas.append((esq, col, SOMBRA_LADO[k], i))
+                crudas.append((esq, cl, SOMBRA_LADO[k], i))
     caras = []
     for esq, col, sombra, i in crudas:
         pts = [punto(*q) for q in esq]
@@ -100,7 +117,7 @@ class Editor(tk.Tk):
     def __init__(self, ruta=None):
         super().__init__()
         estilo.ventana_base(self, "Editor de niveles - Sabrina")
-        self.geometry("1280x780")
+        self.geometry("1420x860")
         self.plats = []
         self.sel = None
         self.ruta = None
@@ -114,6 +131,9 @@ class Editor(tk.Tk):
         self.cola = queue.Queue()         # lo que los hilos del juego piden hacer en la ventana
         self.yaw3d, self.pitch3d, self.zoom3d = -math.pi / 4, 0.6, 1.0   # vista 3D: como mira la camara del juego
         self.caras3d, self._arr3d = [], None
+        self.cielo = dict(np_.CIELO_DEFECTO)
+        self.tipo = tk.StringVar(value="plataforma")       # que se crea al arrastrar en vacio
+        self._miniaturas = []                              # las PhotoImage de la galeria (si no, Tk las borra)
         self._armar_ui()
         self.after(100, self._vaciar_cola)
         self.protocol("WM_DELETE_WINDOW", self.salir)
@@ -139,49 +159,74 @@ class Editor(tk.Tk):
         c3.bind("<MouseWheel>", self._rueda3d)
         c3.bind("<Double-Button-1>", self._reiniciar3d)
         c3.bind("<Configure>", lambda _e: self.dibujar3d())
-        lado = tk.Frame(self, bg=estilo.BG, width=330)
+        lado = tk.Frame(self, bg=estilo.BG, width=360)
         lado.grid(row=0, column=1, sticky="ns", padx=8, pady=8)
         lado.grid_propagate(False)
 
-        tk.Label(lado, text="Plataformas", font=estilo.ENCABEZADO, bg=estilo.BG, fg=estilo.FG).pack(anchor="w")
-        self.lista = tk.Listbox(lado, height=9, bg=estilo.BG_TARJETA, fg=estilo.FG, font=estilo.TEXTO_CHICO,
+        tk.Label(lado, text="Bloques", font=estilo.ENCABEZADO, bg=estilo.BG, fg=estilo.FG).pack(anchor="w")
+        crear = tk.Frame(lado, bg=estilo.BG)
+        crear.pack(fill="x")
+        tk.Label(crear, text="Al crear:", bg=estilo.BG, fg=estilo.FG_MUTED, font=estilo.TEXTO_CHICO).pack(side="left")
+        for valor, texto in (("plataforma", "Plataforma"), ("pared", "Pared"), ("rampa", "Rampa")):
+            tk.Radiobutton(crear, text=texto, value=valor, variable=self.tipo, bg=estilo.BG, fg=estilo.FG,
+                           selectcolor=estilo.BG_TARJETA, activebackground=estilo.BG, activeforeground=estilo.FG,
+                           font=estilo.TEXTO_CHICO).pack(side="left", padx=4)
+        self.lista = tk.Listbox(lado, height=6, bg=estilo.BG_TARJETA, fg=estilo.FG, font=estilo.TEXTO_CHICO,
                                 selectbackground=estilo.ACENTO, selectforeground=estilo.ACENTO_TEXTO,
                                 exportselection=False, highlightthickness=0, borderwidth=0)
-        self.lista.pack(fill="x", pady=(4, 8))
+        self.lista.pack(fill="x", pady=(4, 6))
         self.lista.bind("<<ListboxSelect>>", self._lista_elegida)
 
         fila = tk.Frame(lado, bg=estilo.BG)
         fila.pack(fill="x")
         self.campos = {}
-        for i, (clave, texto) in enumerate([("nombre", "Nombre"), ("x0", "X desde"), ("z0", "Z desde"),
-                                            ("x1", "X hasta"), ("z1", "Z hasta"), ("alto", "Altura (+ = arriba)")]):
+        campos = [("nombre", "Nombre"), ("x0", "X desde"), ("z0", "Z desde"), ("x1", "X hasta"), ("z1", "Z hasta"),
+                  ("alto", "Altura (+ = arriba)"), ("grosor", "Grosor (vacio = auto)"),
+                  ("alto2", "Rampa: altura final"), ("eje", "Rampa: eje (x o z)")]
+        for i, (clave, texto) in enumerate(campos):
             tk.Label(fila, text=texto, bg=estilo.BG, fg=estilo.FG_MUTED, font=estilo.TEXTO_CHICO).grid(
-                row=i, column=0, sticky="w", pady=2)
-            e = tk.Entry(fila, width=14, bg=estilo.BG_TARJETA, fg=estilo.FG, insertbackground=estilo.FG,
+                row=i, column=0, sticky="w", pady=1)
+            e = tk.Entry(fila, width=12, bg=estilo.BG_TARJETA, fg=estilo.FG, insertbackground=estilo.FG,
                          relief="flat", font=estilo.TEXTO)
-            e.grid(row=i, column=1, sticky="e", padx=(8, 0), pady=2)
+            e.grid(row=i, column=1, sticky="e", padx=(8, 0), pady=1)
             e.bind("<Return>", lambda _e: self.aplicar_campos())
             e.bind("<FocusOut>", lambda _e: self.aplicar_campos())
             self.campos[clave] = e
         fila.columnconfigure(1, weight=1)
-        self.boton_color = self._boton(lado, "Color...", self.elegir_color)
+        mats = tk.Frame(lado, bg=estilo.BG)
+        mats.pack(fill="x", pady=(6, 0))
+        self.boton_color = self._boton(mats, "Color", self.elegir_color, pack=False)
+        self.boton_tapa = self._boton(mats, "Tapa: ...", lambda: self.elegir_textura("tex_tapa"), pack=False)
+        self.boton_lado = self._boton(mats, "Lado: ...", lambda: self.elegir_textura("tex_lado"), pack=False)
+        for i, b in enumerate((self.boton_color, self.boton_tapa, self.boton_lado)):
+            b.grid(row=0, column=i, sticky="ew", padx=2)
+        mats.columnconfigure((0, 1, 2), weight=1)
+
+        cielo = tk.Frame(lado, bg=estilo.BG)
+        cielo.pack(fill="x", pady=(8, 0))
+        tk.Label(cielo, text="Cielo:", bg=estilo.BG, fg=estilo.FG_MUTED, font=estilo.TEXTO_CHICO).grid(row=0, column=0)
+        self.botones_cielo = {}
+        for i, (k, t) in enumerate((("cenit", "Cenit"), ("horizonte", "Horizonte"), ("nadir", "Nadir"))):
+            self.botones_cielo[k] = self._boton(cielo, t, lambda k=k: self.elegir_cielo(k), pack=False)
+            self.botones_cielo[k].grid(row=0, column=i + 1, sticky="ew", padx=2)
+        cielo.columnconfigure((1, 2, 3), weight=1)
 
         botones = tk.Frame(lado, bg=estilo.BG)
-        botones.pack(fill="x", pady=(10, 0))
-        for i, (t, f) in enumerate([("Duplicar", self.duplicar), ("Borrar", self.borrar),
-                                    ("Nuevo nivel", self.nuevo_nivel), ("Abrir...", self.abrir),
-                                    ("Guardar", self.guardar), ("Guardar como...", self.guardar_como)]):
-            b = self._boton(botones, t, f, pack=False)
-            b.grid(row=i // 2, column=i % 2, sticky="ew", padx=2, pady=2)
-        botones.columnconfigure((0, 1), weight=1)
+        botones.pack(fill="x", pady=(8, 0))
+        for i, (t, fn) in enumerate([("Duplicar", self.duplicar), ("Borrar", self.borrar),
+                                     ("Nuevo nivel", self.nuevo_nivel), ("Abrir...", self.abrir),
+                                     ("Guardar", self.guardar), ("Guardar como...", self.guardar_como)]):
+            b = self._boton(botones, t, fn, pack=False)
+            b.grid(row=i // 3, column=i % 3, sticky="ew", padx=2, pady=2)
+        botones.columnconfigure((0, 1, 2), weight=1)
 
         self.btn_probar = self._boton(lado, "▶ Probar en el juego", self.probar, acento=True)
         self.btn_ir = self._boton(lado, "Ir a la seleccionada (juego abierto)", self.ir_a_seleccionada)
         self.btn_cerrar = self._boton(lado, "Cerrar el juego", self.cerrar_juego)
 
         self.estado = tk.Label(lado, text="", bg=estilo.BG, fg=estilo.FG_MUTED, font=estilo.TEXTO_CHICO,
-                               justify="left", anchor="nw", wraplength=310)
-        self.estado.pack(fill="both", expand=True, pady=(10, 0), anchor="w")
+                               justify="left", anchor="nw", wraplength=340)
+        self.estado.pack(fill="both", expand=True, pady=(8, 0), anchor="w")
 
         c = self.canvas
         c.bind("<ButtonPress-1>", self._clic)
@@ -245,8 +290,17 @@ class Editor(tk.Tk):
             borde = "#ff5a5a" if inalcanzable else "#f2f2f2" if i == self.sel else "#000000"
             c.create_rectangle(ax, az, bx, bz, fill=hex_color(p["color"]), outline=borde,
                                width=3 if i == self.sel or inalcanzable else 1, stipple="" if i != self.sel else "")
-            c.create_text((ax + bx) / 2, (az + bz) / 2, text=f"{p['nombre']}\n↑{-p['h']}", fill="#101010",
-                          font=("Segoe UI", 9, "bold"))
+            etiqueta = f"{p['nombre']}\n↑{-p['h']}" + (f" → ↑{-p['h2']} (eje {p.get('eje', 'x')})"
+                                                          if p.get("h2") is not None else "")
+            c.create_text((ax + bx) / 2, (az + bz) / 2, text=etiqueta, fill="#101010", font=("Segoe UI", 9, "bold"))
+            if p.get("h2") is not None:                  # una flecha hacia donde sube la rampa
+                sube_x = p.get("eje", "x") == "x"
+                alto_, bajo_ = (p["h2"] < p["h"]), None
+                if sube_x:
+                    a_, b_ = ((ax, (az + bz) / 2), (bx, (az + bz) / 2)) if alto_ else ((bx, (az + bz) / 2), (ax, (az + bz) / 2))
+                else:
+                    a_, b_ = (((ax + bx) / 2, az), ((ax + bx) / 2, bz)) if alto_ else (((ax + bx) / 2, bz), ((ax + bx) / 2, az))
+                c.create_line(*a_, *b_, fill="#101010", width=2, arrow="last")
         if self.sel is not None and self.sel < len(self.plats):
             p = self.plats[self.sel]
             for x, z in ((p["x0"], p["z0"]), (p["x1"], p["z0"]), (p["x0"], p["z1"]), (p["x1"], p["z1"])):
@@ -269,7 +323,14 @@ class Editor(tk.Tk):
         w, h = c.winfo_width(), c.winfo_height()
         if w < 50 or h < 50:
             return
-        c.create_text(8, 6, anchor="nw", fill="#6f6f85", font=("Segoe UI", 8),
+        franjas = 24                      # el cielo del nivel de fondo: cenit arriba, horizonte al medio, nadir abajo
+        mezcla = lambda a, b, t: [a[k] + (b[k] - a[k]) * t for k in range(3)]
+        for i in range(franjas):
+            t = (i + 0.5) / franjas
+            col = mezcla(self.cielo["cenit"], self.cielo["horizonte"], t * 2) if t < 0.5 else \
+                mezcla(self.cielo["horizonte"], self.cielo["nadir"], (t - 0.5) * 2)
+            c.create_rectangle(0, h * i / franjas, w, h * (i + 1) / franjas + 1, fill=hex_color(col), outline="")
+        c.create_text(8, 6, anchor="nw", fill="#ffffff", font=("Segoe UI", 8),
                       text="3D: arrastra para girar, rueda = zoom, doble clic = reiniciar, clic = seleccionar")
         if not self.plats:
             self.caras3d = []
@@ -346,6 +407,10 @@ class Editor(tk.Tk):
     # ------------------------------------------------------------ raton
     def _clic(self, ev):
         self.canvas.focus_set()
+        if ev.state & 0x1:                       # Mayus + arrastrar: crea un bloque nuevo aunque haya otro debajo
+            x, z = (self.ajustar(v) for v in self.a_mundo(ev.x, ev.y))
+            self.arrastre = ("crear", (x, z), (x, z))
+            return
         esq = self.hit_esquina(ev.x, ev.y)
         if esq:
             self.arrastre = ("tamano", esq)
@@ -384,15 +449,23 @@ class Editor(tk.Tk):
         if a and a[0] == "crear":
             (ax, az), (bx, bz) = a[1], a[2]
             if abs(bx - ax) >= 256 and abs(bz - az) >= 256:
-                n = 1 + max([int(p["nombre"][1:]) for p in self.plats
-                             if p["nombre"][:1] == "p" and p["nombre"][1:].isdigit()] or [0])
-                alt = self.plats[self.sel]["h"] if self.sel is not None and self.sel < len(self.plats) else 0
-                self.plats.append(np_.nueva(f"p{n}", ax, az, bx, bz, alt, (128, 128, 128)))
+                n = 1 + max([int("".join(ch for ch in p["nombre"] if ch.isdigit()) or 0) for p in self.plats] or [0])
+                base = self.plats[self.sel]["h"] if self.sel is not None and self.sel < len(self.plats) else 0
+                tipo = self.tipo.get()
+                if tipo == "pared":      # alta y maciza (baja hasta el suelo de abajo): para salas y pasillos
+                    self.plats.append(np_.nueva(f"pared{n}", ax, az, bx, bz, base - 600, (150, 140, 130),
+                                                prof=600, tex_tapa=16, tex_lado=1, pared=True))
+                elif tipo == "rampa":
+                    self.plats.append(np_.nueva(f"rampa{n}", ax, az, bx, bz, base, (150, 140, 130), h2=base - 256,
+                                                eje="x" if abs(bx - ax) >= abs(bz - az) else "z", prof=300,
+                                                tex_tapa=97, tex_lado=16))
+                else:
+                    self.plats.append(np_.nueva(f"p{n}", ax, az, bx, bz, base, (128, 128, 128)))
                 self.seleccionar(len(self.plats) - 1)
                 self.cambio()
         elif a and a[0] == "tamano":
             p = self.plats[self.sel]
-            p.update(np_.nueva(p["nombre"], p["x0"], p["z0"], p["x1"], p["z1"], p["h"], p["color"]))
+            p.update(np_.nueva(p["nombre"], p["x0"], p["z0"], p["x1"], p["z1"], p["h"], p["color"]))   # reordena x0 < x1
             self.cambio()
         self.dibujar()
 
@@ -428,44 +501,104 @@ class Editor(tk.Tk):
     def _llenar_lista(self):
         self.lista.delete(0, "end")
         for i, p in enumerate(self.plats):
-            self.lista.insert("end", f"{p['nombre']:8s} ↑{-p['h']:<6d} {p['x1'] - p['x0']}x{p['z1'] - p['z0']}")
+            self.lista.insert("end", f"{p['nombre'][:10]:10s} ↑{-p['h']:<6d} {p['x1'] - p['x0']}x{p['z1'] - p['z0']}"
+                                     + ("  rampa" if p.get("h2") is not None else ""))
         if self.sel is not None and self.sel < len(self.plats):
             self.lista.selection_set(self.sel)
 
     def _llenar_campos(self):
         for k, e in self.campos.items():
             e.delete(0, "end")
+        for b, t in ((self.boton_tapa, "Tapa: ..."), (self.boton_lado, "Lado: ...")):
+            b.config(text=t)
         if self.sel is None or self.sel >= len(self.plats):
             return
         p = self.plats[self.sel]
-        valores = dict(p, alto=-p["h"])
+        valores = dict(p, alto=-p["h"], grosor=p.get("prof", ""), alto2="" if p.get("h2") is None else -p["h2"],
+                       eje=p.get("eje", "x") if p.get("h2") is not None else "")
         for k, e in self.campos.items():
             e.insert(0, str(valores[k]))
-        self.boton_color.config(bg=hex_color(p["color"]), fg="#000000" if sum(p["color"]) > 300 else "#ffffff")
+        self.boton_color.config(text="Color", bg=hex_color(p["color"]), fg="#000000" if sum(p["color"]) > 300 else "#ffffff")
+        nombres = dict(np_.PALETA)
+        for b, clave, rotulo in ((self.boton_tapa, "tex_tapa", "Tapa"), (self.boton_lado, "tex_lado", "Lado")):
+            k = p.get(clave, np_.TEX_DEFECTO)
+            b.config(text=f"{rotulo}: #{k} {nombres.get(k, '')}"[:22])
 
     def aplicar_campos(self):
         if self.sel is None or self.sel >= len(self.plats):
             return
         p = self.plats[self.sel]
         try:
-            nuevo = np_.nueva(self.campos["nombre"].get().strip() or p["nombre"],
-                              int(self.campos["x0"].get()), int(self.campos["z0"].get()),
-                              int(self.campos["x1"].get()), int(self.campos["z1"].get()),
-                              -int(self.campos["alto"].get()), p["color"])
+            nuevo = dict(p)
+            nuevo.update(np_.nueva(self.campos["nombre"].get().strip() or p["nombre"],
+                                   int(self.campos["x0"].get()), int(self.campos["z0"].get()),
+                                   int(self.campos["x1"].get()), int(self.campos["z1"].get()),
+                                   -int(self.campos["alto"].get()), p["color"]))
+            for clave, campo, signo in (("prof", "grosor", 1), ("h2", "alto2", -1)):
+                txt = self.campos[campo].get().strip()
+                if txt:
+                    nuevo[clave] = signo * int(txt)
+                else:
+                    nuevo.pop(clave, None)
+            eje = self.campos["eje"].get().strip().lower()
+            if nuevo.get("h2") is None or eje not in ("x", "z"):
+                nuevo.pop("eje", None)
+            if nuevo.get("h2") is not None:
+                nuevo["eje"] = eje if eje in ("x", "z") else "x"
         except ValueError:
             self._llenar_campos()
             return
         if nuevo != p:
+            p.clear()
             p.update(nuevo)
             self.cambio()
             self._llenar_lista()
+            self._llenar_campos()
             self.dibujar()
+
+    def elegir_textura(self, clave):
+        """Galeria con las texturas de arquitectura (PALETA): un clic en una la pone en la tapa o en los lados."""
+        if self.sel is None or self.sel >= len(self.plats):
+            return
+        p = self.plats[self.sel]
+        ventana = tk.Toplevel(self)
+        ventana.title("Textura de la " + ("tapa" if clave == "tex_tapa" else "pared") + f" de {p['nombre']}")
+        ventana.configure(bg=estilo.BG)
+        ventana.transient(self)
+        self._miniaturas = []
+        columnas = 7
+        for n, (k, nombre) in enumerate(np_.PALETA):
+            im = np_.imagen_textura(k)
+            marco = tk.Frame(ventana, bg=estilo.BG_TARJETA, padx=3, pady=3)
+            marco.grid(row=n // columnas, column=n % columnas, padx=3, pady=3)
+            if im is not None:
+                escala = min(80 / im.width, 80 / im.height)
+                foto = ImageTk.PhotoImage(im.resize((max(1, int(im.width * escala)), max(1, int(im.height * escala)))))
+                self._miniaturas.append(foto)
+                boton = tk.Button(marco, image=foto, relief="flat", bg=estilo.BG_TARJETA, cursor="hand2",
+                                  command=lambda k=k: (p.__setitem__(clave, k), self.cambio(), self._llenar_campos(),
+                                                       self.dibujar(), ventana.destroy()))
+                boton.pack()
+            tk.Label(marco, text=f"#{k} {nombre}", bg=estilo.BG_TARJETA, fg=estilo.FG, font=("Segoe UI", 8)).pack()
+
+    def elegir_cielo(self, cual):
+        rgb, _ = colorchooser.askcolor(color=hex_color(self.cielo[cual]), title=f"Cielo: {cual}")
+        if rgb:
+            self.cielo[cual] = [int(v) for v in rgb]
+            self._color_botones_cielo()
+            self.sucio = True
+            self.cambio()
+            self.dibujar3d()
+
+    def _color_botones_cielo(self):
+        for k, b in self.botones_cielo.items():
+            b.config(bg=hex_color(self.cielo[k]), fg="#000000" if sum(self.cielo[k]) > 330 else "#ffffff")
 
     def elegir_color(self):
         if self.sel is None:
             return
         p = self.plats[self.sel]
-        rgb, _ = colorchooser.askcolor(color=hex_color(p["color"]), title="Color de la plataforma")
+        rgb, _ = colorchooser.askcolor(color=hex_color(p["color"]), title="Color del bloque (128 = el de la textura)")
         if rgb:
             p["color"] = [int(v) for v in rgb]
             self._llenar_campos()
@@ -517,7 +650,7 @@ class Editor(tk.Tk):
         if not errores:
             nombres_mal = {a.split(":")[0] for a in avisos}
             self.alcanzables = {i for i, p in enumerate(self.plats) if p["nombre"] not in nombres_mal}
-        texto = f"{len(self.plats)} plataformas" + ("  (sin guardar)" if self.sucio else "")
+        texto = f"{len(self.plats)} bloques" + ("  (sin guardar)" if self.sucio else "")
         if errores:
             texto += "\n\nERRORES (no se puede probar):\n- " + "\n- ".join(errores)
         if avisos:
@@ -530,8 +663,9 @@ class Editor(tk.Tk):
 
     # ------------------------------------------------------------ archivos
     def cargar_archivo(self, ruta):
-        self.plats = np_.cargar(ruta)
+        self.plats, self.cielo = np_.cargar_nivel(ruta)
         self.ruta, self.sel, self.sucio = ruta, None, False
+        self._color_botones_cielo()
         self.cambio(False)
         self._llenar_campos()
         self._llenar_lista()
@@ -548,7 +682,9 @@ class Editor(tk.Tk):
     def nuevo_nivel(self):
         if not self.confirmar_perdida():
             return
-        self.plats = [np_.nueva("salida", -512, -1536, 1024, 0, 0, (70, 150, 70))]
+        self.plats = [np_.nueva("salida", -512, -1536, 1024, 0, 0, (128, 128, 128))]
+        self.cielo = dict(np_.CIELO_DEFECTO)
+        self._color_botones_cielo()
         self.ruta, self.sel = None, None
         self.cambio()
         self._llenar_campos()
@@ -565,7 +701,7 @@ class Editor(tk.Tk):
     def guardar(self):
         if not self.ruta:
             return self.guardar_como()
-        np_.guardar(self.plats, self.ruta)
+        np_.guardar(self.plats, self.ruta, self.cielo)
         self.sucio = False
         self.cambio(False)
         return True
@@ -606,14 +742,14 @@ class Editor(tk.Tk):
         self.ocupado = True
         self.btn_probar.config(state="disabled")
         self._msg("Armando el disco...")
-        threading.Thread(target=self._jugar, args=(plats,), daemon=True).start()
+        threading.Thread(target=self._jugar, args=(plats, dict(self.cielo)), daemon=True).start()
 
-    def _jugar(self, plats):
+    def _jugar(self, plats, cielo):
         from emu import Emu
         from explorar import recorrer
         try:
             self._cerrar_emu()
-            cue = np_.armar_disco(plats, "editor")
+            cue = np_.armar_disco(plats, "editor", cielo)
             self._msg("Abriendo el juego; unos 40 segundos hasta poder jugar...")
             e = Emu(iso=cue, log="editor.log", extra=("-fastboot",), puerto=PUERTO, ui=True)
             self.emu = e
