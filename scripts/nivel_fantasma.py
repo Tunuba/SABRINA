@@ -129,7 +129,7 @@ def agregar_cubo(nodo, x, z, lado, alto):
                 nodo["tris"].append((a, c, d, textura) + uv + cola)
 
 
-def celdas_de_triangulos(nodo, ancho, alto):
+def celdas_de_triangulos(nodo, ancho, alto, invertida=True):
     """{(fila, columna): [indices de triangulo]} segun donde cae el centro de cada triangulo, con
     la posicion pasada a la escala de Sabrina (CeldaDePosicion trabaja en esa escala, no en la del
     modelo -confirmado con las pruebas de colision en vivo de antes)."""
@@ -148,18 +148,22 @@ def celdas_de_triangulos(nodo, ancho, alto):
         cx = sum(verts_xz[v][0] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         cz = sum(verts_xz[v][1] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         x, z = int(cx), int(cz)
-        fila = (~((z >> 16) + 0x80) & 0xFF) >> 2
+        # Dos indexados distintos: el de 'celdas' (rango de suelo, objetos, zona) lleva la fila invertida; la
+        # colision ('listas', la usa CeldaDePosicion en el juego) la lleva derecha: (z + 0x800000) / 0x40000.
+        # Antes se usaban las dos con la invertida y la consulta de suelo miraba la celda espejo, vacia.
+        fila = (~((z >> 16) + 0x80) & 0xFF) >> 2 if invertida else (((z >> 16) + 0x80) & 0xFF) >> 2
         columna = ((x >> 16) + 0x80) >> 2
         if 0 <= fila < alto and 0 <= columna < ancho:
             reparto.setdefault((fila, columna), []).append(i)
     return reparto
 
 
-def construir_bytes(armar_nodo=None, conservar=None):
+def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False):
     """El H1W.INO modificado, del mismo tamano que el original (relleno con ceros al final, que el
     juego no llega a leer). armar_nodo(nodo_original) -> el nodo del mundo (por defecto el piso plano
-    con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR). Lo usa
-    mini_nivel.py."""
+    con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR); sin_objetos =
+    ninguna celda lista objetos (el ropero, los engranajes y el cielo no se crean; la camara y Sabrina no
+    van por las celdas, el juego las crea siempre). Lo usa mini_nivel.py."""
     s = ino.leer_ino(NIVEL)
     g = s["cuadricula"]
     conservar = CONSERVAR if conservar is None else conservar
@@ -180,6 +184,7 @@ def construir_bytes(armar_nodo=None, conservar=None):
     # Los triangulos van ordenados por celda, como en un nivel real: asi cada celda puede declarar su
     # tramo contiguo de suelo en 'celdas' (primer triangulo, cuantos).
     reparto = celdas_de_triangulos(nodo, g["ancho"], g["alto"])
+    reparto_col = celdas_de_triangulos(nodo, g["ancho"], g["alto"], invertida=False)
     orden = sorted(reparto, key=lambda fc: fc[0] * g["ancho"] + fc[1])
     viejo_a_nuevo, tris = {}, []
     for fc in orden:
@@ -189,11 +194,12 @@ def construir_bytes(armar_nodo=None, conservar=None):
     tris += [t for i, t in enumerate(nodo["tris"]) if i not in viejo_a_nuevo]   # las paredes, al final
     nodo["tris"] = tris
     reparto = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto.items()}
+    reparto_col = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto_col.items()}
 
     # tabla de indices: cada celda con triangulos se lleva un tramo propio y contiguo
     indices = []
     listas = [None] * g["B"]  # (cantidad, inicio) por celda; el resto queda vacia (cantidad 0)
-    for (fila, columna), idxs in reparto.items():
+    for (fila, columna), idxs in reparto_col.items():
         orden = fila * g["ancho"] + columna
         listas[orden] = (len(idxs), len(indices))
         indices.extend(idxs)
@@ -212,6 +218,9 @@ def construir_bytes(armar_nodo=None, conservar=None):
         struct.pack_into("<2h", celdas, i * 12, -1, 0)
     for (fila, columna), idxs in reparto.items():
         struct.pack_into("<2h", celdas, (fila * g["ancho"] + columna) * 12, min(idxs), len(idxs))
+    if sin_objetos:
+        for i in range(g["A"]):
+            struct.pack_into("<2h", celdas, i * 12 + 4, 0, 0)
 
     s["cuadricula"] = dict(
         A=g["A"], B=g["B"], ancho=g["ancho"], alto=g["alto"], C=len(indices),

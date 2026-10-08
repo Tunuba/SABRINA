@@ -6,7 +6,10 @@ paredes, engranajes, ropero, cielo) se vacia; el mismo mecanismo que nivel_fanta
 - una sola pieza de geometria, alineada a la cuadricula de colision (celdas de 1024 unidades del modelo),
   asi que ningun triangulo cruza el borde de dos celdas (lo que hacia que Sabrina se hundiera);
 - solo la tapa entra en la colision (los triangulos horizontales); las paredes y el fondo son solo dibujo;
-- el cielo (SkyDome1) tambien se vacia: habitacion negra.
+- el cielo (SkyDome1) se conserva: es oscuro y tapa el fondo (sin el quedaba pegado un cuadro viejo).
+La caida del nivel fantasma venia de que la colision (CeldaDePosicion: fila = (z + 0x800000) / 0x40000) usa la fila
+DERECHA y el script repartia los triangulos con la fila invertida (la de rangos de suelo, objetos y zona): la
+consulta de suelo miraba la celda espejo, vacia. nivel_fantasma.celdas_de_triangulos(invertida=False) lo arregla.
 
 Uso:
     python mini_nivel.py disco     arma disco\\sabrina_mini.cue (siempre de cero)
@@ -59,21 +62,22 @@ def nodo_cubo(nodo_original):
             for j in range(nv):
                 a, b = base + i * (nv + 1) + j, base + (i + 1) * (nv + 1) + j
                 c, d = b + 1, a + 1                       # p00, p10, p11, p01
-                # Diagonal p10-p01 (x + z = constante), NO la p00-p11: Sabrina aparece en (128, -896), justo sobre
-                # esa diagonal (z = x - 1024) y el cruce de lados de PuntoEnTriangulo falla en el borde exacto
-                # entre los dos triangulos: ninguno la "tenia" y caia sin parar (era el fallo del nivel fantasma).
+                # Diagonal p10-p01 (x + z = constante) y no la p00-p11: Sabrina aparece en (128, -896), justo sobre
+                # la diagonal z = x - 1024 de la otra. Un punto exacto sobre el borde de dos triangulos es un caso
+                # limite para PuntoEnTriangulo; asi se evita (no era la causa de la caida, ver mas abajo).
                 tris.append((a, b, d, textura) + uv + cola)
                 tris.append((b, c, d, textura) + uv + cola)
     return dict(nombre="CUBO\0", matriz=nodo_original["matriz"], tras=nodo_original["tras"],
                 hijos=[], tris=tris, verts=verts)
 
 
-# solo Sabrina (dos entradas del mismo traje) y su sombra; sin SkyDome1 (19): habitacion negra
-CONSERVAR_MINI = {1, 2, 11, 12}
+# Sabrina (dos entradas del mismo traje), su sombra y SkyDome1 (19). El cielo se queda: es oscuro y es lo que
+# tapa el fondo; sin el, en lo que nada dibuja se queda pegado un cuadro viejo (un cartel que parpadea).
+CONSERVAR_MINI = {1, 2, 11, 12, 19}
 
 
 def armar_disco():
-    nuevo = nf.construir_bytes(nodo_cubo, CONSERVAR_MINI)
+    nuevo = nf.construir_bytes(nodo_cubo, CONSERVAR_MINI, sin_objetos=True)
     disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, PISTA_MINI)
     disco.cue_mod(CUE_MINI, PISTA_MINI)
     return CUE_MINI
