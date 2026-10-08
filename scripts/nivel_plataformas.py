@@ -18,7 +18,10 @@ Reglas que cumple cada plataforma (las mismas del mini nivel):
   llevan fondo (seria un segundo suelo);
 - la salida no puede caer justo sobre un borde o una diagonal de cuadro (caso limite de PuntoEnTriangulo: Sabrina
   se cae); 'validar' lo detecta;
-- dos plataformas no pueden pisarse en planta (la consulta de suelo no sabria cual elegir).
+- dos plataformas pueden estar una sobre otra (pisarse en planta) si sus tapas difieren al menos SEPARACION_MIN: el
+  juego (func_8003AF9C) elige el triangulo mas cercano POR DEBAJO de los pies de Sabrina, asi que se camina sobre
+  la de abajo, se sube saltando desde abajo atravesando la de arriba (no hay techo) y se cae sobre la de arriba
+  si se viene de mas alto. Las paredes de la de arriba solo cuelgan hasta la de abajo (profundidades()).
 
 Uso:
     python nivel_plataformas.py disco [nivel.json]   arma disco\\sabrina_plataformas.cue (por defecto niveles\\plataformas.json)
@@ -41,6 +44,8 @@ LIMITE = 30000                       # coordenadas del modelo: int16 de los vert
 PROFUNDO = 768                       # cuanto cuelga cada plataforma por debajo de su tapa (solo dibujo)
 PASO_PARED = nf.SPACING              # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja)
 SALTO_HUECO, SALTO_SUBIDA = 256, 250  # lo que se considera alcanzable (avisos de validar)
+SEPARACION_MIN = 64                  # dos tapas que se pisan en planta tienen que diferir al menos esto de altura
+SEPARACION_AVISO = 256               # menos que esto, Sabrina (mide ~200) casi no cabe entre las dos
 CONSERVAR_PLAT = {1, 2, 11, 12, 19}  # Sabrina, su sombra y el cielo (ver mini_nivel.py)
 
 
@@ -106,7 +111,21 @@ def salida_en_limite(p):
     return (sx - xb) * (zb - za) - (sz - za) * (xa - xb) == 0
 
 
-def agregar_plataforma(verts, tris, p, textura, uv, cola):
+def se_pisan(a, b):
+    return a["x0"] < b["x1"] and b["x0"] < a["x1"] and a["z0"] < b["z1"] and b["z0"] < a["z1"]
+
+
+def profundidades(plats):
+    """Cuanto cuelga la pared de cada plataforma: PROFUNDO, o menos si debajo (se pisan en planta) hay otra, para
+    que no la atraviese. Solo dibujo."""
+    res = []
+    for p in plats:
+        debajo = [q["h"] - p["h"] for q in plats if q is not p and se_pisan(p, q) and q["h"] > p["h"]]
+        res.append(min([PROFUNDO] + debajo))
+    return res
+
+
+def agregar_plataforma(verts, tris, p, textura, uv, cola, profundo=PROFUNDO):
     """La tapa (diagonal p10-p01) y las 4 paredes de una plataforma. La cara que se ve es la de normal
     cross(b - a, c - a); cada cara lleva ejes u, v con cross(u, v) hacia afuera (en la PS1 -Y es arriba)."""
     x0, z0, x1, z1, h = p["x0"], p["z0"], p["x1"], p["z1"], p["h"]
@@ -116,10 +135,10 @@ def agregar_plataforma(verts, tris, p, textura, uv, cola):
     sombra = lambda k: (min(255, r * k // 128), min(255, g * k // 128), min(255, b * k // 128))
     caras = [  # origen, u, largo de u, v, largo de v, color
         ((x0, h, z0), X, lx, Z, lz, sombra(128)),             # tapa: cross(X, Z) = -Y
-        ((x1, h, z0), Y, PROFUNDO, Z, lz, sombra(80)),        # +X: cross(Y, Z) = +X
-        ((x0, h, z0), Z, lz, Y, PROFUNDO, sombra(80)),        # -X: cross(Z, Y) = -X
-        ((x0, h, z1), X, lx, Y, PROFUNDO, sombra(100)),       # +Z: cross(X, Y) = +Z
-        ((x0, h, z0), Y, PROFUNDO, X, lx, sombra(100)),       # -Z: cross(Y, X) = -Z
+        ((x1, h, z0), Y, profundo, Z, lz, sombra(80)),        # +X: cross(Y, Z) = +X
+        ((x0, h, z0), Z, lz, Y, profundo, sombra(80)),        # -X: cross(Z, Y) = -X
+        ((x0, h, z1), X, lx, Y, profundo, sombra(100)),       # +Z: cross(X, Y) = +Z
+        ((x0, h, z0), Y, profundo, X, lx, sombra(100)),       # -Z: cross(Y, X) = -Z
     ]
     for n, (o, u, lu, v, lv, color) in enumerate(caras):
         if n == 0:     # la tapa: cortes en los multiplos de 'paso' (que lo son de 1024/4) mas los bordes
@@ -149,8 +168,8 @@ def nodo_de(plats):
         piso = next(t for t in nodo_original["tris"] if t[10] in (0, 1) and t[15] == 8)
         textura, uv, cola = piso[3], tuple(piso[4:10]), tuple(piso[10:16])
         verts, tris = [], []
-        for p in plats:
-            agregar_plataforma(verts, tris, p, textura, uv, cola)
+        for p, prof in zip(plats, profundidades(plats)):
+            agregar_plataforma(verts, tris, p, textura, uv, cola, prof)
         return dict(nombre="PLATAF\0", matriz=nodo_original["matriz"], tras=nodo_original["tras"],
                     hijos=[], tris=tris, verts=verts)
     return armar
@@ -179,21 +198,25 @@ def validar(plats):
             errores.append(f"{n}: se sale del mapa (maximo {LIMITE})")
     for i, a in enumerate(plats):
         for b in plats[i + 1:]:
-            if a["x0"] < b["x1"] and b["x0"] < a["x1"] and a["z0"] < b["z1"] and b["z0"] < a["z1"]:
-                errores.append(f"{a['nombre']} y {b['nombre']} se pisan en planta")
-    inicio = [p for p in plats if contiene_salida(p)]
+            if se_pisan(a, b):
+                d = abs(a["h"] - b["h"])
+                if d < SEPARACION_MIN:
+                    errores.append(f"{a['nombre']} y {b['nombre']} se pisan en planta y sus alturas difieren solo "
+                                   f"{d}: separalas al menos {SEPARACION_MIN} (una sobre otra)")
+                elif d < SEPARACION_AVISO:
+                    avisos.append(f"{a['nombre']} y {b['nombre']}: una sobre otra con solo {d} de separacion; "
+                                  f"Sabrina casi no cabe entre las dos")
+    inicio = [p for p in plats if contiene_salida(p) and p["h"] == 0]
     if not inicio:
-        errores.append(f"ninguna plataforma cubre la salida {SALIDA}: Sabrina aparece en el vacio")
+        errores.append(f"ninguna plataforma a altura 0 cubre la salida {SALIDA}: Sabrina aparece en el vacio")
     for p in inicio:
-        if p["h"] != 0:
-            errores.append(f"{p['nombre']}: cubre la salida pero su altura es {p['h']}, tiene que ser 0")
         if salida_en_limite(p):
             errores.append(f"{p['nombre']}: la salida {SALIDA} cae justo en un borde o diagonal de cuadro; "
                            "mueve el borde de la plataforma")
     if errores:
         return errores, avisos
     # alcanzables desde la salida con un salto
-    vistos, pila = set(), [i for i, p in enumerate(plats) if contiene_salida(p)]
+    vistos, pila = set(), [i for i, p in enumerate(plats) if contiene_salida(p) and p["h"] == 0]
     while pila:
         i = pila.pop()
         if i in vistos:
@@ -235,12 +258,16 @@ def punto_de_prueba(p):
     return cx, cz
 
 
-def teletransportar(e, p):
-    """Pone a Sabrina sobre la plataforma p (un poco por encima: cae sola) en un emulador ya arrancado."""
+def teletransportar(e, p, plats=()):
+    """Pone a Sabrina sobre la plataforma p (un poco por encima: cae sola) en un emulador ya arrancado. Si otra
+    plataforma esta justo encima de ese punto, empieza entre las dos (si no, caeria sobre la de arriba)."""
     obj = int(float(e.eval(f"return rd32({P_SABRINA})")))
     cx, cz = punto_de_prueba(p)
+    arriba = [q["h"] for q in plats if q is not p and q["h"] < p["h"] and q["x0"] <= cx <= q["x1"]
+              and q["z0"] <= cz <= q["z1"]]
+    sube = min(200, (p["h"] - max(arriba)) // 2) if arriba else 200
     e.eval(f"wr32({obj + 0x24},{cx * 256 & 0xFFFFFFFF})")
-    e.eval(f"wr32({obj + 0x28},{(p['h'] - 200) * 256 & 0xFFFFFFFF})")
+    e.eval(f"wr32({obj + 0x28},{(p['h'] - sube) * 256 & 0xFFFFFFFF})")
     e.eval(f"wr32({obj + 0x2C},{cz * 256 & 0xFFFFFFFF})")
     return obj
 
@@ -257,7 +284,7 @@ def ver(plats):
     with Emu(iso=ruta, log="nivel_plataformas.log", extra=("-fastboot",), puerto=8097) as e:
         recorrer(e, "plat_arranque", "w2160 CROSS w300 START w60 CROSS w240 w1300")
         for p in plats:
-            obj = teletransportar(e, p)
+            obj = teletransportar(e, p, plats)
             e.esperar(90)
             y = s(int(float(e.eval(f"return rd32({obj + 0x28})")))) / 256
             bien = abs(y - p["h"]) < 8
