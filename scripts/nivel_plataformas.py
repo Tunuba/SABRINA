@@ -19,9 +19,11 @@ Reglas que cumple cada plataforma (las mismas del mini nivel):
 - la salida no puede caer justo sobre un borde o una diagonal de cuadro (caso limite de PuntoEnTriangulo: Sabrina
   se cae); 'validar' lo detecta;
 - dos plataformas pueden estar una sobre otra (pisarse en planta) si sus tapas difieren al menos SEPARACION_MIN: el
-  juego (func_8003AF9C) elige el triangulo mas cercano POR DEBAJO de los pies de Sabrina, asi que se camina sobre
-  la de abajo, se sube saltando desde abajo atravesando la de arriba (no hay techo) y se cae sobre la de arriba
-  si se viene de mas alto. Las paredes de la de arriba solo cuelgan hasta la de abajo (profundidades()).
+  juego (func_8003AF9C) elige el triangulo mas cercano POR DEBAJO de un punto algo mas alto que los pies de Sabrina
+  (medido: ~360), asi que se camina sobre la de abajo solo si la de arriba esta mas de ~370 por encima (con menos,
+  Sabrina "sube" a la de arriba en la zona comun, como un escalon), se sube saltando desde abajo atravesando la de
+  arriba (no hay techo) hasta ~700 de separacion, y se cae sobre la de arriba si se viene de mas alto. Las
+  paredes de la de arriba solo cuelgan hasta la de abajo (profundidades()).
 
 Uso:
     python nivel_plataformas.py disco [nivel.json]   arma disco\\sabrina_plataformas.cue (por defecto niveles\\plataformas.json)
@@ -45,7 +47,10 @@ PROFUNDO = 768                       # cuanto cuelga cada plataforma por debajo 
 PASO_PARED = nf.SPACING              # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja)
 SALTO_HUECO, SALTO_SUBIDA = 256, 250  # lo que se considera alcanzable (avisos de validar)
 SEPARACION_MIN = 64                  # dos tapas que se pisan en planta tienen que diferir al menos esto de altura
-SEPARACION_AVISO = 256               # menos que esto, Sabrina (mide ~200) casi no cabe entre las dos
+AGARRE = 370                         # medido en el juego: una tapa hasta ~360 por encima de los pies de Sabrina la
+                                     # sube a ella (mismo cuadro de planta); a 376 o mas ya no
+SEPARACION_AVISO = AGARRE + 10       # con menos separacion la de abajo no se puede pisar en la zona comun
+SALTO_APILADA = 700                  # subiendo desde abajo: salto (~380) + agarre (~360)
 CONSERVAR_PLAT = {1, 2, 11, 12, 19}  # Sabrina, su sombra y el cielo (ver mini_nivel.py)
 
 
@@ -205,7 +210,8 @@ def validar(plats):
                                    f"{d}: separalas al menos {SEPARACION_MIN} (una sobre otra)")
                 elif d < SEPARACION_AVISO:
                     avisos.append(f"{a['nombre']} y {b['nombre']}: una sobre otra con solo {d} de separacion; "
-                                  f"Sabrina casi no cabe entre las dos")
+                                  f"en la zona comun Sabrina sube sola a la de arriba (hacen falta {SEPARACION_AVISO} "
+                                  f"para poder pisar las dos)")
     inicio = [p for p in plats if contiene_salida(p) and p["h"] == 0]
     if not inicio:
         errores.append(f"ninguna plataforma a altura 0 cubre la salida {SALIDA}: Sabrina aparece en el vacio")
@@ -223,7 +229,12 @@ def validar(plats):
             continue
         vistos.add(i)
         for j, q in enumerate(plats):
-            if j not in vistos and hueco(plats[i], q) <= SALTO_HUECO and plats[i]["h"] - q["h"] <= SALTO_SUBIDA:
+            if j in vistos:
+                continue
+            a_, b_ = plats[i], q
+            sube = a_["h"] - b_["h"]               # > 0: b esta mas alto
+            apilada = se_pisan(a_, b_)
+            if (hueco(a_, b_) <= SALTO_HUECO and sube <= (SALTO_APILADA if apilada else SALTO_SUBIDA)):
                 pila.append(j)
     for i, p in enumerate(plats):
         if i not in vistos:
@@ -258,14 +269,26 @@ def punto_de_prueba(p):
     return cx, cz
 
 
+def suelo_esperado(plats, p, cx, cz):
+    """La altura a la que Sabrina se queda al caer sobre p en (cx, cz): si hay tapas hasta AGARRE por encima en
+    ese punto, el juego la sube a la mas alta de ellas (y asi sucesivamente)."""
+    h = p["h"]
+    while True:
+        arriba = [q["h"] for q in plats if q["x0"] <= cx <= q["x1"] and q["z0"] <= cz <= q["z1"]
+                  and 0 < h - q["h"] <= AGARRE - 10]
+        if not arriba:
+            return h
+        h = min(arriba)
+
+
 def teletransportar(e, p, plats=()):
     """Pone a Sabrina sobre la plataforma p (un poco por encima: cae sola) en un emulador ya arrancado. Si otra
-    plataforma esta justo encima de ese punto, empieza entre las dos (si no, caeria sobre la de arriba)."""
+    plataforma esta justo encima de ese punto, empieza casi a ras de suelo (si no, caeria sobre la de arriba)."""
     obj = int(float(e.eval(f"return rd32({P_SABRINA})")))
     cx, cz = punto_de_prueba(p)
     arriba = [q["h"] for q in plats if q is not p and q["h"] < p["h"] and q["x0"] <= cx <= q["x1"]
               and q["z0"] <= cz <= q["z1"]]
-    sube = min(200, (p["h"] - max(arriba)) // 2) if arriba else 200
+    sube = 30 if arriba else 200       # a ras de suelo: mas arriba entraria en la zona de agarre (AGARRE) de la de arriba
     e.eval(f"wr32({obj + 0x24},{cx * 256 & 0xFFFFFFFF})")
     e.eval(f"wr32({obj + 0x28},{(p['h'] - sube) * 256 & 0xFFFFFFFF})")
     e.eval(f"wr32({obj + 0x2C},{cz * 256 & 0xFFFFFFFF})")
@@ -287,9 +310,10 @@ def ver(plats):
             obj = teletransportar(e, p, plats)
             e.esperar(90)
             y = s(int(float(e.eval(f"return rd32({obj + 0x28})")))) / 256
-            bien = abs(y - p["h"]) < 8
+            esperada = suelo_esperado(plats, p, *punto_de_prueba(p))
+            bien = abs(y - esperada) < 8
             fallos += not bien
-            print(f"{p['nombre']:8s} esperada y={p['h']:6d}  medida y={y:8.1f}  {'ok' if bien else 'FALLA'}", flush=True)
+            print(f"{p['nombre']:8s} esperada y={esperada:6d}  medida y={y:8.1f}  {'ok' if bien else 'FALLA'}", flush=True)
             r = os.path.join(CAP, f"plat_{p['nombre']}.png")
             e.captura(r)
             capturas.append(r)

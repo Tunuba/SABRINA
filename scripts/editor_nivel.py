@@ -11,10 +11,14 @@ Ratón (vista desde arriba: derecha = +X, abajo = +Z; en el juego UP avanza haci
   rueda                    zoom
   boton derecho o central  desplaza la vista
 Teclado: Supr borra, Ctrl+D duplica, Ctrl+S guarda, flechas mueven la seleccionada 128.
+Vista 3D (abajo): arrastrar gira y inclina, rueda hace zoom, doble clic la reinicia, clic selecciona. Arranca con la
+vista del juego (la camara mira hacia +X +Z). Dos plataformas pueden estar una sobre otra (ver nivel_plataformas.py);
+Ctrl+clic en la planta elige la plataforma de debajo cuando hay varias apiladas.
 La cruz amarilla es la salida: ahi aparece Sabrina (y reaparece si cae), asi que tiene que haber una plataforma
 a altura 0 debajo. Las plataformas rojas no son alcanzables saltando (hueco > 256 o subida > 250).
 Probar cierra el juego anterior; "Ir a la seleccionada" teletransporta a Sabrina en el juego abierto.
 """
+import math
 import os
 import queue
 import sys
@@ -35,6 +39,63 @@ def hex_color(c):
     return "#%02x%02x%02x" % tuple(min(255, int(v)) for v in c)
 
 
+SOMBRA_LADO = {"+x": 0.62, "-x": 0.62, "+z": 0.78, "-z": 0.78}   # los lados, mas oscuros que la tapa
+
+
+def proyectar_caras(plats, profs, yaw, pitch, ancho, alto, zoom=1.0, sel=None, inalcanzables=()):
+    """Proyeccion ortogonal de las plataformas como cajas (la tapa y los lados que miran a la camara), de lo mas
+    lejano a lo mas cercano (algoritmo del pintor). Devuelve (caras, (escala, mu, mv)) con caras = lista de
+    dict(poly, relleno, borde, grosor, idx). Arriba = -h. Va aparte del Canvas para poder probarla sin ventana."""
+    cy_, sy_ = math.cos(yaw), math.sin(yaw)
+    cp, sp = math.cos(pitch), math.sin(pitch)
+
+    def punto(x, h, z):
+        arriba = -h
+        u = x * cy_ + z * sy_
+        w = -x * sy_ + z * cy_                       # w crece hacia donde mira la camara (horizontalmente)
+        return u, arriba * cp + w * sp, w * cp - arriba * sp          # (u, v) de pantalla y profundidad
+
+    crudas = []                                                         # (4 esquinas 3D, color, sombra, idx)
+    for i, (p, prof) in enumerate(zip(plats, profs)):
+        x0, z0, x1, z1, h = p["x0"], p["z0"], p["x1"], p["z1"], p["h"]
+        col = p["color"]
+        crudas.append(([(x0, h, z0), (x1, h, z0), (x1, h, z1), (x0, h, z1)], col, 1.0, i))
+        lados = {"+x": (1, 0, [(x1, h, z0), (x1, h, z1), (x1, h + prof, z1), (x1, h + prof, z0)]),
+                 "-x": (-1, 0, [(x0, h, z0), (x0, h, z1), (x0, h + prof, z1), (x0, h + prof, z0)]),
+                 "+z": (0, 1, [(x0, h, z1), (x1, h, z1), (x1, h + prof, z1), (x0, h + prof, z1)]),
+                 "-z": (0, -1, [(x0, h, z0), (x1, h, z0), (x1, h + prof, z0), (x0, h + prof, z0)])}
+        for k, (nx, nz, esq) in lados.items():
+            if nx * sy_ - nz * cy_ > 0:                                 # la normal mira hacia la camara
+                crudas.append((esq, col, SOMBRA_LADO[k], i))
+    caras = []
+    for esq, col, sombra, i in crudas:
+        pts = [punto(*q) for q in esq]
+        caras.append((sum(q[2] for q in pts) / 4, [(q[0], q[1]) for q in pts], col, sombra, i))
+    if not caras:
+        return [], (1.0, 0.0, 0.0)
+    us = [q[0] for c in caras for q in c[1]]
+    vs = [q[1] for c in caras for q in c[1]]
+    bw, bh = (max(us) - min(us)) or 1, (max(vs) - min(vs)) or 1
+    escala = min((ancho - 40) / bw, (alto - 40) / bh) * zoom
+    mu, mv = (max(us) + min(us)) / 2, (max(vs) + min(vs)) / 2
+    salida = []
+    for _prof, poly, col, sombra, i in sorted(caras, key=lambda c: -c[0]):
+        pantalla = [(ancho / 2 + (u - mu) * escala, alto / 2 - (v - mv) * escala) for u, v in poly]
+        mal = i in inalcanzables
+        salida.append(dict(poly=pantalla, relleno=hex_color([c * sombra for c in col]), idx=i,
+                           borde="#ffffff" if i == sel else "#ff5a5a" if mal else "#101014",
+                           grosor=2 if i == sel or mal else 1))
+    return salida, (escala, mu, mv)
+
+
+def punto_en_poligono(x, y, poly):
+    dentro = False
+    for (ax, ay), (bx, by) in zip(poly, poly[1:] + poly[:1]):
+        if (ay > y) != (by > y) and x < (bx - ax) * (y - ay) / (by - ay) + ax:
+            dentro = not dentro
+    return dentro
+
+
 class Editor(tk.Tk):
     def __init__(self, ruta=None):
         super().__init__()
@@ -51,6 +112,8 @@ class Editor(tk.Tk):
         self.ocupado = False
         self.alcanzables = set()
         self.cola = queue.Queue()         # lo que los hilos del juego piden hacer en la ventana
+        self.yaw3d, self.pitch3d, self.zoom3d = -math.pi / 4, 0.6, 1.0   # vista 3D: como mira la camara del juego
+        self.caras3d, self._arr3d = [], None
         self._armar_ui()
         self.after(100, self._vaciar_cola)
         self.protocol("WM_DELETE_WINDOW", self.salir)
@@ -60,8 +123,22 @@ class Editor(tk.Tk):
     def _armar_ui(self):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.canvas = tk.Canvas(self, bg="#0c0c10", highlightthickness=0, cursor="crosshair")
+        centro = tk.Frame(self, bg=estilo.BG)
+        centro.grid(row=0, column=0, sticky="nsew")
+        centro.columnconfigure(0, weight=1)
+        centro.rowconfigure(0, weight=3)
+        centro.rowconfigure(1, weight=2)
+        self.canvas = tk.Canvas(centro, bg="#0c0c10", highlightthickness=0, cursor="crosshair")
         self.canvas.grid(row=0, column=0, sticky="nsew")
+        self.canvas3d = tk.Canvas(centro, bg="#14141c", highlightthickness=0, cursor="fleur")
+        self.canvas3d.grid(row=1, column=0, sticky="nsew", pady=(4, 0))
+        c3 = self.canvas3d
+        c3.bind("<ButtonPress-1>", self._ini3d)
+        c3.bind("<B1-Motion>", self._giro3d)
+        c3.bind("<ButtonRelease-1>", self._fin3d)
+        c3.bind("<MouseWheel>", self._rueda3d)
+        c3.bind("<Double-Button-1>", self._reiniciar3d)
+        c3.bind("<Configure>", lambda _e: self.dibujar3d())
         lado = tk.Frame(self, bg=estilo.BG, width=330)
         lado.grid(row=0, column=1, sticky="ns", padx=8, pady=8)
         lado.grid_propagate(False)
@@ -183,6 +260,65 @@ class Editor(tk.Tk):
             _, (ax, az), (bx, bz) = self.arrastre
             pa, pb = self.a_pantalla(ax, az), self.a_pantalla(bx, bz)
             c.create_rectangle(*pa, *pb, outline="#ffffff", dash=(4, 3))
+        self.dibujar3d()
+
+    # ------------------------------------------------------------ vista 3D
+    def dibujar3d(self):
+        c = self.canvas3d
+        c.delete("all")
+        w, h = c.winfo_width(), c.winfo_height()
+        if w < 50 or h < 50:
+            return
+        c.create_text(8, 6, anchor="nw", fill="#6f6f85", font=("Segoe UI", 8),
+                      text="3D: arrastra para girar, rueda = zoom, doble clic = reiniciar, clic = seleccionar")
+        if not self.plats:
+            self.caras3d = []
+            return
+        inalc = set(range(len(self.plats))) - self.alcanzables
+        self.caras3d, (escala, mu, mv) = proyectar_caras(
+            self.plats, np_.profundidades(self.plats), self.yaw3d, self.pitch3d, w, h, self.zoom3d, self.sel, inalc)
+        for cara in self.caras3d:
+            flat = [v for q in cara["poly"] for v in q]
+            c.create_polygon(*flat, fill=cara["relleno"], outline=cara["borde"], width=cara["grosor"])
+        # la salida: un poste amarillo de 500 de alto sobre (128, 0, -896)
+        cy_, sy_ = math.cos(self.yaw3d), math.sin(self.yaw3d)
+        cp, sp = math.cos(self.pitch3d), math.sin(self.pitch3d)
+        sx, sz = np_.SALIDA
+        u, wd = sx * cy_ + sz * sy_, -sx * sy_ + sz * cy_
+        puntos = [(w / 2 + (u - mu) * escala, h / 2 - ((arriba * cp + wd * sp) - mv) * escala) for arriba in (0, 500)]
+        c.create_line(*puntos[0], *puntos[1], fill="#ffe14d", width=2)
+        c.create_text(puntos[1][0] + 6, puntos[1][1], text="salida", fill="#ffe14d", anchor="w",
+                      font=("Segoe UI", 8))
+
+    def _ini3d(self, ev):
+        self._arr3d = (ev.x, ev.y, False)
+
+    def _giro3d(self, ev):
+        if not self._arr3d:
+            return
+        x, y, giro = self._arr3d
+        if giro or abs(ev.x - x) + abs(ev.y - y) > 3:
+            self.yaw3d -= (ev.x - x) * 0.01
+            self.pitch3d = max(0.15, min(1.45, self.pitch3d + (ev.y - y) * 0.01))
+            self._arr3d = (ev.x, ev.y, True)
+            self.dibujar3d()
+
+    def _fin3d(self, ev):
+        a, self._arr3d = self._arr3d, None
+        if a and not a[2]:                       # clic sin arrastrar: elige la plataforma bajo el puntero
+            for cara in reversed(self.caras3d):
+                if punto_en_poligono(ev.x, ev.y, cara["poly"]):
+                    self.seleccionar(cara["idx"])
+                    self.dibujar()
+                    return
+
+    def _rueda3d(self, ev):
+        self.zoom3d = max(0.3, min(5.0, self.zoom3d * (1.15 if ev.delta > 0 else 1 / 1.15)))
+        self.dibujar3d()
+
+    def _reiniciar3d(self, _ev):
+        self.yaw3d, self.pitch3d, self.zoom3d = -math.pi / 4, 0.6, 1.0
+        self.dibujar3d()
 
     # ------------------------------------------------------------ eleccion
     def hit_esquina(self, px, py):
@@ -195,10 +331,17 @@ class Editor(tk.Tk):
                 return nx, nz
         return None
 
-    def hit_plataforma(self, px, py):
+    def hit_plataforma(self, px, py, debajo=False):
+        """La plataforma bajo el puntero: la mas alta (h mas negativo); con 'debajo' (Ctrl+clic), la siguiente mas
+        baja que la seleccionada, para llegar a las que quedan tapadas por otra apilada encima."""
         x, z = self.a_mundo(px, py)
-        dentro = [i for i, p in enumerate(self.plats) if p["x0"] <= x <= p["x1"] and p["z0"] <= z <= p["z1"]]
-        return min(dentro, key=lambda i: self.plats[i]["h"]) if dentro else None   # la mas alta (h mas negativo)
+        dentro = sorted((i for i, p in enumerate(self.plats) if p["x0"] <= x <= p["x1"] and p["z0"] <= z <= p["z1"]),
+                        key=lambda i: self.plats[i]["h"])
+        if not dentro:
+            return None
+        if debajo and self.sel in dentro:
+            return dentro[(dentro.index(self.sel) + 1) % len(dentro)]
+        return dentro[0]
 
     # ------------------------------------------------------------ raton
     def _clic(self, ev):
@@ -207,7 +350,7 @@ class Editor(tk.Tk):
         if esq:
             self.arrastre = ("tamano", esq)
             return
-        i = self.hit_plataforma(ev.x, ev.y)
+        i = self.hit_plataforma(ev.x, ev.y, debajo=bool(ev.state & 0x4))
         if i is not None:
             self.seleccionar(i)
             x, z = self.a_mundo(ev.x, ev.y)
@@ -502,8 +645,9 @@ class Editor(tk.Tk):
         if self.emu is None or self.sel is None or self.sel >= len(self.plats):
             self._msg("Hace falta el juego abierto (Probar) y una plataforma seleccionada.", malo=True)
             return
-        e, p = self.emu, dict(self.plats[self.sel])
-        threading.Thread(target=lambda: np_.teletransportar(e, p), daemon=True).start()
+        e, i = self.emu, self.sel
+        todas = [dict(q) for q in self.plats]
+        threading.Thread(target=lambda: np_.teletransportar(e, todas[i], todas), daemon=True).start()
 
     def salir(self):
         if not self.confirmar_perdida():
