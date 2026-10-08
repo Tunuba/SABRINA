@@ -212,6 +212,8 @@ def main():
                     break
             else:
                 sin_sitio.append((arch, nom, t))
+        if sin_sitio and os.environ.get('ARMAR_DEPURAR'):
+            print('SIN_SITIO', sin_sitio, 'huecos libres', [(hex(h[0]+0x80010000-0x800+0x800), h[1]-h[0]) for h in huecos if h[1]-h[0]>0], file=sys.stderr)
         if sin_sitio:
             total = sum(s[2] for s in secc)
             libre = sum(h[1] - h[0] for h in huecos)
