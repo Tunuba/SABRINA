@@ -113,6 +113,12 @@ MONTON_BIOS = 0x81100000
 MONTON_TAM = 0x00400000
 C0_VIEJO = (0xAF410004, 0xAF420008, 0xAF43000C, 0xAF5F007C, 0x40037000, 0x00000000)
 FIN = 0x80FFFFF0            # direccion de retorno centinela
+# Corte (08-10) para las funciones que nunca vuelven (main, BuclePrincipal): SABRINA_CORTE="0xDIRECCION:N" para
+# las dos corridas cuando entran por N-esima vez a esa direccion (una funcion de la ORIGINAL que las dos llaman,
+# por ejemplo la VSync del bucle) y desde ahi se compara igual que al volver: la RAM, el scratchpad, el hardware,
+# la BIOS, todo, salvo los registros conservados (en el corte son los de la funcion que corre, no los de la vuelta).
+# Si una de las dos no llega al corte es un error de esa corrida.
+CORTE = tuple(int(x, 0) for x in os.environ["SABRINA_CORTE"].split(":")) if os.environ.get("SABRINA_CORTE") else None
 LIMITE = int(os.environ.get("SABRINA_LIMITE", 20_000_000))   # instrucciones como maximo por ejecucion (SABRINA_LIMITE para una tanda larga)
 ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
 
@@ -944,6 +950,15 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         uc.hook_add(UC_HOOK_MEM_READ, lee)
         uc.hook_add(UC_HOOK_MEM_WRITE, escribe)
     error = None
+    cortada = {"veces": 0, "si": False}
+    if CORTE:
+        def al_corte(u, dirc, tam, _):
+            cortada["veces"] += 1
+            if cortada["veces"] == CORTE[1]:
+                cortada["si"] = True
+                u.emu_stop()
+        uc.hook_add(UC_HOOK_CODE, al_corte, begin=CORTE[0] & 0x1FFFFFFF, end=CORTE[0] & 0x1FFFFFFF)
+        uc.hook_add(UC_HOOK_CODE, al_corte, begin=CORTE[0], end=CORTE[0])
     try:
         # tope_seg: tope de tiempo (solo para la original en las variantes, ver verificar)
         uc.emu_start(pc, FIN, timeout=int(tope_seg * 1e6) if tope_seg else 0, count=cuenta or LIMITE)
@@ -951,11 +966,15 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         error = f"{ex} en {uc.reg_read(UC_MIPS_REG_PC):08x}"
     if error is None and interrupcion_mala:
         error = interrupcion_mala[0]
-    if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN:
+    if error is None and CORTE and not cortada["si"]:
+        error = "no llego al corte %08x:%d (paso %d veces)" % (CORTE[0], CORTE[1], cortada["veces"])
+    if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN and not cortada["si"]:
         error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     # los registros que la convencion obliga a conservar (s0-s7, gp, sp, fp), como quedan al volver (04-10 noche: un
     # stub en asm que restauraba mal sp pasaba, porque la corrida termina al volver y nadie lo miraba)
     conservados = [uc.reg_read(UC_MIPS_REG_ZERO + r) for r in (16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30)]
+    if cortada["si"]:
+        conservados = None
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1), conservados=conservados,
                 criticas=criticas, bios=bios, llamadas=llamadas,
                 gte=(tuple(est_gte.datos), tuple(est_gte.ctrl)), cop0=cop0,

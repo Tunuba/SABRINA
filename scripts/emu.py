@@ -25,7 +25,7 @@ LOGS = os.path.join(RAIZ, "notas", "logs")
 
 class Emu:
     def __init__(self, iso=None, exe=None, puerto=8091, bios=None, log="emu.log", extra=(), depurar=False,
-                 ui=False):
+                 ui=False, pausado=False):
         os.makedirs(LOGS, exist_ok=True)
         if depurar:
             # los puntos de interrupcion (contar en control.lua) solo funcionan con el interprete
@@ -34,7 +34,7 @@ class Emu:
         args = [os.path.join(REDUX, "pcsx-redux.exe"), *([] if ui else ["-no-ui"]), "-stdout",
                 "-bios", bios or os.path.join(REDUX, "openbios.bin"),
                 "-webserver", "-webserver-port", str(puerto), "-softgpu",
-                "-dofile", CONTROL, "-run", *extra]
+                "-dofile", CONTROL, *([] if pausado else ["-run"]), *extra]
         if iso:
             args += ["-iso", iso]
         if exe:

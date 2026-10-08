@@ -619,3 +619,6 @@ func_800515B0	436	IGUAL_SINT	src/varios/bios_eventos_g16.c	3 de 3 capturas y 88 
 func_8004FD34	768	IGUAL	src/varios/tarjeta_evento_fd34_g16.c	3 de 3 capturas y 77 de 77 variantes iguales
 func_80050034	680	IGUAL	src/varios/tarjeta_evento_0034_g16.c	3 de 3 capturas y 73 de 73 variantes iguales
 func_80051764	188	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 136 de 136 variantes iguales
+func_80016170	60	IGUAL	src/psyq/setjmp.c	4 de 4 capturas y 121 de 121 variantes iguales
+func_800161BC	12	IGUAL	src/psyq/bios_llamadas.c	5 de 5 capturas y 340 de 340 variantes iguales
+func_800142FC	12	IGUAL	src/psyq/bios_llamadas.c	3 de 3 capturas y 204 de 204 variantes iguales
