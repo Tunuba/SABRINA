@@ -726,8 +726,6 @@ static void __attribute__((noinline)) camara_libre(Objeto *o) {
     o->z += (d[2] * av + l[2] * la) << vel;
     ojo_camara(o);
     mirar(o);
-    D_8007CCBC[0x18] = 1;
-    D_8007CD18[0x18] = 1;
     D_8007CA50 &= 0x100;
     D_8007CA54 = 0;
     D_8007CA58 &= 0x800;
@@ -768,11 +766,10 @@ s32 func_80035314(Objeto *o) {
         e->_20 ^= 1;
         if (!e->_20) {
             o->estado = 0;
-            D_8007CCBC[0x18] = 0;
-            D_8007CD18[0x18] = 0;
         }
     }
     e->_26[0] = n;
+    D_8007CCBC[0x18] = D_8007CD18[0x18] = e->_20;
     if (e->_20) {
         camara_libre(o);
         goto fin;

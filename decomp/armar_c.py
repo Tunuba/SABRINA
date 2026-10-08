@@ -235,6 +235,8 @@ def main():
             nuevos = quitar & set(instalar)
             if not debilitar:
                 sys.exit(f"no caben {len(sin_sitio)} secciones y no se sabe de quien: {sin_sitio[:3]}")
+            if not nuevos:
+                sys.exit(f"no caben estas secciones y no son de una funcion instalada (una auxiliar static?): {sin_sitio}")
             for f in sorted(nuevos):
                 informe.append(f"SIN_SITIO	{f}	{elegidas[f]}")
             instalar = [f for f in instalar if f not in quitar]
