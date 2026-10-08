@@ -1,26 +1,32 @@
-"""Nivel de plataformas: el HUB (H1W) vaciado y reemplazado por una ruta de plataformas flotantes que sube en
-espiral, de la zona de salida (verde) hasta la meta (dorada), en un cuarto negro. Usa el mismo mecanismo que
-mini_nivel.py (nivel_fantasma.construir_bytes), con varias piezas a distintas alturas.
+"""Motor de los niveles de plataformas: el HUB (H1W) vaciado y reemplazado por plataformas flotantes en un cuarto
+negro (lo usa editor_nivel.py). Un nivel es una lista de plataformas guardada en niveles\\*.json; este modulo la
+valida, la convierte en geometria y arma el disco. Usa el mismo mecanismo que mini_nivel.py
+(nivel_fantasma.construir_bytes).
+
+Una plataforma es un dict: nombre, x0, z0, x1, z1 (rectangulo en unidades del modelo; Sabrina aparece en
+(128, -896)), h (altura de la tapa; -Y es arriba, asi que "mas alto" = mas negativo) y color [r, g, b].
 
 Medido con observar_fantasma.py: Sabrina salta ~380 unidades de alto pero corriendo solo avanza ~150-200 de
-distancia (en el aire ~8 cuadros), asi que la ruta usa saltos de 128 de hueco y subidas de 96 por plataforma. Si
-cae, reaparece en la salida.
+distancia (400 a toda carrera), asi que los avisos de 'validar' marcan huecos de mas de 256 y subidas de mas de
+250. Si cae, reaparece en (128, 0, -896): ahi tiene que haber una plataforma a altura 0.
 Con UP Sabrina avanza hacia +X +Z (camara en diagonal).
 
 Reglas que cumple cada plataforma (las mismas del mini nivel):
-- la tapa se parte en los multiplos de 256 (512 en la salida) mas sus propios bordes, que pueden caer en
-  multiplos de 128: como la celda de colision mide 1024, ningun triangulo cruza el borde de dos celdas;
+- la tapa se parte en los multiplos de 256 (512 donde esta la salida) mas sus propios bordes: como la celda de
+  colision mide 1024, ningun triangulo cruza el borde de dos celdas;
 - solo las tapas (triangulos horizontales) entran en la colision; las paredes laterales son solo dibujo y no
   llevan fondo (seria un segundo suelo);
-- la salida usa cuadros de 512 con la diagonal x + z = const: Sabrina aparece en (128, -896), el centro de un
-  cuadro de 256, y justo sobre una diagonal es un caso limite para PuntoEnTriangulo.
+- la salida no puede caer justo sobre un borde o una diagonal de cuadro (caso limite de PuntoEnTriangulo: Sabrina
+  se cae); 'validar' lo detecta;
+- dos plataformas no pueden pisarse en planta (la consulta de suelo no sabria cual elegir).
 
 Uso:
-    python nivel_plataformas.py disco     arma disco\\sabrina_plataformas.cue (siempre de cero)
-    python nivel_plataformas.py probar    lo arma y lo arranca con ventana para jugarlo
-    python nivel_plataformas.py ver       lo arma, lo arranca sin ventana, teletransporta a Sabrina a cada
-                                          plataforma, comprueba que pisa en la altura esperada y saca capturas
+    python nivel_plataformas.py disco [nivel.json]   arma disco\\sabrina_plataformas.cue (por defecto niveles\\plataformas.json)
+    python nivel_plataformas.py ver [nivel.json]     lo arma, lo arranca sin ventana, teletransporta a Sabrina a cada
+                                                     plataforma, comprueba que pisa en la altura esperada y saca capturas
 """
+import json
+import math
 import os
 import struct
 import sys
@@ -28,29 +34,51 @@ import sys
 import disco
 import nivel_fantasma as nf
 
-# (x0, z0, x1, z1, altura de la tapa, color RGB, cuadro); la altura es la de la tapa en unidades del modelo
-# (-Y es arriba, asi que "mas alto" = mas negativo); Sabrina aparece en (128, 0, -896) sobre la salida.
-VERDE, GRIS, AZUL, DORADO = (70, 150, 70), (128, 128, 128), (90, 110, 170), (255, 200, 60)
-PLATAFORMAS = [
-    ("salida", -512, -1536, 1024, 0, 0, VERDE, 512),
-    ("p1", 1152, -1536, 1920, -768, -96, GRIS, 256),
-    ("p2", 2048, -1536, 3072, -768, -192, AZUL, 256),
-    ("p3", 2048, -640, 2816, 128, -288, GRIS, 256),
-    ("p4", 2048, 256, 2816, 1024, -384, AZUL, 256),
-    ("p5", 1152, 256, 1920, 1024, -480, GRIS, 256),
-    ("p6", 256, 256, 1024, 1024, -576, AZUL, 256),
-    ("p7", 256, 1152, 1024, 1920, -672, GRIS, 256),
-    ("p8", 1152, 1152, 1920, 1920, -768, AZUL, 256),
-    ("p9", 2048, 1152, 3328, 1920, -864, GRIS, 256),
-    ("meta", 3456, 1152, 4736, 2176, -960, DORADO, 256),
-]
-PROFUNDO = 768             # cuanto cuelga cada plataforma por debajo de su tapa (solo dibujo)
-PASO_PARED = nf.SPACING    # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja)
+NIVELES = os.path.join(disco.RAIZ, "niveles")
+NIVEL_POR_DEFECTO = os.path.join(NIVELES, "plataformas.json")
+SALIDA = (128, -896)                 # donde aparece Sabrina (y reaparece al caer), a altura 0
+LIMITE = 30000                       # coordenadas del modelo: int16 de los vertices y cuadricula de colision
+PROFUNDO = 768                       # cuanto cuelga cada plataforma por debajo de su tapa (solo dibujo)
+PASO_PARED = nf.SPACING              # cuadros de 512 en las paredes (un triangulo muy grande no se dibuja)
+SALTO_HUECO, SALTO_SUBIDA = 256, 250  # lo que se considera alcanzable (avisos de validar)
+CONSERVAR_PLAT = {1, 2, 11, 12, 19}  # Sabrina, su sombra y el cielo (ver mini_nivel.py)
 
-CUE_PLAT = os.path.join(disco.DISCO, "sabrina_plataformas.cue")
-PISTA_PLAT = os.path.join(disco.DISCO, "sabrina_plataformas (Track 01).bin")
-CONSERVAR_PLAT = {1, 2, 11, 12, 19}   # Sabrina, su sombra y el cielo (ver mini_nivel.py)
 
+def rutas(nombre):
+    return (os.path.join(disco.DISCO, f"sabrina_{nombre}.cue"),
+            os.path.join(disco.DISCO, f"sabrina_{nombre} (Track 01).bin"))
+
+
+CUE_PLAT, PISTA_PLAT = rutas("plataformas")
+
+
+# ---------------------------------------------------------------- datos
+
+def nueva(nombre, x0, z0, x1, z1, h, color=(128, 128, 128)):
+    return dict(nombre=nombre, x0=min(x0, x1), z0=min(z0, z1), x1=max(x0, x1), z1=max(z0, z1), h=h,
+                color=list(color))
+
+
+def cargar(ruta=NIVEL_POR_DEFECTO):
+    with open(ruta, encoding="utf-8") as f:
+        datos = json.load(f)
+    return [nueva(p["nombre"], p["x0"], p["z0"], p["x1"], p["z1"], p["h"], p["color"])
+            for p in datos["plataformas"]]
+
+
+def guardar(plats, ruta):
+    """Una plataforma por linea, para que el diff de git se lea."""
+    os.makedirs(os.path.dirname(ruta), exist_ok=True)
+    lineas = ",\n".join("  " + json.dumps(p, ensure_ascii=False) for p in plats)
+    with open(ruta, "w", encoding="utf-8") as f:
+        f.write('{"plataformas": [\n' + lineas + "\n]}\n")
+
+
+def contiene_salida(p):
+    return p["x0"] <= SALIDA[0] <= p["x1"] and p["z0"] <= SALIDA[1] <= p["z1"]
+
+
+# ---------------------------------------------------------------- geometria
 
 def cortes(a, b, paso):
     """Cortes de la rejilla de una tapa entre a y b: los bordes y todos los multiplos de 'paso' de por medio. Asi
@@ -58,33 +86,54 @@ def cortes(a, b, paso):
     return [a] + [c for c in range((a // paso + 1) * paso, b, paso)] + [b]
 
 
-def agregar_plataforma(verts, tris, plat, textura, uv, cola):
-    """La tapa (cuadros de 'paso', diagonal p10-p01) y las 4 paredes de una plataforma. La cara que se ve es la de
-    normal cross(b - a, c - a); cada cara lleva ejes u, v con cross(u, v) hacia afuera (en la PS1 -Y es arriba)."""
-    _, x0, z0, x1, z1, h, (r, g, b), paso = plat
+def paso_tapa(p):
+    return 512 if contiene_salida(p) else 256
+
+
+def salida_en_limite(p):
+    """True si la salida cae justo en un borde de cuadro o en la diagonal (p10-p01) del cuadro de la tapa."""
+    if not contiene_salida(p):
+        return False
+    cu, cv = cortes(p["x0"], p["x1"], paso_tapa(p)), cortes(p["z0"], p["z1"], paso_tapa(p))
+    sx, sz = SALIDA
+    if sx in cu or sz in cv:
+        return True
+    xa = max(c for c in cu if c < sx)
+    xb = min(c for c in cu if c > sx)
+    za = max(c for c in cv if c < sz)
+    zb = min(c for c in cv if c > sz)
+    # diagonal de (xb, za) a (xa, zb)
+    return (sx - xb) * (zb - za) - (sz - za) * (xa - xb) == 0
+
+
+def agregar_plataforma(verts, tris, p, textura, uv, cola):
+    """La tapa (diagonal p10-p01) y las 4 paredes de una plataforma. La cara que se ve es la de normal
+    cross(b - a, c - a); cada cara lleva ejes u, v con cross(u, v) hacia afuera (en la PS1 -Y es arriba)."""
+    x0, z0, x1, z1, h = p["x0"], p["z0"], p["x1"], p["z1"], p["h"]
+    r, g, b = p["color"]
     lx, lz = x1 - x0, z1 - z0
     X, Y, Z = (1, 0, 0), (0, 1, 0), (0, 0, 1)
-    sombra = lambda k: (r * k // 128, g * k // 128, b * k // 128)
-    caras = [  # origen, u, largo de u, v, largo de v, color, tamano de cuadro
-        ((x0, h, z0), X, lx, Z, lz, sombra(128), paso),            # tapa: cross(X, Z) = -Y
-        ((x1, h, z0), Y, PROFUNDO, Z, lz, sombra(80), PASO_PARED),  # +X: cross(Y, Z) = +X
-        ((x0, h, z0), Z, lz, Y, PROFUNDO, sombra(80), PASO_PARED),  # -X: cross(Z, Y) = -X
-        ((x0, h, z1), X, lx, Y, PROFUNDO, sombra(100), PASO_PARED),  # +Z: cross(X, Y) = +Z
-        ((x0, h, z0), Y, PROFUNDO, X, lx, sombra(100), PASO_PARED),  # -Z: cross(Y, X) = -Z
+    sombra = lambda k: (min(255, r * k // 128), min(255, g * k // 128), min(255, b * k // 128))
+    caras = [  # origen, u, largo de u, v, largo de v, color
+        ((x0, h, z0), X, lx, Z, lz, sombra(128)),             # tapa: cross(X, Z) = -Y
+        ((x1, h, z0), Y, PROFUNDO, Z, lz, sombra(80)),        # +X: cross(Y, Z) = +X
+        ((x0, h, z0), Z, lz, Y, PROFUNDO, sombra(80)),        # -X: cross(Z, Y) = -X
+        ((x0, h, z1), X, lx, Y, PROFUNDO, sombra(100)),       # +Z: cross(X, Y) = +Z
+        ((x0, h, z0), Y, PROFUNDO, X, lx, sombra(100)),       # -Z: cross(Y, X) = -Z
     ]
-    for n, (o, u, lu, v, lv, color, tam) in enumerate(caras):
-        if n == 0:     # la tapa: cortes en los multiplos de 'tam' (que lo son de 1024/4) mas los bordes
-            cu, cv = cortes(x0, x1, tam), cortes(z0, z1, tam)
-            cu, cv = [c - x0 for c in cu], [c - z0 for c in cv]
+    for n, (o, u, lu, v, lv, color) in enumerate(caras):
+        if n == 0:     # la tapa: cortes en los multiplos de 'paso' (que lo son de 1024/4) mas los bordes
+            cu = [c - x0 for c in cortes(x0, x1, paso_tapa(p))]
+            cv = [c - z0 for c in cortes(z0, z1, paso_tapa(p))]
         else:
-            nu, nv = max(1, round(lu / tam)), max(1, round(lv / tam))
+            nu, nv = max(1, round(lu / PASO_PARED)), max(1, round(lv / PASO_PARED))
             cu, cv = [lu * i // nu for i in range(nu + 1)], [lv * j // nv for j in range(nv + 1)]
         nu, nv = len(cu) - 1, len(cv) - 1
         base = len(verts)
         for i in range(nu + 1):
             for j in range(nv + 1):
-                p = [o[k] + u[k] * cu[i] + v[k] * cv[j] for k in range(3)]
-                verts.append(struct.pack("<3hh3Bx", *p, 0, *color))
+                q = [o[k] + u[k] * cu[i] + v[k] * cv[j] for k in range(3)]
+                verts.append(struct.pack("<3hh3Bx", *q, 0, *color))
         for i in range(nu):
             for j in range(nv):
                 a, b_ = base + i * (nv + 1) + j, base + (i + 1) * (nv + 1) + j
@@ -93,69 +142,141 @@ def agregar_plataforma(verts, tris, plat, textura, uv, cola):
                 tris.append((b_, c, d, textura) + uv + cola)
 
 
-def nodo_plataformas(nodo_original):
-    """Un nodo con todas las plataformas. Textura, UV y tipo de superficie se copian de un triangulo de piso real
-    del HUB."""
-    piso = next(t for t in nodo_original["tris"] if t[10] in (0, 1) and t[15] == 8)
-    textura, uv, cola = piso[3], tuple(piso[4:10]), tuple(piso[10:16])
-    verts, tris = [], []
-    for plat in PLATAFORMAS:
-        agregar_plataforma(verts, tris, plat, textura, uv, cola)
-    return dict(nombre="PLATAF\0", matriz=nodo_original["matriz"], tras=nodo_original["tras"],
-                hijos=[], tris=tris, verts=verts)
+def nodo_de(plats):
+    def armar(nodo_original):
+        """Un nodo con todas las plataformas. Textura, UV y tipo de superficie se copian de un triangulo de piso
+        real del HUB."""
+        piso = next(t for t in nodo_original["tris"] if t[10] in (0, 1) and t[15] == 8)
+        textura, uv, cola = piso[3], tuple(piso[4:10]), tuple(piso[10:16])
+        verts, tris = [], []
+        for p in plats:
+            agregar_plataforma(verts, tris, p, textura, uv, cola)
+        return dict(nombre="PLATAF\0", matriz=nodo_original["matriz"], tras=nodo_original["tras"],
+                    hijos=[], tris=tris, verts=verts)
+    return armar
 
 
-def armar_disco():
-    nuevo = nf.construir_bytes(nodo_plataformas, CONSERVAR_PLAT, sin_objetos=True)
-    disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, PISTA_PLAT)
-    disco.cue_mod(CUE_PLAT, PISTA_PLAT)
-    return CUE_PLAT
+# ---------------------------------------------------------------- validacion
+
+def hueco(a, b):
+    """Distancia horizontal entre los rectangulos de dos plataformas (0 si se tocan)."""
+    dx = max(b["x0"] - a["x1"], a["x0"] - b["x1"], 0)
+    dz = max(b["z0"] - a["z1"], a["z0"] - b["z1"], 0)
+    return math.hypot(dx, dz)
+
+
+def validar(plats):
+    """(errores, avisos). Con errores el nivel no se puede armar o Sabrina se cae; los avisos son solo
+    jugabilidad (plataformas que no se alcanzan con el salto medido)."""
+    errores, avisos = [], []
+    if not plats:
+        return ["no hay plataformas"], []
+    for p in plats:
+        n = p["nombre"]
+        if p["x1"] - p["x0"] < 256 or p["z1"] - p["z0"] < 256:
+            errores.append(f"{n}: mide menos de 256 de lado")
+        if max(abs(p[k]) for k in ("x0", "z0", "x1", "z1")) > LIMITE or abs(p["h"]) > LIMITE - PROFUNDO:
+            errores.append(f"{n}: se sale del mapa (maximo {LIMITE})")
+    for i, a in enumerate(plats):
+        for b in plats[i + 1:]:
+            if a["x0"] < b["x1"] and b["x0"] < a["x1"] and a["z0"] < b["z1"] and b["z0"] < a["z1"]:
+                errores.append(f"{a['nombre']} y {b['nombre']} se pisan en planta")
+    inicio = [p for p in plats if contiene_salida(p)]
+    if not inicio:
+        errores.append(f"ninguna plataforma cubre la salida {SALIDA}: Sabrina aparece en el vacio")
+    for p in inicio:
+        if p["h"] != 0:
+            errores.append(f"{p['nombre']}: cubre la salida pero su altura es {p['h']}, tiene que ser 0")
+        if salida_en_limite(p):
+            errores.append(f"{p['nombre']}: la salida {SALIDA} cae justo en un borde o diagonal de cuadro; "
+                           "mueve el borde de la plataforma")
+    if errores:
+        return errores, avisos
+    # alcanzables desde la salida con un salto
+    vistos, pila = set(), [i for i, p in enumerate(plats) if contiene_salida(p)]
+    while pila:
+        i = pila.pop()
+        if i in vistos:
+            continue
+        vistos.add(i)
+        for j, q in enumerate(plats):
+            if j not in vistos and hueco(plats[i], q) <= SALTO_HUECO and plats[i]["h"] - q["h"] <= SALTO_SUBIDA:
+                pila.append(j)
+    for i, p in enumerate(plats):
+        if i not in vistos:
+            avisos.append(f"{p['nombre']}: no se alcanza desde la salida (hueco > {SALTO_HUECO} o subida > "
+                          f"{SALTO_SUBIDA} desde todas las vecinas)")
+    return errores, avisos
+
+
+# ---------------------------------------------------------------- disco
+
+def armar_disco(plats=None, nombre="plataformas"):
+    """Arma disco\\sabrina_<nombre>.cue (siempre de cero). plats por defecto: niveles\\plataformas.json."""
+    plats = cargar() if plats is None else plats
+    errores, _ = validar(plats)
+    if errores:
+        raise ValueError("nivel invalido: " + "; ".join(errores))
+    cue, pista = rutas(nombre)
+    nuevo = nf.construir_bytes(nodo_de(plats), CONSERVAR_PLAT, sin_objetos=True)
+    disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista)
+    disco.cue_mod(cue, pista)
+    return cue
 
 
 P_SABRINA = 0x8007CAF8     # puntero al objeto de Sabrina; +0x24 x, +0x28 y, +0x2C z (posicion = modelo * 256)
 
 
-def ver():
-    """Teletransporta a Sabrina sobre el centro de cada plataforma, la deja caer y comprueba que se queda en la
-    altura de la tapa (la colision de cada plataforma funciona), con una captura por plataforma."""
+def punto_de_prueba(p):
+    """Un punto dentro de la plataforma, cerca del centro y que (casi siempre) no cae en un borde de cuadro, donde
+    Sabrina se cae."""
+    cx = min((p["x0"] + p["x1"]) // 2 + 37, p["x1"] - 64)
+    cz = min((p["z0"] + p["z1"]) // 2 + 53, p["z1"] - 64)
+    return cx, cz
+
+
+def teletransportar(e, p):
+    """Pone a Sabrina sobre la plataforma p (un poco por encima: cae sola) en un emulador ya arrancado."""
+    obj = int(float(e.eval(f"return rd32({P_SABRINA})")))
+    cx, cz = punto_de_prueba(p)
+    e.eval(f"wr32({obj + 0x24},{cx * 256 & 0xFFFFFFFF})")
+    e.eval(f"wr32({obj + 0x28},{(p['h'] - 200) * 256 & 0xFFFFFFFF})")
+    e.eval(f"wr32({obj + 0x2C},{cz * 256 & 0xFFFFFFFF})")
+    return obj
+
+
+def ver(plats):
+    """Teletransporta a Sabrina sobre cada plataforma, la deja caer y comprueba que se queda en la altura de la
+    tapa (la colision de cada plataforma funciona), con una captura por plataforma."""
     from emu import Emu
     from explorar import CAP, recorrer
     from hoja import hoja
-    ruta = armar_disco()
+    ruta = armar_disco(plats)
     s = lambda v: v - (1 << 32) if v >= 1 << 31 else v
     capturas, fallos = [], 0
     with Emu(iso=ruta, log="nivel_plataformas.log", extra=("-fastboot",), puerto=8097) as e:
         recorrer(e, "plat_arranque", "w2160 CROSS w300 START w60 CROSS w240 w1300")
-        p = int(float(e.eval(f"return rd32({P_SABRINA})")))
-        for nombre, x0, z0, x1, z1, h, _, _ in PLATAFORMAS:
-            cx, cz = ((x0 + x1) // 2 + 100) * 256, ((z0 + z1) // 2 + 100) * 256   # +100: no justo sobre una arista de cuadro
-            e.eval(f"wr32({p + 0x24},{cx & 0xFFFFFFFF})")
-            e.eval(f"wr32({p + 0x28},{(h - 200) * 256 & 0xFFFFFFFF})")
-            e.eval(f"wr32({p + 0x2C},{cz & 0xFFFFFFFF})")
+        for p in plats:
+            obj = teletransportar(e, p)
             e.esperar(90)
-            y = s(int(float(e.eval(f"return rd32({p + 0x28})")))) / 256
-            bien = abs(y - h) < 8
+            y = s(int(float(e.eval(f"return rd32({obj + 0x28})")))) / 256
+            bien = abs(y - p["h"]) < 8
             fallos += not bien
-            print(f"{nombre:7s} esperada y={h:6d}  medida y={y:8.1f}  {'ok' if bien else 'FALLA'}", flush=True)
-            r = os.path.join(CAP, f"plat_{nombre}.png")
+            print(f"{p['nombre']:8s} esperada y={p['h']:6d}  medida y={y:8.1f}  {'ok' if bien else 'FALLA'}", flush=True)
+            r = os.path.join(CAP, f"plat_{p['nombre']}.png")
             e.captura(r)
             capturas.append(r)
     hoja(os.path.join(CAP, "plat_hoja.png"), 4, capturas)
     print("plataformas con fallo:", fallos)
+    return fallos
 
 
 if __name__ == "__main__":
     modo = sys.argv[1] if len(sys.argv) > 1 else ""
+    nivel = cargar(sys.argv[2]) if len(sys.argv) > 2 else cargar()
     if modo == "disco":
-        print("disco plataformas:", armar_disco())
-    elif modo == "probar":
-        from emu import Emu
-        from explorar import recorrer
-        ruta = armar_disco()
-        with Emu(iso=ruta, log="nivel_plataformas.log", extra=("-fastboot",), ui=True) as e:
-            recorrer(e, "plat_arranque", "w2160 c CROSS w300 START w60 CROSS w240 c w1300 c")
-            input("jugando el nivel de plataformas; Enter en esta consola para cerrar... ")
+        print("disco plataformas:", armar_disco(nivel))
     elif modo == "ver":
-        ver()
+        ver(nivel)
     else:
         print(__doc__)
