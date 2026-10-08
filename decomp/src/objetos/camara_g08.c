@@ -700,8 +700,10 @@ static void mirar(Objeto *o) {
 #define MIRA_ARRIBA 0x6000 /* MOD: cuanto sube el punto de mira (16.16; 0x10000 = 1 unidad) */
 
 extern s32 D_8007CA54, D_8007CA58;   /* botones de arriba / recien apretados */
+extern u8 D_8007CCBC[], D_8007CD18[]; /* entornos de dibujo de las dos paginas; +0x18 = borrar el fondo */
 
-/* MOD: camara libre. SELECT la prende y la apaga (al apagarla vuelve a seguir a Sabrina). Mientras esta
+/* MOD: camara libre. SELECT la prende y la apaga (al apagarla vuelve a seguir a Sabrina). Prendida, el juego
+ * borra el fondo en cada cuadro: sin cielo (camara fuera del mapa) los cuadros viejos se quedaban pegados. Mientras esta
  * prendida el mando no llega a Sabrina (solo START): flechas arriba/abajo avanzan y retroceden hacia donde
  * mira, izquierda/derecha giran, triangulo/equis miran arriba/abajo, L2/R2 van de lado, L1/R1 suben y
  * bajan y cuadrado va 4 veces mas rapido. */
@@ -724,6 +726,8 @@ static void __attribute__((noinline)) camara_libre(Objeto *o) {
     o->z += (d[2] * av + l[2] * la) << vel;
     ojo_camara(o);
     mirar(o);
+    D_8007CCBC[0x18] = 1;
+    D_8007CD18[0x18] = 1;
     D_8007CA50 &= 0x100;
     D_8007CA54 = 0;
     D_8007CA58 &= 0x800;
@@ -764,6 +768,8 @@ s32 func_80035314(Objeto *o) {
         e->_20 ^= 1;
         if (!e->_20) {
             o->estado = 0;
+            D_8007CCBC[0x18] = 0;
+            D_8007CD18[0x18] = 0;
         }
     }
     e->_26[0] = n;
