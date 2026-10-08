@@ -7,6 +7,9 @@ extern u16 D_800D5822;
 extern u32 D_800D5824;
 extern u32 D_800D582C;
 extern s16 D_800D5848;
+extern char D_8007C930[];            /* el nombre del archivo del video */
+#define Afirmar Afirmar3
+extern void Afirmar3(s32 cond, char *archivo, s32 linea) __asm__("Afirmar");
 
 s32 func_8005CEBC(void) {
     s32 sp18;
@@ -19,7 +22,7 @@ s32 func_8005CEBC(void) {
     var_s0 = 0x800000;
 loop_3:
     if (StGetNext((s32) &sp18, (s32) &sp1C) == 0) {
-        Afirmar((sp18 & 0x80000000) == 0x80000000);
+        Afirmar((sp18 & 0x80000000) == 0x80000000, D_8007C930, 0x384);
         D_800D582C += 1;
         if ((D_800D5824 - M2C_FIELD(sp1C, u32 *, 8)) == 0xE) {
             func_8005D504();

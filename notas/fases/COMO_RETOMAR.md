@@ -1010,3 +1010,12 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
   "TODO FIN" de la anterior. Al terminar: `py verif/anotar.py build/cola_0810.txt` y lo mismo con `cola_0810b.txt`.
 - Lo que queda (14) es limite ya documentado: BuclePrincipal y main no vuelven, setjmp y manejador de excepciones en
   asm, trampolines de BIOS/PCdrv, func_80052114/40/84 (usan v1 del que llama), func_80052388.
+
+### 08-10 NOCHE: PARADO A MANO (Meme, RAM llena)
+
+**99.4 % (79.9 reales + 19.4 sint, 1024 de 1034), SIN commitear.** Anotadas en auditoria.tsv las colas 0810 y 0810b.
+- WSL apagado a mano (`wsl --shutdown`); la cola `verif/lanzar_0810d.sh` (cortes que faltan de BuclePrincipal, log
+  `build/cola_corte2.txt`, y despues mutantes del video `lanzar_0810c.sh`) se mato al empezar: relanzarla por WMI.
+- func_8005CEBC salio DISTINTO en 1 de 199 variantes (la que hace fallar la afirmacion): el C llamaba a Afirmar sin
+  archivo ni linea. Arreglado en `src/auto/func_8005CEBC.c` (alias Afirmar3 con D_8007C930 y 0x384), FALTA verificarlo.
+- Mutantes vivos por revisar: func_8001FD50 (4 de 12) y func_800593E0 (1 de 8), en `build/cola_0810.txt`.

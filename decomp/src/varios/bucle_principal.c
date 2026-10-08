@@ -97,31 +97,56 @@ extern void ReproducirSTR(char *video, s32 cuadros);
 extern void func_800219F8(void);
 extern void func_8004E6C0(void *yo, s32 liberar);
 
-s32 BuclePrincipal(void) {
-    Rect pic, tex;
-    char ruta[0x80];
-    void *juego[3];
-    u32 base;
-    s32 libre, v;
-    void *datos;
+/* El marco va a mano (stub en asm con el de la original: 0x1B8, s0/s1/ra en 0x10/0x14/0x18) y el cuerpo en C
+ * recibe la direccion de ese marco: el objeto del juego vive en sp+0xB4 de la original y su direccion queda en
+ * D_8007C9DC, asi que tiene que caer en el mismo lugar. La ruta va en sp+0x24 y las dos areas de VRAM en sp+0xA4
+ * y sp+0xAC.
+ * Lo primero (el monton y las dos llamadas de arranque) va aparte, en preparar, con solo base y libre vivos:
+ * el setjmp del modulo de interrupciones (que corre adentro de func_800212D4) guarda s1-s7 en un global, y en la
+ * original ahi estan libre (s1) y lo que traia el que llamo (s2-s7). En una sola funcion GCC ocupaba s2 con el
+ * marco y s1 con base. */
+/* la original solo usa s0 y s1: s2-s7 y fp quedan reservados en todo el archivo (GCC no los usa ni los salva) */
+register u32 r_s2 asm("$18");
+register u32 r_s3 asm("$19");
+register u32 r_s4 asm("$20");
+register u32 r_s5 asm("$21");
+register u32 r_s6 asm("$22");
+register u32 r_s7 asm("$23");
+register u32 r_fp asm("$30");
 
-    pic = D_8007C754;
-    tex = D_8007C75C;
+__attribute__((noinline, used)) static s32 preparar(void) {
+    u32 base;
+    register s32 libre asm("$17");
+
     base = (D_80060A08 & ~0xF) + 0x10;
     libre = ((D_800609F0 - (D_800609F8 << 10)) & ~0xF) - base;
     InitHeap(base, D_800609FC << 10);
     printf(D_8006296C, D_80060A08);
     printf(D_80062978, base, D_800609FC << 10);
+    __asm__ volatile("" : "+r"(libre));
     func_800212D4();
     func_80021C48(0x400);
+    return libre;
+}
+
+__attribute__((noinline, used)) static s32 bucle_cuerpo(u8 *marco, s32 libre) {
+    s32 v;
+    void *datos;
+#define RUTA ((char *)(marco + 0x24))
+#define PIC ((Rect *)(marco + 0xA4))
+#define TEX ((Rect *)(marco + 0xAC))
+#define JUEGO ((void **)(marco + 0xB4))
+
+    *PIC = D_8007C754;
+    *TEX = D_8007C75C;
 
     /* el objeto del juego: primero con la tabla de la clase base y enseguida con la suya (constructor en linea) */
-    juego[0] = &D_8007C9D8;
-    *(void * volatile *)&juego[1] = D_80060A58;
-    juego[2] = D_800758F8;
-    *(void * volatile *)&juego[1] = D_80075900;
-    func_8004E72C(juego);
-    D_8007C9DC = juego;
+    JUEGO[0] = &D_8007C9D8;
+    *(void * volatile *)&JUEGO[1] = D_80060A58;
+    JUEGO[2] = D_800758F8;
+    *(void * volatile *)&JUEGO[1] = D_80075900;
+    func_8004E72C(JUEGO);
+    D_8007C9DC = JUEGO;
     v = (*(Metodo *)(*(u8 **)((u8 *)D_8007C9DC + 8) + 0x30))(D_8007C9DC, libre - D_8007CC28 - 0x1400);
     (*(Metodo *)(*(u8 **)((u8 *)D_8007C9DC + 8) + 0x38))(D_8007C9DC, v);
     func_8004DC78();
@@ -142,8 +167,8 @@ s32 BuclePrincipal(void) {
         func_80019CC4();
         CargarSonidoNivel(tabla_sonido_niveles[nivel_actual]);
 
-        sprintf(ruta, D_8007C764, D_8007A1D0, tabla_pic_niveles[nivel_actual]);
-        datos = CargarArchivoEntero(ruta, 0);
+        sprintf(RUTA, D_8007C764, D_8007A1D0, tabla_pic_niveles[nivel_actual]);
+        datos = CargarArchivoEntero(RUTA, 0);
         if (datos == NULL) {
             HerramientaConvertirPIC(tabla_pic_niveles[nivel_actual]);
             printf(D_800629D4);
@@ -151,11 +176,11 @@ s32 BuclePrincipal(void) {
             }
         }
         func_800219C8();
-        SubirAVRAM(&pic, datos);
+        SubirAVRAM(PIC, datos);
         Liberar(datos);
 
-        sprintf(ruta, D_8007C764, D_8007A1D0, tabla_tex_niveles[nivel_actual]);
-        datos = CargarArchivoEntero(ruta, 0);
+        sprintf(RUTA, D_8007C764, D_8007A1D0, tabla_tex_niveles[nivel_actual]);
+        datos = CargarArchivoEntero(RUTA, 0);
         if (datos == NULL) {
             func_80021190();
             func_800185A8(tabla_sonido_niveles[nivel_actual]);
@@ -165,7 +190,7 @@ s32 BuclePrincipal(void) {
             }
         }
         D_8007C9FE = 1;
-        SubirAVRAM(&tex, datos);
+        SubirAVRAM(TEX, datos);
         Liberar(datos);
         D_8007CAE8++;
         CargarINO(tabla_sonido_niveles[nivel_actual]);
@@ -219,6 +244,27 @@ s32 BuclePrincipal(void) {
         D_8007CC04 = 0;
     } while (jugando == 0);
 
-    func_8004E6C0(juego, -1);
+    func_8004E6C0(JUEGO, -1);
     return 0;
 }
+
+__attribute__((naked))
+s32 BuclePrincipal(void) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x1B8\n"
+            "\tsw $31, 0x18($sp)\n"
+            "\tsw $17, 0x14($sp)\n"
+            "\tsw $16, 0x10($sp)\n"
+            "\tjal preparar\n"
+            "\tnop\n"
+            "\taddu $5, $2, $0\n"
+            "\tjal bucle_cuerpo\n"
+            "\taddu $4, $sp, $0\n"
+            "\tlw $31, 0x18($sp)\n"
+            "\tlw $17, 0x14($sp)\n"
+            "\tlw $16, 0x10($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x1B8\n"
+            ".set reorder");
+}
+

@@ -19,6 +19,9 @@ void func_800106C8(void) {
         (*c)();
     }
     BuclePrincipal();
+    /* 08-10: la original llama con jal y conserva su marco; sin esto GCC salta al final ya sin marco y el bucle
+     * corre 0x18 bytes mas arriba en la pila (D_8007C9DC, el objeto del juego en su pila, quedaba distinto) */
+    __asm__ volatile("");
 }
 
 /* Anota el objeto global (primero D_80060A58 y enseguida D_800758CC) y registra su destructor. */

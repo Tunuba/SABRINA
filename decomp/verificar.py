@@ -967,7 +967,7 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     if error is None and interrupcion_mala:
         error = interrupcion_mala[0]
     if error is None and CORTE and not cortada["si"]:
-        error = "no llego al corte %08x:%d (paso %d veces)" % (CORTE[0], CORTE[1], cortada["veces"])
+        error = "no termino: no llego al corte %08x:%d (paso %d veces; con no termino sube el escalon de instrucciones)" % (CORTE[0], CORTE[1], cortada["veces"])
     if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN and not cortada["si"]:
         error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     # los registros que la convencion obliga a conservar (s0-s7, gp, sp, fp), como quedan al volver (04-10 noche: un
