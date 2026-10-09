@@ -228,7 +228,7 @@ DanoPorSuelo	1864	IGUAL	src/colision/suelo_dano_g13.c	8 de 8 capturas y 707 de 7
 func_80021A30	100	IGUAL	src/Screen/cuadro_g13.c	6 de 6 capturas (sin variantes: lenta)
 func_8001EDE4	1112	IGUAL_V0	src/Particle/particula_g13.c	8 de 8 capturas iguales salvo v0 (void)
 func_8002805C	636	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 772 de 772 variantes iguales
-Reservar	584	IGUAL	src/varios/reservar_g13.c	8 de 8 capturas y 702 de 702 variantes iguales
+Reservar	584	IGUAL	src/varios/reservar_g13.c	10 de 10 capturas y 960 de 960 variantes iguales
 func_800460CC	860	IGUAL_V0	src/objetos/enemigo_iniciar_g13.c	2 de 2 capturas iguales salvo v0 (void)
 func_8004EEF4	968	IGUAL_V0	src/varios/tarjeta_lista_g13.c	2 de 2 capturas iguales salvo v0 (void)
 func_80012B0C	372	IGUAL	src/libgpu/reset_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
@@ -264,7 +264,7 @@ func_8004DAC4	168	IGUAL	src/objetos/puerta_mundo_g13.c	2 de 2 capturas y 208 de 
 func_8003DC48	252	IGUAL	src/audio/iniciar_sonido_g13.c	1 de 1 capturas (sin variantes: lenta)
 func_8004EB04	204	IGUAL	src/varios/tarjeta_lista_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
 func_8003EAF8	36	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 63 de 63 variantes iguales
-func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 116 de 116 variantes iguales
+func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_80055A38	448	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
 func_8003E914	68	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 35 de 35 variantes iguales
 func_8005DDE8	36	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 81 de 81 variantes iguales
