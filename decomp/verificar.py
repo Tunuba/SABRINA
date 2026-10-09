@@ -111,6 +111,12 @@ PCDRV = MODELOS and os.environ.get("SABRINA_SIN_PCDRV") != "1"
 # 08-10: SABRINA_PCDRV_FALLA=1 hace que la PC conteste que no a cada PCcreat (v0=-1), para recorrer la rama
 # de error de func_800294F0 (con el modelo normal siempre sale bien y un mutante ahi quedaba vivo).
 PCDRV_FALLA = os.environ.get("SABRINA_PCDRV_FALLA") == "1"
+# - GTE con la pantalla del juego (08-10): las capturas no guardan el estado del coprocesador geometrico y arrancaba
+#   en ceros: H = 0 y el centro de pantalla en (0, 0), asi que cada triangulo se proyectaba a un punto y en
+#   func_8001FD50 nunca salian lados largos (los partidores, el recorte por z). Con SABRINA_GTE_JUEGO=1 arranca con
+#   lo que el juego pone siempre (llamadas en 0x8001802C y 0x80021320): SetGeomOffset(0x100, 0x6E), SetGeomScreen(0x190).
+#   Igual para la original y el C.
+GTE_JUEGO = os.environ.get("SABRINA_GTE_JUEGO") == "1"
 TARJETA = MODELOS and os.environ.get("SABRINA_SIN_TARJETA") != "1"
 MALLOC = MODELOS and os.environ.get("SABRINA_SIN_MALLOC") != "1"
 MONTON_BIOS = 0x81100000
@@ -931,6 +937,8 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
     uc.hook_add(UC_HOOK_INTR, interrupcion)
     # el coprocesador geometrico, emulado en Python: en el codigo del juego y en el C compilado
     est_gte = gte.poner_ganchos(uc, direcciones_cop2() | cop2_en_binario(codigo_c or b""))
+    if GTE_JUEGO:
+        est_gte.ctrl[24], est_gte.ctrl[25], est_gte.ctrl[26] = 0x100 << 16, 0x6E << 16, 0x190   # ver GTE_JUEGO
     # las escrituras al cop0 (mtc0), en orden, en el ejecutable y en el C
     cop0 = []
 

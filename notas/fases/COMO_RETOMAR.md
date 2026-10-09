@@ -1039,3 +1039,19 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
 - BuclePrincipal: cortes en `build/cola_corte2.txt` (corriendo); al terminar, mutantes del video (cola_0810c.txt).
 - func_8001FD50: el mutante "7 por 8" vive porque ninguna captura tiene un triangulo con el lado 0-2 largo (el +7
   de la tabla D_80068878); falta una captura con un triangulo grande muy cerca de la camara.
+
+### 08-10 NOCHE 3: PARADO A MANO (EMPIEZA AQUI)
+
+**99.4 % (79.9 reales + 19.5 sint), 1030 de 1034, todo pusheado.** Meme pidio parar; colas paradas y WSL apagado.
+- **GTE con la pantalla del juego** (`SABRINA_GTE_JUEGO=1` en verificar.py): las capturas no guardan el estado del
+  coprocesador y arrancaba en ceros (H = 0, centro en 0,0): cada triangulo se proyectaba a un punto. Con los valores
+  del juego (SetGeomOffset(0x100, 0x6E), SetGeomScreen(0x190)) func_8001FD50 sigue IGUAL (22/22, 832/832) y el
+  mutante "7 por 8" de la tabla de partidores ya muere. Vivos: bordes exactos (z 0x400 y 0xB, lado 0x3D) y el
+  bit de semitransparencia (`codigo |= 2`, ninguna textura de las capturas tiene banderas & 1).
+- Repetidas con la pantalla del juego, todas IGUAL: func_800177B4, func_80017B5C, func_80017B7C, func_8001C404,
+  func_8001F6C8, func_8001FA3C, func_80020294, func_800204F0, func_80024A48. Faltan las 7 de partir_*.c
+  (`build/gte2.sh` las corre de lista_gte.txt; parado en func_80057F34). Si pasan, dejar GTE_JUEGO por defecto.
+- **BuclePrincipal**: el corte 0x8004E268:1 no dejo resultado (lo corto el `timeout 10800` sin escribir nada);
+  faltan 0x8004B320:1 y 0x80019D80:30. Subir el timeout o bajar SABRINA_VARIANTES antes de relanzar
+  `verif/lanzar_0810d.sh` (despues corre solo los mutantes del video, lanzar_0810c.sh).
+- Lo demas que queda (func_80017B8C, func_80052140/84) son trozos que se copian a la BIOS: limite.
