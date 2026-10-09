@@ -8,6 +8,16 @@ abre el juego con tu mapa.
 El mapa de ejemplo es `niveles\castillo.json`: un patio amurallado con estanque, una puerta, un camino, una
 fortaleza con salon de columnas y habitaciones, y una muralla con rampas hasta una torre.
 
+El segundo mapa es `niveles\greendale.json`: **Greendale entero, el pueblo de Sabrina, bajo una niebla cerrada al
+estilo Silent Hill**. Sabrina aparece en el jardin de la casa Spellman (la funeraria, con su torreon y su porche) y
+detras esta el cementerio con la cripta. Main Street tiene faroles, la libreria Cerberus, el diner del doctor
+Cerberus, el cine Paramount con su marquesina, la farmacia y el ayuntamiento con la torre del reloj; enfrente,
+Baxter High con su portico de columnas y su asta. La calle Kinkle cruza el pueblo hacia la Academia de Artes
+Ocultas (dos torres) y la Iglesia de la Noche, cuyo campanario se sube por diez peldanos que flotan alrededor de
+la torre hasta la campana dorada: esa es la meta. Al sur esta el bosque de Greendale con arboles muertos, el rio
+Sweetwater (se cae y se sale saltando) con su puente de tablones y, al otro lado, la boca oxidada de las minas
+Kinkle contra la colina. Lo genera `scripts\mapa_greendale.py` (91 bloques, el 97 % del espacio).
+
 > Solo es **arquitectura y cielo**: no hay enemigos, gemas ni objetos. Cada mapa reemplaza el nivel del HUB
 > (`H1W.INO`) dentro de una copia del disco; tu disco original no se toca.
 
@@ -44,6 +54,8 @@ Si algo falla, el propio script dice que hacer. Los discos que se generan (`disc
 | `EDITOR_NIVEL.bat` | Abre el editor (con `niveles\plataformas.json`). Puedes pasarle otro: `EDITOR_NIVEL.bat niveles\castillo.json` |
 | `MAPA_CASTILLO.bat` | Abre el juego directamente en el mapa del castillo |
 | `MAPA_CASTILLO_CAMARA_LIBRE.bat` | Lo mismo, con la camara libre (SELECT la prende y la apaga) |
+| `MAPA_GREENDALE.bat` | Abre el juego en Greendale, el pueblo de Sabrina bajo la niebla |
+| `MAPA_GREENDALE_CAMARA_LIBRE.bat` | Greendale con la camara libre |
 | `NIVEL_PLATAFORMAS.bat` | Un nivel de saltos entre plataformas |
 | `CAMARA_LIBRE.bat` | El juego normal con la camara libre |
 | `ARRANCAR.bat` | El juego con los mods de siempre (menus en espanol, etc.) |
@@ -125,7 +137,8 @@ Cada nivel es un JSON en `niveles\` (un bloque por linea):
 `h` es la altura de la tapa con **-Y hacia arriba** (un muro de 1000 de alto sobre el suelo tiene `h: -1000`).
 Opcionales: `prof`, `tex_tapa`, `tex_lado`, `h2` + `eje` (rampa), `techo`, `paso`, `paso_lado`, `pared`.
 `scripts\mapa_castillo.py` genera el castillo con funciones de ayuda (`suelo`, `muro`, `rampa`): es un buen punto
-de partida para hacer mapas por codigo. Tambien por linea de comandos:
+de partida para hacer mapas por codigo. `scripts\mapa_greendale.py` genera el pueblo con otras (`edificio`,
+`tejado`, `escalon`, `arbol`, `farol`) y al final dice cuanto ocupa del .INO. Tambien por linea de comandos:
 
 ```
 python scripts\nivel_plataformas.py disco niveles\castillo.json     arma el disco

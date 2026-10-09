@@ -37,9 +37,10 @@ El parche es `mods\sabrina_todo.ppf`. Tambien sirve con PPF-O-Matic sobre la pis
 ## Editor de niveles
 
 Un editor para armar tus propios mapas (suelos, paredes con colision, rampas, techos, texturas del juego y cielo
-propio) y jugarlos en el emulador, con un mapa de ejemplo (`niveles\castillo.json`) y una camara libre
-(`mods\camara_libre.ppf`). Instalacion ligera: `.\arrancar.ps1 -Editor -SoloInstalar`; despues, doble clic en
-`EDITOR_NIVEL.bat` o `MAPA_CASTILLO.bat`. Todo explicado en [GUIA_EDITOR.md](GUIA_EDITOR.md).
+propio) y jugarlos en el emulador, con dos mapas de ejemplo (`niveles\castillo.json` y `niveles\greendale.json`,
+el pueblo de Sabrina bajo la niebla) y una camara libre (`mods\camara_libre.ppf`). Instalacion ligera:
+`.\arrancar.ps1 -Editor -SoloInstalar`; despues, doble clic en `EDITOR_NIVEL.bat`, `MAPA_CASTILLO.bat` o
+`MAPA_GREENDALE.bat`. Todo explicado en [GUIA_EDITOR.md](GUIA_EDITOR.md).
 
 ## Carpetas
 

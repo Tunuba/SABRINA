@@ -1154,3 +1154,27 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
   faltan 0x8004B320:1 y 0x80019D80:30. Subir el timeout o bajar SABRINA_VARIANTES antes de relanzar
   `verif/lanzar_0810d.sh` (despues corre solo los mutantes del video, lanzar_0810c.sh).
 - Lo demas que queda (func_80017B8C, func_80052140/84) son trozos que se copian a la BIOS: limite.
+
+### 09-10: GREENDALE, EL PUEBLO ENTERO BAJO LA NIEBLA (EMPIEZA AQUI)
+
+Meme pidio (antes de irse, con luz verde a todo) un nivel nuevo de una vez: Greendale completo, como Silent Hill
+pero en Sabrina. GitHub no tenia nada nuevo del amigo (origin/main en a8bd8ed, arbol limpio). La descompilacion sigue
+igual que en "08-10 NOCHE 3" (99.4 %, 1030 de 1034): esta sesion no toco el C ni las colas.
+- **`scripts/mapa_greendale.py` genera `niveles/greendale.json`** (91 bloques, 304.999 de 313.628 bytes del .INO,
+  97.2 %): casa Spellman con torreon y porche, cementerio con lapidas y cripta, setos, Main Street con faroles,
+  Cerberus Books, diner, cine Paramount con marquesina, farmacia, ayuntamiento con torre del reloj, Baxter High con
+  portico de columnas, segundo piso y asta, calle Kinkle, Academia de Artes Ocultas con dos torres y portal, Iglesia
+  de la Noche con campanario y diez peldanos flotantes hasta la campana (la meta), bosque con arboles muertos (4 con
+  copa), rio Sweetwater hundido 400 con puente de tablones, boca de las minas Kinkle (oxido) contra la colina. Cielo
+  de niebla (los tres colores grises). validar: 0 errores, 0 avisos (todo se alcanza desde la salida).
+- Atajos `MAPA_GREENDALE.bat` y `MAPA_GREENDALE_CAMARA_LIBRE.bat`; guia en GUIA_EDITOR.md y README.
+- Para que cupiera: el nivel vacio (cielo + Sabrina) ya ocupa 141.691 bytes y cada triangulo cuesta ~45; un suelo
+  de 4096x4096 son ~8 K, una casa de 1024 ~2 K. Se gasto en: lados de 1024 en suelos y en lo que se ve de lejos
+  (Academia, torres, ayuntamiento), sin tejados volados grandes (la tapa lleva tejas), peldanos como losas de 250
+  con cara inferior en vez de bajar hasta el suelo, jardin y cementerio en un solo suelo. La primera version (100
+  bloques, 5134 triangulos) se paso un 18 %; medir por bloque con agregar_bloque es lo que sirve para recortar.
+- Verificacion: `py scripts/nivel_plataformas.py ver niveles/greendale.json` (emulador sin ventana, teletransporta a
+  Sabrina a cada bloque y comprueba la altura; capturas en notas/capturas/plat_*.png y plat_hoja.png). RESULTADO:
+  **91 de 91 bloques pisan a su altura, 0 fallos**, 3622 triangulos en 154 celdas; en las capturas se ve la niebla, los
+  edificios apagados, los troncos y la boca roja de la mina. Falta solo que Meme lo juegue (MAPA_GREENDALE.bat) y
+  diga que cambiar; si pide mas cosas, hay 8.6 K libres (unos 190 triangulos): quitar faroles o arboles si no cabe.
