@@ -4,7 +4,7 @@
 
 
 
-static void *(*D_8006CF98)() = NULL;
+extern void *(*D_8006CF98)();
 
 s32 func_80027AD0(s32 arg0, s32 arg1, s32 arg2) {
     void *temp_v1;

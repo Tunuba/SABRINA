@@ -8,6 +8,8 @@
 #   .\arrancar.ps1 -Taller         ademas instala las herramientas para investigar el juego
 #                                  (mkpsxiso, jPSXdec, Java 21, Ghidra con el cargador de PS1,
 #                                  unos 800 MB) y saca los archivos del disco a extraido\
+#   .\arrancar.ps1 -Editor         solo lo necesario para el editor de niveles (mkpsxiso, unos 3 MB, y los
+#                                  archivos del disco en extraido\); sin Java ni Ghidra. Ver GUIA_EDITOR.md
 #   .\arrancar.ps1 -Juego ruta     usa esa copia del juego (.7z, o la carpeta con el .cue)
 #
 # El juego no viene en el repositorio. Hace falta tu propia copia, version USA (SLUS-01208),
@@ -18,6 +20,7 @@ param(
     [switch]$Original,
     [switch]$SoloInstalar,
     [switch]$Taller,
+    [switch]$Editor,
     [string]$Juego = ''
 )
 
@@ -149,11 +152,21 @@ foreach ($lnk in @((Join-Path $RAIZ 'Sabrina.lnk'), (Join-Path ([Environment]::G
 Ok 'Sabrina.lnk en el escritorio y en esta carpeta: doble clic y a jugar'
 
 # ---------------------------------------------------------------- Taller
+if ($Taller -or $Editor) {
+    Paso 'Archivos del disco (mkpsxiso)'
+    Bajar 'https://github.com/Lameguy64/mkpsxiso/releases/download/v2.30/mkpsxiso-2.30-win64.zip' (Join-Path $ZIP 'mkpsxiso.zip')
+    if (-not (Test-Path (Join-Path $HERR 'mkpsxiso'))) { Expand-Archive (Join-Path $ZIP 'mkpsxiso.zip') (Join-Path $HERR 'mkpsxiso') -Force }
+    $ext = Join-Path $RAIZ 'extraido'
+    if (-not (Test-Path (Join-Path $ext 'sabrina.xml'))) {
+        Write-Host '   sacando los archivos del disco a extraido\ ...'
+        $dump = Get-ChildItem (Join-Path $HERR 'mkpsxiso') -Recurse -Filter 'dumpsxiso.exe' | Select-Object -First 1
+        & $dump.FullName -l -x $ext -s (Join-Path $ext 'sabrina.xml') $CUE | Out-Null
+    }
+    Ok 'archivos del juego en extraido\ (los scripts de scripts\ trabajan sobre ellos)'
+}
 if ($Taller) {
     Paso 'Herramientas del taller'
     $gh = @{ 'User-Agent' = 'sabrina-arrancar' }
-    Bajar 'https://github.com/Lameguy64/mkpsxiso/releases/download/v2.30/mkpsxiso-2.30-win64.zip' (Join-Path $ZIP 'mkpsxiso.zip')
-    if (-not (Test-Path (Join-Path $HERR 'mkpsxiso'))) { Expand-Archive (Join-Path $ZIP 'mkpsxiso.zip') (Join-Path $HERR 'mkpsxiso') -Force }
     Bajar 'https://github.com/m35/jpsxdec/releases/download/v2.1/jpsxdec_v2.1-beta.zip' (Join-Path $ZIP 'jpsxdec.zip')
     if (-not (Test-Path (Join-Path $HERR 'jpsxdec'))) { Expand-Archive (Join-Path $ZIP 'jpsxdec.zip') (Join-Path $HERR 'jpsxdec') -Force }
     Bajar 'https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jdk/hotspot/normal/eclipse?project=jdk' (Join-Path $ZIP 'jdk21.zip')
@@ -172,14 +185,7 @@ if ($Taller) {
             Expand-Archive (Join-Path $ZIP 'psx_ldr.zip') (Join-Path $gdir 'Ghidra\Extensions') -Force
         } else { Aviso "El cargador de PS1 todavia no tiene version para Ghidra $gver" }
     }
-    Ok 'mkpsxiso, jPSXdec, Java 21 y Ghidra con el cargador de PS1'
-    $ext = Join-Path $RAIZ 'extraido'
-    if (-not (Test-Path (Join-Path $ext 'sabrina.xml'))) {
-        Write-Host '   sacando los archivos del disco a extraido\ ...'
-        $dump = Get-ChildItem (Join-Path $HERR 'mkpsxiso') -Recurse -Filter 'dumpsxiso.exe' | Select-Object -First 1
-        & $dump.FullName -l -x $ext -s (Join-Path $ext 'sabrina.xml') $CUE | Out-Null
-    }
-    Ok 'archivos del juego en extraido\ (los scripts de scripts\ trabajan sobre ellos)'
+    Ok 'jPSXdec, Java 21 y Ghidra con el cargador de PS1'
 }
 
 # ---------------------------------------------------------------- Jugar

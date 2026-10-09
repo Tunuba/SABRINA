@@ -1,0 +1,73 @@
+"""Abre el juego con ventana y sonido, ya pasada la intro, para jugar una de las dos pruebas propias.
+
+Uso: python jugar.py camara     camara libre (disco\\libre.cue, el ejecutable en C decomp\\build\\SLUS_libre.exe)
+     python jugar.py nivel      nivel de plataformas (disco\\sabrina_plataformas.cue)
+     python jugar.py nivel niveles\\castillo.json [--libre]    cualquier nivel del editor (--libre: con la camara libre)
+  --rearmar  vuelve a armar el disco aunque ya exista
+
+Camara libre: SELECT la prende y la apaga; con ella prendida las flechas arriba/abajo avanzan, izquierda/derecha
+giran, triangulo/equis miran arriba/abajo, L2/R2 van de lado, L1/R1 suben/bajan y cuadrado va mas rapido.
+Se cierra al cerrar la ventana del emulador. Los atajos son CAMARA_LIBRE.bat y NIVEL_PLATAFORMAS.bat.
+"""
+import os
+import subprocess
+import sys
+
+import disco
+from emu import RAIZ, Emu
+from explorar import recorrer
+
+# lo mismo que mini_nivel.py / nivel_plataformas.py: pasar el titulo, "New game" y la intro del HUB
+PASOS_HASTA_EL_HUB = "w2160 CROSS w300 START w60 CROSS w240 w1300"
+
+
+def disco_camara(rearmar):
+    """La camara libre: mods\\camara_libre.ppf sobre el disco original (lo normal) o, si no hay parche, el ejecutable
+    compilado del C descompilado (decomp\\build\\SLUS_libre.exe)."""
+    import nivel_plataformas
+    cue = nivel_plataformas.CUE_CAMARA_LIBRE
+    if rearmar:
+        for ruta in (cue, nivel_plataformas.PISTA_CAMARA_LIBRE):
+            if os.path.exists(ruta):
+                os.remove(ruta)
+    if os.path.exists(cue):
+        return cue
+    try:
+        nivel_plataformas.asegurar_camara_libre()
+        return cue
+    except FileNotFoundError:
+        pass
+    exe = os.path.join(RAIZ, "decomp", "build", "SLUS_libre.exe")
+    if not os.path.exists(exe):
+        sys.exit(f"no hay mods\\camara_libre.ppf ni {exe}")
+    subprocess.run([sys.executable, os.path.join(RAIZ, "scripts", "armar_disco_c.py"), exe, "libre"], check=True)
+    return cue
+
+
+def disco_nivel(rearmar, ruta_json=None, libre=False):
+    import nivel_plataformas
+    if ruta_json:             # un nivel del editor: se rearma siempre (cuesta unos segundos)
+        plats, cielo = nivel_plataformas.cargar_nivel(ruta_json)
+        return nivel_plataformas.armar_disco(plats, "mapa", cielo, camara_libre=libre)
+    if rearmar or not os.path.exists(nivel_plataformas.CUE_PLAT):
+        nivel_plataformas.armar_disco()
+    return nivel_plataformas.CUE_PLAT
+
+
+if __name__ == "__main__":
+    modos = {"camara": disco_camara, "nivel": disco_nivel}
+    if len(sys.argv) < 2 or sys.argv[1] not in modos:
+        print(__doc__)
+        sys.exit(1)
+    modo = sys.argv[1]
+    jsons = [a for a in sys.argv[2:] if a.lower().endswith(".json")]
+    if modo == "nivel" and jsons:
+        cue = disco_nivel("--rearmar" in sys.argv, os.path.abspath(jsons[0]), "--libre" in sys.argv)
+    else:
+        cue = modos[modo]("--rearmar" in sys.argv)
+    print(f"abriendo {os.path.basename(cue)}; espera unos 40 segundos a que pase la intro...", flush=True)
+    with Emu(iso=cue, log=f"jugar_{modo}.log", extra=("-fastboot",), puerto=8095, ui=True) as e:
+        recorrer(e, f"jugar_{modo}", PASOS_HASTA_EL_HUB)
+        e.eval("PCSX.settings.spu.Mute = false; return 'ok'")      # Emu lo deja mudo para las rondas automaticas
+        print("listo, ya puedes jugar (cierra la ventana del emulador para terminar)", flush=True)
+        e.p.wait()

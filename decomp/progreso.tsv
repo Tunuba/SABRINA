@@ -408,9 +408,9 @@ func_800294F0	40	SIN_CAPTURAS
 func_80029518	24	SIN_CAPTURAS	
 func_80029530	28	SIN_CAPTURAS	
 func_800297CC	60	NO_TERMINA	func_800297CC: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
-func_80029808	40	IGUAL	func_80029808: 8 de 8 capturas y 368 de 368 variantes iguales -> IGUAL
+func_80029808	40	IGUAL	func_80029808: 9 de 9 capturas y 414 de 414 variantes iguales -> IGUAL
 func_80029830	40	SIN_CAPTURAS	
-func_80029858	40	IGUAL	func_80029858: 8 de 8 capturas y 368 de 368 variantes iguales -> IGUAL
+func_80029858	40	IGUAL	func_80029858: 9 de 9 capturas y 414 de 414 variantes iguales -> IGUAL
 func_8002988C	144	NO_TERMINA	func_8002988C: la original no termina en el emulador (espera al hardware) -> NO_TERMINA
 func_8002991C	16	IGUAL	func_8002991C: 8 de 8 capturas y 544 de 544 variantes iguales -> IGUAL
 func_8002992C	16	IGUAL	func_8002992C: 8 de 8 capturas y 544 de 544 variantes iguales -> IGUAL
@@ -624,7 +624,7 @@ func_8003E0C4	448	YA_HECHA
 func_8003E284	40	IGUAL	func_8003E284: 6 de 6 capturas y 296 de 296 variantes iguales -> IGUAL
 func_8003E2AC	40	SIN_CAPTURAS	
 func_8003E2D4	640	IGUAL	func_8003E2D4: 1 de 1 capturas y 2 de 2 variantes iguales -> IGUAL
-func_8003E554	188	IGUAL	func_8003E554: 6 de 6 capturas y 456 de 456 variantes iguales -> IGUAL
+func_8003E554	188	IGUAL	func_8003E554: 7 de 7 capturas y 532 de 532 variantes iguales -> IGUAL
 func_8003E610	640	IGUAL	func_8003E610: 6 de 6 capturas y 375 de 375 variantes iguales -> IGUAL
 func_8003E890	132	IGUAL	func_8003E890: 6 de 6 capturas y 358 de 358 variantes iguales -> IGUAL
 func_8003E914	68	YA_HECHA	

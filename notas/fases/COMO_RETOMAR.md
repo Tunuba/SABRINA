@@ -802,6 +802,105 @@ que en el C apunta al C (en un ejecutable rearmado en su direccion daria igual),
 Cola de la PAUSA 05-10 relanzada como `verif/lanzar_pausa0510.sh` (PantallasLegales, criticas, mutantes), por WMI
 para que no muera con el turno; resultado en build/pausa_pl.txt, build/criticas*.txt y build/mut5.txt.
 
+### 05-10 TARDE, ARMADO CON C (EMPIEZA AQUI) — Meme apago la PC antes de que terminara
+
+**Que se hizo hoy:** se escribio el armado "movible": `decomp/armar_c.py` compila el C verificado y lo coloca en los huecos
+de las propias funciones originales (el .exe no puede crecer: `disco.parchar` exige el mismo tamano), dejando en cada entrada
+`j c__Nombre; nop`. Salida `decomp/build/SLUS_C.exe`; `scripts/armar_disco_c.py` arma `disco/sabrina_c.cue`.
+Con 5 funciones el juego llego al HUB. Con 698 (205 KB de C) arranca pero se CUELGA en el frame ~1240, cerca del titulo.
+No hay todavia una version jugable con todo el C.
+
+**Lo que se aprendio (la verificacion tenia puntos ciegos, el 98,8 % era optimista):**
+- Borradores de m2c con `static ... (*D_xxxx)() = NULL;` (19 archivos, ya cambiados a `extern`): era una copia propia de una
+  variable del juego, los callbacks reales nunca se llamaban. El armado ahora rechaza cualquier objeto que defina un D_ del juego.
+- m2c se come los argumentos de las llamadas a la BIOS (`DeliverEvent(0xF0000009, 0x20)` salia como `DeliverEvent()`) porque los
+  stubs `li t2,0xB0; jr t2; li t1,N` no leen a0-a3. `aridad.py` tiene ahora `ARIDAD_NOMBRE` (OpenEvent = 4, no 3) y `verificar.py`
+  compara las llamadas a la BIOS en orden (`ARIDAD_BIOS`). 10 funciones regeneradas con auto.py --solo y de vuelta a IGUAL.
+- func_800164BC (despachador de interrupciones) leia el puntero a callback con lbu en vez de lw; corregida.
+- func_800161D4 da DISTINTO con los modelos del verificador porque el modelo de VSync engancha su entrada; con
+  `SABRINA_SIN_MODELOS=1` da IGUAL (no es un error del C).
+
+**Fuera del armado por ahora** (`decomp/armar_c_excluir.txt`, con el motivo): func_80017BC0 (parche de la BIOS en InitGeom: cae
+al reinicio de la BIOS al llamar a GetC0Table), func_80017D80 y func_800189A4 (cargan del CD; tormenta de interrupciones del CD en
+el emulador real aunque Unicorn dice IGUAL). Siguen sin entender: por que fallan. Pista: la traza de entradas a funciones
+(`scripts/traza_llamadas.py`) muestra func_80016A2C repetida sin parar (tormenta de IRQ).
+
+**Como seguir:**
+1. `python scripts/lazo_armado_c.py 12` (desde Windows, tarda ~10 min por vuelta): arma, prueba que el juego ARRANQUE DE VERDAD,
+   bisecta la funcion que lo rompe y la anota en `armar_c_excluir.txt`. Termina cuando arranca. Criterio de "arranca" en
+   `scripts/biseccion_c.py` (`prueba`): a los 2300 cuadros la captura pesa > 50000 bytes (el titulo pesa ~142 KB). OJO: una
+   captura de ~63 bytes es pantalla vacia = el juego esta en la BIOS; contar cuadros NO sirve (la BIOS tambien los cuenta).
+2. Al terminar: `python scripts/prueba_juego_c.py sabrina_c.cue c` (titulo, HUB, 6 niveles; ojo, hay que arrancar desde cero, un
+   estado guardado trae el ejecutable viejo en la RAM).
+3. Investigar las excluidas, de a una, con `scripts/traza_llamadas.py` (compara entradas a funciones original contra C).
+Trampas: un emulador sin cerrar deja el puerto 8091 ocupado y el siguiente Emu habla con el viejo (`taskkill /F /IM pcsx-redux.exe`);
+`open(p,'w')` de Python en Windows convierte los saltos de linea a CRLF; una funcion sola no cabe en su propio hueco (el C ocupa mas
+que el original), por eso no se puede probar de a una: se prueba "todas menos algunas".
+
+### 07-10 MANANA, PARADO A MANO (Meme apaga la PC) — EMPIEZA AQUI
+
+**Que se hizo:** se retomo `scripts/lazo_armado_c.py` (armado con todo el C + prueba de arranque + bisecta). Resultado parcial:
+- **func_800218D4 rompia el arranque y ya esta arreglada.** `D_8007CAE6` estaba como `extern u8` sin volatile en
+  `src/auto/func_800218D4.c`: GCC saca la lectura del `do { } while (D_8007CAE6 < 2)` y espera para siempre. Unicorn no
+  lo ve porque el modelo de VBlank corre dentro de la llamada a VSync. Ahora es `extern volatile u8` y se quito de
+  `decomp/armar_c_excluir.txt` (quedan excluidas solo func_80017BC0, func_80017D80 y func_800189A4).
+- **Sigue habiendo AL MENOS otra funcion que congela el arranque.** Con las 698 funciones el juego se queda en el frame 1241.
+  La bisecta (sobre `build/armado_c_completo.txt`, 698 filas OK) dio: "sin las primeras 349" ARRANCA y "sin las primeras 174"
+  se congela, pero en el frame 1883 (otro punto, asi que puede haber DOS culpables). Culpable ubicado entre la fila 175
+  (CrearObjetoMundo) y la 349 (func_8002BB78). Se paro antes de seguir.
+- **Patron a buscar (lo mas probable):** esperas sobre variables que cambia una interrupcion y estan declaradas SIN volatile
+  (el verificador no las ve). Sospechosas por grep: D_80063914/D_80063904 (func_8001626C), D_8007CC40, D_800D52C8
+  (func_800513B4/func_800515B0), D_8006D2C8 (cdsync_g14.c), D_8006CFD8/D_8006CFC4 (mando), D_80063818/D_8006381C (cola GPU),
+  D_8007CA58, D_800D5848. OJO: no tocarlas a ciegas; confirmarlas con la bisecta o mirando el asm de la original.
+- func_8001626C y las de psyq/libetc tambien tocan contadores de interrupcion: revisar que sus globales sean volatile.
+
+**Como seguir (en este orden):**
+1. Desde PowerShell: `cd scripts; py lazo_armado_c.py 12`. Cada vuelta ~10 min, el log esta en `decomp/build/lazo_armado_c.txt`
+   (los pasos de la bisecta salen ahi). Antes: `taskkill /F /IM pcsx-redux.exe` por si quedo uno (solo puede haber UN emulador).
+   Si el log no avanza en mas de 3 min, `armar_c.py` en WSL se cuelga (dormido en poll, sin hijos): matar `py`/`python`
+   en Windows y `pkill -f armar_c.py` en WSL (`wsl -d Ubuntu`) y relanzar. Paso en la bisecta de las 10:38.
+2. Cuando el lazo anote una funcion culpable: antes de dejarla excluida, mirar su C (casi siempre falta un volatile o hay
+   una espera sobre algo de interrupcion). Si se arregla, quitarla de `armar_c_excluir.txt` y volver a correr el lazo.
+3. Al arrancar con todo: `python scripts/prueba_juego_c.py sabrina_c.cue c` (titulo, HUB y 6 niveles, desde cero).
+
+**IDEA para cambiar el juego sin esperar al armado completo (pregunta de Meme):** el armado SI se puede hacer con un grupo
+chico: `python3 armar_c.py --solo f1,f2,... --salida build/SLUS_X.exe` (en WSL, carpeta decomp). Cada funcion en C conserva las
+direcciones de datos y se llama por su direccion original, asi que convive con el resto en ensamblador (por eso la bisecta
+funciona con subconjuntos; con 5 funciones llego al HUB). Limites: (a) el exe no puede crecer: el C va en los huecos de las
+propias funciones reemplazadas y lo que no cabe se queda con la original (incluir vecinas para dar hueco); (b) los structs y
+globales tienen direccion y tamano fijos: no cambiar el tamano de un campo que leen funciones en ensamblador; (c) las pocas
+con basura de pila (ver arriba) no se pueden tocar.
+Plan propuesto: armar SOLO la camara (func_80035314, func_80036880, func_80036D58, func_80037A18, `src/objetos/camara_g08.c`)
+con `biseccion_c.prueba([...])` (arma, parcha una pista `bis`, arranca y mide), y si arranca, cambiar algo visible del C
+(distancia/altura de la camara) para ver el efecto. Despues lo mismo con la construccion de niveles. Hacerlo cuando el lazo
+no este usando el emulador.
+
+**Trampas de hoy:** `Add-Content` falla ("archivo en uso") mientras el lazo tiene abierto su log; escribir al log solo con el lazo parado.
+`sleep` largo en Bash esta bloqueado en Claude Code: usar Monitor sobre el log. El autorespaldo (commit cada ~15 min) ya subio
+el arreglo de func_800218D4 (commit 899fa66).
+
+### PLAN SIGUIENTE (acordado con Meme el 07-10): modificar el juego por grupos chicos, EMPEZAR POR LA CAMARA
+
+Idea: no esperar al armado con las 698. Armar solo un grupo (`armar_c.py --solo ...`), comprobar que arranca y llega al HUB, y
+despues cambiar una constante del C para ver el efecto en el juego (cambio de codigo real en el .exe, no de RAM).
+Pasos por grupo: (1) armar solo ese grupo, (2) `biseccion_c.prueba([...])` o `prueba_juego_c.py` para ver que arranca,
+(3) cambiar una constante visible, rearmar y mirar. Si el C no cabe en sus huecos, sumar funciones vecinas. Un solo emulador a la vez
+(parar el lazo grande antes).
+
+Grupos, de mas facil a mas dificil (los nombres salen de estas notas; el efecto exacto de cada funcion hay que confirmarlo al probar):
+1. **Camara (EMPEZAR AQUI):** func_80035314 (la camara, 3900 bytes), func_80036880, func_80036D58, func_80037A18 en
+   `src/objetos/camara_g08.c`. Cambiar distancia, altura, suavizado, seguimiento.
+2. **Dano y vida:** ActualizarBarraVida (`sabrina/vida_g13.c`), DanoPorEnemigo, DanoPorSuelo, func_80031698 y func_800349F0 (reaparicion).
+3. **Hechizos:** func_80032B98, func_8005C358 (selector), func_80038318 (carga).
+4. **Recogibles:** CrearRecogible (ojo: marco de pila a mano), RegistrarRecogible, `objetos/agarrable_g13.c`.
+5. **Construccion de niveles:** ActivarObjetosCercanos, CrearObjetoMundo, func_800252A0 (`objetos/crear_g13.c`). Los datos de cada
+   nivel (donde esta cada objeto) siguen en los archivos del disco (`notas/OBJETOS.md`, `scripts/nivel_fantasma.py`).
+6. **Movimiento de Sabrina (lo mas delicado):** func_800318F4, func_80030208, FisicaObjeto; van juntas porque func_80030208 depende de
+   la basura de pila de FisicaObjeto.
+
+Despues de la camara, seguir con el 2 y asi. Para una version de PC (idea de Meme) haria falta TODO el juego en C mas una capa nueva
+de GPU/GTE/SPU/CD/mandos y quitar los trucos de MIPS (marcos a mano, naked, registros fijos); por eso conviene terminar tambien el
+armado completo en PlayStation como prueba de que el C esta completo.
 ### 05-10 MEDIODIA, EL CHAT SE CERRO A MEDIAS (EMPIEZA AQUI)
 
 **Llamadas a la BIOS en la comparacion.** En mut5 sobrevivio quitar `FlushCache();` en func_800521AC y func_800523B4

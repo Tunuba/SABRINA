@@ -6,7 +6,7 @@
 extern s32 func_80026CFC();
 extern s32 func_80026D50();
 
-static s32 (*D_8006CFA0)() = NULL;
+extern s32 (*D_8006CFA0)();
 
 s32 func_800272B0(void *arg0, s32 arg1_reg, s32 arg2_reg) {
     s8 arg1 = (s8) arg1_reg;

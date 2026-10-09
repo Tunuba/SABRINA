@@ -5,7 +5,7 @@
 extern u8 D_8007CCB0[];
 extern s32 func_80010670();
 
-static M2C_UNK (*D_8007C9D8)() = NULL;
+extern M2C_UNK (*D_8007C9D8)();
 
 void func_80010000(void) {
     D_8007C9D8 = D_80060A58;

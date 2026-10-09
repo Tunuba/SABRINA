@@ -7,8 +7,8 @@ extern void * D_8006CF70;
 extern s32 D_8006CFC4;
 extern s32 D_8006CFDC[];
 
-static M2C_UNK (*D_8006CFA4)(s32, s32 *) = NULL;
-static M2C_UNK (*D_8006CFA8)(s32) = NULL;
+extern M2C_UNK (*D_8006CFA4)(s32, s32 *);
+extern M2C_UNK (*D_8006CFA8)(s32);
 
 s32 func_80025EF8(s32 arg0) {
     s32 *temp_a1;

@@ -8,9 +8,9 @@ extern s32 func_80029808();
 extern s32 func_80029830();
 extern s32 func_80029858();
 
-static s32 (*D_8006D020)() = NULL;
-static s32 (*D_8006D304)() = NULL;
-static s32 (*D_8006D308)() = NULL;
+extern s32 (*D_8006D020)();
+extern s32 (*D_8006D304)();
+extern s32 (*D_8006D308)();
 
 void func_8002988C(void) {
     s32 var_s0;

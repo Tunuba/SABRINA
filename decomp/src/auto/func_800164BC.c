@@ -18,7 +18,7 @@ void func_800164BC(void) {
     u32 temp_v0;
     u32 temp_v0_2;
     u32 var_s0;
-    u8 *var_s2;
+    u32 *var_s2;
 
     if (M2C_FIELD(D_80063918, u16 *, 0) == 0) {
         printf((s32) "unexpected interrupt(%04x)\n", *D_800649A4);
@@ -31,17 +31,17 @@ void func_800164BC(void) {
         do {
             var_s1 = 0;
             if (var_s0 != 0) {
-                var_s2 = D_80063918 + 4;
+                var_s2 = (u32 *)(D_80063918 + 4);
 loop_6:
                 if (var_s1 < 0xB) {
                     if (var_s0 & 1) {
                         *D_800649A4 = ~(1 << var_s1);
-                        temp_v0_3 = *var_s2;
+                        temp_v0_3 = (M2C_UNK (*)()) *var_s2;
                         if (temp_v0_3 != NULL) {
                             temp_v0_3();
                         }
                     }
-                    var_s2 += 4;
+                    var_s2 += 1;
                     var_s0 = var_s0 >> 1;
                     var_s1 += 1;
                     if (var_s0 & 0xFFFF) {

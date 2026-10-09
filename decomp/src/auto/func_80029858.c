@@ -5,5 +5,5 @@
 
 
 void func_80029858(void) {
-    DeliverEvent();
+    DeliverEvent(-0x0FFFFFFD, 0x40);
 }

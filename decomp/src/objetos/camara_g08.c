@@ -697,6 +697,41 @@ static void mirar(Objeto *o) {
     D_8007CAE4 = o->rot[0];
 }
 
+#define MIRA_ARRIBA 0x6000 /* MOD: cuanto sube el punto de mira (16.16; 0x10000 = 1 unidad) */
+
+extern s32 D_8007CA54, D_8007CA58;   /* botones de arriba / recien apretados */
+extern void ActivarObjetosCercanos(void);
+extern u8 D_8007CCBC[], D_8007CD18[]; /* entornos de dibujo de las dos paginas; +0x18 = borrar el fondo */
+
+/* MOD: camara libre. SELECT la prende y la apaga (al apagarla vuelve a seguir a Sabrina). Prendida, el juego
+ * borra el fondo en cada cuadro: sin cielo (camara fuera del mapa) los cuadros viejos se quedaban pegados. Mientras esta
+ * prendida el mando no llega a Sabrina (solo START): flechas arriba/abajo avanzan y retroceden hacia donde
+ * mira, izquierda/derecha giran, triangulo/equis miran arriba/abajo, L2/R2 van de lado, L1/R1 suben y
+ * bajan y cuadrado va 4 veces mas rapido. */
+static void __attribute__((noinline)) camara_libre(Objeto *o) {
+    s32 b = D_8007CA50;
+    s32 vel = (b & 0x80) ? 4 : 2;
+    s32 d[3], l[3], av, la, p;
+
+    o->rot[1] += (((b >> 13) & 1) - ((b >> 15) & 1)) * 24;
+    p = o->rot[0] + (((b >> 6) & 1) - ((b >> 4) & 1)) * 20;
+    if (p > -1000 && p < 1000) {
+        o->rot[0] = p;
+    }
+    func_8002205C(d, o->rot[0], o->rot[1]);
+    func_8002205C(l, 0, o->rot[1] + 0x400);
+    av = ((b >> 12) & 1) - ((b >> 14) & 1);
+    la = ((b >> 1) & 1) - (b & 1);
+    o->x += (d[0] * av + l[0] * la) << vel;
+    o->y += (d[1] * av + (((b >> 3) & 1) - ((b >> 2) & 1)) * 0x1000) << vel;
+    o->z += (d[2] * av + l[2] * la) << vel;
+    ojo_camara(o);
+    mirar(o);
+    D_8007CA50 &= 0x100;
+    D_8007CA54 = 0;
+    D_8007CA58 &= 0x800;
+}
+
 /* El paso de la camara. Mientras corre no ignora ningun tipo de triangulo. Estados: 0 sigue a Sabrina
  * desde atras (girando con los botones 1 y 2 o sola), 1 se aparta mirando a Sabrina, 2 se acerca a la
  * nuca de Sabrina, 3 vuelve atras, 4 y 5 una escena entre D_8007CBAC y D_8007CBB0, 6 y 8 se mueve hacia
@@ -727,6 +762,36 @@ s32 func_80035314(Objeto *o) {
     d = func_8001BF8C(0, 0, v[0], v[2]);
     func_8001C45C(v);
     d = (d - 0x40000) >> 4;
+    n = (D_8007CA50 >> 8) & 1;
+    if (n && !e->_26[0]) {
+        e->_20 ^= 1;
+        if (!e->_20) {
+            o->estado = 0;
+        }
+    }
+    e->_26[0] = n;
+    D_8007CCBC[0x18] = D_8007CD18[0x18] = e->_20;
+    if (e->_20) {
+        camara_libre(o);
+        /* MOD: el juego solo crea los objetos de la zona de Sabrina alrededor de la camara. Con la camara libre
+         * se crean ademas los de la zona de la camara (Sabrina "prestada" un momento a la camara) y los que
+         * rodean a Sabrina (el ojo "prestado" a Sabrina), para que no se borre nada. */
+        {
+            s32 sx = p_sabrina->x, sz = p_sabrina->z, ox = D_8006C444[0], oz = D_8006C444[2];
+
+            p_sabrina->x = o->x;
+            p_sabrina->z = o->z;
+            ActivarObjetosCercanos();
+            p_sabrina->x = sx;
+            p_sabrina->z = sz;
+            D_8006C444[0] = sx >> 8;
+            D_8006C444[2] = sz >> 8;
+            ActivarObjetosCercanos();
+            D_8006C444[0] = ox;
+            D_8006C444[2] = oz;
+        }
+        goto fin;
+    }
     switch ((u16)o->estado) {
     case 6:
         func_80036410(o, D_800C6508[0], D_800C6508[1], D_800C6508[2], D_800C64FC[0], D_800C64FC[1],
@@ -844,6 +909,8 @@ s32 func_80035314(Objeto *o) {
         if (r <= 0) {
             e->ojo[1] += r * 64;
         }
+        /* MOD: la camara mira un poco por encima de Sabrina (la posicion del ojo ya esta calculada). */
+        e->mira[1] -= MIRA_ARRIBA;
         func_80036410(o, e->ojo[0], e->ojo[1], e->ojo[2], e->mira[0], e->mira[1], e->mira[2], 3);
         func_80036524(o, e->mira[0], e->mira[1], e->mira[2]);
         if ((s8)ps[0x1D] == 13) {
@@ -947,6 +1014,7 @@ s32 func_80035314(Objeto *o) {
         ojo_camara(o);
         break;
     }
+fin:
     D_8007CBD4 = D_8007CBC0;
     return (u16)D_8007CBC0;
 }

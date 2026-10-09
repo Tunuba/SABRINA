@@ -4,7 +4,7 @@
 
 
 
-static M2C_UNK (*D_8006CF88)() = NULL;
+extern M2C_UNK (*D_8006CF88)();
 
 s32 func_80026D50(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0x53) != 0) {

@@ -129,7 +129,7 @@ def agregar_cubo(nodo, x, z, lado, alto):
                 nodo["tris"].append((a, c, d, textura) + uv + cola)
 
 
-def celdas_de_triangulos(nodo, ancho, alto):
+def celdas_de_triangulos(nodo, ancho, alto, invertida=True, solo_horizontales=True):
     """{(fila, columna): [indices de triangulo]} segun donde cae el centro de cada triangulo, con
     la posicion pasada a la escala de Sabrina (CeldaDePosicion trabaja en esa escala, no en la del
     modelo -confirmado con las pruebas de colision en vivo de antes)."""
@@ -143,37 +143,77 @@ def celdas_de_triangulos(nodo, ancho, alto):
         # Solo triangulos horizontales (piso y tapa del cubo): uno vertical (pared) en la colision de
         # suelo hace que la altura calculada salga mal y Sabrina atraviese el piso y se caiga. Las
         # paredes quedan solo para dibujar.
-        if len({verts_xyz[v][1] for v in (v0, v1, v2)}) != 1:
+        if solo_horizontales and len({verts_xyz[v][1] for v in (v0, v1, v2)}) != 1:
             continue
         cx = sum(verts_xz[v][0] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         cz = sum(verts_xz[v][1] for v in (v0, v1, v2)) / 3 * ESCALA_MUNDO
         x, z = int(cx), int(cz)
-        fila = (~((z >> 16) + 0x80) & 0xFF) >> 2
+        # Dos indexados distintos: el de 'celdas' (rango de suelo, objetos, zona) lleva la fila invertida; la
+        # colision ('listas', la usa CeldaDePosicion en el juego) la lleva derecha: (z + 0x800000) / 0x40000.
+        # Antes se usaban las dos con la invertida y la consulta de suelo miraba la celda espejo, vacia.
+        fila = (~((z >> 16) + 0x80) & 0xFF) >> 2 if invertida else (((z >> 16) + 0x80) & 0xFF) >> 2
         columna = ((x >> 16) + 0x80) >> 2
         if 0 <= fila < alto and 0 <= columna < ancho:
             reparto.setdefault((fila, columna), []).append(i)
     return reparto
 
 
-def construir_bytes():
+def celdas_de_paredes(nodo, ancho, alto, margen=400):
+    """{(fila, columna): [indices de triangulo]} de los triangulos NO horizontales (paredes), en la numeracion de
+    la colision (fila derecha). El choque de lado (FisicaObjeto -> func_8003AE84 -> func_8003A94C) solo mira la
+    lista de la celda donde EMPIEZA el segmento, unas decenas de unidades detras de Sabrina, asi que cada pared va
+    en todas las celdas que toque su caja agrandada en 'margen' (unidades del modelo; celda = 1024)."""
+    verts_xyz = [struct.unpack_from("<3h", v, 0) for v in nodo["verts"]]
+    reparto = {}
+    for i, t in enumerate(nodo["tris"]):
+        pts = [verts_xyz[v] for v in t[:3]]
+        if len({p[1] for p in pts}) == 1:
+            continue
+        xs, zs = [p[0] for p in pts], [p[2] for p in pts]
+        c0, c1 = (min(xs) - margen + 32768) // 1024, (max(xs) + margen + 32768) // 1024
+        f0, f1 = (min(zs) - margen + 32768) // 1024, (max(zs) + margen + 32768) // 1024
+        for fila in range(max(0, f0), min(alto - 1, f1) + 1):
+            for col in range(max(0, c0), min(ancho - 1, c1) + 1):
+                reparto.setdefault((fila, col), []).append(i)
+    return reparto
+
+
+ULTIMO = {}      # ULTIMO['tamano']: bytes del ultimo .INO calculado (aunque no cupiera)
+
+
+def construir_bytes(armar_nodo=None, conservar=None, sin_objetos=False, paredes=False, reemplazos=None, callar=False):
     """El H1W.INO modificado, del mismo tamano que el original (relleno con ceros al final, que el
-    juego no llega a leer)."""
+    juego no llega a leer). armar_nodo(nodo_original) -> el nodo del mundo (por defecto el piso plano
+    con el cubo); conservar = indices de modelos que no se vacian (por defecto CONSERVAR); sin_objetos =
+    ninguna celda lista objetos (el ropero, los engranajes y el cielo no se crean; la camara y Sabrina no
+    van por las celdas, el juego las crea siempre). Lo usa mini_nivel.py. paredes = los triangulos no horizontales
+    tambien entran en la colision (necesitan su normal, ejes y tipo bien puestos: nivel_plataformas.cola_de_triangulo).
+    reemplazos = {indice de modelo: armar(nodo_original) -> nodo nuevo}: sustituye ese modelo (por ejemplo el cielo)."""
     s = ino.leer_ino(NIVEL)
     g = s["cuadricula"]
+    conservar = CONSERVAR if conservar is None else conservar
 
     idx_mundo = next(i for i, (nom, _nd) in enumerate(s["modelos"]) if nom.upper().endswith(NIVEL + ".BUD"))
     nombre_mundo, nodos_mundo = s["modelos"][idx_mundo]
-    nodo = nodo_plano(nodos_mundo[0])
-    if CUBO:
-        agregar_cubo(nodo, **CUBO)
+    if armar_nodo:
+        nodo = armar_nodo(nodos_mundo[0])
+    else:
+        nodo = nodo_plano(nodos_mundo[0])
+        if CUBO:
+            agregar_cubo(nodo, **CUBO)
     s["modelos"][idx_mundo] = (nombre_mundo, [nodo])
     for i, (nom, nodos) in enumerate(s["modelos"]):
-        if i != idx_mundo and i not in CONSERVAR:
+        if reemplazos and i in reemplazos:
+            s["modelos"][i] = (nom, [reemplazos[i](nodos[0])])
+        elif i != idx_mundo and i not in conservar:
             s["modelos"][i] = (nom, [])
 
     # Los triangulos van ordenados por celda, como en un nivel real: asi cada celda puede declarar su
     # tramo contiguo de suelo en 'celdas' (primer triangulo, cuantos).
-    reparto = celdas_de_triangulos(nodo, g["ancho"], g["alto"])
+    # Con paredes=True TODOS los triangulos entran en el rango de su celda (medido en el juego: el mundo se dibuja por
+    # los rangos de 'celdas'; un triangulo fuera de todo rango, como las paredes de antes, no se dibuja nunca).
+    reparto = celdas_de_triangulos(nodo, g["ancho"], g["alto"], solo_horizontales=not paredes)
+    reparto_col = celdas_de_triangulos(nodo, g["ancho"], g["alto"], invertida=False)
     orden = sorted(reparto, key=lambda fc: fc[0] * g["ancho"] + fc[1])
     viejo_a_nuevo, tris = {}, []
     for fc in orden:
@@ -183,11 +223,15 @@ def construir_bytes():
     tris += [t for i, t in enumerate(nodo["tris"]) if i not in viejo_a_nuevo]   # las paredes, al final
     nodo["tris"] = tris
     reparto = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto.items()}
+    reparto_col = {fc: [viejo_a_nuevo[i] for i in idxs] for fc, idxs in reparto_col.items()}
+    if paredes:
+        for fc, idxs in celdas_de_paredes(nodo, g["ancho"], g["alto"]).items():
+            reparto_col.setdefault(fc, []).extend(idxs)
 
     # tabla de indices: cada celda con triangulos se lleva un tramo propio y contiguo
     indices = []
     listas = [None] * g["B"]  # (cantidad, inicio) por celda; el resto queda vacia (cantidad 0)
-    for (fila, columna), idxs in reparto.items():
+    for (fila, columna), idxs in reparto_col.items():
         orden = fila * g["ancho"] + columna
         listas[orden] = (len(idxs), len(indices))
         indices.extend(idxs)
@@ -206,6 +250,9 @@ def construir_bytes():
         struct.pack_into("<2h", celdas, i * 12, -1, 0)
     for (fila, columna), idxs in reparto.items():
         struct.pack_into("<2h", celdas, (fila * g["ancho"] + columna) * 12, min(idxs), len(idxs))
+    if sin_objetos:
+        for i in range(g["A"]):
+            struct.pack_into("<2h", celdas, i * 12 + 4, 0, 0)
 
     s["cuadricula"] = dict(
         A=g["A"], B=g["B"], ancho=g["ancho"], alto=g["alto"], C=len(indices),
@@ -213,13 +260,16 @@ def construir_bytes():
         listas=listas_bytes,
         indices=indices_bytes,
     )
-    print(f"piso repartido en {len(reparto)} celda(s) reales de las {g['B']} de la cuadricula "
-          f"({len(nodo['tris'])} triangulos en total)")
+    if not callar:
+        print(f"piso repartido en {len(reparto)} celda(s) reales de las {g['B']} de la cuadricula "
+              f"({len(nodo['tris'])} triangulos en total)")
 
     nuevo = escribir_ino(s)
     tam_original = os.path.getsize(os.path.join(ino.RAIZ, "extraido", "GRAPHICS", "HUB", "H1W.INO"))
+    ULTIMO["tamano"] = len(nuevo)
     if len(nuevo) > tam_original:
-        raise ValueError("el .INO reescrito se paso del tamano original; disco.parchar() no lo va a aceptar")
+        raise ValueError(f"el .INO reescrito se paso del tamano original ({len(nuevo)} > {tam_original} bytes, "
+                         f"{len(nuevo) - tam_original} de mas); disco.parchar() no lo va a aceptar")
     return nuevo + b"\0" * (tam_original - len(nuevo))
 
 

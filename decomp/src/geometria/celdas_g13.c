@@ -15,6 +15,7 @@ extern s32 D_8006C444[3];            /* el ojo de la camara */
 extern CeldaVista *D_8007CA48;
 extern void *D_8008AB78[];           /* los nodos de las piezas, 0xF0 */
 extern s32 BitDeZona(s32 celda);
+extern Objeto *D_8007CAFC;           /* el objeto camara; en su extra +0x20 la camara libre (MOD) */
 extern s32 func_800207AC(s32 a, void *nodo, CeldaVista *c);  /* arma el dibujo de una celda */
 extern s32 func_80020764(s32 i);     /* deja sin dibujo los nodos que sobran */
 
@@ -27,11 +28,14 @@ s32 DibujarCeldasVisibles(s32 *a, s32 tabla) {
     u32 alto, bajo, celda;
     CeldaVista *c;
     s16 n = 0;
+    Objeto *ref;
     s32 dx, dz;
 
     b = a[1];
-    x = (s16)(((p_sabrina->x >> 16) + 0x80) >> 2);
-    z = (s16)((~((p_sabrina->z >> 16) + 0x80) & 0xFF) >> 2);
+    /* MOD: con la camara libre la zona sale de la celda de la camara, no de la de Sabrina. */
+    ref = (D_8007CAFC != NULL && *((u8 *)D_8007CAFC + 0x74 + 0x20) != 0) ? D_8007CAFC : p_sabrina;
+    x = (s16)(((ref->x >> 16) + 0x80) >> 2);
+    z = (s16)((~((ref->z >> 16) + 0x80) & 0xFF) >> 2);
     alto = BitDeZona(((z << 6) + x) & 0xFFFF) & 0xFFFF;
     bajo = (alto >> 1) & 0xFFFF;
     if (alto < 0x8000) {

@@ -4,7 +4,7 @@
 
 extern s32 D_8006CFEC;
 
-static s32 (*D_8006CF9C)() = NULL;
+extern s32 (*D_8006CF9C)();
 
 void func_80027368(void *arg0) {
     D_8006CFEC = D_8006CF9C();

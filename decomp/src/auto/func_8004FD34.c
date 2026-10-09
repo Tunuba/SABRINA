@@ -34,7 +34,7 @@ s32 func_8004FD34(s32 *arg0) {
         *temp_v0 = 0;
         D_80075B28 = temp_v1_2;
         func_80051D14();
-        _card_info();
+        _card_info(M2C_FIELD(D_800D52D0, s32 *, 0));
         *arg0 += 1;
 block_30:
         return 0;
@@ -98,7 +98,7 @@ block_25:
         /* Duplicate return node #31. Try simplifying control flow for better match */
         return 0;
     default:                                        /* switch 1 */
-        printf((s32) "error");
+        printf((s32) D_800621E4);
         goto block_30;
     }
 }
