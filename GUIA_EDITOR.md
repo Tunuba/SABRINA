@@ -66,6 +66,27 @@ emulador **tiene que estar visible**: si la minimizas mientras arranca, no respo
 Teclado en el emulador: flechas para moverse, X = X, D = circulo, Z = cuadrado, S = triangulo, Enter = START.
 Un mando tambien sirve.
 
+### SABRINA KART (la Copa del Tiempo)
+
+`SABRINA_KART.bat` abre un modo carrera hecho como si fuera un nivel escondido del juego: Sabrina maneja como un
+kart por un circuito cerrado que pasa por las epocas del juego (la recta de Greendale con el arco de meta, Egipto,
+el Oeste con el salto del rio Sweetwater, la horquilla de la Edad de Piedra y el Vortice del tiempo). Tres vueltas
+con cronometro, mejor vuelta, turbos en el suelo y cajas de hechizo.
+
+| Boton (teclado) | Que hace |
+|---|---|
+| X o arriba (X) | Acelerar |
+| Cuadrado o abajo (Z) | Frenar y marcha atras |
+| Izquierda / derecha | Girar |
+| Circulo o R1 (D) | Saltito; girando, derrape. Al soltar: mini turbo (azul) o super mini turbo (naranja) |
+| Triangulo o L1 (S) | Usar el hechizo: Turbo de Salem, Triple turbo o Reloj del tiempo (-3 segundos) |
+| SELECT | Empezar otra carrera |
+
+Acelerar justo cuando sale el 1 de la cuenta atras da la salida perfecta. La hierba frena; quien cae al rio
+reaparece en el ultimo punto de control. La pista la genera `scripts\mapa_kart.py`; el modo carrera es C del juego
+descompilado (`decomp\src\objetos\kart.inc`, compilado dentro de la camara con `SABRINA_KART`). Hace falta WSL con
+el compilador (`.\arrancar.ps1 -Taller`) para armarlo la primera vez; `python scripts\kart.py armar` lo rehace.
+
 ### Camara libre
 
 SELECT la prende y la apaga. Prendida, el mando no mueve a Sabrina y la camara vuela: flechas arriba/abajo

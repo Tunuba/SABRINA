@@ -462,6 +462,9 @@ static s32 choca_desde_camara(s32 *cam, s32 fx, s32 fz) {
  * cada costado). lado < 0 pide ir solo hacia un lado y lado > 0 solo hacia el otro. Devuelve 1 si choca o
  * si el lado no es el pedido. */
 s32 func_80036880(s32 *dir, s32 lado) {
+#ifdef SABRINA_KART /* MOD: en el kart la camara no la usa */
+    return 1;
+#else
     s32 v[3], n[3], p[3], cam[3];
     s32 d, ax, az;
 
@@ -509,6 +512,7 @@ s32 func_80036880(s32 *dir, s32 lado) {
         return 1;
     }
     return 0;
+#endif
 }
 
 extern s16 D_8007CBD4;               /* tipos de triangulo que no chocan */
@@ -532,6 +536,9 @@ static s32 choca_desde_sabrina(s32 dx, s32 dz, s32 y) {
  * ninguno choca, la deja 3 veces dir detras de Sabrina y a la altura media de Sabrina menos 0x13333.
  * Mientras, ningun tipo de triangulo se ignora (D_8007CBD4 en 0) y al terminar se ignoran casi todos. */
 s32 func_80036D58(s32 dx, s32 a1, s32 dz, s32 y) {
+#ifdef SABRINA_KART /* MOD: en el kart la camara no la usa */
+    return 0;
+#else
     s32 tx = (((dx >> 4) * 0x300) >> 8) << 8;
     s32 tz = (((dz >> 4) * 0x300) >> 8) << 8;
     s32 cx = (((dx >> 4) * 0xCC) >> 8) << 8;
@@ -570,6 +577,7 @@ s32 func_80036D58(s32 dx, s32 a1, s32 dz, s32 y) {
     D_8007CAFC->z = D_800C65A0[2];
     D_8007CBD4 = -17;
     return 1;
+#endif
 }
 
 /* ---- Proyectil que persigue a un objeto ---- */
@@ -736,6 +744,10 @@ static void __attribute__((noinline)) camara_libre(Objeto *o) {
  * desde atras (girando con los botones 1 y 2 o sola), 1 se aparta mirando a Sabrina, 2 se acerca a la
  * nuca de Sabrina, 3 vuelve atras, 4 y 5 una escena entre D_8007CBAC y D_8007CBB0, 6 y 8 se mueve hacia
  * un punto fijo. Devuelve (v0) el D_8007CBD4 que restaura. */
+#ifdef SABRINA_KART
+#include "kart.inc"
+#endif
+
 s32 func_80035314(Objeto *o) {
     ExtraCamara *e = (ExtraCamara *)&o->extra;
     u8 *ps;
@@ -755,6 +767,9 @@ s32 func_80035314(Objeto *o) {
     ((Objeto *volatile *)__builtin_frame_address(0))[-5] = o;
     func_80036250();
     func_8003630C();
+#ifdef SABRINA_KART
+    kart_paso(o);
+#else
     ps = (u8 *)&p_sabrina->extra;
     v[0] = p_sabrina->x - o->x;
     v[1] = p_sabrina->y - o->y;
@@ -1014,6 +1029,7 @@ s32 func_80035314(Objeto *o) {
         ojo_camara(o);
         break;
     }
+#endif
 fin:
     D_8007CBD4 = D_8007CBC0;
     return (u16)D_8007CBC0;
@@ -1023,6 +1039,9 @@ fin:
  * a un costado, hacia la camara corrida al mismo costado). Si choca el primero deja lado = 1 y giro =
  * -300; si choca el segundo, giro = 300 (lado queda en 0). Devuelve 1 si choco alguno. */
 s32 func_800365F0(s16 *giro, s16 *lado) {
+#ifdef SABRINA_KART /* MOD: en el kart la camara no la usa */
+    return 0;
+#else
     s32 v[3];
     s32 az, bz, ax, bx, cx, cz;
 
@@ -1061,4 +1080,5 @@ s32 func_800365F0(s16 *giro, s16 *lado) {
         return 1;
     }
     return 0;
+#endif
 }

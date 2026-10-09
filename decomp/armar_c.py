@@ -76,8 +76,9 @@ def main():
     ap.add_argument("--sint", action="store_true")
     ap.add_argument("--salida", default="build/SLUS_C.exe")
     ap.add_argument("--O")
+    ap.add_argument("--D", action="append", default=[])     # defines para el C de un mod (--D SABRINA_KART)
     a = ap.parse_args()
-    cc = list(CC)
+    cc = list(CC) + ["-D" + d for d in a.D]
     if a.O:
         cc[cc.index("-O2")] = "-" + a.O
     solo = set(a.solo.split(",")) if a.solo else None
@@ -305,7 +306,7 @@ def main():
     with open("build/armado_c.txt", "w", encoding="utf-8") as fh:
         fh.write("\n".join(informe) + "\n")
     usado = sum(s[1] for s in secs)
-    print(f"{len(instalar)} funciones en C, {usado} bytes de C colocados, salida {a.salida}")
+    print(f"{len(instalar)} funciones en C, {usado} bytes de C colocados, {sum(h[1] - h[0] for h in huecos)} libres en los huecos, salida {a.salida}")
     print("otros:", sum(1 for i in informe if not i.startswith("OK")), "(ver build/armado_c.txt)")
 
 
