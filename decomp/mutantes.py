@@ -58,16 +58,19 @@ def mutantes(texto, funcion):
         linea = texto.count("\n", 0, ini + a) + 1
         res.append((texto[:ini] + c[:a] + nuevo + c[b:] + texto[fin:], f"{que} (linea {linea})"))
 
-    for m in re.finditer(r"(?<![\w.])(0x[0-9A-Fa-f]+|\d+)(?![\w.])", c):
+    # 05-10: los comentarios se tapan con espacios (mismo largo) para no mutarlos: un "05-10" en un comentario
+    # se tomaba como el numero 05 y mutantes.py se caia
+    c_buscar = re.sub(r"/\*.*?\*/|//[^\n]*", lambda x: re.sub(r"[^\n]", " ", x.group(0)), c, flags=re.S)
+    for m in re.finditer(r"(?<![\w.])(0x[0-9A-Fa-f]+|\d+)(?![\w.])", c_buscar):
         v = int(m.group(1), 0)
         cambio(m.start(), m.end(), str(v + 1), f"{m.group(1)} por {v + 1}")
-    for m in re.finditer(r"<=|>=|==|!=|(?<![<>-])<(?![<=])|(?<![<>-])>(?![>=])", c):
+    for m in re.finditer(r"<=|>=|==|!=|(?<![<>-])<(?![<=])|(?<![<>-])>(?![>=])", c_buscar):
         otro = {"<=": "<", ">=": ">", "==": "!=", "!=": "==", "<": "<=", ">": ">="}[m.group(0)]
         cambio(m.start(), m.end(), otro, f"{m.group(0)} por {otro}")
-    for m in re.finditer(r"&&|\|\|", c):
+    for m in re.finditer(r"&&|\|\|", c_buscar):
         otro = "||" if m.group(0) == "&&" else "&&"
         cambio(m.start(), m.end(), otro, f"{m.group(0)} por {otro}")
-    for m in re.finditer(r"(?<=\w|\))\s*([+-])\s*(?=[\w(])", c):
+    for m in re.finditer(r"(?<=\w|\))\s*([+-])\s*(?=[\w(])", c_buscar):
         otro = "-" if m.group(1) == "+" else "+"
         cambio(m.start(1), m.end(1), otro, f"{m.group(1)} por {otro}")
     lineas = c.split("\n")

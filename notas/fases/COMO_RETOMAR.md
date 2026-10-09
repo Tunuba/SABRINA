@@ -784,6 +784,14 @@ cuerpo de func_80017D80 sobrevivio `<` por `<=` (linea 60, `ultimo < primero`): 
 un solo sector. `verif/caso17d80.py` corre la captura 00 con WRLDDATA\FRONT\FRW.BIN (368 bytes): el C IGUAL y el
 mutante DISTINTO. (La original devuelve 0 con un archivo de un sector: pide leer 0 sectores, falla 10 veces y lo
 libera. Error del juego, el C lo copia.)
+Tambien sobrevivio quitar cada `Liberar(datos)` de los caminos de error (el modelo del CD nunca falla). caso17d80.py
+suma "CdControl falla" (su primera instruccion cambiada por `jr ra; move v0, zero` en la RAM, igual para las dos):
+mata el de la linea 73; el de un sector mata el de la linea 86. El C da IGUAL en los cuatro casos. "CdRead falla" no
+sirve: CdSearchFile tambien usa CdRead para leer el directorio y la busqueda falla antes.
+Resultado final del cuerpo de func_80017D80 (`lanzar_mut_cuerpos.sh`): 4 de 8 cazados por el verificador; los otros 4
+(y el de la linea 73) caen con caso17d80.py: lineas 60, 76, 86 y 87 con el de un sector, 73 con CdControl falla.
+PantallasLegales con los registros conservados: IGUAL (26 de 26). Las 18 con stub siguen IGUAL.
+Las 13 con secciones criticas (`lanzar_criticas.sh`) siguen IGUAL / IGUAL_SINT con la comparacion nueva.
 Cola `verif/lanzar_mut_cuerpos.sh` -> build/mut_cuerpos.txt: mutantes en el cuerpo de las 15 funciones con stub.
 
 Trampa: un `open(p, "w")` de python en Windows sin `encoding="utf-8"` escribe en cp1252 y rompe los acentos de este
@@ -893,3 +901,240 @@ Grupos, de mas facil a mas dificil (los nombres salen de estas notas; el efecto 
 Despues de la camara, seguir con el 2 y asi. Para una version de PC (idea de Meme) haria falta TODO el juego en C mas una capa nueva
 de GPU/GTE/SPU/CD/mandos y quitar los trucos de MIPS (marcos a mano, naked, registros fijos); por eso conviene terminar tambien el
 armado completo en PlayStation como prueba de que el C esta completo.
+### 05-10 MEDIODIA, EL CHAT SE CERRO A MEDIAS (EMPIEZA AQUI)
+
+**Llamadas a la BIOS en la comparacion.** En mut5 sobrevivio quitar `FlushCache();` en func_800521AC y func_800523B4
+(parchean codigo de la BIOS y luego vacian la cache): el modelo no hace nada en FlushCache y no queda rastro en la RAM.
+verificar.py ahora guarda la secuencia de llamadas a la BIOS (tabla 0xA0/0xB0/0xC0 y numero de funcion en t1, sin
+argumentos) y la compara: "llamadas a la BIOS distintas". Las que llaman a una envoltura de la BIOS estan en
+build/llaman_bios.txt y se reverifican con eso (`verif/lanzar_bios.sh`): Afirmar, Liberar, func_80012B0C y
+func_80014774 siguen IGUAL.
+
+El chat se cerro con tres colas a medias (bios en func_800161D4, mut5 en func_80024450, mut_cuerpos en
+func_800189A4) y murieron. `verif/lanzar_reanudar0510.sh` sigue cada una desde donde quedo, de a una, lanzada por
+WMI. Resumen en build/reanudar.txt; detalle en build/bios.txt, build/bios_sint.txt y build/mut_cuerpos.txt.
+Si una da "llamadas a la BIOS distintas", el C llama de mas o de menos a la BIOS: es un error real del C.
+
+Los otros vivos de mut5 en tarjeta_bios_g15.c (0x74 por 117, 0x9C8 por 2505, 0x70 por 113) son mutantes
+equivalentes: van dentro de `d[x / 4]` y la division entera da el mismo indice (29, 626, 28). No hay nada que cazar.
+Con la comparacion nueva, quitar `FlushCache();` ya muere en las dos: func_800521AC y func_800523B4 dan 7 de 8, y el
+unico vivo de cada una es el equivalente. Quedan 0 mutantes reales vivos en tarjeta_bios_g15.c.
+
+**Resultado de la reverificacion con la BIOS (cola partida en `verif/reanudar_a.sh` y `reanudar_b.sh` para usar
+mas RAM):** 17 de 19 reales y 21 de 23 sinteticas siguen IGUAL. Salieron tres:
+- func_800161D4 (la espera de cuadros) DISTINTO, pero es del verificador: el modelo de VSync pone un gancho en la
+  ENTRADA de la original, asi que al verificar esa misma funcion la original salia enseguida y el C (en BASE_C, sin
+  gancho) esperaba hasta el limite y llamaba a puts/ChangeClearPAD. Arreglo: no poner ese gancho cuando la funcion
+  bajo prueba es func_800161D4 (`EN_PRUEBA`, en verificar_ra.py, ver abajo).
+- func_80050AB8 y func_800513B4 (sinteticas) DISTINTO, y esas SI eran errores del C: `include/prototipos.h` declara
+  `open(void)`, `close(void)`, `lseek(void)` y `write(void)`, y los borradores de m2c las llamaban sin argumentos
+  (sin nombre de archivo ni modo). Igual estaban func_80050418, 80050554, 80050694 y 80050C40 (IGUAL_SINT en falso).
+  Las seis reescritas a mano con los argumentos de la original en `src/varios/tarjeta_archivo_g16.c`; cola
+  `verif/lanzar_tarjeta16.sh` -> build/tarjeta16.txt (sinteticas y mutantes). func_800509E8 y 80050A50 solo
+  declaraban open, no la llaman: estan bien.
+
+**verificar_ra.py (copia de trabajo, se arma con un parche sobre verificar.py; pasarla a verificar.py cuando no
+corra ninguna cola):**
+- Direcciones de vuelta como reubicacion: se anotan las llamadas que la funcion hace hacia afuera de su codigo
+  (destino, ra y sp en el jal/jalr) y una palabra de RAM distinta vale si en la original es el ra o el sp de la
+  llamada k y en el C el de la llamada k, con los mismos destinos en el mismo orden. Es lo que daria un ejecutable
+  rearmado con el C en su lugar. Para InitGeom (func_800177B4), InitCARD (func_800522E4) y el setjmp de
+  func_800163E4.
+- Se compara el GTE al final (datos y control) y la secuencia de escrituras al cop0 (mtc0: registro y valor). El
+  registro de estado de Unicorn no sirve: no deja poner el bit 30 (CU2).
+- **InitGeom (func_800177B4) IGUAL, 32 de 32, y 8 de 8 mutantes cazados** (antes de comparar el GTE y el cop0 caian
+  0 de 8: todo lo que hace es escribir ahi).
+- Prueba de func_800161D4, InitCARD y func_800163E4 con `verif/probar_ra.sh` -> build/probar_ra.txt.
+  `verif/vfull_ra.sh` y `verif/mutantes_ra.sh` son vfull y mutantes con verificar_ra.
+- **func_800161D4 IGUAL con el arreglo de la espera: 8 de 8 capturas, 198 de 198 variantes.**
+
+**verificar.py YA ES EL NUEVO (05-10 tarde).** Se arma con `py verif/parche_ra.py build/verificar_antes_0510.py
+verificar.py` (copia vieja en build/, fuera de git; el parche esta en el repo). verificar_ra.py queda igual a
+verificar.py (solo para los *_ra.sh). Ademas de lo de arriba:
+- **Argumentos de la BIOS**: la secuencia de llamadas a la BIOS lleva los argumentos que dice `ARGS_BIOS` (cuantos
+  toma cada funcion de la BIOS que usa el juego); un argumento que en las dos apunta a la pila local vale igual (un
+  nombre armado en la pila queda en otro lugar del marco). Con eso func_80051D14 (TestEvent sin argumento) da 0 de 3.
+- **Llamadas a funciones del mismo .c**: en el C una llamada a la copia en C de una funcion del juego se anota como
+  llamada a la original (MAPA_C); si no, las listas de llamadas no coincidian y no se reubicaba nada.
+- `verif/depurar_ra.py src/x.c funcion [captura]` muestra las palabras distintas y las llamadas de las dos.
+
+**Borradores con la BIOS sin argumentos, reescritos en `src/varios/bios_eventos_g16.c`** (14): func_80014910,
+80014988 (SysEnq/DeqIntRP), 80016874 (HookEntryInt), 80029808/30/58 (DeliverEvent del CD), 8003E554 (DeliverEvent
+del SPU), 800515B0 (erase), 80051A84 (8 OpenEvent y EnableEvent), 80051C60 (CloseEvent), 80051D14/1E1C/1EF4
+(TestEvent), 80052350 (ChangeClearPAD). Cola `verif/lanzar_eventos16.sh` -> build/eventos16*.txt.
+OJO: `anotar.py` no baja un estado; si alguna de estas no da IGUAL con el archivo nuevo, hay que sacarla a mano de
+auditoria.tsv / progreso*.tsv (el borrador viejo ya no vale).
+
+**func_800163E4 (el setjmp de libetc)**: con el verificador nuevo solo diferian ra (se reubica) y s0, que el setjmp
+guarda: en la original s0 = D_80063918. Arreglo en libetc_g13.c: `register u8 *base asm("$16")` con asm volatile
+antes de la llamada, y `noinline` en func_800168EC, 80016AF4 y 80016DA0 (GCC las metia dentro y faltaban llamadas;
+solo las llama func_800163E4). Cola `verif/lanzar_limites0510.sh` -> build/limites0510*.txt (setjmp, InitGeom,
+InitCARD y mutantes). Cola `verif/lanzar_revisar.sh` -> build/revisar_real.txt / revisar_sint.txt: las 61 contadas
+que llaman a la BIOS o usan cop2/mtc0 (`verif/lista_revisar.py`), con el verificador nuevo.
+
+### 05-10 TARDE: RESULTADOS (EMPIEZA AQUI)
+
+**98.5 %: reales 79.1 % (703 fn) + sinteticas 19.4 % (314 fn) = 1017 de 1034.** Pasaron a IGUAL las que eran
+limite por guardar una direccion de vuelta: setjmp de libetc (func_800163E4, 8 de 8 mutantes), InitGeom
+(func_800177B4, 8 de 8) e InitCARD (func_800522E4, sintetica, 8 de 8). Bajo func_8001FD50 (ver abajo).
+- Eventos (bios_eventos_g16.c): las 8 reales y las 6 sinteticas IGUAL con los argumentos de la BIOS. Mutantes:
+  func_80051A84 8 de 8; func_8003E554 3 de 8 con la captura sintetica de la funcion de usuario (los 5 vivos son
+  equivalentes: el bucle de espera de func_8003EA90 no deja rastro y el bucle del SPU ocupado no se puede activar).
+- Tarjeta (tarjeta_archivo_g16.c) con capturas a mano (`verif/capturas_tarjeta16.sh`): func_80050418 176 de 176,
+  func_80050554 y 80050694 254 de 254, func_800513B4 84 de 84 y **8 de 8 mutantes** (antes 0 de 8).
+- **Truco de stub para funciones con un bufer en la pila**: func_800513B4 (crear) y func_800515B0 (borrar) arman
+  ruta[32] en sp+0x10 y guardan resultado en sp+0x30, justo despues; un nombre de mas de 32 letras (variante con
+  a1 = 0x200) desborda ruta y pisa resultado y los registros guardados. Con el marco de GCC daba otro nombre de
+  archivo. Ahora un stub en asm arma el marco de la original (registros en los mismos lugares) y el cuerpo en C usa
+  `ruta + 32` como resultado. El atributo optimize("no-move-loop-invariants") NO sirve (cambia el lugar de los
+  registros guardados y queda peor).
+- **gte.py**: los registros de datos de 16 bits guardan solo eso (VZ0-2, IR0-3 con signo; OTZ, SZ0-3 sin signo),
+  como la consola. func_80024A48 daba "coprocesador geometrico distinto" por un lw contra un lhu del mismo dato:
+  ahora 149 de 149.
+- **mutantes.py** ya no muta los comentarios (un "05-10" en un comentario lo hacia caer).
+- **func_8001FD50 bajo a DISTINTO** (1348 bytes): 2 de 162 variantes con fin = 0xA3C20040. Con
+  `verif/depurar_args.py src/geometria/arbol.c func_8001FD50 1 800178cc 801074ac a3c20040 2c40000 ff000000` se ve
+  que el C deja de recorrer los hermanos despues del nodo 30 (visible, entra al dibujo) y la original sigue con 210
+  mas; la RAM queda igual y solo difiere el GTE. Lo mas probable: con ese fin, los partidores (D_80068878[corte]) o
+  AddPrim escriben en la pila del que llama y pisan otra cosa en el marco de GCC que en el de la original (0x70).
+  Siguiente paso: confirmar con un gancho de escritura en la pila del C, y si es eso, stub con el marco de la original.
+- Cola B (`reanudar_b.sh`) PARADA a mano por falta de RAM, en los mutantes de func_80024450 (85 min). Faltan el
+  resto de mut5 y mut_cuerpos desde func_800189A4: relanzar `verif/reanudar_b.sh` cuando haya memoria.
+- `verif/lanzar_revisar.sh` sigue (reverificacion de las 61); los DISTINTO de borradores viejos de src/auto ya
+  reemplazados (func_80014910, 80014988, 80016874, 80029808/30/58, 8003E554) no cuentan: las versiones de
+  bios_eventos_g16.c son las que estan en auditoria.tsv.
+
+### 05-10 NOCHE 2: REVERIFICACION TERMINADA, DIBUJO DEL ESCENARIO PROBADO (EMPIEZA AQUI)
+
+Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB libres): una o dos colas a la vez.
+- **Las 24 de `verif/revisar_falta.txt` terminaron** (logs `build/revisar_real.txt` y `revisar_sint.txt`). IGUAL todas
+  salvo: los borradores de `src/auto/` de 800515B0, 80052350, 80051A84, 80051C60, 80051D14, 80051E1C, 80051EF4 (no
+  cuentan: la auditoria apunta a `bios_eventos_g16.c`), func_80050AB8 (se corto a la hora, ver abajo), func_80051764 y
+  los tres partidores (arreglados abajo).
+- **func_8001FD50 IGUAL, 22 de 22 capturas y 954 de 954 variantes.** No era la pila. Con a2 = 0xFF000000 el C se
+  saltaba las matrices: la original guarda la bandera con `sb` y la relee con `lbu` (se queda con el byte) y con `u8`
+  en la firma GCC da por hecho que quien llama ya la recorto. Ahora entra como s32 y se recorta adentro. Se barrieron
+  las demas funciones con parametros cortos (u8/s16...): en las otras cuatro el recorte sale igual (sb/sh, lhu de la pila).
+- **Lo mas importante: las 8 capturas viejas de func_8001FD50 no probaban el dibujo.** Eran de los primeros cuadros, con
+  la camara sin poner: un solo triangulo pasaba los descartes y caia fuera de pantalla (6 de 12 mutantes vivos, uno era
+  `D_8007CAC0 -= 0x28`). Nuevo `scripts/capt_dibujo.py` (entra a cada nivel, espera 1300 cuadros y captura en dos
+  puntos): 14 capturas mas de func_8001FD50 y de func_800204F0, con hasta 13 triangulos por captura llegando a AddPrim,
+  recorte y partidores. Lo mismo puede pasar con otras funciones de dibujo verificadas con capturas del arranque.
+- **verificar.py**: llegar a la vuelta de las interrupciones (VUELTA_INT) sin ninguna en curso ya no revienta la
+  verificacion entera con un TypeError; es un error de esa corrida y se compara como cualquier otro.
+- **func_80051764 IGUAL_SINT 136 de 136** (formatea la tarjeta, ahora en `bios_eventos_g16.c`): el borrador llamaba a
+  `_card_load()` sin el puerto y era void (sin el -1). Ademas el puerto se lee de D_800D52D0 como en la original: con
+  D_800D52C0[4] GCC usaba s1, el marco crecia a 0x20 y el bufer de pila de func_80052578 que va a `_card_read` quedaba 8
+  bytes mas abajo (el verificador compara ese argumento). Leccion: un argumento de pila distinto en la BIOS desde una
+  funcion llamada es un marco de otro tamano en el C.
+- **Partidores func_800589EC, 80058EE4, 800593E0**: con el GTE comparado daban DISTINTO en todo, solo por VXY2/VZ2. La
+  original manda a rtpt un tercer vector que nunca llena (sp+0x3C de su marco de 0x60) y el C mandaba su propia basura.
+  Pasaron a stub con el marco de la original + cuerpo en C que carga ese vector desde sp+0x3C (el truco de la basura de
+  pila); con la captura 0 el GTE ya sale igual en los tres. Cola `verif/lanzar_0510b.sh` (log `build/cola_0510b.txt`)
+  con la verificacion completa y los mutantes; anotar con `py verif/anotar.py build/cola_0510b.txt --solo ...`.
+- La cola `lanzar_0510b.sh` dio **IGUAL a los tres partidores** (139, 142 y 141 variantes, con 2 capturas) y 8 de 8
+  mutantes muertos en func_80051764; sigue con los mutantes de los partidores. Despues se capturaron con
+  `py capt_dibujo.py 1,3,5,7,9,11,13 func_80057F34,...,func_80020294` entre 11 y 14 capturas de juego para los siete
+  partidores y func_80020294.
+- **Cola encadenada `verif/lanzar_dibujo.sh`** (log `build/cola_dibujo.txt`), lanzada por WMI: espera el "TODO FIN" de
+  `cola_0510b.txt` y reverifica con las capturas nuevas func_800204F0, func_80020294 y los siete partidores, y al final
+  los mutantes de func_8001FD50 (los primeros se pararon a mano por RAM: Windows llego a 0.9 GB libres por las otras
+  sesiones; WSL solo ocupaba 0.5 GB). Al terminar: `py verif/anotar.py build/cola_dibujo.txt` y
+  `py verif/anotar.py build/cola_0510b.txt --solo func_800589EC,func_80058EE4,func_800593E0`.
+- **PARADO A MANO por Meme ("mata todo")**: se mataron las dos colas y se apago la maquina de WSL. De los mutantes de
+  `lanzar_0510b.sh` alcanzaron a salir func_80051764 8 de 8 y func_800589EC 8 de 8; func_80058EE4 y func_800593E0
+  quedaron sin mutantes y `lanzar_dibujo.sh` no llego a empezar. Para seguir: quitar de `lanzar_0510b.sh` lo ya hecho
+  (o correr solo los mutantes que faltan) y relanzar `lanzar_dibujo.sh` (espera el "TODO FIN" de `cola_0510b.txt`:
+  agregarlo a mano o quitar esa espera).
+- func_80050AB8: no es un error, es costo. Cuando el modelo de la tarjeta responde 3 la original reintenta sin fin y
+  esa variante gasta el tope de instrucciones en las dos versiones; con 8 variantes pasa de una hora. Correrla sola
+  con `timeout` largo (4 h) cuando la PC este libre.
+- Pendiente ademas: mutantes de tarjeta16b; cola B; revisar si otras funciones de dibujo tienen solo capturas del
+  arranque (como func_8001FD50) y darles capturas con `capt_dibujo.py`.
+
+### 05-10 NOCHE: SE APAGO LA PC
+
+**98.5 % (1017 de 1034), todo pusheado.** Meme apago la PC; las colas que corrian en WSL murieron.
+- La reverificacion destapo dos mas con la BIOS sin argumentos: func_8004FD34 y func_80050034 (callbacks de
+  eventos de la tarjeta) llamaban a `_card_info()` / `_card_load()` sin el puerto. Copias de los borradores con el
+  puerto en `src/varios/tarjeta_evento_fd34_g16.c` y `tarjeta_evento_0034_g16.c` (alias en asm
+  `extern void tarjeta_info(s32) __asm__("_card_info")` para no chocar con prototipos.h): **IGUAL 77 de 77 y 73 de 73**.
+- De la reverificacion de las 61 (`verif/lanzar_revisar.sh`) van 37: todas IGUAL salvo los borradores viejos ya
+  reemplazados (lista arriba), func_8001FD50 (pendiente, arriba) y las dos de la tarjeta de este punto (ya arregladas).
+  **Faltan 24, en `verif/revisar_falta.txt`.** Para seguir, desde WSL (los logs se agregan, no se borran):
+  `LISTA=/mnt/c/Proyectos/SABRINA/decomp/verif/revisar_falta.txt bash verif/lanzar_revisar.sh`, lanzado por WMI
+  (`Invoke-CimMethod Win32_Process Create` con `wsl.exe -d Ubuntu-24.04 -- bash ...`) para que no muera con el turno.
+  Un DISTINTO con "llamadas a la BIOS distintas" casi siempre es un borrador que llama a la BIOS sin argumentos:
+  mirar el asm de la original y pasarlos.
+- Murieron a medias: los mutantes de `lanzar_eventos16.sh` (iba en func_80051E1C; los de func_80051D14 dieron 3 de
+  8, los vivos son las cadenas b[3]=0... con banderas ya en 0, equivalentes con esas capturas), `lanzar_tarjeta16b.sh`
+  (la verificacion termino; faltaban los mutantes de 80050418, 80050AB8 y los de abrir_y_pasar) y la cola B.
+- Orden sugerido al volver: 1) revisar_falta.txt; 2) mutantes de tarjeta16b; 3) func_8001FD50; 4) cola B.
+  Con poca RAM (bajo 2 GB) correr de a una cola.
+
+### 07-10: VIDEO DESTRABADO, PARADO A MANO (EMPIEZA AQUI)
+
+**Sigue 99.0 % (1018 de 1034).** Meme pidio apagar todo; colas muertas y WSL apagado.
+- **El video no era limite.** `func_8005D50C` no se colgaba: el modelo del CD entregaba como datos los sectores de
+  audio XA que los .STR traen cada 8 de video (submodo 0x64) y la biblioteca de video no armaba los cuadros.
+  `modelo_cd.py` ahora los salta sin INT1 cuando el modo tiene 0x40 (XA-ADPCM), como la consola que los manda al
+  sonido. Con eso la original termina, tambien con la captura real (`capturas/func_8005D50C/00`).
+- Queda un detalle del modelo: el video corta en el cuadro 4 (el 3 llega desde el trozo 2: se pierden dos sectores,
+  14003 y 14004) y termina por "cuadro menor que la cuenta". En la consola no pasa. Original y C ven lo mismo, asi
+  que la comparacion es justa, pero no recorre el video entero.
+- Capturas sinteticas armadas (fuera de git, `decomp/capturas_sint/`): func_8005D50C con el cuadro final del pedido
+  (`m801FFDE4`) en 12, 30 y 40 (esta con fundido D_8007CC94=0x80); ReproducirSTR con a1 = 0x10 y 0x22 (el cuadro final
+  es a1 - 4). Ojo: si la real ya termina, verificar primero con la real (`vfull.sh`), que cuenta como real.
+- Al volver: 1) `SABRINA_LIMITE=300000000 bash verif/vfull.sh src/Screen/video_reproductor_g14.c func_8005D50C`
+  (y `vsint.sh` si no); lo mismo con ReproducirSTR (src/Screen/video_g13.c); 2) reverificar lo que lee audio XA
+  (la musica de los niveles, CdRead con modo 0x40) porque el cambio del modelo les toca; 3) `verif/lanzar_0710.sh`
+  sin los mutantes de func_80058EE4 (ya dieron 5 de 8; los vivos cambian m[0]/m[1] y sxy[1]/sxy[2] en las lineas
+  69-71 de partir_80058EE4.c: vertices que coinciden en las capturas, cobertura y no error del C).
+- Herramientas de diagnostico usadas (en el scratchpad, no en el repo): parchear `V.Uc.emu_start` para poner un
+  gancho en 0x8005CEF0 (vuelta de StGetNext en func_8005CEBC) y ver el numero de cuadro y trozo de cada uno.
+- Truco escondido del juego (para la seccion de secretos): `truco_invencible` en 0x8007CB74 (nadie lo enciende),
+  hechizos 6 y 7 vacios en la tabla D_80074BC4, selector de niveles por 0x8007CA00.
+
+### 08-10: VIDEO IGUAL (EMPIEZA AQUI)
+
+**99.3 % (1020 de 1034).** GitHub no tenia nada nuevo del amigo (7bbb749 era lo ultimo).
+- Con el modelo del CD que salta el audio XA, **func_8005D50C IGUAL** (1 de 1 capturas, 10 de 10 variantes) y
+  **ReproducirSTR IGUAL** (1 de 1, 22 de 22), con `SABRINA_LIMITE=300000000` y la captura real. Anotadas.
+- El audio XA del disco esta solo en FMV (LBA 14140 a 40596). La musica va en las pistas de CD-DA 2 a 7 y los .WAV
+  de AUDIO1-4 apuntan a esas pistas, asi que el cambio del 07-10 solo toca al reproductor de video.
+- Colas encadenadas en WSL, lanzadas por WMI, una a la vez (2.9 GB libres):
+  `verif/lanzar_0810.sh` (log `build/cola_0810.txt`: video, mutantes de func_800593E0, dibujo con capturas nuevas,
+  mutantes de func_8001FD50); `verif/lanzar_0810b.sh` (log `cola_0810b.txt`: reverifica las 17 del reproductor de
+  video); `verif/lanzar_0810c.sh` (log `cola_0810c.txt`: mutantes de las dos del video). Cada una espera el
+  "TODO FIN" de la anterior. Al terminar: `py verif/anotar.py build/cola_0810.txt` y lo mismo con `cola_0810b.txt`.
+- Lo que queda (14) es limite ya documentado: BuclePrincipal y main no vuelven, setjmp y manejador de excepciones en
+  asm, trampolines de BIOS/PCdrv, func_80052114/40/84 (usan v1 del que llama), func_80052388.
+
+### 08-10 NOCHE: PARADO A MANO (Meme, RAM llena)
+
+**99.4 % (79.9 reales + 19.4 sint, 1024 de 1034), SIN commitear.** Anotadas en auditoria.tsv las colas 0810 y 0810b.
+- WSL apagado a mano (`wsl --shutdown`); la cola `verif/lanzar_0810d.sh` (cortes que faltan de BuclePrincipal, log
+  `build/cola_corte2.txt`, y despues mutantes del video `lanzar_0810c.sh`) se mato al empezar: relanzarla por WMI.
+- func_8005CEBC salio DISTINTO en 1 de 199 variantes (la que hace fallar la afirmacion): el C llamaba a Afirmar sin
+  archivo ni linea. Arreglado en `src/auto/func_8005CEBC.c` (alias Afirmar3 con D_8007C930 y 0x384), FALTA verificarlo.
+- Mutantes vivos por revisar: func_8001FD50 (4 de 12) y func_800593E0 (1 de 8), en `build/cola_0810.txt`.
+
+### 08-10 NOCHE 2: CASI TODO (EMPIEZA AQUI)
+
+**99.4 % (79.9 reales + 19.5 sint), 1030 de 1034.** Despues del apagado de WSL se retomo todo.
+- func_8005CEBC IGUAL (199/199) tras pasar archivo y linea a Afirmar.
+- **PCdrv en C** (`src/psyq/pcdrv.c`): func_800294F0 (PCcreat), func_80029518 (PCclose), func_80029530 (PCwrite) con
+  el mismo break en asm y variables de registro, y func_80052114 (trozo del mando con v1/v0 de entrada). Las cuatro
+  IGUAL_SINT. verificar.py ahora pone el gancho de PCdrv tambien en cada break del codigo del C, y
+  `SABRINA_PCDRV_FALLA=1` hace que la PC conteste que no (recorre la rama de error de PCcreat; su mutante muere asi).
+  Mutantes vivos que quedan: equivalentes (registros temporales, una vuelta menos en la espera).
+- `sint.py crear_con` acepta v0= y v1= (ademas de a0-a3).
+- malloc y free de la BIOS ahora comparan su argumento (ARGS_BIOS). free (func_800161C8) IGUAL_SINT; malloc,
+  func_80017CBC/CE4, Reservar (960/960), Liberar (1088/1088) y func_8004DC10 siguen IGUAL.
+- func_80052388 IGUAL_SINT: con `__asm__ volatile("")` despues de la ultima llamada (GCC la hacia salto y
+  func_800523B4 guardaba en D_800D53C0 el ra del que llamo). Sin la barrera da DISTINTO justo ahi (probado).
+- func_80052140/84 y func_80017B8C son trozos que se copian a la RAM de la BIOS (en la captura 0xDFAC tiene la
+  primera instruccion de func_80052140) y vuelven al manejador de la BIOS (0x3488): limite.
+- BuclePrincipal: cortes en `build/cola_corte2.txt` (corriendo); al terminar, mutantes del video (cola_0810c.txt).
+- func_8001FD50: el mutante "7 por 8" vive porque ninguna captura tiene un triangulo con el lado 0-2 largo (el +7
+  de la tabla D_80068878); falta una captura con un triangulo grande muy cerca de la camara.

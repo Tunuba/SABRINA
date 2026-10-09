@@ -98,8 +98,12 @@ extern void (*D_80068878[])(Triangulo *t, s32 fin, s32 z);       /* los que part
  * (salvo que la textura se vea de los dos lados), lo situa en la lista por la z mas lejana de sus tres
  * vertices, y si el coprocesador marco que algo se salio de rango lo manda a recortar. Un triangulo que
  * sale muy grande en pantalla se parte antes de dibujarlo: cual de los tres lados es el largo decide a
- * cual de los partidores le toca. */
-void func_8001FD50(Nodo *padre, s32 fin, u8 padre_al_dia) {
+ * cual de los partidores le toca.
+ * La bandera del padre llega en un registro entero y la original se queda solo con su byte (sb a la pila y
+ * lbu despues); con `u8` en la firma GCC da por hecho que quien llama ya la recorto, y con a2 = 0xFF000000 la
+ * tomaba por verdadera y se saltaba las matrices (05-10). Por eso entra como s32 y se recorta aqui. */
+void func_8001FD50(Nodo *padre, s32 fin, s32 padre_al_dia_entra) {
+    u8 padre_al_dia = (u8) padre_al_dia_entra;
     Nodo *n = padre->hijo;
     Matriz *matriz_padre = &padre->mundo;
     u8 al_dia = 0;

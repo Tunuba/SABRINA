@@ -53,7 +53,7 @@ s32 func_8001668C(s32 canal, s32 f) {
 }
 
 /* Pone en cero n palabras desde p. Devuelve -1 (lo que queda de la cuenta). */
-s32 func_800168EC(s32 *p, s32 n) {
+__attribute__((noinline)) s32 func_800168EC(s32 *p, s32 n) {
     while (n-- != 0) {
         *p++ = 0;
     }
@@ -102,7 +102,7 @@ s32 func_80016D78(s32 *p, s32 n) {
 }
 
 /* Arranca las funciones de cada vuelta: sin ninguna, la cuenta en cero y su manejador en el canal 0. */
-void *func_80016AF4(void) {
+__attribute__((noinline)) void *func_80016AF4(void) {
     *D_800649E0 = 0x100;
     D_800649EC = 0;
     func_80016AC4(D_800649C0, 8);
@@ -111,7 +111,7 @@ void *func_80016AF4(void) {
 }
 
 /* Arranca las funciones de DMA: ninguna, DICR en cero y su manejador en el canal 3. */
-void *func_80016DA0(void) {
+__attribute__((noinline)) void *func_80016DA0(void) {
     func_80016D78(D_800649F4, 8);
     *D_800649F0 = 0;
     func_80016940(3, (s32)func_80016B4C, 0, 0);
@@ -131,14 +131,20 @@ extern void func_800143F4(void);
 /* Inicia el modulo de interrupciones (una sola vez): apaga y limpia, guarda el punto de vuelta, pone la pila
  * y el manejador, y arranca las funciones de cada vuelta y de DMA. Devuelve el estado, o NULL si ya estaba. */
 u8 *func_800163E4(void) {
-    if (*(u16 *)D_80063918 != 0) {
+    /* 05-10: la base en s0 como la original, porque el setjmp guarda s0 en el punto de vuelta (D_80063918+0x38);
+     * noinline en las tres de arriba para que las llamadas sean las mismas */
+    register u8 *base asm("$16") = D_80063918;
+
+    __asm__ volatile("" : "+r"(base));
+    if (*(u16 *)base != 0) {
         return NULL;
     }
     *D_800649A8 = 0;
     *D_800649A4 = *D_800649A8;
     *D_800649AC = 0x33333333;
-    func_800168EC((s32 *)D_80063918, 0x41A);
-    if (func_80016170(D_80063918 + 0x38) != 0) {
+    func_800168EC((s32 *)base, 0x41A);
+    __asm__ volatile("" : "+r"(base));
+    if (func_80016170(base + 0x38) != 0) {
         func_800164BC();
     }
     *(u8 **)D_80063954 = D_80063954 + 0xFDC;

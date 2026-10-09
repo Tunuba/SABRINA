@@ -75,6 +75,12 @@ class Gte:
             n = v if not (v & 0x80000000) else (~v & 0xFFFFFFFF)
             self.datos[31] = 32 - n.bit_length() if n else 32
             return
+        # 05-10: los registros de 16 bits guardan solo eso, como en la consola (se leen con signo VZ0-2 e IR0-3, sin
+        # signo OTZ y SZ0-3); antes quedaba la palabra entera y un lw contra un lhu del mismo dato daban otro GTE
+        if i in (1, 3, 5, 8, 9, 10, 11):
+            v = (v & 0xFFFF) | (0xFFFF0000 if v & 0x8000 else 0)
+        elif i in (7, 16, 17, 18, 19):
+            v &= 0xFFFF
         self.datos[i] = v
 
     # --- matrices y vectores ---

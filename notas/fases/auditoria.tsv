@@ -31,8 +31,8 @@ func_8001ED9C	72	IGUAL	src/Object/lista_g04.c	3 de 3 capturas y 180 de 180 varia
 func_8001F23C	196	IGUAL	src/Object/lista_g04.c	7 de 7 capturas y 301 de 301 variantes iguales
 func_8001F6C8	884	IGUAL	src/objetos/particulas.c	9 de 9 capturas y 900 de 900 variantes iguales
 func_8001FA3C	544	IGUAL	src/geometria/camara.c	9 de 9 capturas y 1224 de 1224 variantes iguales
-func_8001FD50	1348	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 165 de 165 variantes iguales
-func_800204F0	496	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 212 de 212 variantes iguales
+func_8001FD50	1348	IGUAL	src/geometria/arbol.c	22 de 22 capturas y 954 de 954 variantes iguales
+func_800204F0	496	IGUAL	src/geometria/arbol.c	22 de 22 capturas y 1449 de 1449 variantes iguales
 func_800206F0	116	IGUAL	src/Particle/nodos_g04.c	7 de 7 capturas y 196 de 196 variantes iguales
 func_80020764	72	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 175 de 175 variantes iguales
 func_80021CE4	96	IGUAL	src/geometria/varios.c	9 de 9 capturas y 1069 de 1069 variantes iguales
@@ -42,7 +42,7 @@ func_80021F70	236	IGUAL	src/StratTools/girar_g05.c	9 de 9 capturas y 809 de 809 
 func_80022104	136	IGUAL	src/geometria/angulos.c	9 de 9 capturas y 656 de 656 variantes iguales
 func_800223E8	100	IGUAL	src/colision/suelo.c	7 de 7 capturas y 689 de 689 variantes iguales
 func_80024300	40	IGUAL	src/WobjCode/objetos_g06.c	9 de 9 capturas y 955 de 955 variantes iguales
-func_80024A48	316	IGUAL	src/geometria/arbol.c	9 de 9 capturas y 268 de 268 variantes iguales
+func_80024A48	316	IGUAL	src/geometria/arbol.c	6 de 6 capturas y 149 de 149 variantes iguales
 func_80027A04	204	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 1062 de 1062 variantes iguales
 func_80027F08	68	IGUAL	src/membank/tarjeta_g06.c	9 de 9 capturas y 916 de 916 variantes iguales
 func_8002BAD4	164	IGUAL	src/varios/tabla_nombres_g07.c	9 de 9 capturas y 1130 de 1130 variantes iguales
@@ -92,13 +92,13 @@ func_8004E86C	88	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 475 de 475 variant
 func_8004E8C4	460	IGUAL	src/varios/banco_b.c	9 de 9 capturas y 423 de 423 variantes iguales
 func_80053F74	244	IGUAL	src/varios/texto_g11.c	3 de 3 capturas y 332 de 332 variantes iguales
 func_80055CAC	320	IGUAL	src/sabrina/objetos_g12.c	9 de 9 capturas y 696 de 696 variantes iguales
-func_80057F34	920	IGUAL	src/geometria/partir_80057F34.c	9 de 9 capturas y 632 de 632 variantes iguales
-func_800582CC	912	IGUAL	src/geometria/partir_800582CC.c	9 de 9 capturas y 633 de 633 variantes iguales
-func_8005865C	912	IGUAL	src/geometria/partir_8005865C.c	9 de 9 capturas y 636 de 636 variantes iguales
-func_800589EC	1272	IGUAL	src/geometria/partir_800589EC.c	9 de 9 capturas y 643 de 643 variantes iguales
-func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	9 de 9 capturas y 637 de 637 variantes iguales
-func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	9 de 9 capturas y 643 de 643 variantes iguales
-func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	9 de 9 capturas y 646 de 646 variantes iguales
+func_80057F34	920	IGUAL	src/geometria/partir_80057F34.c	14 de 14 capturas y 977 de 977 variantes iguales
+func_800582CC	912	IGUAL	src/geometria/partir_800582CC.c	13 de 13 capturas y 911 de 911 variantes iguales
+func_8005865C	912	IGUAL	src/geometria/partir_8005865C.c	14 de 14 capturas y 993 de 993 variantes iguales
+func_800589EC	1272	IGUAL	src/geometria/partir_800589EC.c	14 de 14 capturas y 991 de 991 variantes iguales
+func_80058EE4	1276	IGUAL	src/geometria/partir_80058EE4.c	15 de 15 capturas y 1050 de 1050 variantes iguales
+func_800593E0	1276	IGUAL	src/geometria/partir_800593E0.c	15 de 15 capturas y 1054 de 1054 variantes iguales
+func_800598DC	1616	IGUAL	src/geometria/partir_800598DC.c	15 de 15 capturas y 1054 de 1054 variantes iguales
 DanoPorEnemigo	816	IGUAL_V0	src/sabrina/dano.c	0 de 1 capturas y 5 de 26 variantes iguales
 func_80024DFC	368	IGUAL_V0	src/WobjCode/objetos_g06.c	9 de 9 capturas y 866 de 908 variantes iguales
 CrearParticula	952	IGUAL	src/objetos/particula_g14.c	8 de 8 capturas y 844 de 844 variantes iguales
@@ -228,7 +228,7 @@ DanoPorSuelo	1864	IGUAL	src/colision/suelo_dano_g13.c	8 de 8 capturas y 707 de 7
 func_80021A30	100	IGUAL	src/Screen/cuadro_g13.c	6 de 6 capturas (sin variantes: lenta)
 func_8001EDE4	1112	IGUAL_V0	src/Particle/particula_g13.c	8 de 8 capturas iguales salvo v0 (void)
 func_8002805C	636	IGUAL	src/psyq/mando_g13.c	8 de 8 capturas y 772 de 772 variantes iguales
-Reservar	584	IGUAL	src/varios/reservar_g13.c	8 de 8 capturas y 702 de 702 variantes iguales
+Reservar	584	IGUAL	src/varios/reservar_g13.c	10 de 10 capturas y 960 de 960 variantes iguales
 func_800460CC	860	IGUAL_V0	src/objetos/enemigo_iniciar_g13.c	2 de 2 capturas iguales salvo v0 (void)
 func_8004EEF4	968	IGUAL_V0	src/varios/tarjeta_lista_g13.c	2 de 2 capturas iguales salvo v0 (void)
 func_80012B0C	372	IGUAL	src/libgpu/reset_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
@@ -246,8 +246,8 @@ func_80016AF4	88	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 85 de 85 variante
 func_80016DA0	76	IGUAL	src/psyq/libetc_g13.c	1 de 1 capturas y 72 de 72 variantes iguales
 func_800190C0	280	IGUAL	src/Font/textos_g13.c	1 de 1 capturas y 93 de 93 variantes iguales
 func_800193F8	108	IGUAL	src/Font/textos_g13.c	2 de 2 capturas y 158 de 158 variantes iguales
-func_800163E4	216	DISTINTO	src/psyq/libetc_g13.c	1 de 2 capturas y 152 de 251 variantes iguales; difieren 2 palabras en 80063950: el setjmp (func_80016170) guarda la direccion de vuelta y la pila del que llama, que en el C son otras
-ReproducirSTR	184	NO_TERMINA	src/Screen/video_g13.c	la original no termina en el emulador (espera al hardware)
+func_800163E4	216	IGUAL	src/psyq/libetc_g13.c	2 de 2 capturas y 62 de 62 variantes iguales
+ReproducirSTR	184	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
 PantallasLegales	456	IGUAL	src/Screen/pantallas_legales_g14.c	1 de 1 capturas y 26 de 26 variantes iguales
 func_800144C4	156	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 58 de 58 variantes iguales
 func_80014598	52	IGUAL	src/libgpu/canal_g13.c	1 de 1 capturas y 56 de 56 variantes iguales
@@ -264,16 +264,16 @@ func_8004DAC4	168	IGUAL	src/objetos/puerta_mundo_g13.c	2 de 2 capturas y 208 de 
 func_8003DC48	252	IGUAL	src/audio/iniciar_sonido_g13.c	1 de 1 capturas (sin variantes: lenta)
 func_8004EB04	204	IGUAL	src/varios/tarjeta_lista_g13.c	1 de 1 capturas y 124 de 124 variantes iguales
 func_8003EAF8	36	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 63 de 63 variantes iguales
-func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 116 de 116 variantes iguales
+func_8004DC10	104	IGUAL	src/varios/reservar_g13.c	1 de 1 capturas y 136 de 136 variantes iguales
 func_80055A38	448	IGUAL	src/objetos/sorpresa_g13.c	2 de 2 capturas y 164 de 164 variantes iguales
 func_8003E914	68	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 35 de 35 variantes iguales
-func_8005DDE8	36	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 69 de 69 variantes iguales
-func_8005D164	108	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 198 de 198 variantes iguales
+func_8005DDE8	36	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 81 de 81 variantes iguales
+func_8005D164	108	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 199 de 199 variantes iguales
 func_8005DCD4	124	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 189 de 189 variantes iguales
-func_8005D844	92	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 89 de 89 variantes iguales
+func_8005D844	92	IGUAL	src/Screen/video_g13.c	1 de 1 capturas y 95 de 95 variantes iguales
 func_8005D9C0	144	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 106 de 106 variantes iguales
 func_8005D1D0	156	IGUAL	src/Screen/video_g13.c	2 de 2 capturas y 258 de 258 variantes iguales
-func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 22 de 22 variantes iguales
+func_80041CD8	560	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 32 de 32 variantes iguales
 func_8003E0C4	448	IGUAL	src/audio/tempo_g13.c	1 de 1 capturas y 37 de 37 variantes iguales
 func_80034710	96	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 131 de 131 variantes iguales
 func_8003D5F4	500	IGUAL	src/objetos/enemigo2_g13.c	2 de 2 capturas y 85 de 85 variantes iguales
@@ -289,7 +289,7 @@ func_80048DC0	684	IGUAL	src/objetos/enemigo_g13.c	1 de 1 capturas y 73 de 73 var
 func_80054C5C	1440	IGUAL_V0	src/objetos/gema_hechizo_g13.c	2 de 2 capturas y 154 de 187 variantes iguales (resto solo v0)
 func_800573C0	592	IGUAL	src/objetos/ruta_g13.c	1 de 1 capturas y 62 de 62 variantes iguales
 func_80057800	332	IGUAL	src/objetos/enemigo_g13.c	2 de 2 capturas y 153 de 153 variantes iguales
-func_80020294	604	IGUAL	src/geometria/triangulos_g13.c	8 de 8 capturas y 411 de 411 variantes iguales
+func_80020294	604	IGUAL	src/geometria/triangulos_g13.c	22 de 22 capturas y 1146 de 1146 variantes iguales
 func_80017B5C	24	IGUAL	src/geometria/triangulos_g13.c	1 de 1 capturas y 68 de 68 variantes iguales
 func_80017B7C	12	IGUAL	src/geometria/triangulos_g13.c	1 de 1 capturas y 64 de 64 variantes iguales
 sintetica: 1 de 1 capturas y 69 de 69 variantes iguales		IGUAL		
@@ -310,7 +310,7 @@ func_80013D24	40	IGUAL_SINT	src/psyq/libetc_g13.c	sintetica: 1 de 1 capturas y 6
 func_80021190	68	IGUAL_SINT	src/libgpu/pantalla_g13.c	sintetica: 1 de 1 capturas y 76 de 76 variantes iguales
 func_800447DC	8	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 44 de 44 variantes iguales
 func_8004EA90	28	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 78 de 78 variantes iguales
-func_8005C940	36	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 70 de 70 variantes iguales
+func_8005C940	36	IGUAL_SINT	src/varios/sueltas_g13.c	1 de 1 capturas y 81 de 81 variantes iguales
 func_800522B0	52	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 136 de 136 variantes iguales
 func_8002244C	108	IGUAL_SINT	src/varios/sueltas_g13.c	sintetica: 1 de 1 capturas y 25 de 25 variantes iguales
 func_800534A0	56	IGUAL_SINT	src/objetos/listas_g13.c	sintetica: 1 de 1 capturas y 99 de 99 variantes iguales
@@ -486,7 +486,7 @@ func_8002AC18	1036	IGUAL	src/psyq/cdsync_g14.c	5 de 5 capturas y 591 de 591 vari
 func_8002BB78	668	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 66 de 66 variantes iguales (6 capturas donde la original no termina, sin comparar)
 func_8002BE88	728	IGUAL	src/psyq/cd_dir_g14.c	2 de 2 capturas y 172 de 172 variantes iguales (6 capturas donde la original no termina, sin comparar)
 func_8005A360	3168	IGUAL	src/objetos/jefe_mundo_g14.c	2 de 2 capturas y 109 de 109 variantes iguales
-func_8005C9D0	968	IGUAL	src/Screen/video_inicio_g14.c	1 de 1 capturas y 33 de 33 variantes iguales
+func_8005C9D0	968	IGUAL	src/Screen/video_inicio_g14.c	1 de 1 capturas y 74 de 74 variantes iguales
 func_80012130	688	IGUAL	src/libgpu/encolar_g14.c	8 de 8 capturas y 484 de 484 variantes iguales
 func_80011D9C	640	IGUAL	src/libgpu/vram_fifo_g14.c	6 de 6 capturas y 434 de 434 variantes iguales
 func_8002643C	632	IGUAL	src/psyq/mando_byte_g14.c	8 de 8 capturas y 263 de 263 variantes iguales
@@ -496,20 +496,20 @@ CargarSonidoNivel	468	IGUAL	src/audio/sonido_nivel_g14.c	6 de 6 capturas y 96 de
 func_800213A0	412	IGUAL	src/Screen/pantalla_iniciar_g14.c	1 de 1 capturas y 88 de 88 variantes iguales
 func_80025A10	400	IGUAL	src/psyq/mando_cuadro_g14.c	8 de 8 capturas y 363 de 363 variantes iguales
 func_8002CD3C	376	IGUAL_V0	src/auto/func_8002CD3C.c	3 de 3 capturas y 316 de 322 variantes iguales (3 capturas donde la original no termina, sin comparar)
-func_8005CEBC	368	IGUAL	src/auto/func_8005CEBC.c	2 de 2 capturas y 88 de 88 variantes iguales
+func_8005CEBC	368	IGUAL	src/auto/func_8005CEBC.c	2 de 2 capturas y 199 de 199 variantes iguales
 func_800257F4	368	IGUAL	src/auto/func_800257F4.c	8 de 8 capturas y 694 de 694 variantes iguales
 func_80029D28	332	IGUAL	src/auto/func_80029D28.c	8 de 8 capturas y 759 de 759 variantes iguales
 func_80029AB8	316	IGUAL	src/auto/func_80029AB8.c	8 de 8 capturas y 826 de 826 variantes iguales
-func_8005D26C	308	IGUAL	src/Screen/video_cuadro_g14.c	2 de 2 capturas y 93 de 93 variantes iguales
+func_8005D26C	308	IGUAL	src/Screen/video_cuadro_g14.c	2 de 2 capturas y 212 de 212 variantes iguales
 func_800218D4	244	IGUAL	src/auto/func_800218D4.c	8 de 8 capturas y 437 de 437 variantes iguales
-func_8005D8D0	240	IGUAL	src/auto/func_8005D8D0.c	1 de 1 capturas y 36 de 36 variantes iguales
+func_8005D8D0	240	IGUAL	src/auto/func_8005D8D0.c	1 de 1 capturas y 80 de 80 variantes iguales
 func_80011850	224	IGUAL	src/auto/func_80011850.c	8 de 8 capturas y 725 de 725 variantes iguales
 func_800273B0	216	IGUAL	src/auto/func_800273B0.c	8 de 8 capturas y 312 de 312 variantes iguales
 func_80027534	196	IGUAL	src/auto/func_80027534.c	8 de 8 capturas y 241 de 241 variantes iguales
 func_80021A94	184	IGUAL	src/Screen/video_arranque_g14.c	1 de 1 capturas y 46 de 46 variantes iguales
 CargarINO	184	IGUAL	src/varios/cargar_ino_g14.c	2 de 2 capturas y 27 de 27 variantes iguales (4 capturas donde la original no termina, sin comparar)
 func_8002FFB8	176	IGUAL	src/auto/func_8002FFB8.c	6 de 6 capturas y 144 de 144 variantes iguales
-func_8005CD98	176	IGUAL	src/auto/func_8005CD98.c	1 de 1 capturas y 33 de 33 variantes iguales
+func_8005CD98	176	IGUAL	src/auto/func_8005CD98.c	1 de 1 capturas y 113 de 113 variantes iguales
 func_80027488	172	IGUAL	src/auto/func_80027488.c	8 de 8 capturas y 334 de 334 variantes iguales
 func_80010880	160	IGUAL	src/auto/func_80010880.c	6 de 6 capturas y 621 de 621 variantes iguales
 func_8002988C	144	IGUAL	src/auto/func_8002988C.c	1 de 1 capturas y 112 de 112 variantes iguales
@@ -517,7 +517,7 @@ func_80018218	144	IGUAL	src/nodos/reserva_crear_g15.c	1 de 1 capturas y 106 de 1
 ArchivoAbrir	140	IGUAL	src/auto/ArchivoAbrir.c	3 de 3 capturas y 58 de 58 variantes iguales (5 capturas donde la original no termina, sin comparar)
 func_8002CB2C	132	IGUAL	src/auto/func_8002CB2C.c	1 de 1 capturas y 111 de 111 variantes iguales
 func_8003DE68	128	IGUAL	src/auto/func_8003DE68.c	1 de 1 capturas y 64 de 64 variantes iguales
-func_8005CE48	116	IGUAL	src/auto/func_8005CE48.c	1 de 1 capturas y 106 de 106 variantes iguales
+func_8005CE48	116	IGUAL	src/auto/func_8005CE48.c	1 de 1 capturas y 129 de 129 variantes iguales
 func_8002CEB4	112	IGUAL	src/auto/func_8002CEB4.c	6 de 6 capturas y 329 de 329 variantes iguales
 func_8005C964	108	IGUAL	src/Screen/limpiar_g14.c	1 de 1 capturas y 130 de 130 variantes iguales
 func_8003DDFC	108	IGUAL	src/auto/func_8003DDFC.c	6 de 6 capturas y 672 de 672 variantes iguales
@@ -534,11 +534,11 @@ func_80026744	40	IGUAL	src/auto/func_80026744.c	8 de 8 capturas y 580 de 580 var
 func_8002CB00	32	IGUAL	src/psyq/cd_stream_aviso_g14.c	2 de 2 capturas y 78 de 78 variantes iguales
 func_80046B90	28	IGUAL	src/auto/func_80046B90.c	2 de 2 capturas y 208 de 208 variantes iguales
 func_8003E0B4	16	IGUAL	src/auto/func_8003E0B4.c	6 de 6 capturas y 360 de 360 variantes iguales
-func_8002D170	128	IGUAL	src/auto/func_8002D170.c	1 de 1 capturas y 117 de 117 variantes iguales
+func_8002D170	128	IGUAL	src/auto/func_8002D170.c	1 de 1 capturas y 29 de 29 variantes iguales
 func_80010BD8	796	IGUAL	src/Font/fnt_flush_g14.c	8 de 8 capturas y 1051 de 1051 variantes iguales
 func_8002B810	708	IGUAL	src/psyq/cd_dir_g14.c	1 de 1 capturas y 112 de 112 variantes iguales
 func_8002FF1C	156	IGUAL	src/varios/animaciones_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
-func_80017BC0	172	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 56 de 56 variantes iguales
+func_80017BC0	172	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 32 de 32 variantes iguales
 CargarWRLDDATA	308	IGUAL	src/WobjCode/wrlddata_g14.c	6 de 6 capturas y 285 de 285 variantes iguales
 func_800189A4	352	IGUAL	src/File/archivo_entero_g14.c	8 de 8 capturas y 707 de 707 variantes iguales
 func_8002D56C	424	IGUAL	src/psyq/cd_stream_g14.c	2 de 2 capturas y 54 de 54 variantes iguales
@@ -551,10 +551,10 @@ func_8002F9A0	604	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 83 de 83 
 func_80051024	608	IGUAL	src/varios/tarjeta_dir_g14.c	1 de 1 capturas y 15 de 15 variantes iguales
 func_8002FBFC	616	IGUAL	src/varios/animaciones_g14.c	3 de 3 capturas y 83 de 83 variantes iguales
 func_8002F298	652	IGUAL	src/varios/animaciones_g14.c	6 de 6 capturas y 277 de 277 variantes iguales
-func_8005D50C	824	NO_TERMINA	src/Screen/video_reproductor_g14.c	la original no termina en el emulador (espera al hardware)
+func_8005D50C	824	IGUAL	src/Screen/video_reproductor_g14.c	1 de 1 capturas y 10 de 10 variantes iguales
 func_800275F8	916	IGUAL	src/psyq/mando_envio_g14.c	8 de 8 capturas y 252 de 252 variantes iguales
 func_8002D714	2332	IGUAL_V0	src/psyq/cd_stream_g14.c	2 de 2 capturas y 12 de 14 variantes iguales
-func_800177B4	128	DISTINTO	src/psyq/parche_bios_g14.c	0 de 1 capturas y 0 de 56 variantes iguales
+func_800177B4	128	IGUAL	src/psyq/parche_bios_g14.c	1 de 1 capturas y 32 de 32 variantes iguales
 func_8002153C	660	IGUAL	src/Screen/primitivas_g13.c	1 de 1 capturas y 128 de 128 variantes iguales
 func_8003DEE8	264	IGUAL_SINT	src/auto/func_8003DEE8.c	1 de 1 capturas y 109 de 109 variantes iguales
 func_8002B704	236	IGUAL_SINT	src/auto/func_8002B704.c	1 de 1 capturas y 79 de 79 variantes iguales
@@ -567,16 +567,16 @@ func_8004F50C	92	IGUAL_V0_SINT	src/varios/tarjeta_cerrar_g15.c	0 de 2 capturas y
 func_8001210C	36	IGUAL_SINT	src/auto/func_8001210C.c	1 de 1 capturas y 54 de 54 variantes iguales
 func_80029EB4	32	IGUAL_SINT	src/auto/func_80029EB4.c	1 de 1 capturas y 78 de 78 variantes iguales
 func_8004EBD0	396	IGUAL_SINT	src/varios/tarjeta_iconos_g15.c	2 de 2 capturas y 64 de 64 variantes iguales
-func_800522E4	108	DISTINTO	src/varios/tarjeta_dir_g14.c	0 de 1 capturas y 0 de 132 variantes iguales
+func_800522E4	108	IGUAL_SINT	src/varios/tarjeta_dir_g14.c	1 de 1 capturas y 28 de 28 variantes iguales
 func_8002B49C	360	IGUAL_SINT	src/psyq/cd_datasync_g14.c	1 de 1 capturas y 87 de 87 variantes iguales
 func_80012F2C	184	IGUAL_SINT	src/libgpu/mover_imagen_g14.c	1 de 1 capturas y 65 de 65 variantes iguales
 func_8003E9FC	60	IGUAL_SINT	src/varios/tabla_corrida_g14.c	3 de 3 capturas y 284 de 284 variantes iguales
 func_80019D80	572	IGUAL	src/auto/func_80019D80.c	8 de 8 capturas y 214 de 214 variantes iguales
 func_8001B9C0	776	IGUAL_SINT	src/varios/textura_fuente_g15.c	1 de 1 capturas y 23 de 23 variantes iguales
 func_800502DC	316	IGUAL_SINT	src/varios/tarjeta_leer_g15.c	5 de 5 capturas y 493 de 493 variantes iguales
-func_800521AC	148	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
-func_80052240	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
-func_800523B4	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 136 de 136 variantes iguales
+func_800521AC	148	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_80052240	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_800523B4	112	IGUAL_SINT	src/varios/tarjeta_bios_g15.c	1 de 1 capturas y 32 de 32 variantes iguales
 func_8001B0C8	972	IGUAL_SINT	src/varios/textura_tga_g15.c	2 de 2 capturas y 35 de 35 variantes iguales
 func_8001B698	808	IGUAL_SINT	src/varios/textura_sprite_g15.c	2 de 2 capturas y 31 de 31 variantes iguales
 HerramientaConvertirPIC	452	IGUAL_SINT	src/varios/convertir_pic_g15.c	1 de 1 capturas y 27 de 27 variantes iguales
@@ -595,3 +595,37 @@ func_8004AAE4	64	IGUAL_SINT	src/auto/func_8004AAE4.c	2 de 2 capturas y 82 de 82 
 func_8005C8E0	76	IGUAL_SINT	src/auto/func_8005C8E0.c	2 de 2 capturas y 80 de 80 variantes iguales
 func_8003980C	404	IGUAL_V0_SINT	src/auto/func_8003980C.c	2 de 6 capturas y 183 de 439 variantes iguales
 func_800185A8	200	IGUAL_SINT	src/varios/armar_ino_g15.c	1 de 1 capturas y 15 de 15 variantes iguales
+func_80051A84	476	IGUAL	src/varios/bios_eventos_g16.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_80051C60	180	IGUAL	src/varios/bios_eventos_g16.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_80014910	120	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_80014988	56	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_800167D4	160	IGUAL_SINT	src/auto/func_800167D4.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_80016874	120	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 28 de 28 variantes iguales
+func_80052350	56	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 20 de 20 variantes iguales
+func_80050C40	68	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_80050418	316	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_80050554	320	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 26 de 26 variantes iguales
+func_80050694	320	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 26 de 26 variantes iguales
+func_80050AB8	392	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	1 de 1 capturas y 27 de 27 variantes iguales
+func_800513B4	508	IGUAL_SINT	src/varios/tarjeta_archivo_g16.c	3 de 3 capturas y 84 de 84 variantes iguales
+func_80029808	40	IGUAL	src/varios/bios_eventos_g16.c	8 de 8 capturas y 192 de 192 variantes iguales
+func_80029858	40	IGUAL	src/varios/bios_eventos_g16.c	8 de 8 capturas y 192 de 192 variantes iguales
+func_8003E554	188	IGUAL	src/varios/bios_eventos_g16.c	6 de 6 capturas y 192 de 192 variantes iguales
+func_80051D14	264	IGUAL	src/varios/bios_eventos_g16.c	3 de 3 capturas y 96 de 96 variantes iguales
+func_80051E1C	216	IGUAL	src/varios/bios_eventos_g16.c	3 de 3 capturas y 96 de 96 variantes iguales
+func_80051EF4	216	IGUAL	src/varios/bios_eventos_g16.c	1 de 1 capturas y 32 de 32 variantes iguales
+func_80029830	40	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 24 de 24 variantes iguales
+func_800515B0	436	IGUAL_SINT	src/varios/bios_eventos_g16.c	3 de 3 capturas y 88 de 88 variantes iguales
+func_8004FD34	768	IGUAL	src/varios/tarjeta_evento_fd34_g16.c	3 de 3 capturas y 77 de 77 variantes iguales
+func_80050034	680	IGUAL	src/varios/tarjeta_evento_0034_g16.c	3 de 3 capturas y 73 de 73 variantes iguales
+func_80051764	188	IGUAL_SINT	src/varios/bios_eventos_g16.c	1 de 1 capturas y 136 de 136 variantes iguales
+func_80016170	60	IGUAL	src/psyq/setjmp.c	4 de 4 capturas y 121 de 121 variantes iguales
+func_800161BC	12	IGUAL	src/psyq/bios_llamadas.c	5 de 5 capturas y 340 de 340 variantes iguales
+func_800142FC	12	IGUAL	src/psyq/bios_llamadas.c	3 de 3 capturas y 204 de 204 variantes iguales
+func_800106C8	76	IGUAL	src/varios/arranque_g13.c	4 de 4 capturas y 91 de 91 variantes iguales
+func_800294F0	40	IGUAL_SINT	src/psyq/pcdrv.c	1 de 1 capturas y 47 de 47 variantes iguales
+func_80029518	24	IGUAL_SINT	src/psyq/pcdrv.c	2 de 2 capturas y 136 de 136 variantes iguales
+func_80029530	28	IGUAL_SINT	src/psyq/pcdrv.c	2 de 2 capturas y 111 de 111 variantes iguales
+func_80052114	44	IGUAL_SINT	src/psyq/pcdrv.c	2 de 2 capturas y 152 de 152 variantes iguales
+func_800161C8	12	IGUAL_SINT	src/psyq/bios_llamadas.c	2 de 2 capturas y 136 de 136 variantes iguales
+func_80052388	40	IGUAL_SINT	src/auto/func_80052388.c	1 de 1 capturas y 132 de 132 variantes iguales

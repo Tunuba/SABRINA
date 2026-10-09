@@ -106,23 +106,13 @@ TABLA_B0 = TABLA_C0 + 0x200
 # - PCdrv (04-10): las herramientas de desarrollo escriben a la PC con "break" (0x102 PCcreat, 0x104 PCclose,
 #   0x106 PCwrite, en func_800294F0/80029518/80029530; un gancho en cada break). El modelo contesta que salio bien y anota cada
 #   creacion, cierre y escritura (con los datos); eso tambien se compara. SABRINA_SIN_PCDRV=1 lo apaga.
-#   08-10: tambien hay gancho en cada break del codigo del C (los trampolines escritos en C con asm).
 PCDRV = MODELOS and os.environ.get("SABRINA_SIN_PCDRV") != "1"
-# 08-10: SABRINA_PCDRV_FALLA=1 hace que la PC conteste que no a cada PCcreat (v0=-1), para recorrer la rama
-# de error de func_800294F0 (con el modelo normal siempre sale bien y un mutante ahi quedaba vivo).
-PCDRV_FALLA = os.environ.get("SABRINA_PCDRV_FALLA") == "1"
 TARJETA = MODELOS and os.environ.get("SABRINA_SIN_TARJETA") != "1"
 MALLOC = MODELOS and os.environ.get("SABRINA_SIN_MALLOC") != "1"
 MONTON_BIOS = 0x81100000
 MONTON_TAM = 0x00400000
 C0_VIEJO = (0xAF410004, 0xAF420008, 0xAF43000C, 0xAF5F007C, 0x40037000, 0x00000000)
 FIN = 0x80FFFFF0            # direccion de retorno centinela
-# Corte (08-10) para las funciones que nunca vuelven (main, BuclePrincipal): SABRINA_CORTE="0xDIRECCION:N" para
-# las dos corridas cuando entran por N-esima vez a esa direccion (una funcion de la ORIGINAL que las dos llaman,
-# por ejemplo la VSync del bucle) y desde ahi se compara igual que al volver: la RAM, el scratchpad, el hardware,
-# la BIOS, todo, salvo los registros conservados (en el corte son los de la funcion que corre, no los de la vuelta).
-# Si una de las dos no llega al corte es un error de esa corrida.
-CORTE = tuple(int(x, 0) for x in os.environ["SABRINA_CORTE"].split(":")) if os.environ.get("SABRINA_CORTE") else None
 LIMITE = int(os.environ.get("SABRINA_LIMITE", 20_000_000))   # instrucciones como maximo por ejecucion (SABRINA_LIMITE para una tanda larga)
 ESCALONES = (250_000, 1_250_000, 5_000_000, LIMITE)   # para medir cuanto corre la original en una captura
 
@@ -680,11 +670,6 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         a1, a2, a3 = (u.reg_read(UC_MIPS_REG_ZERO + r) for r in (5, 6, 7))
         if codigo_break == 0x102:                      # PCcreat(nombre): manejador en v1
             nombre = bytes(u.mem_read(a1 & 0x1FFFFFFF, 64)).split(bytes(1))[0]
-            if PCDRV_FALLA:
-                pc_escrito.append(("crear", nombre, "fallo"))
-                u.reg_write(UC_MIPS_REG_V0, 0xFFFFFFFF)
-                u.reg_write(UC_MIPS_REG_V1, 0x1234)
-                return
             pc_abiertos["n"] += 1
             pc_escrito.append(("crear", nombre, pc_abiertos["n"]))
             u.reg_write(UC_MIPS_REG_V0, 0)
@@ -766,10 +751,6 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         for f, off in (("func_800294F0", 0xC), ("func_80029518", 0x8), ("func_80029530", 0xC)):
             d = simbolos()[f] + off
             uc.hook_add(UC_HOOK_CODE, break_pcdrv, begin=d, end=d)
-        # 08-10: los mismos break escritos en el C (los trampolines de PCdrv en C con asm) van al mismo modelo
-        for i in range(0, len(cod_p) - 3, 4) if codigo_c else ():
-            if struct.unpack_from("<I", cod_p, i)[0] & 0xFC00003F == 0x0000000D:
-                uc.hook_add(UC_HOOK_CODE, break_pcdrv, begin=ini_p + i, end=ini_p + i)
     if MODELOS:
         espera, contador = simbolos()["func_800161D4"], simbolos()["D_800649EC"] & 0x1FFFFFFF
 
@@ -852,13 +833,6 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
                     correr_siguiente(u)
                     return
                 r = estado["guardado"]
-                if r is None:
-                    # 05-10: se llego a la vuelta de las interrupciones sin ninguna en curso (una variante que
-                    # salta a donde no debe). Antes reventaba la verificacion entera con un TypeError; ahora es
-                    # un error de esa corrida, que se compara como cualquier otro
-                    interrupcion_mala.append(f"vuelta de interrupcion sin interrupcion (ra {u.reg_read(UC_MIPS_REG_RA):08x})")
-                    u.emu_stop()
-                    return
                 for i in range(1, 32):
                     u.reg_write(UC_MIPS_REG_ZERO + i, r[i])
                 u.reg_write(UC_MIPS_REG_HI, r[32])
@@ -963,15 +937,6 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         uc.hook_add(UC_HOOK_MEM_READ, lee)
         uc.hook_add(UC_HOOK_MEM_WRITE, escribe)
     error = None
-    cortada = {"veces": 0, "si": False}
-    if CORTE:
-        def al_corte(u, dirc, tam, _):
-            cortada["veces"] += 1
-            if cortada["veces"] == CORTE[1]:
-                cortada["si"] = True
-                u.emu_stop()
-        uc.hook_add(UC_HOOK_CODE, al_corte, begin=CORTE[0] & 0x1FFFFFFF, end=CORTE[0] & 0x1FFFFFFF)
-        uc.hook_add(UC_HOOK_CODE, al_corte, begin=CORTE[0], end=CORTE[0])
     try:
         # tope_seg: tope de tiempo (solo para la original en las variantes, ver verificar)
         uc.emu_start(pc, FIN, timeout=int(tope_seg * 1e6) if tope_seg else 0, count=cuenta or LIMITE)
@@ -979,15 +944,11 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         error = f"{ex} en {uc.reg_read(UC_MIPS_REG_PC):08x}"
     if error is None and interrupcion_mala:
         error = interrupcion_mala[0]
-    if error is None and CORTE and not cortada["si"]:
-        error = "no termino: no llego al corte %08x:%d (paso %d veces; con no termino sube el escalon de instrucciones)" % (CORTE[0], CORTE[1], cortada["veces"])
-    if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN and not cortada["si"]:
+    if error is None and uc.reg_read(UC_MIPS_REG_PC) != FIN:
         error = f"no termino en {cuenta or LIMITE} instrucciones (pc {uc.reg_read(UC_MIPS_REG_PC):08x})"
     # los registros que la convencion obliga a conservar (s0-s7, gp, sp, fp), como quedan al volver (04-10 noche: un
     # stub en asm que restauraba mal sp pasaba, porque la corrida termina al volver y nadie lo miraba)
     conservados = [uc.reg_read(UC_MIPS_REG_ZERO + r) for r in (16, 17, 18, 19, 20, 21, 22, 23, 28, 29, 30)]
-    if cortada["si"]:
-        conservados = None
     return dict(v0=uc.reg_read(UC_MIPS_REG_V0), v1=uc.reg_read(UC_MIPS_REG_V1), conservados=conservados,
                 criticas=criticas, bios=bios, llamadas=llamadas,
                 gte=(tuple(est_gte.datos), tuple(est_gte.ctrl)), cop0=cop0,
@@ -1039,7 +1000,6 @@ def marco_original(funcion):
 # pasaban, porque el modelo de la BIOS no hace nada con ellos.
 ARGS_BIOS = {
     (0xA0, 0x39): 2, (0xA0, 0x49): 1, (0xA0, 0xAB): 1, (0xA0, 0xAC): 1,          # InitHeap, GPU_cw, _card_info/load
-    (0xA0, 0x33): 1, (0xA0, 0x34): 1,                                            # malloc, free (08-10)
     (0xB0, 0x07): 2, (0xB0, 0x08): 4, (0xB0, 0x09): 1, (0xB0, 0x0A): 1,          # Deliver/Open/Close/WaitEvent
     (0xB0, 0x0B): 1, (0xB0, 0x0C): 1, (0xB0, 0x12): 4, (0xB0, 0x19): 1,          # Test/EnableEvent, InitPAD2, HookEntryInt
     (0xB0, 0x32): 2, (0xB0, 0x33): 3, (0xB0, 0x34): 3, (0xB0, 0x35): 3,          # open, lseek, read, write

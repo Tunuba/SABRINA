@@ -15,12 +15,12 @@ extern u16 D_8007CA9C;               /* triangulos ya puestos en la lista de est
  * medio sale del que ya se le puso a la pieza en D_8007CAC0 (func_8001FD28), que se queda sin usar: las
  * tres piezas nuevas van en las tres siguientes y la lista avanza cuatro. Cada una va al mismo lugar de la
  * lista (la z que calculo el llamador). */
-void func_800589EC(Triangulo *t, s32 fin, s32 z) {
+__attribute__((noinline, used)) static void cuerpo_800589EC(Triangulo *t, s32 fin, s32 z, Vertice *tercero) {
     TriTex *a = (TriTex *) (D_8007CAC0 + 0x28);
     TriTex *b = (TriTex *) (D_8007CAC0 + 0x50);
     TriTex *c = (TriTex *) (D_8007CAC0 + 0x78);
     TriTex *p;
-    Vertice medio[3];                /* el tercero no se llena: el juego lo manda asi a rtpt y no lo usa */
+    Vertice medio[2];
     s16 antes[6];                    /* v0, v1 y v2 en pantalla */
     s16 ahora[6];                    /* m01, m12 y lo que salga del tercero */
     u8 *uv = t->u;                   /* u0 v0 u1 v1 u2 v2 */
@@ -41,7 +41,7 @@ void func_800589EC(Triangulo *t, s32 fin, s32 z) {
     medio[1].z = (t->v[2]->z + t->v[1]->z) >> 1;
     gte_poner_v0(&medio[0]);
     gte_poner_v1(&medio[1]);
-    gte_poner_v2(&medio[2]);
+    gte_poner_v2(tercero);           /* sin llenar: lo que haya en la pila de la original */
 
     p = (TriTex *) D_8007CAC0;
     medio[0].r = (p->r1 + p->r0) >> 1;
@@ -150,4 +150,26 @@ void func_800589EC(Triangulo *t, s32 fin, s32 z) {
     AddPrim((u32 *) lista, c);
     D_8007CAC0 += 0xA0;
     D_8007CA9C += 3;
+}
+
+/* Stub con el marco de la original (0x60: s0-s2 en 0x10-0x18, ra en 0x1C). La original manda a rtpt un tercer
+ * vector que nunca llena (sp+0x3C de su marco) y el GTE se queda con esa basura de la pila; el cuerpo la carga
+ * desde el mismo lugar (05-10: con el GTE comparado, el C de un solo marco dejaba en VXY2/VZ2 su propia basura). */
+__attribute__((naked))
+void func_800589EC(Triangulo *t, s32 fin, s32 z) {
+    __asm__(".set noreorder\n"
+            "\taddiu $sp, $sp, -0x60\n"
+            "\tsw $16, 0x10($sp)\n"
+            "\tsw $17, 0x14($sp)\n"
+            "\tsw $18, 0x18($sp)\n"
+            "\tsw $31, 0x1C($sp)\n"
+            "\tjal cuerpo_800589EC\n"
+            "\taddiu $7, $sp, 0x3C\n"
+            "\tlw $31, 0x1C($sp)\n"
+            "\tlw $18, 0x18($sp)\n"
+            "\tlw $17, 0x14($sp)\n"
+            "\tlw $16, 0x10($sp)\n"
+            "\tjr $31\n"
+            "\taddiu $sp, $sp, 0x60\n"
+            ".set reorder");
 }
