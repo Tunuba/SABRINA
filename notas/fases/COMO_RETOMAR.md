@@ -1019,3 +1019,23 @@ Sesion sola, sin agentes, con Roblox Studio y otras sesiones abiertas (2-3 GB li
 - func_8005CEBC salio DISTINTO en 1 de 199 variantes (la que hace fallar la afirmacion): el C llamaba a Afirmar sin
   archivo ni linea. Arreglado en `src/auto/func_8005CEBC.c` (alias Afirmar3 con D_8007C930 y 0x384), FALTA verificarlo.
 - Mutantes vivos por revisar: func_8001FD50 (4 de 12) y func_800593E0 (1 de 8), en `build/cola_0810.txt`.
+
+### 08-10 NOCHE 2: CASI TODO (EMPIEZA AQUI)
+
+**99.4 % (79.9 reales + 19.5 sint), 1030 de 1034.** Despues del apagado de WSL se retomo todo.
+- func_8005CEBC IGUAL (199/199) tras pasar archivo y linea a Afirmar.
+- **PCdrv en C** (`src/psyq/pcdrv.c`): func_800294F0 (PCcreat), func_80029518 (PCclose), func_80029530 (PCwrite) con
+  el mismo break en asm y variables de registro, y func_80052114 (trozo del mando con v1/v0 de entrada). Las cuatro
+  IGUAL_SINT. verificar.py ahora pone el gancho de PCdrv tambien en cada break del codigo del C, y
+  `SABRINA_PCDRV_FALLA=1` hace que la PC conteste que no (recorre la rama de error de PCcreat; su mutante muere asi).
+  Mutantes vivos que quedan: equivalentes (registros temporales, una vuelta menos en la espera).
+- `sint.py crear_con` acepta v0= y v1= (ademas de a0-a3).
+- malloc y free de la BIOS ahora comparan su argumento (ARGS_BIOS). free (func_800161C8) IGUAL_SINT; malloc,
+  func_80017CBC/CE4, Reservar (960/960), Liberar (1088/1088) y func_8004DC10 siguen IGUAL.
+- func_80052388 IGUAL_SINT: con `__asm__ volatile("")` despues de la ultima llamada (GCC la hacia salto y
+  func_800523B4 guardaba en D_800D53C0 el ra del que llamo). Sin la barrera da DISTINTO justo ahi (probado).
+- func_80052140/84 y func_80017B8C son trozos que se copian a la RAM de la BIOS (en la captura 0xDFAC tiene la
+  primera instruccion de func_80052140) y vuelven al manejador de la BIOS (0x3488): limite.
+- BuclePrincipal: cortes en `build/cola_corte2.txt` (corriendo); al terminar, mutantes del video (cola_0810c.txt).
+- func_8001FD50: el mutante "7 por 8" vive porque ninguna captura tiene un triangulo con el lado 0-2 largo (el +7
+  de la tabla D_80068878); falta una captura con un triangulo grande muy cerca de la camara.

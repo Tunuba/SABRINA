@@ -95,7 +95,7 @@ def crear(nom):
     open(os.path.join(dst, "DONANTE"), "w").write(don + "\n")
 
 
-REG = {"a0": 4, "a1": 5, "a2": 6, "a3": 7}
+REG = {"v0": 2, "v1": 3, "a0": 4, "a1": 5, "a2": 6, "a3": 7}
 
 
 def crear_con(nom, cambios, en=None):

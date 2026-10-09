@@ -106,7 +106,11 @@ TABLA_B0 = TABLA_C0 + 0x200
 # - PCdrv (04-10): las herramientas de desarrollo escriben a la PC con "break" (0x102 PCcreat, 0x104 PCclose,
 #   0x106 PCwrite, en func_800294F0/80029518/80029530; un gancho en cada break). El modelo contesta que salio bien y anota cada
 #   creacion, cierre y escritura (con los datos); eso tambien se compara. SABRINA_SIN_PCDRV=1 lo apaga.
+#   08-10: tambien hay gancho en cada break del codigo del C (los trampolines escritos en C con asm).
 PCDRV = MODELOS and os.environ.get("SABRINA_SIN_PCDRV") != "1"
+# 08-10: SABRINA_PCDRV_FALLA=1 hace que la PC conteste que no a cada PCcreat (v0=-1), para recorrer la rama
+# de error de func_800294F0 (con el modelo normal siempre sale bien y un mutante ahi quedaba vivo).
+PCDRV_FALLA = os.environ.get("SABRINA_PCDRV_FALLA") == "1"
 TARJETA = MODELOS and os.environ.get("SABRINA_SIN_TARJETA") != "1"
 MALLOC = MODELOS and os.environ.get("SABRINA_SIN_MALLOC") != "1"
 MONTON_BIOS = 0x81100000
@@ -676,6 +680,11 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         a1, a2, a3 = (u.reg_read(UC_MIPS_REG_ZERO + r) for r in (5, 6, 7))
         if codigo_break == 0x102:                      # PCcreat(nombre): manejador en v1
             nombre = bytes(u.mem_read(a1 & 0x1FFFFFFF, 64)).split(bytes(1))[0]
+            if PCDRV_FALLA:
+                pc_escrito.append(("crear", nombre, "fallo"))
+                u.reg_write(UC_MIPS_REG_V0, 0xFFFFFFFF)
+                u.reg_write(UC_MIPS_REG_V1, 0x1234)
+                return
             pc_abiertos["n"] += 1
             pc_escrito.append(("crear", nombre, pc_abiertos["n"]))
             u.reg_write(UC_MIPS_REG_V0, 0)
@@ -757,6 +766,10 @@ def ejecutar(captura, pc, codigo_c, regs=None, parche=None, trazar=False, propia
         for f, off in (("func_800294F0", 0xC), ("func_80029518", 0x8), ("func_80029530", 0xC)):
             d = simbolos()[f] + off
             uc.hook_add(UC_HOOK_CODE, break_pcdrv, begin=d, end=d)
+        # 08-10: los mismos break escritos en el C (los trampolines de PCdrv en C con asm) van al mismo modelo
+        for i in range(0, len(cod_p) - 3, 4) if codigo_c else ():
+            if struct.unpack_from("<I", cod_p, i)[0] & 0xFC00003F == 0x0000000D:
+                uc.hook_add(UC_HOOK_CODE, break_pcdrv, begin=ini_p + i, end=ini_p + i)
     if MODELOS:
         espera, contador = simbolos()["func_800161D4"], simbolos()["D_800649EC"] & 0x1FFFFFFF
 
@@ -1026,6 +1039,7 @@ def marco_original(funcion):
 # pasaban, porque el modelo de la BIOS no hace nada con ellos.
 ARGS_BIOS = {
     (0xA0, 0x39): 2, (0xA0, 0x49): 1, (0xA0, 0xAB): 1, (0xA0, 0xAC): 1,          # InitHeap, GPU_cw, _card_info/load
+    (0xA0, 0x33): 1, (0xA0, 0x34): 1,                                            # malloc, free (08-10)
     (0xB0, 0x07): 2, (0xB0, 0x08): 4, (0xB0, 0x09): 1, (0xB0, 0x0A): 1,          # Deliver/Open/Close/WaitEvent
     (0xB0, 0x0B): 1, (0xB0, 0x0C): 1, (0xB0, 0x12): 4, (0xB0, 0x19): 1,          # Test/EnableEvent, InitPAD2, HookEntryInt
     (0xB0, 0x32): 2, (0xB0, 0x33): 3, (0xB0, 0x34): 3, (0xB0, 0x35): 3,          # open, lseek, read, write

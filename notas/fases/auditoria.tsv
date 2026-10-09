@@ -623,3 +623,9 @@ func_80016170	60	IGUAL	src/psyq/setjmp.c	4 de 4 capturas y 121 de 121 variantes 
 func_800161BC	12	IGUAL	src/psyq/bios_llamadas.c	5 de 5 capturas y 340 de 340 variantes iguales
 func_800142FC	12	IGUAL	src/psyq/bios_llamadas.c	3 de 3 capturas y 204 de 204 variantes iguales
 func_800106C8	76	IGUAL	src/varios/arranque_g13.c	4 de 4 capturas y 91 de 91 variantes iguales
+func_800294F0	40	IGUAL_SINT	src/psyq/pcdrv.c	1 de 1 capturas y 47 de 47 variantes iguales
+func_80029518	24	IGUAL_SINT	src/psyq/pcdrv.c	2 de 2 capturas y 136 de 136 variantes iguales
+func_80029530	28	IGUAL_SINT	src/psyq/pcdrv.c	2 de 2 capturas y 111 de 111 variantes iguales
+func_80052114	44	IGUAL_SINT	src/psyq/pcdrv.c	2 de 2 capturas y 152 de 152 variantes iguales
+func_800161C8	12	IGUAL_SINT	src/psyq/bios_llamadas.c	2 de 2 capturas y 136 de 136 variantes iguales
+func_80052388	40	IGUAL_SINT	src/auto/func_80052388.c	1 de 1 capturas y 132 de 132 variantes iguales
