@@ -439,11 +439,26 @@ def validar(plats):
 # ---------------------------------------------------------------- disco
 
 PISTA_CAMARA_LIBRE = os.path.join(disco.DISCO, "libre (Track 01).bin")    # disco con el ejecutable con camara libre
+CUE_CAMARA_LIBRE = os.path.join(disco.DISCO, "libre.cue")
+PPF_CAMARA_LIBRE = os.path.join(disco.RAIZ, "mods", "camara_libre.ppf")
+
+
+def asegurar_camara_libre():
+    """Deja disco\\libre.cue (el juego con la camara libre en SELECT), armandolo con mods\\camara_libre.ppf sobre la
+    imagen original si no existe (el parche cambia solo 12 KB: el ejecutable). Devuelve la ruta de la pista."""
+    if not os.path.exists(PISTA_CAMARA_LIBRE):
+        if not os.path.exists(PPF_CAMARA_LIBRE):
+            raise FileNotFoundError(f"falta {PISTA_CAMARA_LIBRE} y tampoco esta {PPF_CAMARA_LIBRE}")
+        import ppf
+        ppf.aplicar(disco.PISTA1, PPF_CAMARA_LIBRE, PISTA_CAMARA_LIBRE)
+    if not os.path.exists(CUE_CAMARA_LIBRE):
+        disco.cue_mod(CUE_CAMARA_LIBRE, PISTA_CAMARA_LIBRE)
+    return PISTA_CAMARA_LIBRE
 
 
 def armar_disco(plats=None, nombre="plataformas", cielo=None, camara_libre=False):
     """Arma disco\\sabrina_<nombre>.cue (siempre de cero). Por defecto: niveles\\plataformas.json. camara_libre = parte
-    del disco con el ejecutable que trae la camara libre (SELECT la prende; se arma con scripts\\jugar.py camara)."""
+    del disco con el ejecutable que trae la camara libre (SELECT la prende; se arma sola con mods\\camara_libre.ppf)."""
     if plats is None:
         plats, cielo_json = cargar_nivel()
         cielo = cielo or cielo_json
@@ -455,9 +470,7 @@ def armar_disco(plats=None, nombre="plataformas", cielo=None, camara_libre=False
     nuevo = nf.construir_bytes(nodo_de(plats), CONSERVAR_PLAT, sin_objetos=True, paredes=True,
                                reemplazos={INDICE_CIELO: nodo_cielo(cielo)})
     if camara_libre:
-        if not os.path.exists(PISTA_CAMARA_LIBRE):
-            raise FileNotFoundError(f"falta {PISTA_CAMARA_LIBRE}: se arma con 'python jugar.py camara'")
-        disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista, PISTA_CAMARA_LIBRE)
+        disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista, asegurar_camara_libre())
     else:
         disco.parchar({"GRAPHICS\\HUB\\H1W.INO": nuevo}, pista)
     disco.cue_mod(cue, pista)

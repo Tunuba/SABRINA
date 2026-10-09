@@ -22,12 +22,25 @@ PASOS_HASTA_EL_HUB = "w2160 CROSS w300 START w60 CROSS w240 w1300"
 
 
 def disco_camara(rearmar):
-    cue = os.path.join(disco.DISCO, "libre.cue")
-    if rearmar or not os.path.exists(cue):
-        exe = os.path.join(RAIZ, "decomp", "build", "SLUS_libre.exe")
-        if not os.path.exists(exe):
-            sys.exit(f"falta {exe}: armalo con decomp\\armar_c.py (la camara libre va en camara_g08.c)")
-        subprocess.run([sys.executable, os.path.join(RAIZ, "scripts", "armar_disco_c.py"), exe, "libre"], check=True)
+    """La camara libre: mods\\camara_libre.ppf sobre el disco original (lo normal) o, si no hay parche, el ejecutable
+    compilado del C descompilado (decomp\\build\\SLUS_libre.exe)."""
+    import nivel_plataformas
+    cue = nivel_plataformas.CUE_CAMARA_LIBRE
+    if rearmar:
+        for ruta in (cue, nivel_plataformas.PISTA_CAMARA_LIBRE):
+            if os.path.exists(ruta):
+                os.remove(ruta)
+    if os.path.exists(cue):
+        return cue
+    try:
+        nivel_plataformas.asegurar_camara_libre()
+        return cue
+    except FileNotFoundError:
+        pass
+    exe = os.path.join(RAIZ, "decomp", "build", "SLUS_libre.exe")
+    if not os.path.exists(exe):
+        sys.exit(f"no hay mods\\camara_libre.ppf ni {exe}")
+    subprocess.run([sys.executable, os.path.join(RAIZ, "scripts", "armar_disco_c.py"), exe, "libre"], check=True)
     return cue
 
 

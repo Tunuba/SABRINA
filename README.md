@@ -34,6 +34,13 @@ Otras formas de correrlo, desde PowerShell en esta carpeta:
 
 El parche es `mods\sabrina_todo.ppf`. Tambien sirve con PPF-O-Matic sobre la pista 1 de la imagen.
 
+## Editor de niveles
+
+Un editor para armar tus propios mapas (suelos, paredes con colision, rampas, techos, texturas del juego y cielo
+propio) y jugarlos en el emulador, con un mapa de ejemplo (`niveles\castillo.json`) y una camara libre
+(`mods\camara_libre.ppf`). Instalacion ligera: `.\arrancar.ps1 -Editor -SoloInstalar`; despues, doble clic en
+`EDITOR_NIVEL.bat` o `MAPA_CASTILLO.bat`. Todo explicado en [GUIA_EDITOR.md](GUIA_EDITOR.md).
+
 ## Carpetas
 
 - `scripts\` herramientas propias, en Python y Lua.
