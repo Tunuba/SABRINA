@@ -86,8 +86,26 @@ El kart acelera solo: **para correr basta con izquierda y derecha**. Lo demas es
 | Izquierda / derecha | Girar |
 | Cuadrado o abajo (Z) | Frenar y marcha atras |
 | Circulo o R1 (D), mantenido en una curva | Derrape; al soltar, mini turbo (azul) o super mini turbo (naranja) |
-| Triangulo o L1 (S) | Usar el hechizo: Turbo de Salem, Triple turbo o Reloj del tiempo (-3 segundos) |
+| Triangulo o L1 (S) | Usar el hechizo que se lleva (ver abajo) |
 | SELECT | Empezar otra carrera |
+
+**Cajas de hechizo y objetos (como en Mario Kart).** Sobre cada cinta dorada flotan tres cajas que giran; al pasar se
+rompen (Salem tambien las rompe) y salen otra vez a los 3 segundos. Con la mano vacia empieza la ruleta y toca uno de
+estos; yendo segunda salen mas los fuertes:
+
+| Hechizo | Que hace |
+|---|---|
+| Turbo / Triple turbo | Un acelerón (tres usos el triple) |
+| Rayo de Sabrina | Salem da vueltas y se frena, este donde este |
+| Pocion resbalosa | Se deja atras en la pista; si Salem la pisa, resbala (y tu tambien, si vuelves a pasar) |
+| Estrella magica | 5 segundos mas rapida, sin miedo a nada; si chocas a Salem, el sale girando |
+| Reloj del tiempo | Salem se queda congelado 3 segundos |
+
+Salem, por su parte, va soltando **bolas de pelo** detras de el: si pisas una, das un trompo.
+
+**La meta.** Si ganas, la camara da vueltas alrededor de Sabrina mientras ella levanta los brazos, saluda y lanza
+magia, el kart salta y gira y las cajas de hechizo vuelan alrededor como fuegos artificiales. Si gana Salem, Sabrina
+se queda triste con los brazos cruzados y el que salta es el. X o SELECT empieza otra carrera.
 
 La musica es nueva y esta hecha solo con los sonidos del juego (`scripts\musica_kart.py`: muestras de los bancos
 VAB tocadas a otra altura, como hace la PS1), en el lugar de la musica del pueblo (la pista 3 del CD, mismo tamano).

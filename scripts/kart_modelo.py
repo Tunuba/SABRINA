@@ -64,6 +64,40 @@ class Malla:
         caras = [(0, 1, 3, 2), (4, 5, 7, 6), (0, 1, 5, 4), (2, 3, 7, 6), (0, 2, 6, 4), (1, 3, 7, 5)]
         self.solido(pts, caras, color)
 
+    def cara_textura(self, esquinas, color, tex, centro):
+        """Un cuadrado con la textura tex entera (la ventana de tabla_texturas) y el color de vertice tal cual (128 =
+        la textura sin tocar). esquinas: 4 puntos en orden alrededor."""
+        w, h = n.tabla_texturas().get(tex, (63, 63))
+        uvs = [(0, 0), (w, 0), (w, h), (0, h)]
+        pts = [self.t(p) for p in esquinas]
+        base = []
+        for p in pts:
+            self.verts.append(struct.pack("<3hh3Bx", *[round(q) for q in p], 0, *color))
+            base.append(len(self.verts) - 1)
+        for a, b, c in ((0, 1, 2), (0, 2, 3)):
+            p0, p1, p2 = pts[a], pts[b], pts[c]
+            u = [p1[k] - p0[k] for k in range(3)]
+            v = [p2[k] - p0[k] for k in range(3)]
+            nn = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]]
+            m = [(p0[k] + p1[k] + p2[k]) / 3 - centro[k] for k in range(3)]
+            orden = (a, b, c)
+            if sum(nn[k] * m[k] for k in range(3)) < 0:
+                orden = (a, c, b)
+                nn = [-q for q in nn]
+            lon = math.sqrt(sum(q * q for q in nn)) or 1
+            nb = [round(q / lon * 127) & 0xFF for q in nn]
+            self.tris.append(tuple(base[i] for i in orden) + (tex,) + tuple(c_ for i in orden for c_ in uvs[i]) +
+                             (1, 0, *nb, 4))
+
+    def caja_textura(self, x0, x1, y0, y1, z0, z1, tex, colores):
+        """Una caja con la textura en cada cara y un color por cara (6)."""
+        centro = self.t(((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2))
+        caras = [[(x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1)], [(x1, y1, z0), (x0, y1, z0), (x0, y1, z1), (x1, y1, z1)],
+                 [(x0, y1, z0), (x0, y0, z0), (x0, y0, z1), (x0, y1, z1)], [(x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1)],
+                 [(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)], [(x0, y1, z0), (x1, y1, z0), (x1, y0, z0), (x0, y0, z0)]]
+        for cara, color in zip(caras, colores):
+            self.cara_textura(cara, color, tex, centro)
+
     def rueda(self, cx, cy, cz, r, ancho, color, lados=8):
         """Un prisma de 'lados' caras con el eje en x."""
         pts = []
@@ -134,6 +168,55 @@ def rival(nodo_original):
     salem(m)
     cadera = dict(cadera_sab, nombre="RIVALkart\0", hijos=[], tris=m.tris, verts=m.verts)
     return dict(raiz_sab, nombre=nodo_original["nombre"], hijos=[cadera], tris=[], verts=[])
+
+
+def como_sabrina(nodo_original, m, nombre):
+    """Un modelo armado como la mitad de abajo de Sabrina (raiz con la matriz de SABdefault y una cadera hija con la
+    malla m en ejes de cadera, el suelo en z = SUELO): asi sale derecho al ponerlo con MatrizDesdeAngulos."""
+    import ino
+    raiz_sab = ino.leer_ino("H1W")["modelos"][1][1][0]
+    cadera = dict(raiz_sab["hijos"][0], nombre=nombre + "\0", hijos=[], tris=m.tris, verts=m.verts)
+    return dict(raiz_sab, nombre=nodo_original["nombre"], hijos=[cadera], tris=[], verts=[])
+
+
+# las cajas de hechizo: el glifo dorado del juego, cada cara de un color (la caja de Mario Kart brilla en arcoiris)
+COLORES_CAJA = [(255, 150, 150), (255, 230, 120), (150, 255, 150), (130, 220, 255), (170, 150, 255), (255, 150, 230)]
+
+
+def caja(nodo_original):
+    """Modelo 20 (COSTUMEdefault): la caja de hechizo que flota y gira sobre la cinta dorada. La caja va centrada en la
+    cadera (kart.inc la sube y la hace girar)."""
+    m = Malla()
+    m.caja_textura(-60, 60, -60, 60, -60, 60, 79, COLORES_CAJA)
+    return como_sabrina(nodo_original, m, "CAJAhechizo")
+
+
+def pocion(nodo_original):
+    """Modelo 21 (COSTUMEegypt): la pocion resbalosa que Sabrina deja en la pista (la banana)."""
+    m = Malla()
+    s = SUELO
+    lila, claro, corcho = (190, 70, 230), (235, 170, 255), (150, 100, 60)
+    # cuerpo: un prisma de 6 lados de pie (eje z), cuello y corcho
+    for r, z0, z1, color in ((72, s, s + 125, lila), (28, s + 125, s + 180, claro)):
+        pts = [(r * math.cos(2 * math.pi * i / 6), r * math.sin(2 * math.pi * i / 6), z) for z in (z0, z1) for i in range(6)]
+        caras = [list(range(6)), list(range(6, 12))] + [(i, (i + 1) % 6, 6 + (i + 1) % 6, 6 + i) for i in range(6)]
+        m.solido(pts, caras, color)
+    m.caja(-22, 22, -22, 22, s + 180, s + 212, corcho)
+    return como_sabrina(nodo_original, m, "POCIONresbalosa")
+
+
+def bola(nodo_original):
+    """Modelo 22 (COSTUMEjapan): la bola de pelo que Salem deja en la pista."""
+    m = Malla()
+    s, r = SUELO, 85
+    pelo = (95, 80, 105)
+    c = (0, 0, s + r)
+    pts = [(c[0] + r, 0, c[2]), (c[0] - r, 0, c[2]), (0, r, c[2]), (0, -r, c[2]), (0, 0, c[2] + r), (0, 0, c[2] - r)]
+    caras = [(0, 2, 4), (2, 1, 4), (1, 3, 4), (3, 0, 4), (2, 0, 5), (1, 2, 5), (3, 1, 5), (0, 3, 5)]
+    m.solido(pts, caras, pelo)
+    m.caja(-100, 100, -14, 14, s + r - 14, s + r + 14, (70, 58, 80))   # pelos sueltos
+    m.caja(-14, 14, -100, 100, s + r - 12, s + r + 12, (70, 58, 80))
+    return como_sabrina(nodo_original, m, "BOLApelo")
 
 
 def vacio(nodo_original):

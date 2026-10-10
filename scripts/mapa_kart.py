@@ -100,8 +100,11 @@ def turbo(x0, z0, x1, z1):
 
 
 def cinta(x0, z0, x1, z1):
-    """Una cinta de hechizos de lado a lado de la pista: al cruzarla sin hechizo, toca uno."""
-    cajas.append((x0, z0, x1, z1))
+    """Una cinta dorada de lado a lado de la pista y, encima, tres cajas de hechizo que flotan y giran (kart.inc):
+    una en el centro y una a cada lado, a 512."""
+    cx, cz = (x0 + x1) // 2, (z0 + z1) // 2
+    for k in (-512, 0, 512):
+        cajas.append((cx + k, cz) if x1 - x0 > z1 - z0 else (cx, cz + k))
     especiales.append(("cinta", (x0, z0, x1, z1), dict(color=(210, 175, 90), tex_tapa=GLIFO)))
 
 
@@ -335,7 +338,8 @@ def medir():
     try:
         n.nf.construir_bytes(n.nodo_de(bloques), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True, callar=True,
                              reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **cielo)),
-                                         1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival})
+                                         1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival,
+                                           20: kart_modelo.caja, 21: kart_modelo.pocion, 22: kart_modelo.bola})
     except ValueError:
         pass
     return n.nf.ULTIMO["tamano"], maximo
@@ -373,7 +377,7 @@ def escribir_h(ruta):
     with open(ruta, "w", encoding="utf-8", newline="\n") as f:
         f.write("/* Generado por scripts/mapa_kart.py: no editar a mano. La pista de SABRINA KART (niveles/kart.json). */\n")
         f.write("/* Puntos de control en el orden de la carrera (el 0 es la meta): x0, z0, x1, z1, x y z donde se\n"
-                " * reaparece, y el rumbo del kart ahi. Turbos y cintas de hechizo: x0, z0, x1, z1. */\n")
+                " * reaparece, y el rumbo del kart ahi. Turbos: x0, z0, x1, z1. Cajas de hechizo: x, z. */\n")
         f.write(f"#define KART_NCP {len(cp)}\n#define KART_NTURBOS {len(turbos)}\n#define KART_NCAJAS {len(cajas)}\n")
         f.write(f"#define KART_SALIDA_X {n.SALIDA[0]}\n#define KART_SALIDA_Z {n.SALIDA[1]}\n")
         f.write(f"#define KART_SUELO_HIERBA {MURO_H}\n#define KART_FONDO 300\n")
@@ -383,7 +387,7 @@ def escribir_h(ruta):
         f.write("};\nstatic const s16 kart_turbos[KART_NTURBOS][4] = {\n")
         for t in turbos:
             f.write("    {" + ", ".join(str(v) for v in t) + "},\n")
-        f.write("};\nstatic const s16 kart_cajas[KART_NCAJAS][4] = {\n")
+        f.write("};\nstatic const s16 kart_cajas[KART_NCAJAS][2] = {\n")
         for t in cajas:
             f.write("    {" + ", ".join(str(v) for v in t) + "},\n")
         f.write("};\n")

@@ -8,6 +8,7 @@ Uso: python kart.py              abre el juego en la pista (arma el disco si fal
      python kart.py armar        vuelve a armar todo: pista (mapa_kart.py), ejecutable (WSL) y disco
      python kart.py probar       lo arranca sin ventana, prueba la salida, el giro y los muros y saca capturas
      python kart.py vuelta       sin ventana, el piloto automatico corre las 3 vueltas y avisa si se atasca
+     python kart.py vuelta ganar lo mismo con Salem congelado, para ver la fiesta de cuando gana Sabrina
 """
 import os
 import subprocess
@@ -41,9 +42,10 @@ def armar_exe():
     d = os.path.join(RAIZ, "decomp").replace("\\", "/")
     ruta_wsl = "/mnt/" + d[0].lower() + d[2:]
     r = subprocess.run(["wsl.exe", "-d", wsl(), "--cd", ruta_wsl, "--", "python3", "armar_c.py", "--solo", CAMARA,
-                        "--D", "SABRINA_KART", "--O", "Os", "--salida", "build/SLUS_kart.exe"], capture_output=True, text=True)
+                        "--D", "SABRINA_KART", "--O", "Os", "--huecos", "src/mods/kart_huecos.c",
+                        "--salida", "build/SLUS_kart.exe"], capture_output=True, text=True)
     print(r.stdout.strip(), r.stderr.strip())
-    if r.returncode or "16 funciones en C" not in r.stdout:
+    if r.returncode or "funciones en C" not in r.stdout or "otros: 0" not in r.stdout:
         sys.exit("no se pudo armar el ejecutable del kart (ver decomp/build/armado_c.txt)")
 
 
@@ -56,7 +58,8 @@ def armar_disco():
     import kart_modelo
     ino = n.nf.construir_bytes(n.nodo_de(plats), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True,
                                reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **(cielo or {}))),
-                                           1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival})
+                                           1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival,
+                                           20: kart_modelo.caja, 21: kart_modelo.pocion, 22: kart_modelo.bola})
     disco.parchar({traducir.EXE: open(EXE, "rb").read(), "GRAPHICS\\HUB\\H1W.INO": ino}, PISTA)
     disco.cue_mod(CUE, PISTA)
     # la musica del pueblo (pista 3) es la de la carrera: musica_kart.py, hecha con los sonidos del juego
@@ -129,10 +132,12 @@ def simbolos():
     return sim
 
 
-def vuelta(vueltas=3, limite=30000):
+def vuelta(ganar=False, limite=30000):
     """Piloto automatico sin ventana: corre la carrera entera solo con izquierda y derecha, apuntando al centro de
     cada curva, y va diciendo vuelta, punto de control, rapidez y tiempo. Avisa si el kart se atasca (y saca una
-    captura ahi) y mide cuantos pasos del juego hay por segundo (para K_SEG). Capturas en notas/capturas/vuelta_*.png."""
+    captura ahi) y mide cuantos pasos del juego hay por segundo (para K_SEG). Cada 2 segundos usa el hechizo que lleve.
+    Al llegar saca capturas de la fiesta de la meta (fiesta_*.png). ganar: deja a Salem congelado (escribe su k_rhielo
+    en la RAM) para ver la fiesta de cuando gana Sabrina. Capturas en notas/capturas/vuelta_*.png."""
     import math
     import mapa_kart as m
     from nivel_plataformas import P_SABRINA
@@ -161,8 +166,13 @@ def vuelta(vueltas=3, limite=30000):
             x, z = x / 256, z / 256
             if fase == 2 and inicio is None:
                 inicio, t_inicio = e.frames(), t
+            if fase == 2 and ganar:
+                e.eval(f"wr32({sim['k_rhielo'] & 0xFFFFFFFF},1000) return 1")
             if fase == 3:
                 print(f"META en el cuadro {e.frames() - f0}: tiempo {t / 60:.2f} s", flush=True)
+                for i in range(8):
+                    e.esperar(30)
+                    e.captura(os.path.join(CAP, f"fiesta_{i}.png"))
                 if "k_puesto" in sim:
                     print(f"puesto de Sabrina: {leer(e, sim['k_puesto'] & 0xFFFFFFFF)}; Salem lleva "
                           f"{leer(e, sim['k_rd'] & 0xFFFFFFFF)} de {3 * 46640}", flush=True)
@@ -174,6 +184,8 @@ def vuelta(vueltas=3, limite=30000):
             quiere = math.atan2(tx - x, tz - z) * 4096 / (2 * math.pi)
             dif = (quiere - (rumbo & 0xFFF) + 2048) % 4096 - 2048
             boton = "RIGHT" if dif > 60 else ("LEFT" if dif < -60 else None)
+            if (e.frames() - f0) % 120 < 4:
+                boton = "TRIANGLE" if boton is None else boton + ",TRIANGLE"
             if boton:
                 e.lua("boton", b=boton, f=4)
             e.esperar(4)
@@ -209,7 +221,7 @@ if __name__ == "__main__":
     elif modo == "vuelta":
         if not os.path.exists(CUE):
             armar()
-        vuelta()
+        vuelta(ganar="ganar" in sys.argv)
     elif modo == "jugar":
         if not os.path.exists(CUE):
             armar()

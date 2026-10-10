@@ -1,9 +1,9 @@
 /* Generado por scripts/mapa_kart.py: no editar a mano. La pista de SABRINA KART (niveles/kart.json). */
 /* Puntos de control en el orden de la carrera (el 0 es la meta): x0, z0, x1, z1, x y z donde se
- * reaparece, y el rumbo del kart ahi. Turbos y cintas de hechizo: x0, z0, x1, z1. */
+ * reaparece, y el rumbo del kart ahi. Turbos: x0, z0, x1, z1. Cajas de hechizo: x, z. */
 #define KART_NCP 6
 #define KART_NTURBOS 4
-#define KART_NCAJAS 2
+#define KART_NCAJAS 6
 #define KART_SALIDA_X 128
 #define KART_SALIDA_Z -896
 #define KART_SUELO_HIERBA 450
@@ -22,9 +22,13 @@ static const s16 kart_turbos[KART_NTURBOS][4] = {
     {1792, 4864, 2304, 5376},
     {-3328, 4096, -2816, 4608},
 };
-static const s16 kart_cajas[KART_NCAJAS][4] = {
-    {9472, 4608, 11008, 4864},
-    {256, 6400, 512, 7936},
+static const s16 kart_cajas[KART_NCAJAS][2] = {
+    {9728, 4736},
+    {10240, 4736},
+    {10752, 4736},
+    {384, 6656},
+    {384, 7168},
+    {384, 7680},
 };
 /* La linea del rival (ruta_rival en mapa_kart.py): cada tramo x, z, rumbo y direccion (ux, uz de largo
  * 4096); kart_ruta_d es la distancia al empezar cada tramo y KART_RUTA_LARGO la de una vuelta. */

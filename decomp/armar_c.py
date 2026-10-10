@@ -77,6 +77,7 @@ def main():
     ap.add_argument("--salida", default="build/SLUS_C.exe")
     ap.add_argument("--O")
     ap.add_argument("--D", action="append", default=[])     # defines para el C de un mod (--D SABRINA_KART)
+    ap.add_argument("--huecos")                               # archivo con funciones vaciadas para un mod
     a = ap.parse_args()
     cc = list(CC) + ["-D" + d for d in a.D]
     if a.O:
@@ -91,6 +92,13 @@ def main():
             tam[p[2]] = (int(p[0], 16), int(p[1]))
     exe = bytearray(open("SLUS_012.08", "rb").read())
     elegidas = elegir(a.sint, solo)
+    # --huecos archivo.c: funciones del juego que un mod no usa nunca, escritas vacias en ese archivo; se instalan
+    # como las demas y su cuerpo original queda libre para el C del mod (ver src/mods/kart_huecos.c)
+    if a.huecos:
+        for nombre in re.findall(r"^void (\w+)\(void\) \{\s*\}", open(a.huecos, encoding="utf-8").read(), re.M):
+            if nombre not in tam:
+                sys.exit(f"--huecos: {nombre} no es una funcion del juego")
+            elegidas[nombre] = a.huecos
     informe = []
     tmp = tempfile.mkdtemp()
 
