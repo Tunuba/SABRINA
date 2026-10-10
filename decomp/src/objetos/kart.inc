@@ -16,6 +16,8 @@
 extern s32 D_8007C8A4;               /* pasos quieta antes de una animacion de espera */
 extern s16 D_8007CB70;               /* la animacion que debe tener el companero */
 extern void ImprimirDepuracion(const char *formato, ...);
+extern s32 rsin(s32 angulo);
+extern s32 rcos(s32 angulo);
 extern volatile s32 D_800649EC;      /* cuantas vueltas de la pantalla van (VSync) */
 extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 
@@ -56,6 +58,19 @@ static s16 k_rumbo, k_cam_rumbo;
 static const char *k_aviso;
 static s32 k_tiempos[K_VUELTAS];
 static s32 k_vbl;                    /* D_800649EC del paso anterior */
+
+/* El rival: Salem en su kart verde (el modelo 17 del HUB, FashionDiva, cambiado por kart_modelo.rival). No es un
+ * objeto del juego: es un nodo de modelo colgado de los de los objetos (como hace func_8003821C) que se pone en su
+ * sitio cada paso con MatrizDesdeAngulos. Corre por la linea de kart_ruta (mapa_kart.ruta_rival). */
+#define K_RIVAL_MODELO 18             /* modelos_cargados va uno corrido: el 17 de la lista del .INO es el 18 */
+#define K_RIVAL_LADO 280             /* va un poco a un lado de su linea: asi no van los dos por el centro */
+#define K_RIVAL_VEL (46 * 16)                /* su rapidez de crucero, en 1/16 de unidad por paso */
+static void *k_rival;
+static s32 k_rd;                     /* lo que lleva recorrido desde la meta, sumando vueltas */
+static s32 k_rv;                     /* su rapidez, en 1/16 de unidad por paso */
+static s32 k_rlado;                  /* desvio a un lado de su linea (en la salida esta al lado de Sabrina) */
+static s32 k_rx, k_rz, k_choque, k_puesto, k_progreso;
+static s16 k_rrumbo;
 
 static const char *const k_nombre_objeto[] = {"", "TURBO DE SALEM", "TRIPLE TURBO", "RELOJ DEL TIEMPO"};
 
@@ -133,49 +148,49 @@ static void __attribute__((noinline)) k_chispas(Objeto *s, s32 r, s32 g, s32 b, 
 static void k_imprimir_tiempo(const char *texto, s32 f) {
     s32 m = f / (60 * K_VBL), sg = (f / K_VBL) % 60, cs = (f % K_VBL) * 100 / K_VBL;
 
-    ImprimirDepuracion("%s%d'%d%d\"%d%d\n", texto, m, sg / 10, sg % 10, cs / 10, cs % 10);
+    ImprimirDepuracion("%s%d'%d%d\"%d%d", texto, m, sg / 10, sg % 10, cs / 10, cs % 10);
 }
 
 /* El texto de la pantalla. */
 static void __attribute__((noinline)) k_pantalla(void) {
-    s32 i, n;
+    s32 i;
 
-    ImprimirDepuracion("\n  SABRINA KART - COPA DEL TIEMPO\n\n");
     if (k_fase == K_CUENTA) {
-        n = 3 - k_cuadros / K_SEG;
-        ImprimirDepuracion("\n\n\n\n\n                     %d\n", n);
+        ImprimirDepuracion("\n  SABRINA KART - COPA DEL TIEMPO\n  CONTRA SALEM, 3 VUELTAS\n\n\n\n\n                     %d\n",
+                           3 - k_cuadros / K_SEG);
         return;
     }
     if (k_fase == K_META) {
-        ImprimirDepuracion("\n\n             META!\n\n");
+        ImprimirDepuracion("\n  SABRINA KART - COPA DEL TIEMPO\n\n\n        META!  LLEGASTE %s\n\n",
+                           k_puesto == 1 ? "PRIMERA!" : "SEGUNDA");
         for (i = 0; i < K_VUELTAS; i++) {
             ImprimirDepuracion("          VUELTA %d  ", i + 1);
             k_imprimir_tiempo("", k_tiempos[i]);
+            ImprimirDepuracion("\n");
         }
         k_imprimir_tiempo("\n          TOTAL     ", k_tiempo);
-        k_imprimir_tiempo("          MEJOR     ", k_mejor);
+        k_imprimir_tiempo("\n          MEJOR     ", k_mejor);
+        ImprimirDepuracion("\n");
         if (k_cuadros > 2 * K_SEG) {
             ImprimirDepuracion("\n       X O SELECT: OTRA CARRERA\n");
         }
         return;
     }
-    ImprimirDepuracion("  VUELTA %d/%d     ", k_vuelta, K_VUELTAS);
-    k_imprimir_tiempo("", k_tiempo);
+    /* tres lineas arriba: vuelta y puesto, tiempo y mejor vuelta, rapidez y hechizo */
+    ImprimirDepuracion("\n  VUELTA %d/%d               PUESTO %d/2\n", k_vuelta, K_VUELTAS, k_rd > k_progreso ? 2 : 1);
+    k_imprimir_tiempo("  TIEMPO ", k_tiempo);
     if (k_mejor != 0) {
-        k_imprimir_tiempo("                  MEJOR ", k_mejor);
-    } else {
-        ImprimirDepuracion("\n");
+        k_imprimir_tiempo("        MEJOR ", k_mejor);
     }
-    ImprimirDepuracion("  %d KM/H\n", (k_vel < 0 ? -k_vel : k_vel) / 45);
+    ImprimirDepuracion("\n  %d KM/H", (k_vel < 0 ? -k_vel : k_vel) / 45);
     if (k_objeto != K_NADA) {
-        ImprimirDepuracion("  HECHIZO: %s", k_nombre_objeto[k_objeto]);
+        ImprimirDepuracion("   %s", k_nombre_objeto[k_objeto]);
         if (k_objeto == K_TRIPLE) {
             ImprimirDepuracion(" x%d", k_usos);
         }
-        ImprimirDepuracion("  (TRIANGULO)\n");
-    } else {
-        ImprimirDepuracion("\n");
+        ImprimirDepuracion(" (TRIANGULO)");
     }
+    ImprimirDepuracion("\n");
     if (k_aviso_t > 0) {
         ImprimirDepuracion("\n\n\n            %s\n", k_aviso);
     } else if (k_fase == K_CARRERA && k_cuadros < K_SEG) {
@@ -428,6 +443,110 @@ static void __attribute__((noinline)) k_camara(Objeto *o, Objeto *s) {
     mirar(o);
 }
 
+/* Cuanto lleva Sabrina desde la meta, sumando vueltas: su proyeccion sobre el tramo de la ruta mas cercano. */
+static s32 __attribute__((noinline)) k_avance(Objeto *s) {
+    s32 i, t, dx, dz, ex, ez, d2, mejor = 0x7FFFFFFF, r = 0;
+    const s16 *q;
+
+    for (i = 0; i < KART_RUTA_N; i++) {
+        q = kart_ruta[i];
+        dx = (s->x >> 8) - q[0];
+        dz = (s->z >> 8) - q[1];
+        t = (dx * q[3] + dz * q[4]) >> 12;
+        d2 = (i + 1 < KART_RUTA_N ? kart_ruta_d[i + 1] : KART_RUTA_LARGO) - kart_ruta_d[i];
+        if (t < 0) {
+            t = 0;
+        }
+        if (t > d2) {
+            t = d2;
+        }
+        ex = dx - ((q[3] * t) >> 12);
+        ez = dz - ((q[4] * t) >> 12);
+        d2 = ex * ex + ez * ez;
+        if (d2 < mejor) {
+            mejor = d2;
+            r = kart_ruta_d[i] + t;
+        }
+    }
+    /* recien salida (el siguiente punto es el 1 y no ha cruzado la meta) esta al final de la vuelta anterior */
+    if (k_cp == 1 && r > KART_RUTA_LARGO * 3 / 4) {
+        r -= KART_RUTA_LARGO;
+    }
+    return (k_vuelta - 1) * KART_RUTA_LARGO + r;
+}
+
+/* Un paso de Salem: acelera hasta su rapidez, que se estira como una goma (mas rapido si Sabrina se le escapa, mas
+ * lento si le saca mucha ventaja), avanza por la ruta, gira poco a poco hacia el tramo en que va y, si toca a
+ * Sabrina, los dos se frenan. */
+static void __attribute__((noinline)) k_rival_paso(Objeto *s) {
+    s32 i, d, meta, escala[3], pos[3], giro[3];
+    const s16 *q;
+
+    if (k_rival == NULL) {
+        if (modelos_cargados[K_RIVAL_MODELO] == NULL) {
+            return;
+        }
+        k_rival = func_8001E06C(modelos_cargados[K_RIVAL_MODELO], D_8007C9F0);
+    }
+    k_progreso = k_avance(s);
+    if (k_fase == K_CUENTA) {
+        k_rd = -900 + 350;           /* a la altura de Sabrina, un poco delante, en el otro carril */
+        k_rv = 0;
+        k_rlado = 520;
+        k_rrumbo = 0x400;
+        k_choque = 0;
+    } else if (k_rd < K_VUELTAS * KART_RUTA_LARGO) {
+        meta = K_RIVAL_VEL - (k_rd - k_progreso) / 8;
+        meta = meta < 36 * 16 ? 36 * 16 : (meta > 58 * 16 ? 58 * 16 : meta);
+        k_rv += k_rv < meta ? 14 : -14;
+        k_rd += k_rv >> 4;
+        k_rlado += (K_RIVAL_LADO - k_rlado) / 48;
+        if (k_rd >= K_VUELTAS * KART_RUTA_LARGO && k_fase == K_CARRERA) {
+            k_avisar("SALEM CRUZO LA META!", 2 * K_SEG);
+        }
+    } else {
+        k_rv -= k_rv / 16;           /* ya llego: rueda hasta pararse */
+        k_rd += k_rv >> 4;
+    }
+    d = k_rd % KART_RUTA_LARGO;
+    if (d < 0) {
+        d += KART_RUTA_LARGO;
+    }
+    for (i = KART_RUTA_N - 1; kart_ruta_d[i] > d; i--) {
+    }
+    q = kart_ruta[i];
+    d -= kart_ruta_d[i];
+    meta = k_dif(q[2], k_rrumbo);
+    k_rrumbo = (k_rrumbo + (meta > 70 ? 70 : (meta < -70 ? -70 : meta))) & 0xFFF;
+    k_rx = q[0] + ((q[3] * d) >> 12) + ((rcos(k_rrumbo) * k_rlado) >> 12);
+    k_rz = q[1] + ((q[4] * d) >> 12) - ((rsin(k_rrumbo) * k_rlado) >> 12);
+    escala[0] = 5734;                /* la escala del objeto de Sabrina (5734, 4096, 5734), leida en la RAM */
+    escala[1] = 0x1000;
+    escala[2] = 5734;
+    pos[0] = k_rx << 8;
+    pos[1] = 0;
+    pos[2] = k_rz << 8;
+    giro[0] = 0;
+    giro[1] = k_rrumbo;
+    giro[2] = 0;
+    MatrizDesdeAngulos(k_rival, escala, pos, giro);
+    /* choque */
+    if (k_choque > 0) {
+        k_choque--;
+    } else if (k_fase == K_CARRERA && (s->x >> 8) - k_rx < 330 && k_rx - (s->x >> 8) < 330 &&
+               (s->z >> 8) - k_rz < 330 && k_rz - (s->z >> 8) < 330) {
+        /* Salem se aparta hacia el lado contrario de donde esta Sabrina */
+        d = (((s->x >> 8) - k_rx) * rcos(k_rrumbo) - ((s->z >> 8) - k_rz) * rsin(k_rrumbo)) >> 12;
+        k_rlado += d > 0 ? -420 : 420;
+        k_rlado = k_rlado > 600 ? 600 : (k_rlado < -600 ? -600 : k_rlado);
+        k_vel -= k_vel / 5;
+        k_rv -= k_rv / 6;
+        k_choque = K_SEG;
+        k_avisar("  CHOCASTE CON SALEM!", K_SEG);
+        TocarSonido(1, 0, 0x2A, 0x7F);
+    }
+}
+
 static void __attribute__((noinline)) kart_paso(Objeto *o) {
     Objeto *s = p_sabrina;
     u32 b = D_8007CA50, nuevo = D_8007CA58;
@@ -466,7 +585,11 @@ static void __attribute__((noinline)) kart_paso(Objeto *o) {
     k_conducir(s, b, nuevo, en_suelo);
     if (k_fase == K_CARRERA) {
         k_pista(s, x, z, en_suelo);
+        if (k_fase == K_META) {
+            k_puesto = k_rd > k_avance(s) ? 2 : 1;
+        }
     }
+    k_rival_paso(s);
     /* al agua: Salem la saca en el ultimo punto de control */
     if (s->y > KART_FONDO << 8) {
         k_poner(s, kart_cp[k_ultimo][4], kart_cp[k_ultimo][5], kart_cp[k_ultimo][6]);

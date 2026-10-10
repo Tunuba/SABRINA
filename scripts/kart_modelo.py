@@ -24,8 +24,10 @@ NEGRO, GRIS, CREMA = (28, 26, 32), (150, 150, 165), (240, 225, 200)
 
 
 class Malla:
-    def __init__(self):
+    def __init__(self, transformar=None):
+        """transformar(p) -> p: para armar en otros ejes (el rival va en los del mundo)."""
         self.verts, self.tris = [], []
+        self.t = transformar or (lambda p: p)
 
     def _v(self, p, color):
         c = [min(255, round(color[k] * 128 / n.TEXEL_CIELO[k])) for k in range(3)]
@@ -49,6 +51,7 @@ class Malla:
 
     def solido(self, puntos, caras, color):
         """puntos: vertices; caras: listas de indices (convexas, se abren en abanico)."""
+        puntos = [self.t(p) for p in puntos]
         base = [self._v(p, color) for p in puntos]
         pos = {base[i]: puntos[i] for i in range(len(puntos))}
         centro = [sum(p[k] for p in puntos) / len(puntos) for k in range(3)]
@@ -73,30 +76,64 @@ class Malla:
         self.solido(pts, caras, color)
 
 
-def kart():
-    m = Malla()
-    m.caja(-64, 64, -125, 135, -186, -158, MORADO)          # chasis
-    m.caja(-72, -54, -112, 70, -158, 4, ROSA)               # lados de la cabina
-    m.caja(54, 72, -112, 70, -158, 4, ROSA)
-    m.caja(-54, 54, -118, -88, -158, -8, ROSA)              # respaldo (bajo: se ve la espalda de Sabrina)
-    m.caja(-50, 50, -88, 40, -158, 8, MORADO)               # asiento (tapa el hueco hasta el pecho)
-    m.caja(-54, 54, 70, 112, -158, -6, MORADO)              # tablero
-    m.caja(-50, 50, 112, 200, -184, -112, ROSA)             # morro
-    m.caja(-68, 68, 200, 216, -192, -160, ORO)              # parachoques
-    m.caja(-18, 18, 198, 204, -150, -126, ORO)              # la S de Sabrina (una placa)
-    m.caja(-5, 5, 40, 70, -20, 14, GRIS)                    # columna del volante
-    m.caja(-26, 26, 34, 42, -6, 30, NEGRO)                  # volante
-    m.caja(-46, -34, -150, -124, -158, -40, GRIS)           # soportes del aleron
-    m.caja(34, 46, -150, -124, -158, -40, GRIS)
-    m.caja(-84, 84, -178, -128, -40, -26, ORO)              # aleron (bajo y atras)
-    m.caja(-38, -20, -152, -125, -176, -160, GRIS)          # escapes
-    m.caja(20, 38, -152, -125, -176, -160, GRIS)
+def kart(m=None, cuerpo=ROSA, chasis=MORADO, adorno=ORO, simple=False):
+    """El kart en ejes de la cadera. Ruedas de 6 lados, sin tapacubos: el .INO tiene tamano fijo. simple: sin
+    volante, soportes ni escapes (el del rival, que se ve de lejos)."""
+    m = m or Malla()
+    m.caja(-64, 64, -125, 135, -186, -158, chasis)          # chasis
+    m.caja(-72, -54, -112, 70, -158, 4, cuerpo)             # lados de la cabina
+    m.caja(54, 72, -112, 70, -158, 4, cuerpo)
+    m.caja(-54, 54, -118, -88, -158, -8, cuerpo)            # respaldo (bajo: se ve la espalda de quien maneja)
+    m.caja(-50, 50, -88, 40, -158, 8, chasis)               # asiento (tapa el hueco hasta el pecho)
+    m.caja(-54, 54, 70, 112, -158, -6, chasis)              # tablero
+    m.caja(-50, 50, 112, 200, -184, -112, cuerpo)           # morro
+    m.caja(-68, 68, 200, 216, -192, -160, adorno)           # parachoques
+    if not simple:
+        m.caja(-5, 5, 40, 70, -20, 14, GRIS)                # columna del volante
+        m.caja(-26, 26, 34, 42, -6, 30, NEGRO)              # volante
+        m.caja(-46, -34, -150, -124, -158, -40, GRIS)       # soportes del aleron
+        m.caja(34, 46, -150, -124, -158, -40, GRIS)
+        m.caja(-38, -20, -152, -125, -176, -160, GRIS)      # escapes
+        m.caja(20, 38, -152, -125, -176, -160, GRIS)
+    m.caja(-84, 84, -178, -128, -40, -26, adorno)           # aleron (bajo y atras)
     r = 40
     for y in (-82, 122):
         for lado in (-1, 1):
-            m.rueda(lado * 92, y, SUELO + r, r, 30, NEGRO)
-            m.rueda(lado * 109, y, SUELO + r, 15, 6, ORO, lados=6)   # tapacubos
+            m.rueda(lado * 92, y, SUELO + r, r, 30, NEGRO, lados=6)
     return m
+
+
+VERDE, VERDE_OSCURO, PLATA = (60, 175, 90), (25, 70, 40), (200, 205, 215)
+PELO, AMARILLO, ROSITA = (40, 34, 46), (250, 225, 40), (230, 140, 160)
+
+
+def salem(m):
+    """Salem, el gato negro de Sabrina, sentado en el asiento (bloques, en ejes de la cadera)."""
+    m.caja(-30, 30, -60, 20, -20, 70, PELO)                 # cuerpo
+    m.caja(-34, 34, -30, 40, 70, 136, PELO)                 # cabeza
+    m.caja(-30, -12, -10, 14, 136, 170, PELO)               # orejas
+    m.caja(12, 30, -10, 14, 136, 170, PELO)
+    m.caja(-22, -8, 40, 44, 100, 114, AMARILLO)             # ojos
+    m.caja(8, 22, 40, 44, 100, 114, AMARILLO)
+    m.caja(-24, -10, 10, 40, 30, 46, PELO)                  # patas al volante
+    m.caja(10, 24, 10, 40, 30, 46, PELO)
+    m.caja(-6, 6, -150, -60, 20, 34, PELO)                  # cola, hacia atras y arriba
+    m.caja(-6, 6, -162, -148, 20, 130, PELO)
+
+
+def rival(nodo_original):
+    """Para construir_bytes(reemplazos={17: rival}): el modelo de FashionDiva (no sale en la pista) es el kart verde
+    de Salem. Va armado igual que la mitad de abajo de Sabrina (la raiz con la matriz de SABdefault y una cadera hija
+    a 212 del suelo con la malla en ejes de cadera), porque kart.inc lo pone en su sitio igual que el juego a Sabrina:
+    MatrizDesdeAngulos con la escala de ella. Con la malla en ejes del mundo salia de punta."""
+    import ino
+    raiz_sab = ino.leer_ino("H1W")["modelos"][1][1][0]
+    cadera_sab = raiz_sab["hijos"][0]
+    m = Malla()
+    kart(m, cuerpo=VERDE, chasis=VERDE_OSCURO, adorno=PLATA, simple=True)
+    salem(m)
+    cadera = dict(cadera_sab, nombre="RIVALkart\0", hijos=[], tris=m.tris, verts=m.verts)
+    return dict(raiz_sab, nombre=nodo_original["nombre"], hijos=[cadera], tris=[], verts=[])
 
 
 def vacio(nodo_original):

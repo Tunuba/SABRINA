@@ -163,10 +163,8 @@ pared("torreon_punta", 3712, -3200, 4224, -2688, alto=400, base=1600, color=(110
 pared("porche", 2304, -2432, 3584, -2176, alto=420, color=(200, 190, 175), tex_tapa=TABLONES, tex_lado=PANELES)
 # faroles sobre el seto de la recta
 for i, x in enumerate((-1536, 1792, 5120, 7424)):
-    pared(f"farol{i}", x, A[1] + MEDIO + 128, x + 256, A[1] + MEDIO + 384, alto=420, base=MURO_H, color=(60, 60, 70),
-          tex_tapa=ORO, tex_lado=PIEDRA)
-    pared(f"farol{i}_luz", x - 64, A[1] + MEDIO + 64, x + 320, A[1] + MEDIO + 448, alto=120, base=MURO_H + 420,
-          color=(255, 220, 120), tex_tapa=ORO, tex_lado=ORO)
+    pared(f"farol{i}", x, A[1] + MEDIO + 128, x + 256, A[1] + MEDIO + 384, alto=420, base=MURO_H, color=(90, 85, 70),
+          tex_tapa=ORO, tex_lado=ORO)
 
 # ============================================================ Egipto: curva B y recta hacia el sur
 EGIPTO = dict(color=(170, 150, 105), tex_tapa=ORO, tex_lado=JEROGLIFOS)
@@ -178,11 +176,11 @@ cinta(B[0] - MEDIO, 4608, B[0] + MEDIO, 4864)
 arco("puerta_egipto", "z", 1792, B[0] - MEDIO, B[0] + MEDIO, 1200, 900, color=(180, 160, 110), tex_tapa=ORO,
      tex_lado=JEROGLIFOS, color_col=(180, 160, 110), tex_col=MURAL)
 # la piramide escalonada y los obeliscos detras del muro este
-for i, (lado, alto) in enumerate(((2560, 400), (1920, 400), (1280, 400), (640, 400))):
-    cx, cz = 13056, 2304
-    pared(f"piramide{i}", cx - lado // 2, cz - lado // 2, cx + lado // 2, cz + lado // 2, alto=alto, base=400 * i,
-          extra=HONDO if i == 0 else 0, color=(200, 170, 110), tex_tapa=ORO if i == 3 else GLIFO, tex_lado=ORO)
-for i, z in enumerate((-256, 4608, 6400)):
+for i, (lado, alto) in enumerate(((2048, 500), (1280, 500), (512, 500))):
+    cx, cz = 12800, 2304
+    pared(f"piramide{i}", cx - lado // 2, cz - lado // 2, cx + lado // 2, cz + lado // 2, alto=alto, base=500 * i,
+          extra=HONDO if i == 0 else 0, color=(200, 170, 110), tex_tapa=ORO if i == 2 else GLIFO, tex_lado=ORO)
+for i, z in enumerate((-256, 5376)):
     pared(f"obelisco{i}", 11520, z, 11776, z + 256, alto=1500, color=(180, 160, 110), tex_tapa=ORO,
           tex_lado=JEROGLIFOS, paso_lado=512)
 
@@ -194,7 +192,7 @@ bloque("puente_oeste", RIO[0], C[1] - MEDIO, RIO[1], C[1] + MEDIO, color=(120, 1
 bloque("llegada", D[0] + MEDIO, C[1] - MEDIO, RIO[0], C[1] + MEDIO, **OESTE)
 punto_control(7168, C[1] - MEDIO, 7680, C[1] + MEDIO, 0xC00)           # 2
 # el deposito de agua y el saloon detras del muro sur
-for i, (x, z) in enumerate(((9472, 8704), (10240, 8704), (9472, 9472), (10240, 9472))):
+for i, (x, z) in enumerate(((9472, 8960), (10240, 9216))):
     pared(f"deposito_pata{i}", x, z, x + 256, z + 256, alto=900, color=(110, 85, 65), tex_tapa=TABLONES,
           tex_lado=TABLONES, paso_lado=512)
 pared("deposito", 9216, 8448, 10752, 9984, alto=700, base=900, color=(130, 100, 75), tex_tapa=TEJAS, tex_lado=PANELES)
@@ -238,10 +236,6 @@ bloque("vortice_norte", H[0] - MEDIO, A[1] + MEDIO, H[0] + MEDIO, H[1] - MEDIO, 
 punto_control(H[0] - MEDIO, 2560, H[0] + MEDIO, 3072, 0x800)            # 5
 turbo(H[0] - 256, 4096, H[0] + 256, 4608)
 bloque("curva_a", *esquina(A), **GREEN)
-# relojes del tiempo flotando sobre el seto del vortice
-for i, (x, z, b) in enumerate(((-1536, 4352, 900), (512, 5376, 1050), (-512, 2304, 960))):
-    losa(f"reloj{i}", x, z, x + 512, z + 512, b, 128, color=(230, 200, 120), tex_tapa=ZODIACO, tex_lado=ORO)
-
 # ============================================================ el muro de fuera
 pared("muro_n", X0 - 256, Z0 - 256, X1 + 256, Z0, tex_lado=LADRILLO, color=(150, 120, 110))
 pared("muro_s", X0 - 256, Z1, X1 + 256, Z1 + 256, tex_lado=TABLONES, color=(140, 110, 85))
@@ -341,10 +335,38 @@ def medir():
     try:
         n.nf.construir_bytes(n.nodo_de(bloques), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True, callar=True,
                              reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **cielo)),
-                                         1: kart_modelo.armar, 11: kart_modelo.vacio})
+                                         1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival})
     except ValueError:
         pass
     return n.nf.ULTIMO["tamano"], maximo
+
+
+CHAFLAN = 600                    # cuanto se recorta cada curva en la linea del rival (sin salirse de la pista)
+
+
+def ruta_rival():
+    """La linea por donde corre el rival: el centro de la pista desde la meta, con cada curva cortada en diagonal
+    (CHAFLAN antes y despues de la esquina). Devuelve [(x, z, rumbo, ux, uz, d)]: cada tramo con su rumbo, su
+    direccion de largo 4096 y la distancia recorrida al empezarlo; y el largo de la vuelta."""
+    import math
+    esquinas = [B, C, D, E, F, G, H, A]
+    puntos = [(1024, -896)]
+    for i, c in enumerate(esquinas):
+        ant = puntos[-1] if i == 0 else esquinas[i - 1]
+        sig = esquinas[i + 1] if i + 1 < len(esquinas) else (1024, -896)
+        for o in (ant, sig):
+            lx, lz = o[0] - c[0], o[1] - c[1]
+            lon = math.hypot(lx, lz)
+            p = (round(c[0] + lx / lon * CHAFLAN), round(c[1] + lz / lon * CHAFLAN))
+            puntos.append(p)
+    tramos, d = [], 0
+    for i, (x, z) in enumerate(puntos):
+        nx, nz = puntos[(i + 1) % len(puntos)]
+        lon = math.hypot(nx - x, nz - z)
+        rumbo = round(math.atan2(nx - x, nz - z) * 4096 / (2 * math.pi)) & 0xFFF
+        tramos.append((x, z, rumbo, round((nx - x) / lon * 4096), round((nz - z) / lon * 4096), d))
+        d += round(lon)
+    return tramos, d
 
 
 def escribir_h(ruta):
@@ -365,6 +387,14 @@ def escribir_h(ruta):
         for t in cajas:
             f.write("    {" + ", ".join(str(v) for v in t) + "},\n")
         f.write("};\n")
+        tramos, largo = ruta_rival()
+        f.write("/* La linea del rival (ruta_rival en mapa_kart.py): cada tramo x, z, rumbo y direccion (ux, uz de largo\n"
+                " * 4096); kart_ruta_d es la distancia al empezar cada tramo y KART_RUTA_LARGO la de una vuelta. */\n")
+        f.write(f"#define KART_RUTA_N {len(tramos)}\n#define KART_RUTA_LARGO {largo}\n")
+        f.write("static const s16 kart_ruta[KART_RUTA_N][5] = {\n")
+        for t in tramos:
+            f.write("    {" + ", ".join(str(v) for v in t[:5]) + "},\n")
+        f.write("};\nstatic const s32 kart_ruta_d[KART_RUTA_N] = {" + ", ".join(str(t[5]) for t in tramos) + "};\n")
 
 
 if __name__ == "__main__":

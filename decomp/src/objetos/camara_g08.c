@@ -301,6 +301,9 @@ extern void func_80037738(Objeto *o, Objeto *a);
  * frente; entonces guarda a y el producto en su parte extra, cambia su forma y pasa su aviso a
  * func_80037738. */
 void func_80037468(Objeto *o, Objeto *a) {
+#ifdef SABRINA_KART /* MOD: en la pista no hay nada que recoger */
+    return;
+#else
     u8 *extra = (u8 *)o + 0x74;
     s32 fuerza = CAMPO_S8(extra, 0x1F);
     s32 v[3], mira[3];
@@ -368,6 +371,7 @@ void func_80037468(Objeto *o, Objeto *a) {
     CAMPO_S16(o, 0x114) = 0x26;
     o->forma.banderas = 0x3000;
     o->aviso = func_80037738;
+#endif
 }
 
 extern s32 func_80021CE4(s32 n);     /* al azar, de 0 a n */
@@ -385,6 +389,9 @@ extern Recompensa D_80074BC4[];      /* por fuerza (extra+0x1F): que hacer con l
  * particula; si a tiene alguno de los bits 0-1, le aplica la recompensa de la fuerza de o y le avisa; y o
  * vuelve al aviso normal (func_80024F6C). */
 void func_80037738(Objeto *o, Objeto *a) {
+#ifdef SABRINA_KART /* MOD: en la pista no hay nada que recoger */
+    return;
+#else
     u8 *extra = (u8 *)o + 0x74;
     void (*f)(Objeto *);
 
@@ -436,6 +443,7 @@ void func_80037738(Objeto *o, Objeto *a) {
     }
     o->aviso = func_80024F6C;
     CAMPO_S32(extra, 0x0C) = CAMPO_S32(extra, 0x08);
+#endif
 }
 
 /* ---- Paredes a los lados de la camara ---- */
@@ -603,6 +611,9 @@ extern void func_80021D44(s16 *ang, s32 meta, s32 paso);   /* acerca un angulo a
  * un poco, avanza segun sus giros, deja estelas y su particula, y se marca para borrar (bit 0x80 de
  * +0x20) al pasar su alcance. En v0 queda el alcance, o ese byte si se marco. */
 s32 func_80037A18(Objeto *o) {
+#ifdef SABRINA_KART /* MOD: en el kart Sabrina no lanza hechizos: el hueco es para el rival */
+    return 0;
+#else
     ExtraProyectil *e = (ExtraProyectil *)&o->extra;
     Objeto *b = e->blanco;
     s32 esc = o->escala[0];
@@ -650,6 +661,7 @@ s32 func_80037A18(Objeto *o) {
         return *((u8 *)o + 0x20);
     }
     return e->alcance;
+#endif
 }
 
 /* ---- La camara del juego ---- */

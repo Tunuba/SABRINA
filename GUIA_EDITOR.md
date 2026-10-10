@@ -72,7 +72,12 @@ Un mando tambien sirve.
 carrito (su mitad de abajo, de la cadera a los pies, se cambio por el kart) por un circuito cerrado que pasa por las
 epocas del juego: la recta de Greendale con el arco de meta, Egipto, el Oeste con el puente del rio Sweetwater, la
 horquilla de la Edad de Piedra y el Vortice del tiempo. Tres vueltas con cronometro, mejor vuelta, turbos en el
-suelo y cajas de hechizo. Setos y muros altos a los dos lados de toda la pista: no hay por donde salirse ni saltos.
+suelo y cintas de hechizo, todo a ras de la pista (nada que estorbe). Setos y muros altos a los dos lados de toda
+la pista: no hay por donde salirse ni saltos. **Salem, el gato de Sabrina, corre contra ti en su kart verde**: va
+por su propia linea, acelera o afloja segun lo lejos que vayas (como en Mario Kart), te puede chocar y arriba se ve
+el puesto (1/2 o 2/2). Cada epoca tiene su decorado: la casa Spellman y faroles, la piramide, los obeliscos y la
+puerta de jeroglificos, el deposito de agua, el saloon y los cactus, el dintel de piedra y los menhires, y el portal
+del tiempo; pianos rojos y blancos en cada curva.
 
 El kart acelera solo: **para correr basta con izquierda y derecha**. Lo demas es opcional:
 

@@ -41,7 +41,7 @@ def armar_exe():
     d = os.path.join(RAIZ, "decomp").replace("\\", "/")
     ruta_wsl = "/mnt/" + d[0].lower() + d[2:]
     r = subprocess.run(["wsl.exe", "-d", wsl(), "--cd", ruta_wsl, "--", "python3", "armar_c.py", "--solo", CAMARA,
-                        "--D", "SABRINA_KART", "--salida", "build/SLUS_kart.exe"], capture_output=True, text=True)
+                        "--D", "SABRINA_KART", "--O", "Os", "--salida", "build/SLUS_kart.exe"], capture_output=True, text=True)
     print(r.stdout.strip(), r.stderr.strip())
     if r.returncode or "16 funciones en C" not in r.stdout:
         sys.exit("no se pudo armar el ejecutable del kart (ver decomp/build/armado_c.txt)")
@@ -56,7 +56,7 @@ def armar_disco():
     import kart_modelo
     ino = n.nf.construir_bytes(n.nodo_de(plats), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True,
                                reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **(cielo or {}))),
-                                           1: kart_modelo.armar, 11: kart_modelo.vacio})
+                                           1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival})
     disco.parchar({traducir.EXE: open(EXE, "rb").read(), "GRAPHICS\\HUB\\H1W.INO": ino}, PISTA)
     disco.cue_mod(CUE, PISTA)
     # la musica del pueblo (pista 3) es la de la carrera: musica_kart.py, hecha con los sonidos del juego
@@ -162,7 +162,10 @@ def vuelta(vueltas=3, limite=30000):
             if fase == 2 and inicio is None:
                 inicio, t_inicio = e.frames(), t
             if fase == 3:
-                print(f"META en el cuadro {e.frames() - f0}: tiempo del juego {t} pasos", flush=True)
+                print(f"META en el cuadro {e.frames() - f0}: tiempo {t / 60:.2f} s", flush=True)
+                if "k_puesto" in sim:
+                    print(f"puesto de Sabrina: {leer(e, sim['k_puesto'] & 0xFFFFFFFF)}; Salem lleva "
+                          f"{leer(e, sim['k_rd'] & 0xFFFFFFFF)} de {3 * 46640}", flush=True)
                 break
             tx, tz = puntos[objetivo]
             if math.hypot(tx - x, tz - z) < 1000:
