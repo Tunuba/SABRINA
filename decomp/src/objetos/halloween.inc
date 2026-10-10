@@ -620,6 +620,11 @@ static void __attribute__((noinline)) h_jefe(Objeto *o, Objeto *s) {
     }
     for (i = 0; i < 3; i++) {
         f = &h_fuego[i];
+        if (f->vivo > 0 && h_fase == H_JUEGO && h_pega(f->x, f->y + 100, f->z, 230)) {
+            /* el cristal tambien deshace las bolas de fuego */
+            f->vivo = 0;
+            h_explotar(f->x, f->y + 100, f->z);
+        }
         if (f->vivo > 0 && h_fase == H_JUEGO) {
             f->vivo--;
             h_ir(f, sx, sz, h_rey_vida <= 4 ? 44 : 34);
