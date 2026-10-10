@@ -225,17 +225,19 @@ recinto("torre", *Z3, 3400, color=(80, 75, 95), tex_tapa=PIEDRA, tex_lado=VETEAD
 for k, (m, alto) in enumerate(((0, 300), (384, 300), (768, 300))):
     pared(f"torre_tejado{k}", Z3[0] - 256 + m, Z3[1] - 256 + m, Z3[2] + 256 - m, Z3[3] + 256 - m, alto,
           base=3400 + 300 * k, color=(70, 40, 80), tex_tapa=TEJAS, tex_lado=TEJAS)
-# las plataformas en espiral, pegadas a los muros por dentro, subiendo 250 cada una: ocho sitios (esquinas y mitades de
-# cada lado, separados 192, que se saltan) y la vuelta y media llega hasta 2750, junto a la cima del centro (3000)
+# las plataformas en espiral, pegadas a los muros por dentro, subiendo 250 cada una (Sabrina sube sola hasta ~360):
+# ocho sitios (esquinas y mitades de cada lado) de 576 con huecos de 96, que se saltan hasta desde parada; la vuelta y
+# media llega hasta 2750, pegada a la cima del centro (3000)
 ox, oz = Z3[0] + 64, Z3[1] + 64
-anillo = [(ox + 704 * a, oz + 704 * b) for a, b in ((0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (1, 2), (0, 2), (0, 1))]
+PELDANO = 576
+anillo = [(ox + 672 * a, oz + 672 * b) for a, b in ((0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (1, 2), (0, 2), (0, 1))]
 plataformas = []
 for k in range(11):
     x, z = anillo[(k + 1) % 8]
     alto = 250 * (k + 1)
-    losa(f"peldano{k}", x, z, x + 512, z + 512, alto, color=(110, 95, 120), tex_tapa=PIEDRA3, tex_lado=VETEADA)
-    plataformas.append((x + 256, alto, z + 256))
-losa("torre_cima", ox + 576, oz + 576, ox + 1344, oz + 1344, 3000, 160, color=(130, 110, 60), tex_tapa=ORO,
+    losa(f"peldano{k}", x, z, x + PELDANO, z + PELDANO, alto, color=(110, 95, 120), tex_tapa=PIEDRA3, tex_lado=VETEADA)
+    plataformas.append((x + PELDANO // 2, alto, z + PELDANO // 2))
+losa("torre_cima", ox + PELDANO, oz + PELDANO, ox + 1344, oz + 1344, 3000, 160, color=(130, 110, 60), tex_tapa=ORO,
      tex_lado=BANDA_ORO)
 zona("LA TORRE EMBRUJADA", (14336 + 37, -2560 + 53, 0x400),
      calabazas=[(x, -a, z) for (x, a, z) in plataformas[1:11:2]],
