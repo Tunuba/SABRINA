@@ -233,6 +233,21 @@ static void __attribute__((noinline)) h_entrar(Objeto *o, Objeto *s, s32 z) {
     TocarSonido(0x31, 0, 0x2A, 0x7F);              /* el del portal del juego */
 }
 
+/* Deja la coordenada *c (en 1/256) entre a + 60 y b - 60, y le quita el empuje que la sacaba. */
+static void __attribute__((noinline)) h_borde(s32 *c, s32 *empuje, s32 a, s32 b) {
+    if (*c < (a + 60) << 8) {
+        *c = (a + 60) << 8;
+        if (*empuje < 0) {
+            *empuje = 0;
+        }
+    } else if (*c > (b - 60) << 8) {
+        *c = (b - 60) << 8;
+        if (*empuje > 0) {
+            *empuje = 0;
+        }
+    }
+}
+
 /* Un golpe de un monstruo que esta en (x, z): como DanoPorEnemigo (empujon hacia atras, quejido, 4 de vida y un rato
  * sin que vuelva a doler). Sin vida, Sabrina vuelve a empezar la zona. */
 static void __attribute__((noinline)) h_golpe(Objeto *o, Objeto *s, s32 x, s32 z) {
@@ -951,6 +966,12 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
         o->estado = 0;
         func_80037278(o, s);
         h_avisar("UN HECHIZO TE DEVOLVIO", 2 * H_SEG);
+    }
+    /* el borde de la zona: aunque trepe a una reja o a un tejado, Sabrina no sale del suelo de su zona (la prueba de
+     * caos la vio saltar la reja del cementerio desde el suelo: su salto llega a ~465 y la reja tiene 450) */
+    if (h_fase != H_TITULO) {
+        h_borde(&s->x, &s->empuje_x, hw_borde[h_zona][0], hw_borde[h_zona][2]);
+        h_borde(&s->z, &s->empuje_z, hw_borde[h_zona][1], hw_borde[h_zona][3]);
     }
     h_cristales(s, nuevo);
     h_fantasmas(o, s);

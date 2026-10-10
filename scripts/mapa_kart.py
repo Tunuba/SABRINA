@@ -27,6 +27,7 @@ orden, el 0 es la meta), los turbos y las cintas de hechizo, en unidades del mod
 Uso: python mapa_kart.py      (escribe los dos archivos y dice cuanto ocupa el .INO, con el carrito incluido)
 """
 import os
+import sys
 
 import nivel_plataformas as n
 
@@ -415,3 +416,5 @@ if __name__ == "__main__":
         h = os.path.join(n.disco.RAIZ, "decomp", "src", "objetos", "kart_pista.h")
         escribir_h(h)
         print("escrito", h)
+    else:
+        sys.exit("NO se escribio la pista: " + ("; ".join(errores) or "no cabe en el .INO"))

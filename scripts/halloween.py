@@ -7,6 +7,8 @@ musica_halloween.py (en la pista 3 del CD, la del pueblo). Va en su propio disco
 Uso: python halloween.py              abre el juego (arma el disco si falta)
      python halloween.py armar        vuelve a armar todo: castillo, musica, ejecutable (WSL) y disco
      python halloween.py probar       sin ventana: juega una partida entera (calabazas, portales, jefe) y saca capturas
+     python halloween.py caos [n]     sin ventana: botones al azar en cada zona (semilla n); cuenta salidas por las
+                                      paredes y caidas
 """
 import os
 import subprocess
@@ -139,6 +141,63 @@ def probar():
     print("capturas en notas/capturas/hw_hoja.png")
 
 
+def caos(acciones=200, semilla=7):
+    """Prueba de caos sin ventana: en cada zona aprieta botones al azar (caminar, saltar, cristal) y cuenta las veces
+    que Sabrina queda fuera de la zona (atraveso una pared) o cae por debajo del suelo, y si el juego sigue andando.
+    Asi se encontro que la torre perdia los lados de sus muros (09-10)."""
+    import random
+    import mapa_halloween as m
+    from nivel_plataformas import P_SABRINA
+    sim = kart.simbolos("h_", "build/SLUS_halloween.elf")
+    a = lambda nombre: sim[nombre] & 0xFFFFFFFF
+    botones = ["UP", "DOWN", "LEFT", "RIGHT", "UP,CROSS", "SQUARE", "UP,SQUARE", "LEFT,UP", "RIGHT,UP", "CROSS"]
+    malos = 0
+    with Emu(iso=CUE, log="halloween_caos.log", extra=("-fastboot",), puerto=8096) as e:
+        recorrer(e, "hw_arranque", kart.PASOS_HASTA_EL_HUB)
+        e.pulsar("CROSS", 4, 20)
+        s = kart.leer(e, P_SABRINA) & 0xFFFFFFFF
+        for z in range(len(m.zonas)):
+            random.seed(semilla + z)
+            if z > 0:
+                px, py, pz = m.zonas[z - 1]["portal"]
+                e.eval(f"wr32({a('h_portal')},1) wr32({s + 0x24},{(px << 8) & 0xFFFFFFFF}) "
+                       f"wr32({s + 0x28},{((py - 30) << 8) & 0xFFFFFFFF}) wr32({s + 0x2C},{(pz << 8) & 0xFFFFFFFF}) "
+                       "return 1")
+                e.esperar(30)
+            if kart.leer(e, a("h_zona")) != z:
+                print(f"zona {z + 1}: no se pudo entrar (h_zona {kart.leer(e, a('h_zona'))})")
+                malos += 1
+                continue
+            # el rectangulo de la zona: lo que cubren sus bloques de suelo
+            x0, z0, x1, z1 = m.rectangulo_zona(z)
+            pasos = kart.leer(e, a("h_pasos"))
+            fuera = caidas = quietas = 0
+            antes = 0
+            gano = False
+            for k in range(acciones):
+                e.lua("boton", b=random.choice(botones), f=random.randint(8, 40))
+                e.esperar(15)
+                if kart.leer(e, a("h_fase")) == 3:  # le acerto ocho cristales al Rey Calabaza: gano, no es un fallo
+                    gano = True
+                    break
+                ahora = kart.leer(e, a("h_pasos"))
+                quietas += ahora == pasos           # el juego no dio ni un paso en toda la accion
+                pasos = ahora
+                x, y, zz = (kart.leer(e, s + d) / 256 for d in (0x24, 0x28, 0x2C))
+                afuera = not (x0 - 50 <= x <= x1 + 50 and z0 - 50 <= zz <= z1 + 50)
+                if afuera and not fuera:            # la primera salida: donde y su captura
+                    print(f"  zona {z + 1}: sale en ({x:.0f}, {y:.0f}, {zz:.0f}) en la accion {k}, h_zona "
+                          f"{kart.leer(e, a('h_zona'))}, h_fase {kart.leer(e, a('h_fase'))}", flush=True)
+                    e.captura(os.path.join(CAP, f"hw_caos_z{z + 1}.png"))
+                fuera += afuera
+                caidas += y > 600 and antes <= 600
+                antes = y
+            malos += fuera + caidas + quietas
+            print(f"zona {z + 1}: fuera de la zona {fuera}, caidas {caidas}, juego parado {quietas} veces"
+                  + (f" (gano al jefe en la accion {k})" if gano else ""), flush=True)
+    print("todo bien" if malos == 0 else "HAY FALLOS")
+
+
 if __name__ == "__main__":
     modo = sys.argv[1] if len(sys.argv) > 1 else "jugar"
     if modo == "armar":
@@ -147,6 +206,8 @@ if __name__ == "__main__":
         if not os.path.exists(CUE):
             armar()
         probar()
+    elif modo == "caos":
+        caos(semilla=int(sys.argv[2]) if len(sys.argv) > 2 else 7)
     elif modo == "jugar":
         if not os.path.exists(CUE):
             armar()

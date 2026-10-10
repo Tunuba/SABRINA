@@ -18,6 +18,7 @@ torre por encima de la reja. Los lados que nadie ve no se generan (sin_lados), c
 Uso: python mapa_halloween.py      (escribe los dos archivos y dice cuanto ocupa el .INO con los modelos)
 """
 import os
+import sys
 
 import nivel_plataformas as n
 
@@ -122,7 +123,8 @@ pared("cripta_puerta", 1792, -2560, 2304, -2304, 420, color=(40, 30, 35), tex_ta
 # arboles muertos: tronco y dos ramas
 for i, (x, z) in enumerate(((-1792, 1024), (2560, 1024), (-1792, -3328), (2816, -1280))):
     pared(f"arbol{i}", x, z, x + 256, z + 256, 1000, color=MADERA_MUERTA, tex_tapa=TABLONES, tex_lado=TABLONES)
-    losa(f"arbol{i}_rama", x - 384, z, x + 640, z + 256, 760, 100, color=MADERA_MUERTA, tex_tapa=TABLONES,
+    losa(f"arbol{i}_rama", max(x - 384, Z1[0]), z, min(x + 640, Z1[2]), z + 256, 760, 100,  # sin cruzar la reja
+         color=MADERA_MUERTA, tex_tapa=TABLONES,
          tex_lado=TABLONES)
 zona("EL CEMENTERIO DE GREENDALE", (128, -896, 0x800),
      calabazas=[(-1536, 0, -3200), (2048, -720, -2944), (-1152, 0, 768), (1792, 0, 1024), (-512, 0, -1792),
@@ -152,9 +154,9 @@ pared("casa_tabique_h4", 2560, 6144, 3072, 6400, 900, color=PAPEL, tex_lado=PANE
 losa("casa_techo", *ZC, 1000, 100, color=(50, 35, 40), tex_tapa=TEJAS,
      tex_lado=PANELES)
 # vestibulo: el reloj de pie
-pared("reloj_pie", -1024, 4608, -768, 4864, 700, color=(110, 80, 40), tex_tapa=TABLONES, tex_lado=PUERTA_ORO)
+pared("reloj_pie", -1024, 4608, -768, 4864, 500, color=(110, 80, 40), tex_tapa=TABLONES, tex_lado=PUERTA_ORO)
 # biblioteca: estanterias contra la pared y la mesa de lectura
-pared("estanteria", 1536, 4608, 2816, 4864, 700, color=(90, 60, 40), tex_tapa=TABLONES, tex_lado=PANELES)
+pared("estanteria", 1536, 4608, 2816, 4864, 500, color=(90, 60, 40), tex_tapa=TABLONES, tex_lado=PANELES)
 escalon("mesa_lectura", 2048, 5376, 2560, 5632, 200, color=(100, 70, 45), tex_tapa=TABLONES, tex_lado=TABLONES)
 # comedor: la mesa larga
 escalon("mesa_comedor", -640, 6784, 640, 7168, 220, color=(90, 55, 40), tex_tapa=TABLONES, tex_lado=TABLONES)
@@ -172,7 +174,7 @@ zona("LA CASA DEL TERROR", (-512 + 37, 5376 + 53, 0x400),
      esqueletos=[(1536, 0, 7424), (-768, 0, 6912)],
      dulces=[(0, 0, 5376), (512, 0, 5376), (1152, 0, 6144), (2304, 0, 6272), (-512, 0, 6656), (768, 0, 7040)],
      farolas=[(-896, 0, 5888), (2944, -620, 6528)],
-     velas=[(-384, -220, 6976), (384, -220, 6976), (2304, -200, 5504), (-896, -700, 4736)],
+     velas=[(-384, -220, 6976), (384, -220, 6976), (2304, -200, 5504), (-896, -500, 4736)],
      sustos=[(1408, 4736, 2944, 6016, 1, 0), (-896, 6528, 896, 7552, 3, 0), (1408, 6528, 2944, 7552, 2, 0)],
      portal=(1984, 0, 6976), lema="NO MIRES DEBAJO DE LA CAMA...")
 
@@ -287,6 +289,25 @@ for p in bloques:
     p["sin_lados"] = [l for l in ("x0", "x1", "z0", "z1") if cubierto(p, l, otros)]
 
 
+def rectangulo_zona(z):
+    """El rectangulo (x0, z0, x1, z1) de los suelos de la zona z: el bloque de suelo que contiene su salida y los que lo
+    tocan (las baldosas del salon). Lo usa halloween.py caos."""
+    sx, sz = zonas[z]["salida"][:2]
+    suelos = [b for b in bloques if not b.get("pared") and not b.get("techo") and b["h"] >= 0]
+    dentro = [b for b in suelos if b["x0"] <= sx < b["x1"] and b["z0"] <= sz < b["z1"]]
+    zona = list(dentro)
+    cambio = True
+    while cambio:
+        cambio = False
+        for b in suelos:
+            if b not in zona and any(b["x0"] <= q["x1"] and q["x0"] <= b["x1"] and b["z0"] <= q["z1"] and q["z0"] <= b["z1"]
+                                     for q in zona):
+                zona.append(b)
+                cambio = True
+    return (min(b["x0"] for b in zona), min(b["z0"] for b in zona), max(b["x1"] for b in zona),
+            max(b["z1"] for b in zona))
+
+
 def medir():
     """(bytes del .INO con el mapa, el cielo y los modelos de Halloween, bytes que caben)."""
     import halloween_modelos as hm
@@ -336,6 +357,9 @@ def escribir_h(ruta):
         f.write("static const s16 hw_portal[HW_ZONAS][3] = {" + ", ".join(
             "{%d, %d, %d}" % (z["portal"] or (0, 0, 0)) for z in zonas) + "};\n")
         f.write(f"#define HW_JEFE_X {JEFE[0]}\n#define HW_JEFE_Z {JEFE[1]}\n")
+        # el borde de cada zona (x0, z0, x1, z1): el suelo de la zona; el juego no deja salir a Sabrina de ahi
+        f.write("static const s16 hw_borde[HW_ZONAS][4] = {" + ", ".join(
+            "{%d, %d, %d, %d}" % rectangulo_zona(k) for k in range(len(zonas))) + "};\n")
         f.write(f"#define HW_DULCES_TOTAL {sum(len(z['dulces']) for z in zonas)}\n")
 
 
@@ -354,3 +378,5 @@ if __name__ == "__main__":
         h = os.path.join(n.disco.RAIZ, "decomp", "src", "objetos", "halloween_mapa.h")
         escribir_h(h)
         print("escrito", h)
+    else:
+        sys.exit("NO se escribio el castillo: " + ("; ".join(errores) or "no cabe en el .INO"))

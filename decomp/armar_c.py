@@ -112,7 +112,8 @@ def main():
         o = os.path.join(tmp, re.sub(r"\W", "_", arch) + ".o")
         r = run(cc + ["-o", o, arch])
         if r.returncode:
-            informe.append(f"NO_COMPILA\t{arch}\t{r.stderr.splitlines()[0] if r.stderr else ''}")
+            errores = [l for l in r.stderr.splitlines() if "error" in l] or r.stderr.splitlines()[:1]
+            informe.append(f"NO_COMPILA\t{arch}\t" + " | ".join(errores[:8]))
             continue
         objs[arch] = o
 
