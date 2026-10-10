@@ -121,12 +121,12 @@ def probar():
         e.captura(os.path.join(CAP, "kart_5_muro.png"))
 
 
-def simbolos(prefijo="k_"):
-    """Direcciones de las variables de un mod (las static de kart.inc, 'k_'; las de halloween.inc, 'h_') en el ultimo
-    armado (decomp/build/armado_c.elf)."""
+def simbolos(prefijo="k_", elf="build/SLUS_kart.elf"):
+    """Direcciones de las variables de un mod (las static de kart.inc, 'k_'; las de halloween.inc, 'h_') en el .elf que
+    armar_c.py deja junto a su ejecutable (decomp/build/SLUS_kart.elf, SLUS_halloween.elf)."""
     d = os.path.join(RAIZ, "decomp").replace("\\", "/")
     r = subprocess.run(["wsl.exe", "-d", wsl(), "--cd", "/mnt/" + d[0].lower() + d[2:], "--", "mipsel-linux-gnu-nm",
-                        "build/armado_c.elf"], capture_output=True, text=True)
+                        elf], capture_output=True, text=True)
     sim = {}
     for linea in r.stdout.splitlines():
         p = linea.split()

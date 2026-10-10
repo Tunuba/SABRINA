@@ -28,7 +28,9 @@ extern s32 func_80031000(void);          /* la animacion de dolor y el rato sin 
 #define H_SELECT 0x100
 #define H_SEG 28                     /* pasos del juego por segundo (medido en el kart) */
 #define H_VBL 60
-#define H_LEJOS 6000                 /* altura (hacia abajo) donde se esconde un nodo que no se usa */
+#define H_LEJOS 6000                 /* "escondido": h_colocar lo deja con escala 0 (todos sus triangulos en un punto: la
+                                      * PS1 no dibuja nada). Bajarlo lejos no servia: la GTE recorta la posicion en
+                                      * pantalla y el modelo salia gigante pegado al borde de abajo */
 #define H_VIDA 20                    /* la vida llena del juego (func_800300C4 no pasa de 20) */
 
 /* modelos_cargados va uno corrido: el modelo n de la lista del .INO es el n + 1 */
@@ -66,6 +68,9 @@ static HBicho h_esq[HW_MAX_ESQUELETOS];
 static void *h_dul_nodo[HW_MAX_DULCES], *h_far_nodo[HW_MAX_FAROLAS], *h_vel_nodo[HW_MAX_VELAS];
 static u8 h_dul_tomado[HW_MAX_DULCES], h_susto_hecho[HW_MAX_SUSTOS];
 static s32 h_dulces;                 /* los dulces juntados en toda la noche */
+static const char *h_pista;          /* hacia donde queda la calabaza mas cercana (o el portal) */
+static s32 h_pista_m;
+static s32 h_luna[4];                /* donde va la luna respecto de Sabrina (x, y, z) y su escala; las pruebas la mueven */                /* y a cuantos metros (160 unidades = 1 m: Sabrina mide ~250) */
 static void *h_cal_nodo[HW_MAX_CALABAZAS], *h_man_nodo[HW_MAX_MANZANAS], *h_portal_nodo, *h_luna_nodo;
 static void *h_cristal_nodo, *h_chispa_nodo[3];
 static u8 h_tomada[HW_MAX_CALABAZAS];
@@ -89,6 +94,10 @@ static void __attribute__((noinline)) h_colocar(void *nodo, s32 x, s32 y, s32 z,
 
     if (nodo == NULL) {
         return;
+    }
+    if (y == H_LEJOS) {
+        y = 0;
+        ex = ey = ez = 0;
     }
     e[0] = ex;
     e[1] = ey;
@@ -214,7 +223,7 @@ static void __attribute__((noinline)) h_entrar(Objeto *o, Objeto *s, s32 z) {
     o->estado = 0;
     func_80037278(o, s);             /* la camara, ya asentada detras de Sabrina */
     h_avisar(hw_nombre[z], 3 * H_SEG);
-    TocarSonido(1, 0, 0x30, 0x7F);
+    TocarSonido(0x31, 0, 0x2A, 0x7F);              /* el del portal del juego */
 }
 
 /* Un golpe de un monstruo que esta en (x, z): como DanoPorEnemigo (empujon hacia atras, quejido, 4 de vida y un rato
@@ -251,7 +260,7 @@ static void h_explotar(s32 x, s32 y, s32 z) {
     h_boom_y = y;
     h_boom_z = z;
     h_zap_t = 0;
-    TocarSonido(1, 0, 0x24, 0x7F);
+    TocarSonido(0x12, 0, 0x2A, 0x7F);              /* el brillo de la gema de hechizo */
 }
 
 /* Un monstruo que el cristal acaba de deshacer: explota y vuelve a salir de su casa a los 12 segundos. */
@@ -472,7 +481,7 @@ static void __attribute__((noinline)) h_adornos(Objeto *s) {
         if (h_fase == H_JUEGO && h_toca(s, q[0], q[1], q[2], 210)) {
             h_dul_tomado[i] = 1;
             h_dulces++;
-            TocarSonido(1, 0, 0x54, 0x60);
+            TocarSonido(0x12, 0, 0x30, 0x60);      /* el brillo, mas agudo */
         }
     }
     for (i = 0; i < HW_MAX_FAROLAS; i++) {
@@ -603,7 +612,7 @@ static void __attribute__((noinline)) h_calabazas(Objeto *s) {
             h_tomada[i] = 1;
             h_juntadas++;
             h_explotar(q[0], q[1] - 120, q[2]);
-            TocarSonido(1, 0, 0x3C, 0x7F);
+            TocarSonido(0x20, 0, 0x2A, 0x7F);      /* el de recoger una gema de hechizo */
             if (h_juntadas == n) {
                 h_portal = 1;
                 h_avisar("TODAS! EL PORTAL SE ABRIO!", 3 * H_SEG);
@@ -636,7 +645,7 @@ static void __attribute__((noinline)) h_manzanas(Objeto *s) {
             func_800300C4(0);
             h_man_t[i] = 20 * H_SEG;
             h_avisar("MANZANA ENCANTADA: +VIDA", H_SEG);
-            TocarSonido(1, 0, 0x48, 0x7F);
+            TocarSonido(0x21, 0, 0x2A, 0x7F);      /* el de agarrar algo */
         }
     }
 }
@@ -659,9 +668,16 @@ static void __attribute__((noinline)) h_portal_luna(Objeto *o, Objeto *s) {
     } else {
         h_esconder(h_portal_nodo);
     }
-    /* la luna llena, siempre al norte, dentro de la cupula del cielo (que va con Sabrina) */
-    h_colocar(h_luna_nodo, (s->x >> 8) + 1800, -3300, (s->z >> 8) - 5400, func_8001BE8C(1800, -5400, 0, 0), 0x1000,
-              0x1000, 0x1000);
+    /* la luna llena, siempre al norte y por encima de todo (el juego no dibuja los modelos de objetos lejos de la
+     * camara: a ~4000 ya no salia; va a ~2200, mas chica, y baja, a unos 17 grados: mas arriba la camara no la ve) */
+    if (h_luna[0] == 0) {
+        h_luna[0] = 500;
+        h_luna[1] = -500;
+        h_luna[2] = -2200;
+        h_luna[3] = 0x500;
+    }
+    h_colocar(h_luna_nodo, (s->x >> 8) + h_luna[0], h_luna[1], (s->z >> 8) + h_luna[2],
+              func_8001BE8C(h_luna[0], h_luna[2], 0, 0), h_luna[3], h_luna[3], h_luna[3]);
 }
 
 /* El cristal magico: sale de Sabrina hacia donde mira, vuela un segundo y, al pegar, salta en chispas. */
@@ -681,7 +697,7 @@ static void __attribute__((noinline)) h_cristales(Objeto *s, u32 nuevo) {
         h_zap_z = (s->z >> 8) + ((rcos(h_zap_dir) * 150) >> 12);
         h_zap_y = (s->y >> 8) - 30;
         h_pose(H_POSE_MAGIA);
-        TocarSonido(1, 0, 0x4C, 0x7F);
+        TocarSonido(2, 0, 0x2A, 0x7F);             /* el hechizo de Sabrina */
     }
     if (h_zap_t > 0) {
         h_zap_t--;
@@ -710,6 +726,43 @@ static void h_imprimir_tiempo(const char *texto, s32 f) {
     s32 m = f / (60 * H_VBL), sg = (f / H_VBL) % 60;
 
     ImprimirDepuracion("%s%d:%d%d", texto, m, sg / 10, sg % 10);
+}
+
+/* La brujula: hacia donde queda, mirando como mira Sabrina, la calabaza mas cercana que falta (o el portal, si ya
+ * se abrio). Girar a la derecha hace crecer el angulo (como en el kart). */
+static void __attribute__((noinline)) h_brujula(Objeto *s) {
+    static const char *const lados[4] = {"ADELANTE", "A LA DERECHA", "ATRAS", "A LA IZQUIERDA"};
+    s32 i, dx, dz, d, mejor = 0x7FFFFFFF, tx = 0, tz = 0, sx = s->x >> 8, sz = s->z >> 8;
+    const s16 *q;
+
+    h_pista = NULL;
+    for (i = 0; i < hw_n_calabazas[h_zona]; i++) {
+        q = hw_calabazas[h_zona][i];
+        if (h_tomada[i]) {
+            continue;
+        }
+        dx = q[0] - sx;
+        dz = q[2] - sz;
+        d = (dx < 0 ? -dx : dx) + (dz < 0 ? -dz : dz);
+        if (d < mejor) {
+            mejor = d;
+            tx = q[0];
+            tz = q[2];
+        }
+    }
+    if (mejor == 0x7FFFFFFF && h_portal > 0) {
+        tx = hw_portal[h_zona][0];
+        tz = hw_portal[h_zona][2];
+        dx = tx - sx;
+        dz = tz - sz;
+        mejor = (dx < 0 ? -dx : dx) + (dz < 0 ? -dz : dz);
+    }
+    if (mejor == 0x7FFFFFFF) {
+        return;
+    }
+    d = (func_8001BE8C(sx, sz, tx, tz) - s->rot[1] + 0x200) & 0xFFF;
+    h_pista = lados[d >> 10];
+    h_pista_m = mejor * 3 / 4 / 160;
 }
 
 /* El texto de arriba: la zona, las calabazas, los monstruos deshechos y el tiempo; la vida del jefe; los avisos. */
@@ -742,7 +795,12 @@ static void __attribute__((noinline)) h_pantalla(void) {
     }
     ImprimirDepuracion("   DULCES %d   MONSTRUOS %d", h_dulces, h_derrotados);
     h_imprimir_tiempo("   ", h_tiempo);
-    ImprimirDepuracion("\n  CUADRADO: CRISTAL MAGICO\n");
+    if (h_pista != NULL) {
+        ImprimirDepuracion(h_juntadas < hw_n_calabazas[h_zona] ? "\n  CALABAZA: %s, A %d M\n" : "\n  EL PORTAL: %s, A %d M\n",
+                           h_pista, h_pista_m);
+    } else {
+        ImprimirDepuracion("\n  CUADRADO: CRISTAL MAGICO\n");
+    }
     if (h_avisos_t > 0) {
         ImprimirDepuracion("\n\n\n          %s\n", h_aviso);
     }
@@ -754,7 +812,7 @@ static void __attribute__((noinline)) h_fiesta(void) {
 
     if (h_pasos % (H_SEG + H_SEG / 3) == 1) {
         h_pose(poses[(h_pasos / (H_SEG + H_SEG / 3)) & 3]);
-        TocarSonido(1, 0, 0x3C + ((h_pasos / H_SEG) & 3) * 4, 0x7F);
+        TocarSonido(0x20, 0, 0x2A + ((h_pasos / H_SEG) & 3) * 3, 0x7F);   /* la gema, cada vez mas aguda */
     }
     for (h_juntadas = 0; h_juntadas < HW_MAX_CALABAZAS; h_juntadas++) {
         h_tomada[h_juntadas] = 1;
@@ -815,6 +873,7 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
     h_manzanas(s);
     h_portal_luna(o, s);
     h_adornos(s);
+    h_brujula(s);
     if (h_fase == H_FIN) {
         h_fiesta();
     }

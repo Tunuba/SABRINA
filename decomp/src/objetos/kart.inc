@@ -49,7 +49,9 @@ extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 #define K_VEL_ATRAS -1800
 #define K_ACELERA 150
 #define K_FRENA 380
-#define K_LEJOS 6000                 /* altura (hacia abajo) donde se esconde un modelo que no se usa */
+#define K_LEJOS 6000                 /* "escondido": k_colocar lo deja con escala 0 (todos sus triangulos en un punto: la
+                                      * PS1 no dibuja nada). Bajarlo lejos no servia: la GTE recorta la posicion en
+                                      * pantalla y el modelo salia gigante pegado al borde de abajo */
 
 /* modelos_cargados va uno corrido: el modelo n de la lista del .INO es el n + 1 */
 #define K_MODELO_RIVAL 18            /* 17 FashionDiva -> el kart de Salem */
@@ -136,8 +138,12 @@ static void __attribute__((noinline)) k_colocar(void *nodo, s32 x, s32 y, s32 z,
     if (nodo == NULL) {
         return;
     }
+    if (y == K_LEJOS) {
+        y = 0;
+        ex = 0;
+    }
     e[0] = ex;
-    e[1] = 0x1000;
+    e[1] = ex ? 0x1000 : 0;
     e[2] = ex;
     p[0] = x << 8;
     p[1] = y << 8;
@@ -287,7 +293,7 @@ static void __attribute__((noinline)) k_pista(s32 x, s32 z, s32 en_suelo) {
             }
             k_ini_vuelta = k_tiempo;
             k_vuelta++;
-            TocarSonido(1, 0, 0x30, 0x7F);
+            TocarSonido(0x31, 0, 0x2A, 0x7F);          /* vuelta: el sonido del portal */
             if (k_vuelta > K_VUELTAS) {
                 k_vuelta = K_VUELTAS;
                 k_fase = K_META;
@@ -306,7 +312,7 @@ static void __attribute__((noinline)) k_pista(s32 x, s32 z, s32 en_suelo) {
     for (i = 0; i < KART_NTURBOS; i++) {
         if (k_dentro(kart_turbos[i], x, z)) {
             if (k_turbo < K_SEG) {
-                TocarSonido(1, 0, 0x36, 0x7F);
+                TocarSonido(2, 0, 0x2A, 0x7F);      /* turbo del suelo: el hechizo de Sabrina */
             }
             k_turbo = K_SEG + K_SEG / 4;
         }
@@ -345,7 +351,7 @@ static void __attribute__((noinline)) k_cajas(Objeto *s) {
             if (k_objeto == K_NADA && k_ruleta == 0) {
                 k_ruleta = K_SEG + K_SEG / 3;
             }
-            TocarSonido(1, 0, 0x3C, 0x7F);
+            TocarSonido(0x20, 0, 0x2A, 0x7F);
         } else if (k_cerca(k_rx, k_rz, kart_cajas[i][0], kart_cajas[i][1], 240)) {
             k_caja_t[i] = 3 * K_SEG;
         }
@@ -358,7 +364,7 @@ static void __attribute__((noinline)) k_hechizos(Objeto *s, u32 nuevo) {
 
     if (k_ruleta > 0) {
         if ((k_ruleta & 3) == 0) {
-            TocarSonido(1, 0, 0x48, 0x50);
+            TocarSonido(0x12, 0, 0x2A, 0x50);
         }
         if (--k_ruleta == 0) {
             r = func_80021CE4(100);
@@ -366,7 +372,7 @@ static void __attribute__((noinline)) k_hechizos(Objeto *s, u32 nuevo) {
             }
             k_objeto = i + 1;
             k_usos = k_objeto == K_TRIPLE ? 3 : 1;
-            TocarSonido(1, 0, 0x3C, 0x7F);
+            TocarSonido(0x20, 0, 0x2A, 0x7F);
         }
         return;
     }
@@ -407,7 +413,7 @@ static void __attribute__((noinline)) k_hechizos(Objeto *s, u32 nuevo) {
         k_avisar("   TURBO!", K_SEG);
         break;
     }
-    TocarSonido(1, 0, 0x36, 0x7F);
+    TocarSonido(2, 0, 0x2A, 0x7F);                  /* usar un hechizo: el de Sabrina */
     if (--k_usos <= 0) {
         k_objeto = K_NADA;
     }
@@ -508,7 +514,7 @@ static void __attribute__((noinline)) k_efectos(Objeto *s) {
             k_boom_x = tx;
             k_boom_z = tz;
             k_bala_t = 0;
-            TocarSonido(1, 0, 0x24, 0x7F);
+            TocarSonido(0x12, 0, 0x2A, 0x7F);
         } else {
             a = k_bala_de == 1 ? 150 : 72;
             k_bala_x += dx * a / d;
@@ -659,7 +665,7 @@ static void __attribute__((noinline)) k_fiesta(Objeto *s, s32 en_suelo) {
     if (k_cuadros % (K_SEG + K_SEG / 3) == 1) {
         if (k_puesto == 1) {
             k_pose(ganar[(k_cuadros / (K_SEG + K_SEG / 3)) & 3]);
-            TocarSonido(1, 0, 0x3C + ((k_cuadros / K_SEG) & 3) * 4, 0x7F);
+            TocarSonido(0x20, 0, 0x2A + ((k_cuadros / K_SEG) & 3) * 3, 0x7F);
         } else {
             k_pose(perder[(k_cuadros / (K_SEG + K_SEG / 3)) & 1]);
         }
@@ -890,7 +896,7 @@ static void __attribute__((noinline)) kart_paso(Objeto *o) {
         if (k_cuadros >= 3 * K_SEG) {
             k_fase = K_CARRERA;
             k_cuadros = 0;
-            TocarSonido(1, 0, 0x36, 0x7F);
+            TocarSonido(0x30, 0, 0x2A, 0x7F);       /* YA: el sonido del menu */
         }
     } else if (k_fase == K_CARRERA) {
         /* lo que paso desde el paso anterior; mas de 6 vueltas de pantalla es una pausa (START) o una carga */

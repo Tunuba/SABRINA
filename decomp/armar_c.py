@@ -281,6 +281,7 @@ def main():
         sys.exit("no enlaza:\n" + r.stderr)
     # lo enlazado se guarda con sus simbolos (las variables de un mod se leen en el emulador por su direccion)
     open("build/armado_c.elf", "wb").write(open(elf, "rb").read())
+    open(os.path.splitext(a.salida)[0] + ".elf", "wb").write(open(elf, "rb").read())   # el de este ejecutable
     binario = os.path.join(tmp, "c.bin")
     run(["mipsel-linux-gnu-objcopy", "-O", "binary", elf, binario])
     plano = open(binario, "rb").read()

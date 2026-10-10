@@ -70,7 +70,7 @@ def probar():
     import mapa_halloween as m
     from hoja import hoja
     from nivel_plataformas import P_SABRINA
-    sim = kart.simbolos("h_")
+    sim = kart.simbolos("h_", "build/SLUS_halloween.elf")
     a = lambda nombre: sim[nombre] & 0xFFFFFFFF
     capturas, fallos = [], []
     with Emu(iso=CUE, log="halloween.log", extra=("-fastboot",), puerto=8096) as e:
