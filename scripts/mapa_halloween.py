@@ -332,6 +332,7 @@ def escribir_h(ruta):
         f.write("static const s16 hw_portal[HW_ZONAS][3] = {" + ", ".join(
             "{%d, %d, %d}" % (z["portal"] or (0, 0, 0)) for z in zonas) + "};\n")
         f.write(f"#define HW_JEFE_X {JEFE[0]}\n#define HW_JEFE_Z {JEFE[1]}\n")
+        f.write(f"#define HW_DULCES_TOTAL {sum(len(z['dulces']) for z in zonas)}\n")
 
 
 if __name__ == "__main__":

@@ -97,3 +97,4 @@ static const char *const hw_nombre[HW_ZONAS] = {"EL CEMENTERIO DE GREENDALE", "L
 static const s16 hw_portal[HW_ZONAS][3] = {{512, 0, -3200}, {1984, 0, 6976}, {8704, 0, -1024}, {14336, -3000, -2560}, {0, 0, 0}};
 #define HW_JEFE_X 8192
 #define HW_JEFE_Z 6144
+#define HW_DULCES_TOTAL 28

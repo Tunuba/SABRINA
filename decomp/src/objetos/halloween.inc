@@ -59,6 +59,7 @@ typedef struct {
     s32 x, y, z, cx, cy, cz, t, vivo;
     void *nodo;
     s32 pausa;
+    s32 sale;                        /* pasos que le quedan de salir de la tumba (fantasmas y esqueletos suben del suelo) */
 } HBicho;
 
 static s32 h_fase, h_zona, h_pasos, h_tiempo, h_vbl, h_avisos_t, h_juntadas, h_derrotados, h_portal;
@@ -144,6 +145,7 @@ static void __attribute__((noinline)) h_preparar(HBicho *b, const s16 *q, s32 n,
         b->vivo = i < n;
         b->t = i * paso;
         b->pausa = 0;
+        b->sale = H_SEG;
     }
 }
 
@@ -278,6 +280,7 @@ static s32 h_deshacer(HBicho *b) {
 static void h_revivir(HBicho *b) {
     if (!b->vivo && b->t > 0 && --b->t == 0) {
         b->vivo = 1;
+        b->sale = H_SEG;
         b->x = b->cx;
         b->y = b->cy;
         b->z = b->cz;
@@ -361,6 +364,10 @@ static void __attribute__((noinline)) h_fantasmas(Objeto *o, Objeto *s) {
             a = h_ir(b, b->cx, b->cz, 12);
         }
         b->y = b->cy - 40 - ((rsin(b->t * 90) * 60) >> 12);
+        if (b->sale > 0) {
+            b->sale--;
+            b->y += b->sale * 12;          /* sale de la tumba */
+        }
         h_colocar(b->nodo, b->x, b->y, b->z, a, 0x1000, 0x1000, 0x1000);
         if (h_toca(s, b->x, b->y, b->z, 190) && b->pausa == 0) {
             h_golpe(o, s, b->x, b->z);
@@ -448,6 +455,10 @@ static void __attribute__((noinline)) h_esqueletos(Objeto *o, Objeto *s) {
         a = h_ir_n(b, c ? sx : b->cx, c ? sz : b->cz, 10, 1);
         c = (rsin(b->t * 160) * 22) >> 12;
         b->y = b->cy - (c < 0 ? -c : c);
+        if (b->sale > 0) {
+            b->sale--;
+            b->y += b->sale * 16;          /* se levanta del suelo */
+        }
         h_colocar(b->nodo, b->x, b->y, b->z, a + ((rsin(b->t * 80) * 90) >> 12), 0x1000, 0x1000, 0x1000);
         if (h_toca(s, b->x, b->y, b->z, 200) && b->pausa == 0) {
             h_golpe(o, s, b->x, b->z);
@@ -575,6 +586,13 @@ static void __attribute__((noinline)) h_jefe(Objeto *o, Objeto *s) {
                 h_avisar("FANTASMAS, A ELLA!", 2 * H_SEG);
             }
             if (h_rey_vida <= 0) {
+                /* con el rey se deshacen todos sus monstruos, y ya no vuelven */
+                for (i = 0; i < HW_MAX_FANTASMAS; i++) {
+                    h_fan[i].vivo = h_fan[i].t = 0;
+                }
+                for (i = 0; i < HW_MAX_ESQUELETOS; i++) {
+                    h_esq[i].vivo = h_esq[i].t = 0;
+                }
                 h_rey.vivo = 0;
                 h_derrotados++;
                 h_fase = H_FIN;
@@ -811,7 +829,9 @@ static void __attribute__((noinline)) h_pantalla(void) {
     }
     if (h_fase == H_FIN) {
         ImprimirDepuracion("\n   * * *  FELIZ HALLOWEEN, SABRINA!  * * *\n\n   DESHICISTE AL REY CALABAZA Y A %d MONSTRUOS\n"
-                           "   Y JUNTASTE %d DULCES\n", h_derrotados, h_dulces);
+                           "   Y JUNTASTE %d DE %d DULCES\n   RANGO: %s\n", h_derrotados, h_dulces, HW_DULCES_TOTAL,
+                           h_dulces >= HW_DULCES_TOTAL && h_tiempo < 8 * 60 * H_VBL ? "BRUJA SUPREMA!" :
+                           h_dulces * 3 >= HW_DULCES_TOTAL * 2 ? "BRUJA EXPERTA" : "APRENDIZ DE BRUJA");
         h_imprimir_tiempo("   EN ", h_tiempo);
         if (h_pasos > 3 * H_SEG) {
             ImprimirDepuracion("\n\n\n\n\n\n\n\n\n\n          X O SELECT: OTRA NOCHE DE BRUJAS\n");
