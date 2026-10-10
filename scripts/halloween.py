@@ -116,8 +116,10 @@ def probar():
                 foto(f"z{z + 1}_d_portal")
                 llevar(px, py, pz)
                 e.esperar(30)
-        # el jefe: ocho cristales que le pegan
-        for golpe in range(8):
+        # el jefe: cristales que le pegan hasta deshacerlo (con la segunda fase alguno se lo lleva un fantasma)
+        for golpe in range(16):
+            if leer("h_fase") == 3:
+                break
             e.esperar(20)
             x, y, z = (leer("h_rey") + 0, kart.leer(e, a("h_rey") + 4), kart.leer(e, a("h_rey") + 8))
             e.eval(f"wr32({a('h_zap_t')},10) wr32({a('h_zap_x')},{x & 0xFFFFFFFF}) "

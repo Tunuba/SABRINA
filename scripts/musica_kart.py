@@ -4,8 +4,9 @@ del pueblo (la pista 3 del CD, MUSHUBLV), con el mismo tamano exacto.
 Como en los juegos de PS1 (un banco VAB y una secuencia), cada instrumento es una muestra de los bancos de sonido del
 juego (SOUND\\*\\*.VBD, sacadas con vab.py) tocada a otra altura cambiando su velocidad. Casi todas las muestras son
 efectos que deslizan el tono; se usan las dos que se quedan quietas (medidas con un analisis de picos por ventana):
-  E1W_043 (Egipto, 361.4 Hz)        bajo (dos octavas abajo) y arpegio
-  C1W_015 (Caos, 501 Hz, sin los primeros 0.48 s que suben)   melodia y colchon
+  E1W_043 (Egipto, 361.6 Hz, sin los primeros 0.06 s que suben)   bajo (dos octavas abajo) y arpegio
+  C1W_015 (Caos, 493 Hz, sin los primeros 0.48 s que suben)        melodia y colchon
+(los tonos medidos con un pico parabolico sobre toda la parte quieta de cada muestra)
 y para la bateria, golpes cortos: S1W_043 muy grave como bombo, W1W_042 de caja, W1W_045 agudo de platillo cerrado y
 J1W_046 de platillo. Reverberacion simple (como la de la SPU) y un limitador al final.
 
@@ -118,10 +119,10 @@ def componer():
     print(f"{largo:.3f} s de musica, {60 / negra:.2f} BPM")
     m = Mezcla(largo)
 
-    arpa = Instrumento("E1W_043", 361.4, ataque=0.002, suelta=0.05)
-    bajo = Instrumento("E1W_043", 361.4, ataque=0.003, suelta=0.04, filtro=900)
-    voz = Instrumento("C1W_015", 501.0, desde=0.48, ataque=0.012, suelta=0.08)
-    colchon = Instrumento("C1W_015", 501.0, desde=0.48, ataque=0.25, suelta=0.3)
+    arpa = Instrumento("E1W_043", 361.6, desde=0.06, ataque=0.002, suelta=0.05)
+    bajo = Instrumento("E1W_043", 361.6, desde=0.06, ataque=0.003, suelta=0.04, filtro=900)
+    voz = Instrumento("C1W_015", 493.0, desde=0.48, ataque=0.012, suelta=0.08)
+    colchon = Instrumento("C1W_015", 493.0, desde=0.48, ataque=0.25, suelta=0.3)
     bombo = Instrumento("S1W_043", 1000.0, ataque=0.001, suelta=0.03, filtro=500)
     caja = Instrumento("W1W_042", 1000.0, ataque=0.001, suelta=0.04)
     hat = Instrumento("W1W_045", 1000.0, ataque=0.001, suelta=0.02)

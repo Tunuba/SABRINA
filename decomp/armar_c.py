@@ -25,7 +25,11 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 os.chdir(AQUI)
 CC = ["mipsel-linux-gnu-gcc", "-c", "-O2", "-march=r3000", "-mabi=32", "-mno-abicalls", "-fno-pic", "-G0",
       "-fno-builtin", "-ffreestanding", "-fno-strict-aliasing", "-msoft-float", "-std=gnu89", "-w", "-fcommon",
-      "-ffunction-sections", "-fdata-sections", "-mno-check-zero-division", "-I", os.path.join(AQUI, "include")]
+      "-ffunction-sections", "-fdata-sections", "-mno-check-zero-division", "-I", os.path.join(AQUI, "include"),
+      # las cadenas en .rodata normal y no en .rodata.str (mezclables): el enlazador junta y reacomoda las mezclables y
+      # el tamano que se mide aqui antes de enlazar puede dejar fuera el cero del final de la ultima; lo que se coloque
+      # detras (una variable) lo pisaba y la cadena seguia con basura (09-10, el texto del especial de Halloween)
+      "-fno-merge-constants"]
 BASE_EXE = 0x80010000
 OFF_EXE = 0x800
 

@@ -7,7 +7,7 @@ tiene en modelos_cargados uno corrido: el modelo n de la lista es modelos_cargad
 
   13 fantasma     14 murcielago     15 calabaza (la que se junta y la saltarina)     16 manzana encantada
   17 Rey Calabaza 18 portal         20 cristal magico (el de Sabrina)                21 bola de fuego del jefe
-  22 luna
+  22 luna        23 dulce          24 vela          3 esqueleto (los 3 a 10 son los otros trajes de Sabrina)
 """
 import math
 
@@ -131,12 +131,54 @@ def luna(nodo):
     return km.como_sabrina(nodo, m, "LUNA")
 
 
+def dulce(nodo):
+    """Un caramelo envuelto (el papel a los lados en punta); halloween.inc lo hace girar y le cambia el tamano."""
+    m = Malla()
+    s = SUELO + 60
+    m.caja(-40, 40, -26, 26, s, s + 52, (255, 70, 160))                     # el caramelo
+    for lado in (-1, 1):                                                     # el papel retorcido
+        pts = [(lado * 40, -24, s + 2), (lado * 40, 24, s + 2), (lado * 40, 24, s + 50), (lado * 40, -24, s + 50),
+               (lado * 92, 0, s + 26)]
+        m.solido(pts, [(0, 1, 2, 3), (0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4)], (255, 225, 80))
+    m.caja(-41, 41, -27, -20, s + 20, s + 32, (255, 255, 255))               # la raya blanca
+    return km.como_sabrina(nodo, m, "DULCE")
+
+
+def vela(nodo):
+    """Una vela gorda con su llama (decorado: halloween.inc hace temblar la llama cambiando la escala)."""
+    m = Malla()
+    s = SUELO
+    tronco(m, 34, 30, s, s + 150, (235, 225, 200))
+    m.caja(-3, 3, -3, 3, s + 150, s + 170, NEGRO)                           # la mecha
+    tronco(m, 16, 0, s + 165, s + 225, (255, 190, 40), lados=4)             # la llama
+    return km.como_sabrina(nodo, m, "VELA")
+
+
+def esqueleto(nodo):
+    """Un esqueleto que camina hacia Sabrina: craneo con cuencas negras, costillas, brazos estirados y piernas."""
+    m = Malla()
+    s = SUELO
+    hueso, oscuro = (235, 230, 210), (20, 15, 25)
+    m.caja(-12, -4, -10, 10, s, s + 190, hueso)                             # piernas
+    m.caja(4, 12, -10, 10, s, s + 190, hueso)
+    m.caja(-40, 40, -14, 14, s + 190, s + 214, hueso)                       # cadera
+    m.caja(-6, 6, -6, 6, s + 214, s + 380, hueso)                           # columna
+    for k in range(2):                                                       # costillas
+        m.caja(-48, 48, -16, 16, s + 260 + 50 * k, s + 280 + 50 * k, hueso)
+    m.caja(-90, -48, -8, 120, s + 340, s + 356, hueso)                      # brazos hacia delante
+    m.caja(48, 90, -8, 120, s + 340, s + 356, hueso)
+    m.caja(-44, 44, -40, 44, s + 380, s + 470, hueso)                       # craneo
+    m.caja(-30, -8, 44, 48, s + 420, s + 446, oscuro)                       # cuencas
+    m.caja(8, 30, 44, 48, s + 420, s + 446, oscuro)
+    return km.como_sabrina(nodo, m, "ESQUELETO")
+
+
 def reemplazos(cielo):
     """Para nivel_fantasma.construir_bytes: el cielo de noche, la copia sin uso de SABdefault vacia y los modelos."""
     import nivel_plataformas as n
     return {n.INDICE_CIELO: n.nodo_cielo(cielo), 11: km.vacio,
             13: fantasma, 14: murcielago, 15: calabaza, 16: manzana, 17: rey_calabaza, 18: portal,
-            20: km.cristal, 21: bola_fuego, 22: luna}
+            20: km.cristal, 21: bola_fuego, 22: luna, 23: dulce, 24: vela, 3: esqueleto}
 
 
 if __name__ == "__main__":

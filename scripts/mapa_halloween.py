@@ -88,11 +88,19 @@ def recinto(nombre, x0, z0, x1, z1, alto, grueso=256, **kw):
     pared(nombre + "_e", x1, z0, x1 + grueso, z1, alto, **kw)
 
 
-def zona(salida, calabazas, manzanas, fantasmas=(), murcielagos=(), saltarinas=(), portal=None):
+def zona(nombre, salida, calabazas, manzanas, fantasmas=(), murcielagos=(), saltarinas=(), esqueletos=(), dulces=(),
+         farolas=(), velas=(), sustos=(), portal=None):
     """salida: donde aparece Sabrina al entrar (x, z, rumbo). No puede caer en una arista de los triangulos del suelo
-    (multiplos de 256 y sus diagonales) o Sabrina se cae a traves: por eso las salidas van corridas (+37, +53)."""
-    zonas.append(dict(salida=salida, calabazas=list(calabazas), manzanas=list(manzanas), fantasmas=list(fantasmas),
-                      murcielagos=list(murcielagos), saltarinas=list(saltarinas), portal=portal))
+    (multiplos de 256 y sus diagonales) o Sabrina se cae a traves: por eso las salidas van corridas (+37, +53).
+    Las posiciones van (x, y, z) con y hacia abajo (0 = el suelo, -500 = sobre un balcon de 500). farolas y velas son
+    decorado (calabazas encendidas y velas). sustos: (x0, z0, x1, z1, tipo, cual): al entrar Sabrina en el rectangulo
+    pasa una vez: 1 sale de golpe el fantasma 'cual' delante de ella, 2 salen los murcielagos de la chimenea y se
+    levanta el esqueleto 'cual', 3 cae del techo la calabaza saltarina 'cual'. Los monstruos de un susto esperan
+    dormidos hasta entonces. En la ultima zona los fantasmas duermen hasta que el Rey Calabaza los llama."""
+    zonas.append(dict(nombre=nombre, salida=salida, calabazas=list(calabazas), manzanas=list(manzanas),
+                      fantasmas=list(fantasmas), murcielagos=list(murcielagos), saltarinas=list(saltarinas),
+                      esqueletos=list(esqueletos), dulces=list(dulces), farolas=list(farolas), velas=list(velas),
+                      sustos=list(sustos), portal=portal))
 
 
 # ==================================================================== 1. el cementerio de Greendale
@@ -116,12 +124,57 @@ for i, (x, z) in enumerate(((-1792, 1024), (2560, 1024), (-1792, -3328), (2816, 
     pared(f"arbol{i}", x, z, x + 256, z + 256, 1000, color=MADERA_MUERTA, tex_tapa=TABLONES, tex_lado=TABLONES)
     losa(f"arbol{i}_rama", x - 384, z, x + 640, z + 256, 760, 100, color=MADERA_MUERTA, tex_tapa=TABLONES,
          tex_lado=TABLONES)
-zona((128, -896, 0x800),
+zona("EL CEMENTERIO DE GREENDALE", (128, -896, 0x800),
      calabazas=[(-1536, 0, -3200), (2048, -720, -2944), (-1152, 0, 768), (1792, 0, 1024), (-512, 0, -1792),
                 (2432, 0, -1792)],
      manzanas=[(512, 0, 1024), (-1792, 0, -768)],
      fantasmas=[(-1408, 0, -2048), (2304, 0, -1024), (-1024, 0, 1280)],
+     dulces=[(128, 0, -1536), (128, 0, -2304), (640, 0, -640), (-384, 0, 256), (1280, 0, -128), (2688, 0, 0)],
+     farolas=[(-1536, -300, -2304), (1664, -300, -2304), (-896, -300, -1280), (1024, -300, 512), (1536, -560, -2944),
+              (-896, -220, 512)],
+     velas=[(1600, 0, -2176), (2240, 0, -2176)],
      portal=(512, 0, -3200))
+
+# ==================================================================== 2. la casa del terror
+# Una casa embrujada con techo: vestibulo, biblioteca, comedor y dormitorio, con puertas entre ellos; muebles; y tres
+# sustos (el fantasma de la biblioteca, la calabaza que cae en el comedor, los murcielagos de la chimenea y el
+# esqueleto del ataud en el dormitorio).
+ZC = (-1024, 4608, 3072, 7680)
+PAPEL, MADERA_CASA = (95, 45, 55), (85, 60, 45)
+suelo("casa_suelo", *ZC, color=MADERA_CASA, tex_tapa=TABLONES)
+recinto("casa", *ZC, 900, color=PAPEL, tex_tapa=PIEDRA, tex_lado=PANELES)
+pared("casa_tabique_v1", 1024, 4608, 1280, 5888, 900, color=PAPEL, tex_lado=PANELES)
+pared("casa_tabique_v2", 1024, 6400, 1280, 7680, 900, color=PAPEL, tex_lado=PANELES)
+pared("casa_tabique_h1", -1024, 6144, -256, 6400, 900, color=PAPEL, tex_lado=PANELES)
+pared("casa_tabique_h2", 256, 6144, 1024, 6400, 900, color=PAPEL, tex_lado=PANELES)
+pared("casa_tabique_h3", 1280, 6144, 2048, 6400, 900, color=PAPEL, tex_lado=PANELES)
+pared("casa_tabique_h4", 2560, 6144, 3072, 6400, 900, color=PAPEL, tex_lado=PANELES)
+losa("casa_techo", *ZC, 1000, 100, color=(50, 35, 40), tex_tapa=TEJAS,
+     tex_lado=PANELES)
+# vestibulo: el reloj de pie
+pared("reloj_pie", -1024, 4608, -768, 4864, 700, color=(110, 80, 40), tex_tapa=TABLONES, tex_lado=PUERTA_ORO)
+# biblioteca: estanterias contra la pared y la mesa de lectura
+pared("estanteria", 1536, 4608, 2816, 4864, 700, color=(90, 60, 40), tex_tapa=TABLONES, tex_lado=PANELES)
+escalon("mesa_lectura", 2048, 5376, 2560, 5632, 200, color=(100, 70, 45), tex_tapa=TABLONES, tex_lado=TABLONES)
+# comedor: la mesa larga
+escalon("mesa_comedor", -640, 6784, 640, 7168, 220, color=(90, 55, 40), tex_tapa=TABLONES, tex_lado=TABLONES)
+# dormitorio: la cama, el ataud y la chimenea con sus brasas
+escalon("cama", 2304, 6912, 2944, 7552, 180, color=(130, 35, 45), tex_tapa=TELA_ROJA, tex_lado=TABLONES)
+escalon("ataud", 1408, 7168, 1664, 7680, 160, color=(45, 30, 30), tex_tapa=TABLONES, tex_lado=PUERTA)
+pared("chimenea", 2816, 6400, 3072, 6912, 620, color=(100, 60, 55), tex_tapa=PIEDRA, tex_lado=LADRILLO)
+escalon("brasas", 2560, 6528, 2816, 6784, 90, color=(255, 110, 20), tex_tapa=TELA_ROJA, tex_lado=ORO)
+zona("LA CASA DEL TERROR", (-512 + 37, 5376 + 53, 0x400),
+     calabazas=[(2560, 0, 5888), (0, -220, 6976), (2624, -180, 7232), (-768, 0, 4864), (1856, 0, 7424)],
+     manzanas=[(512, 0, 7424), (1536, 0, 4992)],
+     fantasmas=[(2304, 0, 5120), (-640, 0, 7360)],
+     murcielagos=[(2688, -500, 6656), (2560, -600, 6912), (2816, -450, 7168)],
+     saltarinas=[(0, 0, 6528)],
+     esqueletos=[(1536, 0, 7424), (-768, 0, 6912)],
+     dulces=[(0, 0, 5376), (512, 0, 5376), (1152, 0, 6144), (2304, 0, 6272), (-512, 0, 6656), (768, 0, 7040)],
+     farolas=[(-896, 0, 5888), (2944, -620, 6528)],
+     velas=[(-384, -220, 6976), (384, -220, 6976), (2304, -200, 5504), (-896, -700, 4736)],
+     sustos=[(1408, 4736, 2944, 6016, 1, 0), (-896, 6528, 896, 7552, 3, 0), (1408, 6528, 2944, 7552, 2, 0)],
+     portal=(1984, 0, 6976))
 
 # ==================================================================== 2. el gran salon del castillo
 Z2 = (6144, -3584, 11264, 1536)
@@ -151,9 +204,13 @@ for k, alto in enumerate((170, 340)):
 escalon("trono", 10752, -1280, 11264, -768, 260, color=(150, 40, 50), tex_tapa=TELA_ROJA, tex_lado=PUERTA_ORO)
 for k, (x, z) in enumerate(((7680, -1280), (9728, -1280))):
     losa(f"candelabro{k}", x, z, x + 512, z + 512, 1300, 80, color=(220, 180, 70), tex_tapa=ORO, tex_lado=ORO)
-zona((6656 + 37, -1024 + 53, 0x400),
+zona("EL GRAN SALON DEL CASTILLO", (6656 + 37, -1024 + 53, 0x400),
      calabazas=[(8704, -500, -3328), (6656, -500, 1280), (10496, -500, 1280), (8704, 0, -512), (11008, -260, -1024),
                 (7424, 0, 512)],
+     dulces=[(7680, 0, -1024), (8192, 0, -1024), (9216, 0, -1024), (9728, 0, -1024), (7168, -500, -3328),
+             (10240, -500, 1280)],
+     farolas=[(6400, -500, -3328), (11008, -500, -3328), (6400, -500, 1280), (11008, -500, 1280)],
+     velas=[(7936, -1300, -1024), (9984, -1300, -1024), (10880, -260, -1152), (10880, -260, -896)],
      manzanas=[(9216, 0, 0), (8192, -500, -3328)],
      fantasmas=[(8704, 0, -1536), (9728, 0, 512)],
      murcielagos=[(7680, -700, -1024), (9728, -700, -1024)],
@@ -180,8 +237,11 @@ for k in range(11):
     plataformas.append((x + 256, alto, z + 256))
 losa("torre_cima", ox + 576, oz + 576, ox + 1344, oz + 1344, 3000, 160, color=(130, 110, 60), tex_tapa=ORO,
      tex_lado=BANDA_ORO)
-zona((14336 + 37, -2560 + 53, 0x400),
+zona("LA TORRE EMBRUJADA", (14336 + 37, -2560 + 53, 0x400),
      calabazas=[(x, -a, z) for (x, a, z) in plataformas[1:11:2]],
+     dulces=[(x, -a, z) for (x, a, z) in plataformas[0:11:2]],
+     farolas=[(ox + 960, -3000, oz + 640), (ox + 640, -3000, oz + 960)],
+     velas=[(x + 150, -a, z + 150) for (x, a, z) in plataformas[2:11:3]],
      manzanas=[(plataformas[5][0], -plataformas[5][1], plataformas[5][2])],
      murcielagos=[(14336, -900, -2560), (14336, -1700, -2560), (14336, -2500, -2560), (13824, -1300, -3072)],
      portal=(ox + 960, -3000, oz + 960))
@@ -194,7 +254,12 @@ for k, (x, z) in enumerate(((6912, 4864), (8960, 4864), (6912, 6912), (8960, 691
     pared(f"pilar{k}", x, z, x + 384, z + 384, 900, color=(95, 80, 90), tex_tapa=PIEDRA, tex_lado=VETEADA)
     pared(f"brasero{k}", x + 64, z + 64, x + 320, z + 320, 120, base=900, color=(255, 120, 30), tex_tapa=TELA_ROJA,
           tex_lado=ORO)
-zona((6656 + 37, 6144 + 53, 0x400), calabazas=[], manzanas=[(7168, 0, 7680), (9216, 0, 4608), (9216, 0, 7680)])
+zona("LA MAZMORRA DEL REY CALABAZA", (6656 + 37, 6144 + 53, 0x400), calabazas=[],
+     manzanas=[(7168, 0, 7680), (9216, 0, 4608), (9216, 0, 7680)],
+     fantasmas=[(8192, 0, 5120), (8192, 0, 7168)],
+     esqueletos=[(6656, 0, 4608), (9728, 0, 7680)],
+     dulces=[(7424, 0, 5632), (8960, 0, 5632), (7424, 0, 6656), (8960, 0, 6656)],
+     farolas=[(7104, -1020, 5056), (9152, -1020, 5056), (7104, -1020, 7104), (9152, -1020, 7104)])
 JEFE = (8192, 6144)
 
 cielo = dict(cenit=[12, 6, 30], horizonte=[160, 70, 30], nadir=[20, 8, 28])   # noche con el resplandor naranja
@@ -239,8 +304,10 @@ def escribir_h(ruta):
             pts = z[puntos] + [(0, 0, 0)] * (n_max - len(z[puntos]))
             f.write("    {" + ", ".join("{%d, %d, %d}" % p for p in pts) + "},\n")
         f.write("};\n")
-    maxs = {k: max(1, max(len(z[k]) for z in zonas)) for k in ("calabazas", "manzanas", "fantasmas", "murcielagos",
-                                                                 "saltarinas")}
+    LISTAS = ("calabazas", "manzanas", "fantasmas", "murcielagos", "saltarinas", "esqueletos", "dulces", "farolas",
+              "velas")
+    maxs = {k: max(1, max(len(z[k]) for z in zonas)) for k in LISTAS}
+    max_sustos = max(1, max(len(z["sustos"]) for z in zonas))
     with open(ruta, "w", encoding="utf-8", newline="\n") as f:
         f.write("/* Generado por scripts/mapa_halloween.py: no editar a mano. El castillo de Halloween (niveles/halloween.json).\n"
                 " * Por zona: la salida (x, z, rumbo), cuantas calabazas, y las posiciones (x, y, z; y hacia abajo) de las\n"
@@ -249,10 +316,19 @@ def escribir_h(ruta):
         for k, v in maxs.items():
             f.write(f"#define HW_MAX_{k.upper()} {v}\n")
         f.write("static const s16 hw_salida[HW_ZONAS][3] = {" + ", ".join("{%d, %d, %d}" % z["salida"] for z in zonas) + "};\n")
-        for k in ("calabazas", "manzanas", "fantasmas", "murcielagos", "saltarinas"):
+        for k in LISTAS:
             f.write(f"static const u8 hw_n_{k}[HW_ZONAS] = {{" + ", ".join(str(len(z[k])) for z in zonas) + "};\n")
-        for k in ("calabazas", "manzanas", "fantasmas", "murcielagos", "saltarinas"):
+        for k in LISTAS:
             lista(f"hw_{k}", k, maxs[k])
+        f.write(f"#define HW_MAX_SUSTOS {max_sustos}\n")
+        f.write("static const u8 hw_n_sustos[HW_ZONAS] = {" + ", ".join(str(len(z["sustos"])) for z in zonas) + "};\n")
+        f.write("static const s16 hw_sustos[HW_ZONAS][HW_MAX_SUSTOS][6] = {\n")
+        for z in zonas:
+            su = z["sustos"] + [(0, 0, 0, 0, 0, 0)] * (max_sustos - len(z["sustos"]))
+            f.write("    {" + ", ".join("{%d, %d, %d, %d, %d, %d}" % t for t in su) + "},\n")
+        f.write("};\n")
+        f.write("static const char *const hw_nombre[HW_ZONAS] = {" + ", ".join('"%s"' % z["nombre"] for z in zonas) +
+                "};\n")
         f.write("static const s16 hw_portal[HW_ZONAS][3] = {" + ", ".join(
             "{%d, %d, %d}" % (z["portal"] or (0, 0, 0)) for z in zonas) + "};\n")
         f.write(f"#define HW_JEFE_X {JEFE[0]}\n#define HW_JEFE_Z {JEFE[1]}\n")
@@ -262,7 +338,8 @@ if __name__ == "__main__":
     errores, avisos = n.validar(bloques)
     print(len(bloques), "bloques; errores:", errores)
     for a in avisos:
-        print("aviso:", a)
+        if "no se alcanza" not in a:         # las zonas se unen por portales: esas son normales
+            print("aviso:", a)
     tam, maximo = medir()
     print(f"tamano del .INO (con los modelos): {tam} de {maximo} bytes ({100 * tam / maximo:.1f} %)")
     if not errores and tam <= maximo:

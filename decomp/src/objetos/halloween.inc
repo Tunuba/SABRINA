@@ -41,6 +41,9 @@ extern s32 func_80031000(void);          /* la animacion de dolor y el rato sin 
 #define H_M_CRISTAL 21
 #define H_M_FUEGO 22
 #define H_M_LUNA 23
+#define H_M_ESQUELETO 4
+#define H_M_DULCE 24
+#define H_M_VELA 25
 
 #define H_POSE_SALUDA 0x0C
 #define H_POSE_MAGIA 0x0E
@@ -59,14 +62,15 @@ typedef struct {
 static s32 h_fase, h_zona, h_pasos, h_tiempo, h_vbl, h_avisos_t, h_juntadas, h_derrotados, h_portal;
 static const char *h_aviso;
 static HBicho h_fan[HW_MAX_FANTASMAS], h_mur[HW_MAX_MURCIELAGOS], h_sal[HW_MAX_SALTARINAS], h_rey, h_fuego[3];
+static HBicho h_esq[HW_MAX_ESQUELETOS];
+static void *h_dul_nodo[HW_MAX_DULCES], *h_far_nodo[HW_MAX_FAROLAS], *h_vel_nodo[HW_MAX_VELAS];
+static u8 h_dul_tomado[HW_MAX_DULCES], h_susto_hecho[HW_MAX_SUSTOS];
+static s32 h_dulces;                 /* los dulces juntados en toda la noche */
 static void *h_cal_nodo[HW_MAX_CALABAZAS], *h_man_nodo[HW_MAX_MANZANAS], *h_portal_nodo, *h_luna_nodo;
 static void *h_cristal_nodo, *h_chispa_nodo[3];
 static u8 h_tomada[HW_MAX_CALABAZAS];
 static s16 h_man_t[HW_MAX_MANZANAS];            /* pasos para que vuelva a salir una manzana comida */
 static s32 h_zap_t, h_zap_x, h_zap_y, h_zap_z, h_zap_dir, h_boom_t, h_boom_x, h_boom_y, h_boom_z, h_rey_vida;
-
-static const char *const h_nombre_zona[HW_ZONAS] = {
-    "EL CEMENTERIO DE GREENDALE", "EL GRAN SALON DEL CASTILLO", "LA TORRE EMBRUJADA", "LA MAZMORRA DEL REY CALABAZA"};
 
 static void h_avisar(const char *texto, s32 pasos) {
     h_aviso = texto;
@@ -119,10 +123,44 @@ static void h_pose(s32 k) {
     D_8007CB70 = k;
 }
 
+/* Deja n monstruos de la tabla q (x, y, z) en su casa, vivos; los demas hasta max, fuera. paso: para que no se muevan
+ * todos a la vez. */
+static void __attribute__((noinline)) h_preparar(HBicho *b, const s16 *q, s32 n, s32 max, s32 paso) {
+    s32 i;
+
+    for (i = 0; i < max; i++, b++, q += 3) {
+        b->x = b->cx = q[0];
+        b->y = b->cy = q[1];
+        b->z = b->cz = q[2];
+        b->vivo = i < n;
+        b->t = i * paso;
+        b->pausa = 0;
+    }
+}
+
+/* Duerme a los monstruos de un susto (vivo 0 y reloj 0: no vuelven a salir solos). */
+static void h_dormir(s32 tipo, s32 cual) {
+    s32 i;
+
+    if (tipo == 1) {
+        h_fan[cual].vivo = 0;
+        h_fan[cual].t = 0;
+    } else if (tipo == 2) {
+        for (i = 0; i < HW_MAX_MURCIELAGOS; i++) {
+            h_mur[i].vivo = 0;
+            h_mur[i].t = 0;
+        }
+        h_esq[cual].vivo = 0;
+        h_esq[cual].t = 0;
+    } else if (tipo == 3) {
+        h_sal[cual].vivo = 0;
+        h_sal[cual].t = 0;
+    }
+}
+
 /* Lleva a Sabrina (y la camara) a la salida de la zona z y deja la zona como nueva. */
 static void __attribute__((noinline)) h_entrar(Objeto *o, Objeto *s, s32 z) {
     s32 i;
-    const s16 *q;
 
     h_zona = z;
     s->x = hw_salida[z][0] << 8;
@@ -140,29 +178,24 @@ static void __attribute__((noinline)) h_entrar(Objeto *o, Objeto *s, s32 z) {
     for (i = 0; i < HW_MAX_MANZANAS; i++) {
         h_man_t[i] = i < hw_n_manzanas[z] ? 0 : 0x7FFF;
     }
-    for (i = 0; i < HW_MAX_FANTASMAS; i++) {
-        q = hw_fantasmas[z][i];
-        h_fan[i].x = h_fan[i].cx = q[0];
-        h_fan[i].y = h_fan[i].cy = q[1];
-        h_fan[i].z = h_fan[i].cz = q[2];
-        h_fan[i].vivo = i < hw_n_fantasmas[z];
-        h_fan[i].t = i * 40;
+    h_preparar(h_fan, hw_fantasmas[z][0], hw_n_fantasmas[z], HW_MAX_FANTASMAS, 40);
+    h_preparar(h_mur, hw_murcielagos[z][0], hw_n_murcielagos[z], HW_MAX_MURCIELAGOS, 300);
+    h_preparar(h_sal, hw_saltarinas[z][0], hw_n_saltarinas[z], HW_MAX_SALTARINAS, 17);
+    h_preparar(h_esq, hw_esqueletos[z][0], hw_n_esqueletos[z], HW_MAX_ESQUELETOS, 23);
+    for (i = 0; i < HW_MAX_DULCES; i++) {
+        h_dul_tomado[i] = i >= hw_n_dulces[z];
     }
-    for (i = 0; i < HW_MAX_MURCIELAGOS; i++) {
-        q = hw_murcielagos[z][i];
-        h_mur[i].x = h_mur[i].cx = q[0];
-        h_mur[i].y = h_mur[i].cy = q[1];
-        h_mur[i].z = h_mur[i].cz = q[2];
-        h_mur[i].vivo = i < hw_n_murcielagos[z];
-        h_mur[i].t = i * 300;
+    /* los monstruos de un susto duermen hasta que salta; en la mazmorra los fantasmas, hasta que los llama el rey */
+    for (i = 0; i < HW_MAX_SUSTOS; i++) {
+        h_susto_hecho[i] = i >= hw_n_sustos[z];
+        if (!h_susto_hecho[i]) {
+            h_dormir(hw_sustos[z][i][4], hw_sustos[z][i][5]);
+        }
     }
-    for (i = 0; i < HW_MAX_SALTARINAS; i++) {
-        q = hw_saltarinas[z][i];
-        h_sal[i].x = h_sal[i].cx = q[0];
-        h_sal[i].y = h_sal[i].cy = q[1];
-        h_sal[i].z = h_sal[i].cz = q[2];
-        h_sal[i].vivo = i < hw_n_saltarinas[z];
-        h_sal[i].t = i * 17;
+    if (z == HW_ZONAS - 1) {
+        for (i = 0; i < HW_MAX_FANTASMAS; i++) {
+            h_fan[i].vivo = 0;
+        }
     }
     h_rey.vivo = z == HW_ZONAS - 1;
     h_rey.x = h_rey.cx = HW_JEFE_X;
@@ -180,7 +213,7 @@ static void __attribute__((noinline)) h_entrar(Objeto *o, Objeto *s, s32 z) {
     ActualizarBarraVida();
     o->estado = 0;
     func_80037278(o, s);             /* la camara, ya asentada detras de Sabrina */
-    h_avisar(h_nombre_zona[z], 3 * H_SEG);
+    h_avisar(hw_nombre[z], 3 * H_SEG);
     TocarSonido(1, 0, 0x30, 0x7F);
 }
 
@@ -352,6 +385,121 @@ static void __attribute__((noinline)) h_saltarinas(Objeto *o, Objeto *s) {
     }
 }
 
+/* Los esqueletos: caminan hacia Sabrina dando tumbos (se balancean y suben y bajan un poco a cada paso). */
+static void __attribute__((noinline)) h_esqueletos(Objeto *o, Objeto *s) {
+    s32 i, a, c, sx = s->x >> 8, sy = s->y >> 8, sz = s->z >> 8;
+    HBicho *b;
+
+    for (i = 0; i < HW_MAX_ESQUELETOS; i++) {
+        b = &h_esq[i];
+        if (b->nodo == NULL) {
+            b->nodo = h_nodo(H_M_ESQUELETO);
+        }
+        h_revivir(b);
+        if (!b->vivo || h_deshacer(b)) {
+            h_esconder(b->nodo);
+            continue;
+        }
+        b->t++;
+        c = h_caza(b) && h_toca(s, b->cx, sy, b->cz, 2600);
+        a = h_ir(b, c ? sx : b->cx, c ? sz : b->cz, 10);
+        c = (rsin(b->t * 160) * 22) >> 12;
+        b->y = b->cy - (c < 0 ? -c : c);
+        h_colocar(b->nodo, b->x, b->y, b->z, a + ((rsin(b->t * 80) * 90) >> 12), 0x1000, 0x1000, 0x1000);
+        if (h_toca(s, b->x, b->y, b->z, 200) && b->pausa == 0) {
+            h_golpe(o, s, b->x, b->z);
+            b->pausa = 2 * H_SEG;
+        }
+    }
+}
+
+/* Los sustos: al entrar Sabrina en su rectangulo, una vez por visita a la zona. */
+static void __attribute__((noinline)) h_sustos(Objeto *s) {
+    s32 i, k, sx = s->x >> 8, sz = s->z >> 8;
+    const s16 *q;
+    HBicho *b;
+
+    for (i = 0; i < HW_MAX_SUSTOS; i++) {
+        q = hw_sustos[h_zona][i];
+        if (h_susto_hecho[i] || h_fase != H_JUEGO || sx < q[0] || sx >= q[2] || sz < q[1] || sz >= q[3]) {
+            continue;
+        }
+        h_susto_hecho[i] = 1;
+        TocarSonido(1, 0, 0x12, 0x7F);
+        if (q[4] == 1) {
+            /* el fantasma sale de golpe delante de ella */
+            b = &h_fan[q[5]];
+            b->vivo = 1;
+            b->x = sx + ((rsin(s->rot[1]) * 420) >> 12);
+            b->z = sz + ((rcos(s->rot[1]) * 420) >> 12);
+            b->pausa = H_SEG;
+            h_avisar("          BUUUUU!", 2 * H_SEG);
+        } else if (q[4] == 2) {
+            for (k = 0; k < hw_n_murcielagos[h_zona]; k++) {
+                h_mur[k].vivo = 1;
+            }
+            h_esq[q[5]].vivo = 1;
+            h_avisar("MURCIELAGOS! Y ALGO SALE DEL ATAUD...", 3 * H_SEG);
+        } else {
+            /* la calabaza cae del techo justo delante */
+            b = &h_sal[q[5]];
+            b->vivo = 1;
+            b->x = sx + ((rsin(s->rot[1]) * 500) >> 12);
+            b->z = sz + ((rcos(s->rot[1]) * 500) >> 12);
+            b->pausa = H_SEG;
+            h_avisar("     CUIDADO ARRIBA!", 2 * H_SEG);
+        }
+    }
+}
+
+/* Los dulces (dan vueltas; se juntan al pasar), las calabazas encendidas del decorado (giran la cara para mirar a
+ * Sabrina) y las velas (la llama tiembla). */
+static void __attribute__((noinline)) h_adornos(Objeto *s) {
+    s32 i, a, sx = s->x >> 8, sz = s->z >> 8;
+    const s16 *q;
+
+    for (i = 0; i < HW_MAX_DULCES; i++) {
+        if (h_dul_nodo[i] == NULL) {
+            h_dul_nodo[i] = h_nodo(H_M_DULCE);
+        }
+        q = hw_dulces[h_zona][i];
+        if (h_dul_tomado[i]) {
+            h_esconder(h_dul_nodo[i]);
+            continue;
+        }
+        a = 0x1000 + ((rsin(h_pasos * 140 + i * 700) * 0x300) >> 12);
+        h_colocar(h_dul_nodo[i], q[0], q[1] - 40, q[2], h_pasos * 90 + i * 400, a, a, a);
+        if (h_fase == H_JUEGO && h_toca(s, q[0], q[1], q[2], 210)) {
+            h_dul_tomado[i] = 1;
+            h_dulces++;
+            TocarSonido(1, 0, 0x54, 0x60);
+        }
+    }
+    for (i = 0; i < HW_MAX_FAROLAS; i++) {
+        if (h_far_nodo[i] == NULL) {
+            h_far_nodo[i] = h_nodo(H_M_CALABAZA);
+        }
+        q = hw_farolas[h_zona][i];
+        if (i >= hw_n_farolas[h_zona]) {
+            h_esconder(h_far_nodo[i]);
+            continue;
+        }
+        h_colocar(h_far_nodo[i], q[0], q[1], q[2], func_8001BE8C(q[0], q[2], sx, sz), 0x1300, 0x1300, 0x1300);
+    }
+    for (i = 0; i < HW_MAX_VELAS; i++) {
+        if (h_vel_nodo[i] == NULL) {
+            h_vel_nodo[i] = h_nodo(H_M_VELA);
+        }
+        q = hw_velas[h_zona][i];
+        if (i >= hw_n_velas[h_zona]) {
+            h_esconder(h_vel_nodo[i]);
+            continue;
+        }
+        a = 0x1000 + (((h_pasos * 7 + i * 13) & 7) << 5);
+        h_colocar(h_vel_nodo[i], q[0], q[1], q[2], i * 1000, 0x1000, a, 0x1000);
+    }
+}
+
 /* El Rey Calabaza: da vueltas por la mazmorra mirando a Sabrina, cada 2.5 segundos le tira una bola de fuego que la
  * persigue (con la mitad de la vida, dos y mas rapido). Ocho cristales lo deshacen. */
 static void __attribute__((noinline)) h_jefe(Objeto *o, Objeto *s) {
@@ -373,6 +521,16 @@ static void __attribute__((noinline)) h_jefe(Objeto *o, Objeto *s) {
         if (h_pega(h_rey.x, h_rey.y - 350, h_rey.z, 420)) {
             h_explotar(h_zap_x, h_zap_y, h_zap_z);
             h_avisar(--h_rey_vida > 4 ? "  JA JA JA! ESO NO DUELE!" : "    GRRR! ME LAS PAGARAS!", H_SEG);
+            if (h_rey_vida == 4) {
+                /* segunda fase: llama a sus fantasmas, que salen de el */
+                for (i = 0; i < hw_n_fantasmas[h_zona]; i++) {
+                    h_fan[i].vivo = 1;
+                    h_fan[i].x = h_rey.x;
+                    h_fan[i].z = h_rey.z;
+                    h_fan[i].pausa = H_SEG;
+                }
+                h_avisar("FANTASMAS, A ELLA!", 2 * H_SEG);
+            }
             if (h_rey_vida <= 0) {
                 h_rey.vivo = 0;
                 h_derrotados++;
@@ -565,15 +723,15 @@ static void __attribute__((noinline)) h_pantalla(void) {
         return;
     }
     if (h_fase == H_FIN) {
-        ImprimirDepuracion("\n   * * *  FELIZ HALLOWEEN, SABRINA!  * * *\n\n   DESHICISTE AL REY CALABAZA Y A %d MONSTRUOS\n",
-                           h_derrotados);
+        ImprimirDepuracion("\n   * * *  FELIZ HALLOWEEN, SABRINA!  * * *\n\n   DESHICISTE AL REY CALABAZA Y A %d MONSTRUOS\n"
+                           "   Y JUNTASTE %d DULCES\n", h_derrotados, h_dulces);
         h_imprimir_tiempo("   EN ", h_tiempo);
         if (h_pasos > 3 * H_SEG) {
             ImprimirDepuracion("\n\n\n\n\n\n\n\n\n\n          X O SELECT: OTRA NOCHE DE BRUJAS\n");
         }
         return;
     }
-    ImprimirDepuracion("\n  NOCHE DE BRUJAS  %d. %s\n", h_zona + 1, h_nombre_zona[h_zona]);
+    ImprimirDepuracion("\n  NOCHE DE BRUJAS  %d. %s\n", h_zona + 1, hw_nombre[h_zona]);
     if (hw_n_calabazas[h_zona] > 0) {
         ImprimirDepuracion("  CALABAZAS %d/%d", h_juntadas, hw_n_calabazas[h_zona]);
     } else if (h_rey.vivo) {
@@ -582,7 +740,7 @@ static void __attribute__((noinline)) h_pantalla(void) {
             ImprimirDepuracion(i < h_rey_vida ? "#" : "-");
         }
     }
-    ImprimirDepuracion("   MONSTRUOS %d", h_derrotados);
+    ImprimirDepuracion("   DULCES %d   MONSTRUOS %d", h_dulces, h_derrotados);
     h_imprimir_tiempo("   ", h_tiempo);
     ImprimirDepuracion("\n  CUADRADO: CRISTAL MAGICO\n");
     if (h_avisos_t > 0) {
@@ -631,6 +789,7 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
         h_fase = H_JUEGO;
         h_tiempo = 0;
         h_derrotados = 0;
+        h_dulces = 0;
         h_pasos = 0;
         h_avisar("JUNTA LAS CALABAZAS Y CUIDADO CON LOS FANTASMAS!", 3 * H_SEG);
         D_8007CA50 &= ~H_X;
@@ -649,10 +808,13 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
     h_fantasmas(o, s);
     h_murcielagos(o, s);
     h_saltarinas(o, s);
+    h_esqueletos(o, s);
+    h_sustos(s);
     h_jefe(o, s);
     h_calabazas(s);
     h_manzanas(s);
     h_portal_luna(o, s);
+    h_adornos(s);
     if (h_fase == H_FIN) {
         h_fiesta();
     }
