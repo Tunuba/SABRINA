@@ -219,6 +219,8 @@ static void __attribute__((noinline)) k_empezar(Objeto *s) {
     k_pose(K_POSE_QUIETA);
 }
 
+#include "letra_grande.inc"
+
 static void k_imprimir_tiempo(const char *texto, s32 f) {
     s32 m = f / (60 * K_VBL), sg = (f / K_VBL) % 60, cs = (f % K_VBL) * 100 / K_VBL;
 
@@ -230,8 +232,10 @@ static void __attribute__((noinline)) k_pantalla_meta(void) {
     s32 i;
 
     if (k_puesto == 1) {
+        g_grande("GANASTE!", 256, 170, 255, 210, 60);
         ImprimirDepuracion("\n   * * *  GANASTE LA COPA DEL TIEMPO!  * * *\n");
     } else {
+        g_grande("SEGUNDA...", 256, 170, 180, 200, 255);
         ImprimirDepuracion("\n        SALEM GANO ESTA VEZ... LLEGASTE SEGUNDA\n");
     }
     for (i = 0; i < K_VUELTAS; i++) {
@@ -248,8 +252,11 @@ static void __attribute__((noinline)) k_pantalla_meta(void) {
 /* El texto de la pantalla. */
 static void __attribute__((noinline)) k_pantalla(void) {
     if (k_fase == K_CUENTA) {
-        ImprimirDepuracion("\n  SABRINA KART - COPA DEL TIEMPO\n  CONTRA SALEM, 3 VUELTAS\n\n\n\n\n                     %d\n",
-                           3 - k_cuadros / K_SEG);
+        static const char *const cuenta[3] = {"3", "2", "1"};
+
+        g_grande("SABRINA KART", 256, 60, 255, 140, 200);
+        g_grande(cuenta[k_cuadros / K_SEG > 2 ? 2 : k_cuadros / K_SEG], 256, 96, 255, 230, 80);
+        ImprimirDepuracion("\n\n\n\n\n\n\n\n          COPA DEL TIEMPO - CONTRA SALEM, 3 VUELTAS\n");
         return;
     }
     if (k_fase == K_META) {
@@ -274,9 +281,13 @@ static void __attribute__((noinline)) k_pantalla(void) {
     }
     ImprimirDepuracion("\n");
     if (k_aviso_t > 0) {
-        ImprimirDepuracion("\n\n\n            %s\n", k_aviso);
+        if (g_ancho(k_aviso) <= 470) {
+            g_grande(k_aviso, 256, 130, 255, 210, 60);
+        } else {
+            ImprimirDepuracion("\n\n\n            %s\n", k_aviso);
+        }
     } else if (k_fase == K_CARRERA && k_cuadros < K_SEG) {
-        ImprimirDepuracion("\n\n\n                   YA!\n");
+        g_grande("YA!", 256, 120, 120, 255, 120);
     }
 }
 
