@@ -91,11 +91,20 @@ static void *h_nodo(s32 m) {
 
 /* Pone un nodo en (x, y, z) del mundo (y hacia abajo) girado ry, con escala ex a lo ancho, ey a lo alto y ez a lo
  * largo (0x1000 = 1). */
+/* donde estaba la camara en el paso anterior (o->x, y, z de la camara, en unidades del nivel) */
+static s32 h_ojo_x, h_ojo_y, h_ojo_z;
+
 static void __attribute__((noinline)) h_colocar(void *nodo, s32 x, s32 y, s32 z, s32 ry, s32 ex, s32 ey, s32 ez) {
     s32 e[3], p[3], g[3];
 
     if (nodo == NULL) {
         return;
+    }
+    /* un modelo pegado a la camara se dibuja enorme y tapa a Sabrina (una farola del cementerio tapaba media
+     * pantalla): si la camara casi lo toca, no se dibuja ese paso */
+    if (y != H_LEJOS && x - h_ojo_x < 380 && h_ojo_x - x < 380 && z - h_ojo_z < 380 && h_ojo_z - z < 380 &&
+        y - h_ojo_y < 500 && h_ojo_y - y < 500) {
+        y = H_LEJOS;
     }
     /* escondido: el bit 0 de las banderas del nodo (+0x64) hace que el dibujo del arbol (func_800204F0) se salte el
      * nodo y lo que cuelga de el: ni un triangulo. Con escala 0 se seguian procesando todos */
@@ -916,6 +925,9 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
     if (s == NULL) {
         return;
     }
+    h_ojo_x = o->x >> 8;
+    h_ojo_y = o->y >> 8;
+    h_ojo_z = o->z >> 8;
     /* el cuadrado es del cristal magico y SELECT empieza otra noche (en este C SELECT prende la camara libre): a
      * Sabrina y a la camara no les llegan */
     D_8007CA50 &= ~(H_CUADRADO | H_SELECT);
