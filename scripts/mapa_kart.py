@@ -312,7 +312,10 @@ def cubierto(p, lado, otros):
     else:
         z = z0 - 32 if lado == "z0" else z1 + 32
         puntos = [(x, z) for x in range(x0 + 32, x1, 64)]
-    return all(any(q["x0"] <= x < q["x1"] and q["z0"] <= z < q["z1"] and q["h"] <= p["h"] for q in otros)
+    # el vecino tiene que tapar el lado entero de arriba abajo (si no, el lado no choca y se atraviesa)
+    fondo = p["h"] + p.get("prof", n.PROFUNDO)
+    return all(any(q["x0"] <= x < q["x1"] and q["z0"] <= z < q["z1"] and q["h"] <= p["h"]
+                   and q["h"] + q.get("prof", n.PROFUNDO) >= fondo for q in otros)
                for x, z in puntos)
 
 

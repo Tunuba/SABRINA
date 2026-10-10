@@ -185,10 +185,6 @@ for i in range(5):
         suelo(f"ajedrez{i}{j}", x0, z0, x0 + 1024, z0 + 1024, color=(150, 145, 160) if claro else (55, 50, 65),
               tex_tapa=MARMOL if claro else LISA)
 recinto("castillo", *Z2, 1000, color=LADRILLO_NOCHE, tex_tapa=PIEDRA, tex_lado=LADRILLO)
-# almenas sobre el muro del castillo (se ven de lejos, desde el cementerio)
-for k in range(5):
-    x = Z2[0] + 512 + 1024 * k
-    pared(f"almena_n{k}", x, Z2[1] - 256, x + 256, Z2[1], 220, base=1000, color=LADRILLO_NOCHE, tex_lado=LADRILLO)
 for k, (x, z) in enumerate(((7168, -2048), (10240, -2048), (7168, 0), (10240, 0))):
     pared(f"columna{k}", x, z, x + 384, z + 384, 1000, color=(120, 115, 135), tex_tapa=MARMOL, tex_lado=MARMOL)
 # balcon norte con su escalera al oeste, balcon sur con la suya al este
@@ -277,8 +273,11 @@ def cubierto(p, lado, otros):
     else:
         z = z0 - 32 if lado == "z0" else z1 + 32
         puntos = [(x, z) for x in range(x0 + 32, x1, 64)]
+    # el vecino tiene que tapar el lado entero de arriba abajo: empezar igual o mas arriba y llegar igual o mas abajo
+    # (un tejado que flota sobre un muro no le tapa los lados: sin ellos el muro no choca y Sabrina lo atraviesa)
+    fondo = p["h"] + p.get("prof", n.PROFUNDO)
     return all(any(q["x0"] <= x < q["x1"] and q["z0"] <= z < q["z1"] and q["h"] <= p["h"] and not q.get("techo")
-                   for q in otros) for x, z in puntos)
+                   and q["h"] + q.get("prof", n.PROFUNDO) >= fondo for q in otros) for x, z in puntos)
 
 
 for p in bloques:

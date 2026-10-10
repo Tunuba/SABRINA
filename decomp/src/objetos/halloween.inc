@@ -939,6 +939,19 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
         h_tiempo += dv > 0 && dv <= 6 ? dv : 2;
     }
     h_vbl = D_800649EC;
+    /* si cae por debajo del suelo (paso a veces en la torre, cayendo justo en una arista), un hechizo la devuelve a la
+     * entrada de la zona sin perder nada de lo juntado */
+    if (s->y > (700 << 8) && h_fase != H_TITULO) {
+        s->x = hw_salida[h_zona][0] << 8;
+        s->z = hw_salida[h_zona][1] << 8;
+        s->y = -64 << 8;
+        s->empuje_x = 0;
+        s->empuje_z = 0;
+        s->vel_y = 0;
+        o->estado = 0;
+        func_80037278(o, s);
+        h_avisar("UN HECHIZO TE DEVOLVIO", 2 * H_SEG);
+    }
     h_cristales(s, nuevo);
     h_fantasmas(o, s);
     h_murcielagos(o, s);
