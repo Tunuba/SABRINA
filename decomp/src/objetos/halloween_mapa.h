@@ -94,6 +94,7 @@ static const s16 hw_sustos[HW_ZONAS][HW_MAX_SUSTOS][6] = {
     {{0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0}},
 };
 static const char *const hw_nombre[HW_ZONAS] = {"EL CEMENTERIO DE GREENDALE", "LA CASA DEL TERROR", "EL GRAN SALON DEL CASTILLO", "LA TORRE EMBRUJADA", "LA MAZMORRA DEL REY CALABAZA"};
+static const char *const hw_lema[HW_ZONAS] = {"LOS FANTASMAS SALEN DE SUS TUMBAS...", "NO MIRES DEBAJO DE LA CAMA...", "LOS CANDELABROS TIEMBLAN SOLOS...", "SUBE HASTA LO MAS ALTO, SI TE ATREVES", "EL REY CALABAZA: NADIE SALE DE MI CASTILLO!"};
 static const s16 hw_portal[HW_ZONAS][3] = {{512, 0, -3200}, {1984, 0, 6976}, {8704, 0, -1024}, {14336, -3000, -2560}, {0, 0, 0}};
 #define HW_JEFE_X 8192
 #define HW_JEFE_Z 6144

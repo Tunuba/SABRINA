@@ -71,6 +71,7 @@ static u8 h_dul_tomado[HW_MAX_DULCES], h_susto_hecho[HW_MAX_SUSTOS];
 static s32 h_dulces;                 /* los dulces juntados en toda la noche */
 static const char *h_pista;          /* hacia donde queda la calabaza mas cercana (o el portal) */
 static s32 h_pista_m;
+static s32 h_lema_t;                 /* pasos para que salga la frase de la zona */
 static s32 h_luna[4];                /* donde va la luna respecto de Sabrina (x, y, z) y su escala; las pruebas la mueven */                /* y a cuantos metros (160 unidades = 1 m: Sabrina mide ~250) */
 static void *h_cal_nodo[HW_MAX_CALABAZAS], *h_man_nodo[HW_MAX_MANZANAS], *h_portal_nodo, *h_luna_nodo;
 static void *h_cristal_nodo, *h_chispa_nodo[3];
@@ -224,7 +225,8 @@ static void __attribute__((noinline)) h_entrar(Objeto *o, Objeto *s, s32 z) {
     ActualizarBarraVida();
     o->estado = 0;
     func_80037278(o, s);             /* la camara, ya asentada detras de Sabrina */
-    h_avisar(hw_nombre[z], 3 * H_SEG);
+    h_avisar(hw_nombre[z], 2 * H_SEG);
+    h_lema_t = 2 * H_SEG;            /* despues del nombre, la frase de la zona */
     TocarSonido(0x31, 0, 0x2A, 0x7F);              /* el del portal del juego */
 }
 
@@ -915,6 +917,9 @@ static void __attribute__((noinline)) hw_paso(Objeto *o) {
     h_pasos++;
     if (h_avisos_t > 0) {
         h_avisos_t--;
+    }
+    if (h_lema_t > 0 && --h_lema_t == 0 && h_fase == H_JUEGO) {
+        h_avisar(hw_lema[h_zona], 3 * H_SEG);
     }
     if (h_fase == H_JUEGO) {
         dv = D_800649EC - h_vbl;

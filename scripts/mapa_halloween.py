@@ -89,7 +89,7 @@ def recinto(nombre, x0, z0, x1, z1, alto, grueso=256, **kw):
 
 
 def zona(nombre, salida, calabazas, manzanas, fantasmas=(), murcielagos=(), saltarinas=(), esqueletos=(), dulces=(),
-         farolas=(), velas=(), sustos=(), portal=None):
+         farolas=(), velas=(), sustos=(), portal=None, lema=""):
     """salida: donde aparece Sabrina al entrar (x, z, rumbo). No puede caer en una arista de los triangulos del suelo
     (multiplos de 256 y sus diagonales) o Sabrina se cae a traves: por eso las salidas van corridas (+37, +53).
     Las posiciones van (x, y, z) con y hacia abajo (0 = el suelo, -500 = sobre un balcon de 500). farolas y velas son
@@ -97,7 +97,7 @@ def zona(nombre, salida, calabazas, manzanas, fantasmas=(), murcielagos=(), salt
     pasa una vez: 1 sale de golpe el fantasma 'cual' delante de ella, 2 salen los murcielagos de la chimenea y se
     levanta el esqueleto 'cual', 3 cae del techo la calabaza saltarina 'cual'. Los monstruos de un susto esperan
     dormidos hasta entonces. En la ultima zona los fantasmas duermen hasta que el Rey Calabaza los llama."""
-    zonas.append(dict(nombre=nombre, salida=salida, calabazas=list(calabazas), manzanas=list(manzanas),
+    zonas.append(dict(nombre=nombre, lema=lema, salida=salida, calabazas=list(calabazas), manzanas=list(manzanas),
                       fantasmas=list(fantasmas), murcielagos=list(murcielagos), saltarinas=list(saltarinas),
                       esqueletos=list(esqueletos), dulces=list(dulces), farolas=list(farolas), velas=list(velas),
                       sustos=list(sustos), portal=portal))
@@ -133,7 +133,7 @@ zona("EL CEMENTERIO DE GREENDALE", (128, -896, 0x800),
      farolas=[(-1536, -300, -2304), (1664, -300, -2304), (-896, -300, -1280), (1024, -300, 512), (1536, -560, -2944),
               (-896, -220, 512)],
      velas=[(1600, 0, -2176), (2240, 0, -2176)],
-     portal=(512, 0, -3200))
+     portal=(512, 0, -3200), lema="LOS FANTASMAS SALEN DE SUS TUMBAS...")
 
 # ==================================================================== 2. la casa del terror
 # Una casa embrujada con techo: vestibulo, biblioteca, comedor y dormitorio, con puertas entre ellos; muebles; y tres
@@ -174,7 +174,7 @@ zona("LA CASA DEL TERROR", (-512 + 37, 5376 + 53, 0x400),
      farolas=[(-896, 0, 5888), (2944, -620, 6528)],
      velas=[(-384, -220, 6976), (384, -220, 6976), (2304, -200, 5504), (-896, -700, 4736)],
      sustos=[(1408, 4736, 2944, 6016, 1, 0), (-896, 6528, 896, 7552, 3, 0), (1408, 6528, 2944, 7552, 2, 0)],
-     portal=(1984, 0, 6976))
+     portal=(1984, 0, 6976), lema="NO MIRES DEBAJO DE LA CAMA...")
 
 # ==================================================================== 2. el gran salon del castillo
 Z2 = (6144, -3584, 11264, 1536)
@@ -215,7 +215,7 @@ zona("EL GRAN SALON DEL CASTILLO", (6656 + 37, -1024 + 53, 0x400),
      fantasmas=[(8704, 0, -1536), (9728, 0, 512)],
      murcielagos=[(7680, -700, -1024), (9728, -700, -1024)],
      saltarinas=[(8192, 0, 0), (9984, 0, -2304)],
-     portal=(8704, 0, -1024))
+     portal=(8704, 0, -1024), lema="LOS CANDELABROS TIEMBLAN SOLOS...")
 
 # ==================================================================== 3. la torre embrujada
 Z3 = (13312, -3584, 15360, -1536)
@@ -246,7 +246,7 @@ zona("LA TORRE EMBRUJADA", (14336 + 37, -2560 + 53, 0x400),
      velas=[(x + 150, -a, z + 150) for (x, a, z) in plataformas[2:11:3]],
      manzanas=[(plataformas[5][0], -plataformas[5][1], plataformas[5][2])],
      murcielagos=[(14336, -900, -2560), (14336, -1700, -2560), (14336, -2500, -2560), (13824, -1300, -3072)],
-     portal=(ox + 960, -3000, oz + 960))
+     portal=(ox + 960, -3000, oz + 960), lema="SUBE HASTA LO MAS ALTO, SI TE ATREVES")
 
 # ==================================================================== 4. la mazmorra del Rey Calabaza
 Z4 = (6144, 4096, 10240, 8192)
@@ -261,7 +261,8 @@ zona("LA MAZMORRA DEL REY CALABAZA", (6656 + 37, 6144 + 53, 0x400), calabazas=[]
      fantasmas=[(8192, 0, 5120), (8192, 0, 7168)],
      esqueletos=[(6656, 0, 4608), (9728, 0, 7680)],
      dulces=[(7424, 0, 5632), (8960, 0, 5632), (7424, 0, 6656), (8960, 0, 6656)],
-     farolas=[(7104, -1020, 5056), (9152, -1020, 5056), (7104, -1020, 7104), (9152, -1020, 7104)])
+     farolas=[(7104, -1020, 5056), (9152, -1020, 5056), (7104, -1020, 7104), (9152, -1020, 7104)],
+     lema="EL REY CALABAZA: NADIE SALE DE MI CASTILLO!")
 JEFE = (8192, 6144)
 
 cielo = dict(cenit=[12, 6, 30], horizonte=[160, 70, 30], nadir=[20, 8, 28])   # noche con el resplandor naranja
@@ -330,6 +331,8 @@ def escribir_h(ruta):
             f.write("    {" + ", ".join("{%d, %d, %d, %d, %d, %d}" % t for t in su) + "},\n")
         f.write("};\n")
         f.write("static const char *const hw_nombre[HW_ZONAS] = {" + ", ".join('"%s"' % z["nombre"] for z in zonas) +
+                "};\n")
+        f.write("static const char *const hw_lema[HW_ZONAS] = {" + ", ".join('"%s"' % z["lema"] for z in zonas) +
                 "};\n")
         f.write("static const s16 hw_portal[HW_ZONAS][3] = {" + ", ".join(
             "{%d, %d, %d}" % (z["portal"] or (0, 0, 0)) for z in zonas) + "};\n")
