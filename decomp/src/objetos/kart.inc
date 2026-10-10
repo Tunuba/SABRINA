@@ -49,9 +49,9 @@ extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 #define K_VEL_ATRAS -1800
 #define K_ACELERA 150
 #define K_FRENA 380
-#define K_LEJOS 6000                 /* "escondido": k_colocar lo deja con escala 0 (todos sus triangulos en un punto: la
-                                      * PS1 no dibuja nada). Bajarlo lejos no servia: la GTE recorta la posicion en
-                                      * pantalla y el modelo salia gigante pegado al borde de abajo */
+#define K_LEJOS 6000                 /* "escondido": k_colocar prende el bit de no dibujar del nodo. Bajarlo lejos no
+                                      * servia: la GTE recorta la posicion en pantalla y el modelo salia gigante pegado
+                                      * al borde de abajo */
 
 /* modelos_cargados va uno corrido: el modelo n de la lista del .INO es el n + 1 */
 #define K_MODELO_RIVAL 18            /* 17 FashionDiva -> el kart de Salem */
@@ -138,12 +138,14 @@ static void __attribute__((noinline)) k_colocar(void *nodo, s32 x, s32 y, s32 z,
     if (nodo == NULL) {
         return;
     }
+    /* escondido: el bit 0 de las banderas del nodo (+0x64): el dibujo del arbol se lo salta entero */
     if (y == K_LEJOS) {
-        y = 0;
-        ex = 0;
+        ((u8 *)nodo)[0x64] |= 1;
+        return;
     }
+    ((u8 *)nodo)[0x64] &= ~1;
     e[0] = ex;
-    e[1] = ex ? 0x1000 : 0;
+    e[1] = 0x1000;
     e[2] = ex;
     p[0] = x << 8;
     p[1] = y << 8;

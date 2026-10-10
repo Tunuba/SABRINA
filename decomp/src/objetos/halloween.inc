@@ -28,9 +28,9 @@ extern s32 func_80031000(void);          /* la animacion de dolor y el rato sin 
 #define H_SELECT 0x100
 #define H_SEG 28                     /* pasos del juego por segundo (medido en el kart) */
 #define H_VBL 60
-#define H_LEJOS 6000                 /* "escondido": h_colocar lo deja con escala 0 (todos sus triangulos en un punto: la
-                                      * PS1 no dibuja nada). Bajarlo lejos no servia: la GTE recorta la posicion en
-                                      * pantalla y el modelo salia gigante pegado al borde de abajo */
+#define H_LEJOS 6000                 /* "escondido": h_colocar prende el bit de no dibujar del nodo. Bajarlo lejos no
+                                      * servia: la GTE recorta la posicion en pantalla y el modelo salia gigante pegado
+                                      * al borde de abajo */
 #define H_VIDA 20                    /* la vida llena del juego (func_800300C4 no pasa de 20) */
 
 /* modelos_cargados va uno corrido: el modelo n de la lista del .INO es el n + 1 */
@@ -97,10 +97,13 @@ static void __attribute__((noinline)) h_colocar(void *nodo, s32 x, s32 y, s32 z,
     if (nodo == NULL) {
         return;
     }
+    /* escondido: el bit 0 de las banderas del nodo (+0x64) hace que el dibujo del arbol (func_800204F0) se salte el
+     * nodo y lo que cuelga de el: ni un triangulo. Con escala 0 se seguian procesando todos */
     if (y == H_LEJOS) {
-        y = 0;
-        ex = ey = ez = 0;
+        ((u8 *)nodo)[0x64] |= 1;
+        return;
     }
+    ((u8 *)nodo)[0x64] &= ~1;
     e[0] = ex;
     e[1] = ey;
     e[2] = ez;
