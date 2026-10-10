@@ -115,6 +115,36 @@ La pista la genera `scripts\mapa_kart.py`, el carrito `scripts\kart_modelo.py`, 
 descompilado (`decomp\src\objetos\kart.inc`, compilado dentro de la camara con `SABRINA_KART`). Hace falta WSL con
 el compilador (`.\arrancar.ps1 -Taller`) para armarlo la primera vez; `python scripts\kart.py armar` lo rehace.
 
+### SABRINA, NOCHE DE BRUJAS EN EL CASTILLO (el especial de Halloween)
+
+`SABRINA_HALLOWEEN.bat` abre un especial de Halloween hecho sobre el juego tal cual: Sabrina camina, corre y salta
+como siempre y la camara es la del juego. Son cinco zonas, cada una como un mini nivel; en cada una hay que juntar las
+calabazas (al tenerlas todas se abre el portal a la siguiente) mientras salen los monstruos:
+
+1. **El cementerio de Greendale**: lapidas, la cripta, arboles muertos y la reja. Fantasmas.
+2. **La casa del terror**: vestibulo, biblioteca, comedor y dormitorio, con techo y muebles. Cuidado con los sustos al
+   entrar en cada cuarto: un fantasma que sale de golpe, una calabaza que cae del techo, murcielagos de la chimenea y
+   un esqueleto que se levanta del ataud.
+3. **El gran salon del castillo**: suelo de ajedrez, columnas, balcones con escaleras y candelabros. Fantasmas,
+   murcielagos y calabazas saltarinas.
+4. **La torre embrujada**: plataformas en espiral hasta lo alto. Murcielagos.
+5. **La mazmorra del Rey Calabaza**: el jefe flota por la sala tirando bolas de fuego que persiguen; a media vida
+   llama a sus fantasmas. Ocho cristales lo deshacen.
+
+| Boton (teclado) | Que hace |
+|---|---|
+| Flechas, X | Caminar, correr y saltar (como en el juego) |
+| Cuadrado (Z) | Lanzar el cristal magico: deshace a los monstruos |
+| X en la portada | Empezar |
+| SELECT | Volver a empezar la noche |
+
+Las **manzanas encantadas** curan, los **dulces** suman puntos, las calabazas encendidas del decorado giran la cara
+para mirarte y arriba sale hacia donde queda la calabaza mas cercana (o el portal). Si te quedas sin vida, vuelves a
+empezar la zona. La musica es de terror y esta hecha con los sonidos del juego (`scripts\musica_halloween.py`).
+Lo arman `scripts\mapa_halloween.py` (las zonas), `scripts\halloween_modelos.py` (los monstruos) y
+`decomp\src\objetos\halloween.inc` (el juego, `SABRINA_HALLOWEEN`); `python scripts\halloween.py armar` lo rehace y
+`python scripts\halloween.py probar` juega una partida entera sin ventana y dice si algo falla.
+
 ### Camara libre
 
 SELECT la prende y la apaga. Prendida, el mando no mueve a Sabrina y la camara vuela: flechas arriba/abajo

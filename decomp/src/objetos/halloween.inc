@@ -293,15 +293,49 @@ static s32 h_caza(HBicho *b) {
     return h_fase == H_JUEGO;
 }
 
-/* Mueve b hacia (x, z) a lo sumo v por paso y devuelve hacia donde mira. */
-static s32 __attribute__((noinline)) h_ir(HBicho *b, s32 x, s32 z, s32 v) {
-    s32 dx = x - b->x, dz = z - b->z, d = (dx < 0 ? -dx : dx) + (dz < 0 ? -dz : dz);
+/* Si el paso de (ax, az) a (bx, bz), a la altura del pecho de alguien parado en y, choca con el nivel. La camara corre
+ * ignorando casi todos los tipos de triangulo (D_8007CBD4): para esta prueba, ninguno. */
+static s32 __attribute__((noinline)) h_choca(s32 ax, s32 az, s32 bx, s32 bz, s32 y) {
+    s32 r, antes = D_8007CBD4;
+
+    D_8007CBD4 = 0;
+    D_800C6594[0] = ax << 8;
+    D_800C6594[1] = (y - 140) << 8;
+    D_800C6594[2] = az << 8;
+    D_800C65A0[0] = bx << 8;
+    D_800C65A0[1] = (y - 140) << 8;
+    D_800C65A0[2] = bz << 8;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    r = func_8003AE84() != 0;
+    D_8007CBD4 = antes;
+    return r;
+}
+
+/* Mueve b hacia (x, z) a lo sumo v por paso y devuelve hacia donde mira. Los que caminan (esqueletos, calabazas
+ * saltarinas) chocan con las paredes y los muebles: si el paso choca, prueban de lado (solo en x o solo en z). */
+static s32 __attribute__((noinline)) h_ir_n(HBicho *b, s32 x, s32 z, s32 v, s32 camina) {
+    s32 dx = x - b->x, dz = z - b->z, d = (dx < 0 ? -dx : dx) + (dz < 0 ? -dz : dz), px, pz;
 
     if (d > v) {
-        b->x += dx * v / d;
-        b->z += dz * v / d;
+        px = dx * v / d;
+        pz = dz * v / d;
+        if (camina && h_choca(b->x, b->z, b->x + px * 4, b->z + pz * 4, b->cy)) {
+            if (!h_choca(b->x, b->z, b->x + px * 4, b->z, b->cy)) {
+                pz = 0;
+            } else if (!h_choca(b->x, b->z, b->x, b->z + pz * 4, b->cy)) {
+                px = 0;
+            } else {
+                px = pz = 0;
+            }
+        }
+        b->x += px;
+        b->z += pz;
     }
     return func_8001BE8C(0, 0, dx, dz);
+}
+
+static s32 h_ir(HBicho *b, s32 x, s32 z, s32 v) {
+    return h_ir_n(b, x, z, v, 0);
 }
 
 /* Los monstruos de la zona: los fantasmas flotan y persiguen a Sabrina si esta cerca (si no, vuelven a su tumba); los
@@ -383,7 +417,7 @@ static void __attribute__((noinline)) h_saltarinas(Objeto *o, Objeto *s) {
         }
         b->t++;
         c = h_caza(b) && h_toca(s, b->cx, sy, b->cz, 2600);
-        h_ir(b, c ? sx : b->cx, c ? sz : b->cz, 18);
+        h_ir_n(b, c ? sx : b->cx, c ? sz : b->cz, 18, 1);
         a = (rsin(b->t * 130) * 230) >> 12;
         b->y = b->cy - (a < 0 ? -a : a);
         h_colocar(b->nodo, b->x, b->y, b->z, func_8001BE8C(b->x, b->z, sx, sz), 0x1800, 0x1800, 0x1800);
@@ -411,7 +445,7 @@ static void __attribute__((noinline)) h_esqueletos(Objeto *o, Objeto *s) {
         }
         b->t++;
         c = h_caza(b) && h_toca(s, b->cx, sy, b->cz, 2600);
-        a = h_ir(b, c ? sx : b->cx, c ? sz : b->cz, 10);
+        a = h_ir_n(b, c ? sx : b->cx, c ? sz : b->cz, 10, 1);
         c = (rsin(b->t * 160) * 22) >> 12;
         b->y = b->cy - (c < 0 ? -c : c);
         h_colocar(b->nodo, b->x, b->y, b->z, a + ((rsin(b->t * 80) * 90) >> 12), 0x1000, 0x1000, 0x1000);
