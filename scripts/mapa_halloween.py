@@ -237,11 +237,13 @@ for k in range(11):
     plataformas.append((x + PELDANO // 2, alto, z + PELDANO // 2))
 losa("torre_cima", ox + PELDANO, oz + PELDANO, ox + 1344, oz + 1344, 3000, 160, color=(130, 110, 60), tex_tapa=ORO,
      tex_lado=BANDA_ORO)
+# abajo, el caldero de la bruja con su pocion verde burbujeando (se puede pisar: es un escalon de 200)
+escalon("caldero", 14720, -2304, 15104, -1920, 200, color=(35, 30, 40), tex_tapa=HIERBA, tex_lado=PIEDRA)
 zona("LA TORRE EMBRUJADA", (14336 + 37, -2560 + 53, 0x400),
      calabazas=[(x, -a, z) for (x, a, z) in plataformas[1:11:2]],
      dulces=[(x, -a, z) for (x, a, z) in plataformas[0:11:2]],
-     farolas=[(ox + 960, -3000, oz + 640), (ox + 640, -3000, oz + 960)],
-     velas=[(x + 150, -a, z + 150) for (x, a, z) in plataformas[2:11:3]],
+     farolas=[(ox + 960, -3000, oz + 640), (ox + 640, -3000, oz + 960), (13568, 0, -1792), (15104, 0, -3328)],
+     velas=[(x + 150, -a, z + 150) for (x, a, z) in plataformas[2:11:3]] + [(14656, 0, -2368), (15168, 0, -1856)],
      manzanas=[(plataformas[5][0], -plataformas[5][1], plataformas[5][2])],
      murcielagos=[(14336, -900, -2560), (14336, -1700, -2560), (14336, -2500, -2560), (13824, -1300, -3072)],
      portal=(ox + 960, -3000, oz + 960), lema="SUBE HASTA LO MAS ALTO, SI TE ATREVES")

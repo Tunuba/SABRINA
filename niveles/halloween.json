@@ -113,6 +113,7 @@
   {"nombre": "peldano9", "x0": 14720, "z0": -3520, "x1": 15296, "z1": -2944, "h": -2500, "color": [110, 95, 120], "prof": 120, "techo": true, "tex_tapa": 67, "tex_lado": 1, "paso": 512, "paso_lado": 512},
   {"nombre": "peldano10", "x0": 14720, "z0": -2848, "x1": 15296, "z1": -2272, "h": -2750, "color": [110, 95, 120], "prof": 120, "techo": true, "tex_tapa": 67, "tex_lado": 1, "paso": 512, "paso_lado": 512},
   {"nombre": "torre_cima", "x0": 13952, "z0": -2944, "x1": 14720, "z1": -2176, "h": -3000, "color": [130, 110, 60], "prof": 160, "techo": true, "tex_tapa": 77, "tex_lado": 70, "paso": 512, "paso_lado": 512},
+  {"nombre": "caldero", "x0": 14720, "z0": -2304, "x1": 15104, "z1": -1920, "h": -200, "color": [35, 30, 40], "tex_tapa": 81, "tex_lado": 16, "paso": 512, "paso_lado": 512, "prof": 300, "sin_lados": []},
   {"nombre": "mazmorra", "x0": 6144, "z0": 4096, "x1": 10240, "z1": 8192, "h": 0, "color": [90, 60, 60], "tex_tapa": 98, "prof": 300, "paso": 512, "paso_lado": 1024, "tex_lado": 16, "sin_lados": ["x0", "x1", "z0", "z1"]},
   {"nombre": "mazmorra_n", "x0": 5888, "z0": 3840, "x1": 10496, "z1": 4096, "h": -900, "color": [75, 60, 70], "pared": true, "prof": 1500, "tex_tapa": 16, "tex_lado": 1, "paso": 512, "paso_lado": 1024, "sin_lados": []},
   {"nombre": "mazmorra_s", "x0": 5888, "z0": 8192, "x1": 10496, "z1": 8448, "h": -900, "color": [75, 60, 70], "pared": true, "prof": 1500, "tex_tapa": 16, "tex_lado": 1, "paso": 512, "paso_lado": 1024, "sin_lados": []},

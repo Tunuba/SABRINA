@@ -1211,6 +1211,12 @@ normal ni la descompilacion: son C del juego compilado DENTRO de la camara (cama
     tejado flotando sobre un muro le quitaba los lados, el muro no chocaba y Sabrina salia de la torre. Prueba de caos
     (botones al azar por zona, contando salidas de la zona y caidas bajo el suelo): 0 y 0 despues del arreglo.
   - Esconder un modelo de mod: bit 0 de las banderas del nodo (+0x64, func_800204F0 se lo salta entero).
+  - 10-10: la prueba de caos ya es permanente: `py halloween.py caos [semilla]` (dice donde sale Sabrina y saca
+    notas/capturas/hw_caos_zN.png). El emulador no es determinista: correrla con dos o tres semillas. Encontro que
+    el salto de Sabrina llega a ~465 y con agarre sube rejas de 450: el arreglo de fondo es hw_borde (el suelo de
+    cada zona, de mapa_halloween.rectangulo_zona) que el C aplica cada paso (h_borde). Ganarle al jefe no es fallo.
+  - mapa_halloween.py y mapa_kart.py ahora salen con error si el mapa no valida (un bloque de menos de 256 de lado
+    hacia que se quedara el mapa viejo sin avisar y las pruebas daban verde con el viejo).
   - Muestras de tono quieto en los VAB: solo E1W_043 (361.6 Hz, sin los primeros 0.06 s) y C1W_015 (493 Hz, desde 0.48 s).
   - Sonidos del juego: 2/3 hechizo, 0x20/0x12 gema, 0x31 portal, 0x21 agarrar, 0x30 menu, 7/8 quejido, 1 golpe.
 - Musica comprobada DENTRO del juego: se grabo el audio del emulador (loopback con
