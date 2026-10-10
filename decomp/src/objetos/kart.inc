@@ -132,11 +132,19 @@ static void *k_nodo(s32 m) {
 }
 
 /* Pone un nodo en (x, y, z) del mundo (y hacia abajo), girado ry, con escala ex en x y z (0x1000 = 1). */
+/* donde quedo la camara en el paso anterior (en unidades del nivel; la pone k_camara) */
+static s32 k_ojo_x, k_ojo_y, k_ojo_z;
+
 static void __attribute__((noinline)) k_colocar(void *nodo, s32 x, s32 y, s32 z, s32 ry, s32 ex) {
     s32 e[3], p[3], g[3];
 
     if (nodo == NULL) {
         return;
+    }
+    /* un modelo pegado a la camara (Salem justo detras, una caja) se dibuja enorme y tapa la pista: no se dibuja */
+    if (y != K_LEJOS && x - k_ojo_x < 380 && k_ojo_x - x < 380 && z - k_ojo_z < 380 && k_ojo_z - z < 380 &&
+        y - k_ojo_y < 500 && k_ojo_y - y < 500) {
+        y = K_LEJOS;
     }
     /* escondido: el bit 0 de las banderas del nodo (+0x64): el dibujo del arbol se lo salta entero */
     if (y == K_LEJOS) {
@@ -748,6 +756,9 @@ static void __attribute__((noinline)) k_camara(Objeto *o, Objeto *s) {
     o->x = s->x - ((rsin(ang) * k_cam_d) >> 4);
     o->z = s->z - ((rcos(ang) * k_cam_d) >> 4);
     o->y = k_cam_y - (k_cam_alto << 8);
+    k_ojo_x = o->x >> 8;
+    k_ojo_y = o->y >> 8;
+    k_ojo_z = o->z >> 8;
     mx = s->x + ((rsin(ang) * delante) >> 4);
     mz = s->z + ((rcos(ang) * delante) >> 4);
     my = k_cam_y - (mira << 8);
