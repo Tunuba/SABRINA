@@ -759,6 +759,9 @@ static void __attribute__((noinline)) camara_libre(Objeto *o) {
 #ifdef SABRINA_KART
 #include "kart.inc"
 #endif
+#ifdef SABRINA_HALLOWEEN
+#include "halloween.inc"
+#endif
 
 s32 func_80035314(Objeto *o) {
     ExtraCamara *e = (ExtraCamara *)&o->extra;
@@ -779,6 +782,9 @@ s32 func_80035314(Objeto *o) {
     ((Objeto *volatile *)__builtin_frame_address(0))[-5] = o;
     func_80036250();
     func_8003630C();
+#ifdef SABRINA_HALLOWEEN
+    hw_paso(o);
+#endif
 #ifdef SABRINA_KART
     kart_paso(o);
 #else

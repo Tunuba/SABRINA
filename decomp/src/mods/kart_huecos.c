@@ -27,3 +27,23 @@ void func_80057B38(void) {}
 void func_8005A1EC(void) {}
 void func_8005B008(void) {}
 void func_8005EAD4(void) {}
+
+/* Y lo que esos objetos hacen en cada paso (su "actualizar", la primera palabra de la cabecera de su clase): solo los
+ * nombran las tablas de clases de los cinco mundos (por eso salen 5 veces en asm/data) y los iniciar de arriba. No
+ * va func_800349F0, que tambien sale asi pero es la reaparicion de Sabrina. */
+void func_80045278(void) {}
+void func_8002E51C(void) {}
+void func_80046428(void) {}
+void func_8005A360(void) {}
+void func_800528AC(void) {}
+void func_8003D5F4(void) {}
+void func_80045CF4(void) {}
+void func_8004A140(void) {}
+void func_80054894(void) {}
+void func_80055A38(void) {}
+void func_80057800(void) {}
+void func_80057CA0(void) {}
+void func_8005B150(void) {}
+void func_8003D00C(void) {}
+void func_80053ED8(void) {}
+void func_8005655C(void) {}
