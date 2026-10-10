@@ -16,6 +16,7 @@
 extern s32 D_8007C8A4;               /* pasos quieta antes de una animacion de espera */
 extern s16 D_8007CB70;               /* la animacion que debe tener el companero */
 extern void ImprimirDepuracion(const char *formato, ...);
+extern volatile s32 D_800649EC;      /* cuantas vueltas de la pantalla van (VSync) */
 extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 
 #define K_PISO(o) CAMPO_S32(o, 0x50)               /* altura del suelo bajo Sabrina */
@@ -36,13 +37,15 @@ extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 #define K_START 0x800
 
 #define K_VUELTAS 3
-#define K_SEG 50                     /* pasos del juego por segundo (medido en el emulador) */
-#define K_VEL_MAX 5600               /* rapidez punta (en unidades de empuje; Sabrina corriendo va a ~3800) */
-#define K_VEL_HIERBA 2200
-#define K_VEL_TURBO 8200
-#define K_VEL_ATRAS -1600
-#define K_ACELERA 95
-#define K_FRENA 260
+#define K_SEG 28                     /* pasos del juego por segundo: medido 28.2 en el emulador (kart.py vuelta) */
+#define K_VBL 60                     /* el cronometro va en vueltas de pantalla (VSync, 60 por segundo): no depende
+                                      * de cuantos pasos de juego caben en un segundo */
+#define K_VEL_MAX 7400               /* rapidez punta (en unidades de empuje; Sabrina corriendo va a ~3800) */
+#define K_VEL_HIERBA 2600
+#define K_VEL_TURBO 10200
+#define K_VEL_ATRAS -1800
+#define K_ACELERA 150
+#define K_FRENA 380
 
 enum { K_EMPEZAR, K_CUENTA, K_CARRERA, K_META };
 enum { K_NADA, K_TURBO, K_TRIPLE, K_RELOJ };
@@ -52,6 +55,7 @@ static s32 k_derrape, k_carga, k_turbo, k_objeto, k_usos, k_aviso_t, k_cam_y, k_
 static s16 k_rumbo, k_cam_rumbo;
 static const char *k_aviso;
 static s32 k_tiempos[K_VUELTAS];
+static s32 k_vbl;                    /* D_800649EC del paso anterior */
 
 static const char *const k_nombre_objeto[] = {"", "TURBO DE SALEM", "TRIPLE TURBO", "RELOJ DEL TIEMPO"};
 
@@ -127,7 +131,7 @@ static void __attribute__((noinline)) k_chispas(Objeto *s, s32 r, s32 g, s32 b, 
 }
 
 static void k_imprimir_tiempo(const char *texto, s32 f) {
-    s32 m = f / (60 * K_SEG), sg = (f / K_SEG) % 60, cs = (f % K_SEG) * 100 / K_SEG;
+    s32 m = f / (60 * K_VBL), sg = (f / K_VBL) % 60, cs = (f % K_VBL) * 100 / K_VBL;
 
     ImprimirDepuracion("%s%d'%d%d\"%d%d\n", texto, m, sg / 10, sg % 10, cs / 10, cs % 10);
 }
@@ -249,8 +253,8 @@ static void __attribute__((noinline)) k_conducir(Objeto *s, u32 b, u32 nuevo, s3
     /* el hechizo */
     if ((nuevo & (K_TRIANGULO | K_L1)) && k_objeto != K_NADA) {
         if (k_objeto == K_RELOJ) {
-            k_tiempo = k_tiempo > 3 * K_SEG ? k_tiempo - 3 * K_SEG : 0;
-            k_ini_vuelta = k_ini_vuelta > 3 * K_SEG ? k_ini_vuelta - 3 * K_SEG : 0;
+            k_tiempo = k_tiempo > 3 * K_VBL ? k_tiempo - 3 * K_VBL : 0;
+            k_ini_vuelta = k_ini_vuelta > 3 * K_VBL ? k_ini_vuelta - 3 * K_VBL : 0;
             k_avisar("TIEMPO -3 SEGUNDOS!", 2 * K_SEG);
             k_chispas(s, 0xFF, 0xFF, 0x80, 12);
         } else {
@@ -322,7 +326,7 @@ static void __attribute__((noinline)) k_conducir(Objeto *s, u32 b, u32 nuevo, s3
     }
     /* una pared frena */
     if (K_CONTACTO(s) & 8) {
-        k_vel -= k_vel / 6;
+        k_vel -= k_vel / 12;
     }
     /* giro: nada parado, mas fuerte derrapando, al reves en marcha atras */
     t = k_vel < 0 ? -k_vel : k_vel;
@@ -330,9 +334,9 @@ static void __attribute__((noinline)) k_conducir(Objeto *s, u32 b, u32 nuevo, s3
         t = 3000;
     }
     if (k_derrape != 0) {
-        vuelta = k_derrape * 34 + giro * 16;
+        vuelta = k_derrape * 50 + giro * 22;
     } else {
-        vuelta = giro * 30;
+        vuelta = giro * 44;
     }
     vuelta = vuelta * t / 3000;
     if (!en_suelo) {
@@ -427,7 +431,7 @@ static void __attribute__((noinline)) k_camara(Objeto *o, Objeto *s) {
 static void __attribute__((noinline)) kart_paso(Objeto *o) {
     Objeto *s = p_sabrina;
     u32 b = D_8007CA50, nuevo = D_8007CA58;
-    s32 x, z, en_suelo;
+    s32 x, z, en_suelo, dv;
 
     /* el mando es del kart: a Sabrina solo le llega START (la pausa) */
     D_8007CA50 &= K_START;
@@ -454,8 +458,11 @@ static void __attribute__((noinline)) kart_paso(Objeto *o) {
             TocarSonido(1, 0, 0x36, 0x7F);
         }
     } else if (k_fase == K_CARRERA) {
-        k_tiempo++;
+        /* lo que paso desde el paso anterior; mas de 6 vueltas de pantalla es una pausa (START) o una carga */
+        dv = D_800649EC - k_vbl;
+        k_tiempo += dv > 0 && dv <= 6 ? dv : 2;
     }
+    k_vbl = D_800649EC;
     k_conducir(s, b, nuevo, en_suelo);
     if (k_fase == K_CARRERA) {
         k_pista(s, x, z, en_suelo);

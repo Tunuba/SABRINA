@@ -7,6 +7,7 @@ El modo carrera es C del juego descompilado: decomp/src/objetos/kart.inc, que se
 Uso: python kart.py              abre el juego en la pista (arma el disco si falta)
      python kart.py armar        vuelve a armar todo: pista (mapa_kart.py), ejecutable (WSL) y disco
      python kart.py probar       lo arranca sin ventana, prueba la salida, el giro y los muros y saca capturas
+     python kart.py vuelta       sin ventana, el piloto automatico corre las 3 vueltas y avisa si se atasca
 """
 import os
 import subprocess
@@ -55,7 +56,7 @@ def armar_disco():
     import kart_modelo
     ino = n.nf.construir_bytes(n.nodo_de(plats), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True,
                                reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **(cielo or {}))),
-                                           1: kart_modelo.armar})
+                                           1: kart_modelo.armar, 11: kart_modelo.vacio})
     disco.parchar({traducir.EXE: open(EXE, "rb").read(), "GRAPHICS\\HUB\\H1W.INO": ino}, PISTA)
     disco.cue_mod(CUE, PISTA)
     # la musica del pueblo (pista 3) es la de la carrera: musica_kart.py, hecha con los sonidos del juego
@@ -115,6 +116,85 @@ def probar():
         e.captura(os.path.join(CAP, "kart_5_muro.png"))
 
 
+def simbolos():
+    """Direcciones de las variables del kart (las static de kart.inc) en el ultimo armado (decomp/build/armado_c.elf)."""
+    d = os.path.join(RAIZ, "decomp").replace("\\", "/")
+    r = subprocess.run(["wsl.exe", "-d", wsl(), "--cd", "/mnt/" + d[0].lower() + d[2:], "--", "mipsel-linux-gnu-nm",
+                        "build/armado_c.elf"], capture_output=True, text=True)
+    sim = {}
+    for linea in r.stdout.splitlines():
+        p = linea.split()
+        if len(p) == 3 and p[2].startswith("k_"):
+            sim[p[2]] = int(p[0], 16)
+    return sim
+
+
+def vuelta(vueltas=3, limite=30000):
+    """Piloto automatico sin ventana: corre la carrera entera solo con izquierda y derecha, apuntando al centro de
+    cada curva, y va diciendo vuelta, punto de control, rapidez y tiempo. Avisa si el kart se atasca (y saca una
+    captura ahi) y mide cuantos pasos del juego hay por segundo (para K_SEG). Capturas en notas/capturas/vuelta_*.png."""
+    import math
+    import mapa_kart as m
+    from nivel_plataformas import P_SABRINA
+    sim = simbolos()
+    faltan = [k for k in ("k_tiempo", "k_vuelta", "k_cp", "k_fase", "k_vel") if k not in sim]
+    if faltan:
+        sys.exit(f"no estan en armado_c.elf: {faltan}")
+    puntos = [(1024, -896), m.B, m.C, m.D, m.E, m.F, m.G, m.H, m.A]
+    with Emu(iso=CUE, log="kart_vuelta.log", extra=("-fastboot",), puerto=8096) as e:
+        recorrer(e, "kart_arranque", PASOS_HASTA_EL_HUB)
+        e.pulsar("SELECT", 4, 4)
+        s = leer(e, P_SABRINA)
+        # una URL larga hace que el servidor del emulador conteste 404: las direcciones van en una tabla de Lua aparte
+        dirs = [a & 0xFFFFFFFF for a in (s + 0x24, s + 0x2C, sim["k_tiempo"], sim["k_vuelta"], sim["k_cp"],
+                                         sim["k_fase"], sim["k_vel"])]
+        e.eval("KA={" + ",".join(map(str, dirs)) + "} return 1")
+        e.eval(f"KR={(s + 0x32) & 0xFFFFFFFF} return 1")
+        e.eval("function KK() local t={} for i,a in ipairs(KA) do t[i]=tonumber(rd32(a)) end "
+               "t[#t+1]=tonumber(rd16(KR)) return table.concat(t,',') end return 1")
+        consulta = "return KK()"
+        firmado = lambda v: v - (1 << 32) if v >= 1 << 31 else v
+        objetivo, inicio, t_inicio, ultimo, atascos = 1, None, None, [], 0
+        f0 = e.frames()
+        while e.frames() - f0 < limite:
+            x, z, t, vta, k_cp, fase, vel, rumbo = (firmado(int(float(v))) for v in e.eval(consulta).split(","))
+            x, z = x / 256, z / 256
+            if fase == 2 and inicio is None:
+                inicio, t_inicio = e.frames(), t
+            if fase == 3:
+                print(f"META en el cuadro {e.frames() - f0}: tiempo del juego {t} pasos", flush=True)
+                break
+            tx, tz = puntos[objetivo]
+            if math.hypot(tx - x, tz - z) < 1000:
+                objetivo = (objetivo + 1) % len(puntos)
+                tx, tz = puntos[objetivo]
+            quiere = math.atan2(tx - x, tz - z) * 4096 / (2 * math.pi)
+            dif = (quiere - (rumbo & 0xFFF) + 2048) % 4096 - 2048
+            boton = "RIGHT" if dif > 60 else ("LEFT" if dif < -60 else None)
+            if boton:
+                e.lua("boton", b=boton, f=4)
+            e.esperar(4)
+            ultimo.append((e.frames(), x, z))
+            if len(ultimo) > 30:
+                ultimo.pop(0)
+                if fase == 2 and math.hypot(ultimo[-1][1] - ultimo[0][1], ultimo[-1][2] - ultimo[0][2]) < 300:
+                    atascos += 1
+                    print(f"ATASCADO en ({x:.0f}, {z:.0f}) vuelta {vta} punto {k_cp}", flush=True)
+                    e.captura(os.path.join(CAP, f"vuelta_atasco{atascos}.png"))
+                    ultimo.clear()
+                    if atascos > 5:
+                        break
+            if (e.frames() - f0) % 240 < 4:
+                print(f"cuadro {e.frames() - f0:6d}  vuelta {vta} punto {k_cp} rapidez {vel:5d}  ({x:7.0f}, {z:7.0f})"
+                      f"  tiempo {t}", flush=True)
+                e.captura(os.path.join(CAP, f"vuelta_{(e.frames() - f0) // 240:03d}.png"))
+        if inicio is not None:
+            cuadros = e.frames() - inicio
+            pasos = t - t_inicio
+            print(f"pasos del juego por segundo: {pasos * 60 / max(1, cuadros):.1f} ({pasos} en {cuadros} cuadros)")
+        print("atascos:", atascos)
+
+
 if __name__ == "__main__":
     modo = sys.argv[1] if len(sys.argv) > 1 else "jugar"
     if modo == "armar":
@@ -123,6 +203,10 @@ if __name__ == "__main__":
         if not os.path.exists(CUE):
             armar()
         probar()
+    elif modo == "vuelta":
+        if not os.path.exists(CUE):
+            armar()
+        vuelta()
     elif modo == "jugar":
         if not os.path.exists(CUE):
             armar()

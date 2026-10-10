@@ -99,6 +99,14 @@ def kart():
     return m
 
 
+def vacio(nodo_original):
+    """El modelo 11 del HUB es una segunda copia de SABdefault que nadie dibuja en el kart (probado con capturas): se
+    vacia y deja sitio en el .INO para el decorado. Los nodos se quedan, sin triangulos."""
+    def vaciar(nodo):
+        return dict(nodo, tris=[], verts=[], hijos=[vaciar(h) for h in nodo["hijos"]])
+    return vaciar(nodo_original)
+
+
 def armar(nodo_original):
     """Para nivel_fantasma.construir_bytes(reemplazos={1: armar}): el arbol de SABdefault con el kart."""
     raiz = dict(nodo_original)

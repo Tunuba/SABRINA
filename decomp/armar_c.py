@@ -267,6 +267,8 @@ def main():
              [x for f in instalar for x in ("-u", "c__" + f)] + list(objs.values()))
     if r.returncode:
         sys.exit("no enlaza:\n" + r.stderr)
+    # lo enlazado se guarda con sus simbolos (las variables de un mod se leen en el emulador por su direccion)
+    open("build/armado_c.elf", "wb").write(open(elf, "rb").read())
     binario = os.path.join(tmp, "c.bin")
     run(["mipsel-linux-gnu-objcopy", "-O", "binary", elf, binario])
     plano = open(binario, "rb").read()

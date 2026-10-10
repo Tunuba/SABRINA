@@ -297,10 +297,17 @@ def agregar_bloque(verts, tris, p, profundo=PROFUNDO):
     cz = [z0 + (z1 - z0) * i // nz_ for i in range(nz_ + 1)]
     cx = [x0 + (x1 - x0) * i // nx_ for i in range(nx_ + 1)]
     # +X: cross(Y, Z) = +X   -X: cross(Z, Y) = -X   +Z: cross(X, Y) = +Z   -Z: cross(Y, X) = -Z
-    malla(verts, tris, lambda t, z: (x1, fr(yt(x1, z), t), z), ct, cz, sombra(80), tex_l, True)
-    malla(verts, tris, lambda z, t: (x0, fr(yt(x0, z), t), z), cz, ct, sombra(80), tex_l, False)
-    malla(verts, tris, lambda x, t: (x, fr(yt(x, z1), t), z1), cx, ct, sombra(100), tex_l, False)
-    malla(verts, tris, lambda t, x: (x, fr(yt(x, z0), t), z0), ct, cx, sombra(100), tex_l, True)
+    # 'sin_lados' (opcional): lados que tapa del todo un bloque vecino de la misma altura ("x0", "x1", "z0", "z1"):
+    # no se ven, gastan triangulos y su borde de arriba queda justo a la altura de los pies
+    sin = set(p.get("sin_lados", ()))
+    if "x1" not in sin:
+        malla(verts, tris, lambda t, z: (x1, fr(yt(x1, z), t), z), ct, cz, sombra(80), tex_l, True)
+    if "x0" not in sin:
+        malla(verts, tris, lambda z, t: (x0, fr(yt(x0, z), t), z), cz, ct, sombra(80), tex_l, False)
+    if "z1" not in sin:
+        malla(verts, tris, lambda x, t: (x, fr(yt(x, z1), t), z1), cx, ct, sombra(100), tex_l, False)
+    if "z0" not in sin:
+        malla(verts, tris, lambda t, x: (x, fr(yt(x, z0), t), z0), ct, cx, sombra(100), tex_l, True)
     if p.get("techo"):       # cara inferior: u = Z, v = X, cross(Z, X) = +Y (hacia abajo); el suelo la descarta
         malla(verts, tris, lambda z, x: (x, yb, z), cortes(z0, z1, paso_tapa(p)), cortes(x0, x1, paso_tapa(p)),
               sombra(90), tex_l, False)
