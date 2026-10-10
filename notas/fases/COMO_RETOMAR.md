@@ -1178,3 +1178,36 @@ igual que en "08-10 NOCHE 3" (99.4 %, 1030 de 1034): esta sesion no toco el C ni
   **91 de 91 bloques pisan a su altura, 0 fallos**, 3622 triangulos en 154 celdas; en las capturas se ve la niebla, los
   edificios apagados, los troncos y la boca roja de la mina. Falta solo que Meme lo juegue (MAPA_GREENDALE.bat) y
   diga que cambiar; si pide mas cosas, hay 8.6 K libres (unos 190 triangulos): quitar faroles o arboles si no cabe.
+
+### 09-10 NOCHE: SABRINA KART Y NOCHE DE BRUJAS (EMPIEZA AQUI)
+
+Meme pidio dos juegos sobre el de Sabrina ("como si hubiera sido un nivel del juego"): un Mario Kart y, despues ("me
+ire toda la noche, no pares, calidad"), un especial de Halloween. Los dos van en su propio disco y no tocan el juego
+normal ni la descompilacion: son C del juego compilado DENTRO de la camara (camara_g08.c) solo con un define.
+
+- **SABRINA KART** (`SABRINA_KART.bat`, `scripts/kart.py armar|probar|objetos|vuelta [ganar]|jugar`): pista
+  `scripts/mapa_kart.py` (Copa del Tiempo, cinco epocas), carrito y rival `scripts/kart_modelo.py` (la cadera de
+  SABdefault es el kart; Salem el gato en su kart verde en el modelo 17), musica `scripts/musica_kart.py` (pista 3),
+  C `decomp/src/objetos/kart.inc` (-DSABRINA_KART). Objetos tipo Mario Kart que se ven (cajas, rayo que persigue,
+  pocion, estrella, reloj, llamas), fiesta en la meta. `kart.py vuelta` corre 3 vueltas con piloto automatico.
+- **NOCHE DE BRUJAS** (`SABRINA_HALLOWEEN.bat`, `scripts/halloween.py armar|probar|jugar`): cinco zonas en
+  `scripts/mapa_halloween.py` (cementerio, casa del terror con sustos, gran salon, torre, mazmorra del Rey Calabaza),
+  monstruos `scripts/halloween_modelos.py`, musica `scripts/musica_halloween.py`, C `decomp/src/objetos/halloween.inc`
+  (-DSABRINA_HALLOWEEN; la camara del juego sigue andando). `halloween.py probar` juega la partida entera sin ventana
+  y dice FALLOS o "todo bien" (ultimo: todo bien).
+- **Espacio para el C**: `armar_c.py --huecos src/mods/kart_huecos.c` vacia los iniciar y actualizar de clases de
+  objetos de otros mundos (en estos discos no hay objetos del juego): ~22 KB. `--D` pasa el define, `--O Os`.
+  armar_c deja el .elf junto a cada exe (SLUS_kart.elf, SLUS_halloween.elf): de ahi salen las direcciones de las
+  variables (kart.simbolos).
+- **Trampas encontradas esa noche** (todas arregladas de fondo):
+  - Un bloque levantado aunque sea 64 es PARED para el kart (turbos y cintas a ras, partiendo la pista).
+  - Sabrina aparecida justo en una arista/vertice de los triangulos del suelo se cae a traves: salidas +37, +53.
+  - Esconder un modelo bajandolo lejos lo dibuja gigante pegado al borde (la GTE recorta): escala 0.
+  - El juego no dibuja modelos de objetos lejos de la camara (~4000): la luna va a ~2200.
+  - modelos_cargados va uno corrido: el modelo n de la lista del .INO es modelos_cargados[n + 1].
+  - Cadenas mezclables (.rodata.str) sin el cero final tras colocarlas: `-fno-merge-constants` en armar_c.py.
+  - La camara corre durante la intro del HUB: por eso el especial tiene portada (X empieza).
+  - Muestras de tono quieto en los VAB: solo E1W_043 (361.6 Hz, sin los primeros 0.06 s) y C1W_015 (493 Hz, desde 0.48 s).
+  - Sonidos del juego: 2/3 hechizo, 0x20/0x12 gema, 0x31 portal, 0x21 agarrar, 0x30 menu, 7/8 quejido, 1 golpe.
+- Todo commiteado en main, SIN push (preguntar a Meme antes de subir). Falta que Meme lo juegue y diga que cambiar;
+  en el .INO del especial queda ~3 KB (99 %): lo nuevo tiene que salir de quitar algo.
