@@ -56,6 +56,9 @@ extern s32 TocarSonido(s32 prog, s32 tono, s32 nota, s32 prioridad);
 #define K_MODELO_CAJA 21             /* 20 COSTUMEdefault -> la caja de hechizo */
 #define K_MODELO_POCION 22           /* 21 COSTUMEegypt -> la pocion resbalosa */
 #define K_MODELO_BOLA 23             /* 22 COSTUMEjapan -> la bola de pelo de Salem */
+#define K_MODELO_RELOJ 19            /* 18 MagicWardrobe -> el reloj del tiempo */
+#define K_MODELO_LLAMA 24            /* 23 COSTUMEstone -> las llamas de los escapes */
+#define K_MODELO_CRISTAL 25          /* 24 COSTUMEwest -> el cristal magico (el rayo y sus chispas) */
 
 /* poses de la mitad de arriba de Sabrina (indices de su tabla de animaciones, mirados con capturas) */
 #define K_POSE_QUIETA 0
@@ -90,6 +93,12 @@ static s16 k_rrumbo;
 static s32 k_caja_t[KART_NCAJAS];    /* pasos que le faltan a cada caja para volver a salir */
 static s32 k_pocion_t, k_pocion_x, k_pocion_z;   /* la pocion en la pista (k_pocion_t: pasos que lleva ahi; 0 no) */
 static s32 k_bola_t, k_bola_x, k_bola_z, k_bola_espera;
+/* lo que se ve de los hechizos: las llamas de los escapes, el reloj sobre Salem y los cristales (el 0 es el rayo que
+ * vuela persiguiendo a su blanco; los otros tres giran alrededor del kart con la estrella o saltan al pegar) */
+static void *k_llama_nodo, *k_reloj_nodo, *k_cristal_nodo[4];
+static s32 k_bala_t, k_bala_x, k_bala_z, k_bala_de;  /* el rayo: pasos que le quedan, donde va, de quien (1 o 2) */
+static s32 k_boom_t, k_boom_x, k_boom_z;            /* los cristales que saltan donde pego */
+static s32 k_salem_rayo;                            /* pasos hasta que Salem, si va detras, lance el suyo */
 
 static const char *const k_nombre_objeto[K_NOBJETOS] = {
     "", "TURBO", "TRIPLE TURBO", "RAYO DE SABRINA", "POCION RESBALOSA", "ESTRELLA MAGICA", "RELOJ DEL TIEMPO"};
@@ -192,6 +201,9 @@ static void __attribute__((noinline)) k_empezar(Objeto *s) {
     k_rhielo = 0;
     k_rspin = 0;
     k_pose_t = 0;
+    k_bala_t = 0;
+    k_boom_t = 0;
+    k_salem_rayo = 20 * K_SEG;
     for (i = 0; i < K_VUELTAS; i++) {
         k_tiempos[i] = 0;
     }
@@ -363,8 +375,12 @@ static void __attribute__((noinline)) k_hechizos(Objeto *s, u32 nuevo) {
     }
     switch (k_objeto) {
     case K_RAYO:
-        k_rgiro = 2 * K_SEG;
-        k_avisar("ZAP! SALEM DA VUELTAS", 2 * K_SEG);
+        /* sale un cristal que vuela persiguiendo a Salem (k_efectos); si lo alcanza, Salem da vueltas */
+        k_bala_de = 1;
+        k_bala_t = 6 * K_SEG;
+        k_bala_x = s->x >> 8;
+        k_bala_z = s->z >> 8;
+        k_avisar("RAYO DE SABRINA!", K_SEG);
         k_pose(K_POSE_MAGIA);
         k_pose_t = K_SEG;
         break;
@@ -418,7 +434,15 @@ static void __attribute__((noinline)) k_trampas(Objeto *s) {
             k_avisar("   RESBALASTE!", K_SEG);
         }
     }
-    k_colocar(k_pocion_nodo, k_pocion_x, k_pocion_t > 0 ? 0 : K_LEJOS, k_pocion_z, k_cuadros * 24, 0x1000);
+    if (k_pocion_t > 0) {
+        k_colocar(k_pocion_nodo, k_pocion_x, 0, k_pocion_z, k_cuadros * 24, 0x1000);
+    } else if (k_objeto == K_POCION && k_ruleta == 0) {
+        /* la que se lleva va detras del kart, como la banana de Mario Kart */
+        k_colocar(k_pocion_nodo, sx - ((rsin(k_rumbo) * 300) >> 12), s->y >> 8, sz - ((rcos(k_rumbo) * 300) >> 12),
+                  k_rumbo, 0x1000);
+    } else {
+        k_colocar(k_pocion_nodo, sx, K_LEJOS, sz, 0, 0x1000);
+    }
     /* Salem suelta una bola de pelo detras cada 10 a 20 segundos y la deja 20 segundos */
     if (k_fase == K_CARRERA && k_rgiro == 0 && k_rhielo == 0 && --k_bola_espera <= 0) {
         k_bola_x = k_rx - ((rsin(k_rrumbo) * 300) >> 12);
@@ -438,6 +462,84 @@ static void __attribute__((noinline)) k_trampas(Objeto *s) {
         }
     }
     k_colocar(k_bola_nodo, k_bola_x, k_bola_t > 0 ? 0 : K_LEJOS, k_bola_z, k_cuadros * 12, 0x1000);
+}
+
+/* Lo que se ve de los hechizos: las llamas de los escapes con el turbo, la estrella o el mini turbo cargado; el rayo
+ * (un cristal que vuela persiguiendo a Salem o, si lo lanzo Salem, a Sabrina) y los cristales que saltan al pegar;
+ * los que giran alrededor del kart con la estrella; y el reloj sobre Salem mientras esta congelado. Salem lanza su
+ * rayo cuando va detras, cada 15 a 25 segundos: es mas lento que el de Sabrina y con un turbo se le escapa. */
+static void __attribute__((noinline)) k_efectos(Objeto *s) {
+    s32 i, a, d, dx, dz, tx, tz, sx = s->x >> 8, sz = s->z >> 8, sy = s->y >> 8;
+
+    if (k_llama_nodo == NULL) {
+        k_llama_nodo = k_nodo(K_MODELO_LLAMA);
+        k_reloj_nodo = k_nodo(K_MODELO_RELOJ);
+        for (i = 0; i < 4; i++) {
+            k_cristal_nodo[i] = k_nodo(K_MODELO_CRISTAL);
+        }
+    }
+    a = (k_turbo > 0 || k_estrella > 0) ? 5734 : (k_carga >= K_SEG + K_SEG / 4 ? 3000 : 0);
+    k_colocar(k_llama_nodo, sx, a != 0 ? sy : K_LEJOS, sz, s->rot[1], (k_cuadros & 1) ? a : a * 4 / 5);
+    if (k_fase == K_CARRERA && k_bala_t == 0 && k_rgiro == 0 && k_rhielo == 0 && k_rd < k_progreso - 1500 &&
+        --k_salem_rayo <= 0) {
+        k_bala_de = 2;
+        k_bala_t = 5 * K_SEG;
+        k_bala_x = k_rx;
+        k_bala_z = k_rz;
+        k_salem_rayo = 15 * K_SEG + func_80021CE4(10 * K_SEG);
+        k_avisar("CUIDADO! SALEM TE LANZO UN RAYO", 2 * K_SEG);
+    }
+    if (k_bala_t > 0) {
+        k_bala_t--;
+        tx = k_bala_de == 1 ? k_rx : sx;
+        tz = k_bala_de == 1 ? k_rz : sz;
+        dx = tx - k_bala_x;
+        dz = tz - k_bala_z;
+        d = (dx < 0 ? -dx : dx) + (dz < 0 ? -dz : dz);
+        if (d < 260) {
+            if (k_bala_de == 1) {
+                k_rgiro = 2 * K_SEG;
+                k_avisar("ZAP! LE DISTE A SALEM", 2 * K_SEG);
+            } else if (k_estrella == 0) {
+                k_giro_t = K_SEG + K_SEG / 2;
+                k_avisar("EL RAYO DE SALEM TE DIO!", 2 * K_SEG);
+            }
+            k_boom_t = 12;
+            k_boom_x = tx;
+            k_boom_z = tz;
+            k_bala_t = 0;
+            TocarSonido(1, 0, 0x24, 0x7F);
+        } else {
+            a = k_bala_de == 1 ? 150 : 72;
+            k_bala_x += dx * a / d;
+            k_bala_z += dz * a / d;
+        }
+    }
+    k_colocar(k_cristal_nodo[0], k_bala_x, k_bala_t > 0 ? -(40 + ((rsin(k_cuadros * 200) * 40) >> 12)) : K_LEJOS,
+              k_bala_z, k_cuadros * 300, 0x1000);
+    for (i = 1; i < 4; i++) {
+        a = i * 1365 + k_cuadros * 90;
+        if (k_fase == K_CUENTA || (k_fase == K_CARRERA && k_cuadros < K_SEG)) {
+            /* el semaforo de la salida: delante de Sabrina se enciende un cristal por segundo y al YA salen volando */
+            d = k_fase == K_CARRERA ? k_cuadros * 40 : 0;
+            k_colocar(k_cristal_nodo[i], KART_SALIDA_X + 1100, (k_fase == K_CUENTA && i > k_cuadros / K_SEG + 1)
+                      ? K_LEJOS : -(120 + d), KART_SALIDA_Z + (i - 2) * 260, k_cuadros * 60, 0x1000);
+        } else if (k_boom_t > 0) {
+            d = (13 - k_boom_t) * 70;
+            k_colocar(k_cristal_nodo[i], k_boom_x + ((rsin(a) * d) >> 12), -(d / 2), k_boom_z + ((rcos(a) * d) >> 12),
+                      a * 3, 0x1000);
+        } else if (k_estrella > 0) {
+            k_colocar(k_cristal_nodo[i], sx + ((rsin(a) * 330) >> 12), sy - 60, sz + ((rcos(a) * 330) >> 12), a * 2,
+                      0x1000);
+        } else {
+            k_colocar(k_cristal_nodo[i], sx, K_LEJOS, sz, 0, 0x1000);
+        }
+    }
+    if (k_boom_t > 0) {
+        k_boom_t--;
+    }
+    k_colocar(k_reloj_nodo, k_rx, k_rhielo > 0 ? -330 : K_LEJOS, k_rz,
+              k_rumbo + 0x800 + ((rsin(k_cuadros * 90) * 120) >> 12), 0x1000);
 }
 
 /* Un paso del kart: rapidez, giro, derrape, turbos, trompos, y el empuje que se le deja a la fisica de Sabrina. */
@@ -809,6 +911,7 @@ static void __attribute__((noinline)) kart_paso(Objeto *o) {
     k_rival_paso(s);
     k_cajas(s);
     k_trampas(s);
+    k_efectos(s);
     if (k_fase == K_META) {
         k_fiesta(s, en_suelo);
     }

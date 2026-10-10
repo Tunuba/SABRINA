@@ -4,7 +4,7 @@ Un circuito cerrado de carreras hecho con los bloques del motor (nivel_plataform
 pensado como si fuera un nivel escondido de A Twitch in Time: cada tramo es una de las epocas del juego.
 
 - Recta de Greendale (la salida): marmol, la linea de meta dorada bajo el arco con el letrero, la casa Spellman con
-  su torreon detras del muro y faroles sobre los setos.
+  su torreon detras del muro.
 - Curva y recta de Egipto: arena dorada, la piramide escalonada y los obeliscos detras del muro, la puerta de
   jeroglificos sobre la pista y la cinta de hechizos.
 - El Oeste: tablones, el deposito de agua y el saloon detras del muro, cactus sobre los setos y el puente del rio
@@ -164,10 +164,6 @@ pared("torreon", 3584, -3328, 4352, -2560, alto=1600, color=(150, 120, 110), tex
 pared("torreon_punta", 3712, -3200, 4224, -2688, alto=400, base=1600, color=(110, 72, 66), tex_tapa=TEJAS,
       tex_lado=TEJAS)
 pared("porche", 2304, -2432, 3584, -2176, alto=420, color=(200, 190, 175), tex_tapa=TABLONES, tex_lado=PANELES)
-# faroles sobre el seto de la recta
-for i, x in enumerate((-1536, 1792, 5120, 7424)):
-    pared(f"farol{i}", x, A[1] + MEDIO + 128, x + 256, A[1] + MEDIO + 384, alto=420, base=MURO_H, color=(90, 85, 70),
-          tex_tapa=ORO, tex_lado=ORO)
 
 # ============================================================ Egipto: curva B y recta hacia el sur
 EGIPTO = dict(color=(170, 150, 105), tex_tapa=ORO, tex_lado=JEROGLIFOS)
@@ -261,7 +257,7 @@ def partir(p, r):
 
 
 # pianos rojos y blancos en el vertice de dentro de cada curva: la esquina del cuadro de la curva que da en diagonal
-# a un seto, y desde ahi 768 a lo largo del borde de dentro de las dos rectas que llegan
+# a un seto, y desde ahi 512 a lo largo del borde de dentro de las dos rectas que llegan
 setos = [b for b in bloques if b["nombre"].startswith("seto")]
 ROJO, BLANCO = dict(color=(220, 50, 50), tex_tapa=TELA_ROJA), dict(color=(235, 235, 235), tex_tapa=LISA)
 
@@ -288,7 +284,7 @@ for nombre in ("curva_b", "curva_c", "curva_d", "curva_e", "curva_f", "curva_g",
             bx = (cx - 256, cx) if sx > 0 else (cx, cx + 256)      # la franja de 256 de este lado del vertice
             bz = (cz - 256, cz) if sz > 0 else (cz, cz + 256)
             piano((bx[0], bz[0], bx[1], bz[1]), 0)
-            for k in range(1, 4):
+            for k in range(1, 3):
                 # por la recta que sigue en x (borde z = cz) y por la que sigue en z (borde x = cx)
                 x0 = cx + 256 * (k - 1) if sx > 0 else cx - 256 * k
                 z0 = cz + 256 * (k - 1) if sz > 0 else cz - 256 * k
@@ -339,7 +335,8 @@ def medir():
         n.nf.construir_bytes(n.nodo_de(bloques), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True, callar=True,
                              reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **cielo)),
                                          1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival,
-                                           20: kart_modelo.caja, 21: kart_modelo.pocion, 22: kart_modelo.bola})
+                                           20: kart_modelo.caja, 21: kart_modelo.pocion, 22: kart_modelo.bola,
+                                           18: kart_modelo.reloj, 23: kart_modelo.llama, 24: kart_modelo.cristal})
     except ValueError:
         pass
     return n.nf.ULTIMO["tamano"], maximo

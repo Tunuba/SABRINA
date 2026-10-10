@@ -95,13 +95,15 @@ estos; yendo segunda salen mas los fuertes:
 
 | Hechizo | Que hace |
 |---|---|
-| Turbo / Triple turbo | Un acelerón (tres usos el triple) |
-| Rayo de Sabrina | Salem da vueltas y se frena, este donde este |
-| Pocion resbalosa | Se deja atras en la pista; si Salem la pisa, resbala (y tu tambien, si vuelves a pasar) |
-| Estrella magica | 5 segundos mas rapida, sin miedo a nada; si chocas a Salem, el sale girando |
-| Reloj del tiempo | Salem se queda congelado 3 segundos |
+| Turbo / Triple turbo | Un acelerón, con llamas azules saliendo de los escapes (tres usos el triple) |
+| Rayo de Sabrina | Sale un cristal magico que vuela persiguiendo a Salem; al alcanzarlo estalla y Salem da vueltas |
+| Pocion resbalosa | Se lleva detras del kart y se suelta en la pista; si Salem la pisa, resbala (y tu tambien, si vuelves a pasar) |
+| Estrella magica | 5 segundos mas rapida, con cristales girando alrededor y llamas; si chocas a Salem, el sale girando |
+| Reloj del tiempo | Un reloj gigante aparece sobre Salem y lo deja congelado 3 segundos |
 
-Salem, por su parte, va soltando **bolas de pelo** detras de el: si pisas una, das un trompo.
+Salem, por su parte, va soltando **bolas de pelo** detras de el (si pisas una, das un trompo) y, cuando va detras, te
+lanza su propio rayo: es mas lento que el tuyo y con un turbo se le escapa. En la cuenta atras se encienden tres
+cristales delante de la salida, uno por segundo, y al YA salen volando.
 
 **La meta.** Si ganas, la camara da vueltas alrededor de Sabrina mientras ella levanta los brazos, saluda y lanza
 magia, el kart salta y gira y las cajas de hechizo vuelan alrededor como fuegos artificiales. Si gana Salem, Sabrina

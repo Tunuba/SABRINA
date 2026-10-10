@@ -219,6 +219,53 @@ def bola(nodo_original):
     return como_sabrina(nodo_original, m, "BOLApelo")
 
 
+def prisma(m, r, y0, y1, color, lados=6, cz=0.0):
+    """Un prisma de 'lados' caras con el eje en y (de y0 a y1), centrado en x = 0, z = cz."""
+    pts = [(r * math.cos(2 * math.pi * (i + 0.5) / lados), y, cz + r * math.sin(2 * math.pi * (i + 0.5) / lados))
+           for y in (y0, y1) for i in range(lados)]
+    caras = [list(range(lados)), list(range(lados, 2 * lados))]
+    caras += [(i, (i + 1) % lados, lados + (i + 1) % lados, lados + i) for i in range(lados)]
+    m.solido(pts, caras, color)
+
+
+def piramide(m, base, punta, r, color):
+    """Una piramide de base cuadrada (en el plano x-z, a la altura y de 'base') que apunta a 'punta'."""
+    bx, by, bz = base
+    pts = [(bx - r, by, bz - r), (bx + r, by, bz - r), (bx + r, by, bz + r), (bx - r, by, bz + r), punta]
+    m.solido(pts, [(0, 1, 2, 3), (0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4)], color)
+
+
+def llama(nodo_original):
+    """Modelo 23 (COSTUMEstone): las llamas de los escapes del kart (turbo, mini turbo, estrella). En ejes de la cadera,
+    como el kart: kart.inc la pone donde Sabrina, con su giro y su escala, y la estira o la esconde."""
+    m = Malla()
+    for x in (-29, 29):
+        piramide(m, (x, -150, -168), (x, -330, -168), 20, (90, 150, 255))     # azul por fuera
+        piramide(m, (x, -152, -168), (x, -245, -168), 10, (235, 245, 255))    # blanca por dentro
+    return como_sabrina(nodo_original, m, "LLAMAturbo")
+
+
+def cristal(nodo_original):
+    """Modelo 24 (COSTUMEwest): el cristal magico dorado: el rayo de Sabrina (y el de Salem), los tres que giran
+    alrededor del kart con la estrella y los que saltan al pegar. Un octaedro alargado, centrado en la cadera."""
+    m = Malla()
+    pts = [(0, 0, 70), (0, 0, -70), (34, 0, 0), (-34, 0, 0), (0, 34, 0), (0, -34, 0)]
+    caras = [(0, 2, 4), (0, 4, 3), (0, 3, 5), (0, 5, 2), (1, 4, 2), (1, 3, 4), (1, 5, 3), (1, 2, 5)]
+    m.solido(pts, caras, (255, 215, 70))
+    return como_sabrina(nodo_original, m, "CRISTALmagico")
+
+
+def reloj(nodo_original):
+    """Modelo 18 (MagicWardrobe): el reloj del tiempo que flota sobre Salem mientras esta congelado: esfera crema, el
+    borde dorado detras y las dos agujas; mira hacia y (kart.inc lo gira hacia Sabrina)."""
+    m = Malla()
+    prisma(m, 120, -14, 14, (220, 180, 60))                    # el borde dorado
+    prisma(m, 100, 14, 26, (245, 235, 205))                    # la esfera
+    m.caja(-6, 6, 26, 32, -10, 80, (30, 25, 35))               # aguja larga (las 12)
+    m.caja(-6, 55, 26, 32, -6, 6, (30, 25, 35))                # aguja corta (las 3)
+    return como_sabrina(nodo_original, m, "RELOJtiempo")
+
+
 def vacio(nodo_original):
     """El modelo 11 del HUB es una segunda copia de SABdefault que nadie dibuja en el kart (probado con capturas): se
     vacia y deja sitio en el .INO para el decorado. Los nodos se quedan, sin triangulos."""

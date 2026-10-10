@@ -8,6 +8,7 @@ Uso: python kart.py              abre el juego en la pista (arma el disco si fal
      python kart.py armar        vuelve a armar todo: pista (mapa_kart.py), ejecutable (WSL) y disco
      python kart.py probar       lo arranca sin ventana, prueba la salida, el giro y los muros y saca capturas
      python kart.py vuelta       sin ventana, el piloto automatico corre las 3 vueltas y avisa si se atasca
+     python kart.py objetos      sin ventana, usa cada hechizo y saca capturas de lo que se ve
      python kart.py vuelta ganar lo mismo con Salem congelado, para ver la fiesta de cuando gana Sabrina
 """
 import os
@@ -59,7 +60,8 @@ def armar_disco():
     ino = n.nf.construir_bytes(n.nodo_de(plats), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True,
                                reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **(cielo or {}))),
                                            1: kart_modelo.armar, 11: kart_modelo.vacio, 17: kart_modelo.rival,
-                                           20: kart_modelo.caja, 21: kart_modelo.pocion, 22: kart_modelo.bola})
+                                           20: kart_modelo.caja, 21: kart_modelo.pocion, 22: kart_modelo.bola,
+                                           18: kart_modelo.reloj, 23: kart_modelo.llama, 24: kart_modelo.cristal})
     disco.parchar({traducir.EXE: open(EXE, "rb").read(), "GRAPHICS\\HUB\\H1W.INO": ino}, PISTA)
     disco.cue_mod(CUE, PISTA)
     # la musica del pueblo (pista 3) es la de la carrera: musica_kart.py, hecha con los sonidos del juego
@@ -210,6 +212,56 @@ def vuelta(ganar=False, limite=30000):
         print("atascos:", atascos)
 
 
+def objetos():
+    """Prueba sin ventana de los hechizos: los da escribiendo k_objeto en la RAM, los usa con triangulo y saca capturas
+    (notas/capturas/obj_*.png y obj_hoja.png): el rayo volando hacia Salem, el reloj sobre el, la estrella, la pocion
+    que se lleva detras y la que se deja, las llamas del turbo y el rayo de Salem que viene hacia Sabrina."""
+    from hoja import hoja
+    sim = simbolos()
+    a = lambda n: sim[n] & 0xFFFFFFFF
+    capturas = []
+
+    def foto(nombre):
+        r = os.path.join(CAP, f"obj_{nombre}.png")
+        e.captura(r)
+        capturas.append(r)
+
+    def dar(n):
+        e.eval(f"wr32({a('k_objeto')},{n}) wr32({a('k_usos')},1) wr32({a('k_ruleta')},0) return 1")
+
+    with Emu(iso=CUE, log="kart_obj.log", extra=("-fastboot",), puerto=8096) as e:
+        recorrer(e, "kart_arranque", PASOS_HASTA_EL_HUB)
+        e.pulsar("SELECT", 4, 4)
+        e.esperar(230)
+        dar(3)                                          # rayo
+        e.pulsar("TRIANGLE", 4, 6)
+        foto("1_rayo_sale")
+        e.esperar(8)
+        foto("2_rayo_vuela")
+        e.esperar(24)
+        foto("3_rayo_pega")
+        dar(6)                                          # reloj
+        e.pulsar("TRIANGLE", 4, 10)
+        foto("4_reloj")
+        dar(4)                                          # pocion en la mano
+        e.esperar(10)
+        foto("5_pocion_llevada")
+        e.pulsar("TRIANGLE", 4, 20)
+        foto("6_pocion_suelta")
+        dar(5)                                          # estrella (con llamas)
+        e.pulsar("TRIANGLE", 4, 14)
+        foto("7_estrella")
+        e.esperar(150)
+        s = leer(e, 0x8007CAF8) & 0xFFFFFFFF
+        sx, sz = leer(e, s + 0x24) // 256, leer(e, s + 0x2C) // 256
+        e.eval(f"wr32({a('k_bala_de')},2) wr32({a('k_bala_t')},120) wr32({a('k_bala_x')},{(sx + 1800) & 0xFFFFFFFF}) "
+               f"wr32({a('k_bala_z')},{sz & 0xFFFFFFFF}) return 1")
+        e.esperar(12)
+        foto("8_rayo_de_salem")
+    hoja(os.path.join(CAP, "obj_hoja.png"), 4, capturas)
+    print("capturas en notas/capturas/obj_hoja.png")
+
+
 if __name__ == "__main__":
     modo = sys.argv[1] if len(sys.argv) > 1 else "jugar"
     if modo == "armar":
@@ -222,6 +274,8 @@ if __name__ == "__main__":
         if not os.path.exists(CUE):
             armar()
         vuelta(ganar="ganar" in sys.argv)
+    elif modo == "objetos":
+        objetos()
     elif modo == "jugar":
         if not os.path.exists(CUE):
             armar()
