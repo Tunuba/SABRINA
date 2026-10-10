@@ -1210,7 +1210,7 @@ normal ni la descompilacion: son C del juego compilado DENTRO de la camara (cama
   - Muestras de tono quieto en los VAB: solo E1W_043 (361.6 Hz, sin los primeros 0.06 s) y C1W_015 (493 Hz, desde 0.48 s).
   - Sonidos del juego: 2/3 hechizo, 0x20/0x12 gema, 0x31 portal, 0x21 agarrar, 0x30 menu, 7/8 quejido, 1 golpe.
 - Musica comprobada DENTRO del juego: se grabo el audio del emulador (loopback con
-  C:\Proyectos\ROBLOX\herramientasudio\grabar.py) y se comparo la envolvente con las canciones: el kart calza con
+  C:\Proyectos\ROBLOX\herramientas\audio\grabar.py) y se comparo la envolvente con las canciones: el kart calza con
   musica_kart (0.91 contra 0.43 la original) y el especial con musica_halloween (0.54 contra 0.27). La pista 3 suena.
 - Letra grande del juego para los mods: decomp/src/objetos/letra_grande.inc (g_grande: un SPRT de 32 por letra de la
   fuente D_8007CA10 en la OT del cuadro, como DibujarTexto; se puede durante la actualizacion).
