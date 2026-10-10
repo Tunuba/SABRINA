@@ -735,7 +735,8 @@ static void __attribute__((noinline)) h_portal_luna(Objeto *o, Objeto *s) {
         h_luna[2] = -2200;
         h_luna[3] = 0x500;
     }
-    h_colocar(h_luna_nodo, (s->x >> 8) + h_luna[0], h_luna[1], (s->z >> 8) + h_luna[2],
+    /* solo en el cementerio: va con Sabrina, y en la casa, el salon o la torre salia flotando dentro de los muros */
+    h_colocar(h_luna_nodo, (s->x >> 8) + h_luna[0], h_zona == 0 ? h_luna[1] : H_LEJOS, (s->z >> 8) + h_luna[2],
               func_8001BE8C(h_luna[0], h_luna[2], 0, 0), h_luna[3], h_luna[3], h_luna[3]);
 }
 
