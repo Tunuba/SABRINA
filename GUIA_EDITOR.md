@@ -68,22 +68,25 @@ Un mando tambien sirve.
 
 ### SABRINA KART (la Copa del Tiempo)
 
-`SABRINA_KART.bat` abre un modo carrera hecho como si fuera un nivel escondido del juego: Sabrina maneja como un
-kart por un circuito cerrado que pasa por las epocas del juego (la recta de Greendale con el arco de meta, Egipto,
-el Oeste con el salto del rio Sweetwater, la horquilla de la Edad de Piedra y el Vortice del tiempo). Tres vueltas
-con cronometro, mejor vuelta, turbos en el suelo y cajas de hechizo.
+`SABRINA_KART.bat` abre un modo carrera hecho como si fuera un nivel escondido del juego: Sabrina va sentada en un
+carrito (su mitad de abajo, de la cadera a los pies, se cambio por el kart) por un circuito cerrado que pasa por las
+epocas del juego: la recta de Greendale con el arco de meta, Egipto, el Oeste con el puente del rio Sweetwater, la
+horquilla de la Edad de Piedra y el Vortice del tiempo. Tres vueltas con cronometro, mejor vuelta, turbos en el
+suelo y cajas de hechizo. Setos y muros altos a los dos lados de toda la pista: no hay por donde salirse ni saltos.
+
+El kart acelera solo: **para correr basta con izquierda y derecha**. Lo demas es opcional:
 
 | Boton (teclado) | Que hace |
 |---|---|
-| X o arriba (X) | Acelerar |
-| Cuadrado o abajo (Z) | Frenar y marcha atras |
 | Izquierda / derecha | Girar |
-| Circulo o R1 (D) | Saltito; girando, derrape. Al soltar: mini turbo (azul) o super mini turbo (naranja) |
+| Cuadrado o abajo (Z) | Frenar y marcha atras |
+| Circulo o R1 (D), mantenido en una curva | Derrape; al soltar, mini turbo (azul) o super mini turbo (naranja) |
 | Triangulo o L1 (S) | Usar el hechizo: Turbo de Salem, Triple turbo o Reloj del tiempo (-3 segundos) |
 | SELECT | Empezar otra carrera |
 
-Acelerar justo cuando sale el 1 de la cuenta atras da la salida perfecta. La hierba frena; quien cae al rio
-reaparece en el ultimo punto de control. La pista la genera `scripts\mapa_kart.py`; el modo carrera es C del juego
+La musica es nueva y esta hecha solo con los sonidos del juego (`scripts\musica_kart.py`: muestras de los bancos
+VAB tocadas a otra altura, como hace la PS1), en el lugar de la musica del pueblo (la pista 3 del CD, mismo tamano).
+La pista la genera `scripts\mapa_kart.py`, el carrito `scripts\kart_modelo.py`, y el modo carrera es C del juego
 descompilado (`decomp\src\objetos\kart.inc`, compilado dentro de la camara con `SABRINA_KART`). Hace falta WSL con
 el compilador (`.\arrancar.ps1 -Taller`) para armarlo la primera vez; `python scripts\kart.py armar` lo rehace.
 

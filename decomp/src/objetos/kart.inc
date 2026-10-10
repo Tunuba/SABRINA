@@ -6,9 +6,10 @@
  * (cuenta atras, puntos de control, vueltas, tiempos, turbos y cajas de hechizo). El texto sale con la fuente de
  * depuracion del juego (ImprimirDepuracion es su FntPrint; la pantalla la vacia en cada cuadro).
  *
- * Mando: X o arriba acelera, cuadrado o abajo frena y da marcha atras, izquierda y derecha giran, circulo o R1 da
- * un saltito y, girando, derrapa (al soltarlo: mini turbo azul o naranja segun cuanto duro), triangulo o L1 usa el
- * hechizo que se lleva, SELECT empieza otra carrera. La pista sale de scripts/mapa_kart.py (kart_pista.h). */
+ * Mando: el kart acelera solo; izquierda y derecha giran y con eso basta para correr. Sin saltos. Aparte, cuadrado o
+ * abajo frena, circulo o R1 mantenido en una curva derrapa (al soltarlo: mini turbo azul o naranja segun cuanto
+ * duro), triangulo o L1 usa el hechizo que se lleva y SELECT empieza otra carrera. La pista sale de
+ * scripts/mapa_kart.py (kart_pista.h). */
 
 #include "kart_pista.h"
 
@@ -47,7 +48,7 @@ enum { K_EMPEZAR, K_CUENTA, K_CARRERA, K_META };
 enum { K_NADA, K_TURBO, K_TRIPLE, K_RELOJ };
 
 static s32 k_fase, k_cuadros, k_tiempo, k_vel, k_vuelta, k_cp, k_ultimo, k_ini_vuelta, k_mejor;
-static s32 k_derrape, k_carga, k_turbo, k_objeto, k_usos, k_aviso_t, k_cam_y, k_gas, k_en_caja;
+static s32 k_derrape, k_carga, k_turbo, k_objeto, k_usos, k_aviso_t, k_cam_y, k_cam_d, k_cam_alto, k_en_caja;
 static s16 k_rumbo, k_cam_rumbo;
 static const char *k_aviso;
 static s32 k_tiempos[K_VUELTAS];
@@ -80,6 +81,7 @@ static void __attribute__((noinline)) k_poner(Objeto *s, s32 x, s32 z, s32 rumbo
     k_rumbo = rumbo;
     k_cam_rumbo = rumbo;
     k_cam_y = s->y;
+    k_cam_d = 0;
     k_vel = 0;
     k_derrape = 0;
     k_carga = 0;
@@ -100,7 +102,6 @@ static void __attribute__((noinline)) k_empezar(Objeto *s) {
     k_objeto = K_NADA;
     k_usos = 0;
     k_aviso_t = 0;
-    k_gas = 0;
     for (i = 0; i < K_VUELTAS; i++) {
         k_tiempos[i] = 0;
     }
@@ -235,8 +236,8 @@ static void __attribute__((noinline)) k_pista(Objeto *s, s32 x, s32 z, s32 en_su
 static void __attribute__((noinline)) k_conducir(Objeto *s, u32 b, u32 nuevo, s32 en_suelo) {
     s32 giro, gas, freno, max, vuelta, rumbo, t;
 
-    gas = (b & (K_X | K_ARRIBA)) != 0;
     freno = (b & (K_CUADRADO | K_ABAJO)) != 0;
+    gas = !freno;                    /* acelera solo */
     giro = ((b & K_DERECHA) != 0) - ((b & K_IZQUIERDA) != 0);
     if (k_fase != K_CARRERA) {
         gas = 0;
@@ -262,13 +263,10 @@ static void __attribute__((noinline)) k_conducir(Objeto *s, u32 b, u32 nuevo, s3
             k_objeto = K_NADA;
         }
     }
-    /* saltito y derrape */
-    if ((nuevo & (K_CIRCULO | K_R1)) && en_suelo) {
-        s->vel_y = -0x1300;
-        if (giro != 0 && k_vel > 2400) {
-            k_derrape = giro;
-            k_carga = 0;
-        }
+    /* derrape (sin saltito) */
+    if ((b & (K_CIRCULO | K_R1)) && k_derrape == 0 && en_suelo && giro != 0 && k_vel > 2400) {
+        k_derrape = giro;
+        k_carga = 0;
     }
     if (k_derrape != 0) {
         if (!(b & (K_CIRCULO | K_R1)) || k_vel < 1600) {
@@ -352,32 +350,68 @@ static void __attribute__((noinline)) k_conducir(Objeto *s, u32 b, u32 nuevo, s3
     K_RAPIDEZ(s) = (k_vel < 0 ? -k_vel : k_vel) + 0x400;
 }
 
-/* Sabrina corre (o se queda quieta) segun la rapidez del kart; el companero la sigue con la misma. */
+/* Sabrina va sentada en el carrito (el modelo de la cadera para abajo es el kart, ver scripts/kart_modelo.py): siempre
+ * la animacion de quieta, lenta, para que el kart no se mueva con la cadera; el companero tambien quieto. */
 static void __attribute__((noinline)) k_animar(Objeto *s) {
     EstadoAnim *a = s->anim;
     u16 *t = s->animaciones;
-    s32 v = k_vel < 0 ? -k_vel : k_vel;
-    s32 quiere = v < 400 ? t[0] : t[2];
 
     D_8007C8A4 = 150;
-    if (a->animacion != quiere) {
-        a->animacion = quiere;
+    if (a->animacion != t[0]) {
+        a->animacion = t[0];
         a->_50 = 0;
-        D_8007CB70 = v < 400 ? 0 : 2;
+        D_8007CB70 = 0;
     }
-    a->_4E = v < 400 ? 0x800 : 0x800 + v / 4;
+    a->_4E = 0x400;
 }
 
-/* La camara detras del kart: el rumbo y la altura la siguen con un poco de retraso, y se aleja con la rapidez. */
+/* Si el segmento de (ax, ay, az) a (bx, by, bz) choca con el nivel (las paredes y los setos). */
+static s32 k_choca(s32 ax, s32 ay, s32 az, s32 bx, s32 by, s32 bz) {
+    s32 r, antes = D_8007CBD4;
+
+    /* la camara corre ignorando casi todos los tipos de triangulo (D_8007CBD4 = -17), entre ellos el 1 de las
+     * paredes del editor: para esta prueba no se ignora ninguno */
+    D_8007CBD4 = 0;
+    D_800C6594[0] = ax;
+    D_800C6594[1] = ay;
+    D_800C6594[2] = az;
+    D_800C65A0[0] = bx;
+    D_800C65A0[1] = by;
+    D_800C65A0[2] = bz;
+    func_8003B38C(D_800C6594, D_800C6594, D_800C65A0);
+    r = func_8003AE84() != 0;
+    D_8007CBD4 = antes;
+    return r;
+}
+
+/* La camara detras del kart: el rumbo y la altura la siguen con un poco de retraso, y se aleja con la rapidez. Si
+ * entre Sabrina y ese punto hay una pared o un seto, sube (y se acerca un poco) hasta verla por encima; la distancia
+ * y la altura cambian poco a poco para que no salte. */
 static void __attribute__((noinline)) k_camara(Objeto *o, Objeto *s) {
-    s32 d, v[3], mx, my, mz;
+    static const s16 pruebas[4][2] = {{8, 560}, {6, 760}, {5, 980}, {4, 1250}};   /* distancia en octavos, alto */
+    s32 d, v[3], mx, my, mz, i, dd, alto, x, z;
 
     k_cam_rumbo = (k_cam_rumbo + k_dif(k_rumbo, k_cam_rumbo) / 6) & 0xFFF;
     k_cam_y += (s->y - k_cam_y) >> 2;
     d = 1100 + (k_vel > 0 ? k_vel / 30 : 0);
-    o->x = s->x - ((rsin(k_cam_rumbo) * d) >> 4);
-    o->z = s->z - ((rcos(k_cam_rumbo) * d) >> 4);
-    o->y = k_cam_y - (470 << 8);
+    for (i = 0; i < 4; i++) {
+        dd = d * pruebas[i][0] / 8;
+        alto = pruebas[i][1];
+        x = s->x - ((rsin(k_cam_rumbo) * dd) >> 4);
+        z = s->z - ((rcos(k_cam_rumbo) * dd) >> 4);
+        if (!k_choca(s->x, k_cam_y - (300 << 8), s->z, x, k_cam_y - (alto << 8), z)) {
+            break;
+        }
+    }
+    if (k_cam_d == 0) {
+        k_cam_d = dd;
+        k_cam_alto = alto;
+    }
+    k_cam_d += (dd - k_cam_d) / 5;
+    k_cam_alto += (alto - k_cam_alto) / 5;
+    o->x = s->x - ((rsin(k_cam_rumbo) * k_cam_d) >> 4);
+    o->z = s->z - ((rcos(k_cam_rumbo) * k_cam_d) >> 4);
+    o->y = k_cam_y - (k_cam_alto << 8);
     mx = s->x + ((rsin(k_cam_rumbo) * 400) >> 4);
     mz = s->z + ((rcos(k_cam_rumbo) * 400) >> 4);
     my = k_cam_y - (150 << 8);
@@ -414,20 +448,10 @@ static void __attribute__((noinline)) kart_paso(Objeto *o) {
         if (k_cuadros % K_SEG == 1) {
             TocarSonido(1, 0, 0x2A, 0x7F);
         }
-        if (b & (K_X | K_ARRIBA)) {
-            k_gas++;
-        } else {
-            k_gas = 0;
-        }
         if (k_cuadros >= 3 * K_SEG) {
             k_fase = K_CARRERA;
             k_cuadros = 0;
             TocarSonido(1, 0, 0x36, 0x7F);
-            /* salida perfecta: acelerar cuando sale el 1, ni antes ni despues */
-            if (k_gas > 0 && k_gas <= K_SEG) {
-                k_turbo = K_SEG;
-                k_avisar("SALIDA PERFECTA!", K_SEG);
-            }
         }
     } else if (k_fase == K_CARRERA) {
         k_tiempo++;

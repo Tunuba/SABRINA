@@ -6,7 +6,7 @@ El modo carrera es C del juego descompilado: decomp/src/objetos/kart.inc, que se
 
 Uso: python kart.py              abre el juego en la pista (arma el disco si falta)
      python kart.py armar        vuelve a armar todo: pista (mapa_kart.py), ejecutable (WSL) y disco
-     python kart.py probar       lo arranca sin ventana, da una vuelta de prueba con el mando y saca capturas
+     python kart.py probar       lo arranca sin ventana, prueba la salida, el giro y los muros y saca capturas
 """
 import os
 import subprocess
@@ -52,15 +52,26 @@ def armar_disco():
     errores, _ = n.validar(plats)
     if errores:
         sys.exit("pista invalida: " + "; ".join(errores))
+    import kart_modelo
     ino = n.nf.construir_bytes(n.nodo_de(plats), n.CONSERVAR_PLAT, sin_objetos=True, paredes=True,
-                               reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **(cielo or {})))})
+                               reemplazos={n.INDICE_CIELO: n.nodo_cielo(dict(n.CIELO_DEFECTO, **(cielo or {}))),
+                                           1: kart_modelo.armar})
     disco.parchar({traducir.EXE: open(EXE, "rb").read(), "GRAPHICS\\HUB\\H1W.INO": ino}, PISTA)
     disco.cue_mod(CUE, PISTA)
+    # la musica del pueblo (pista 3) es la de la carrera: musica_kart.py, hecha con los sonidos del juego
+    import musica_kart
+    if not os.path.exists(musica_kart.PISTA):
+        musica_kart.escribir(musica_kart.componer())
+    texto = open(CUE, encoding="utf-8").read()
+    original = f'"{disco.NOMBRE} (Track 03).bin"'
+    assert original in texto
+    open(CUE, "w", encoding="utf-8").write(texto.replace(original, f'"{os.path.basename(musica_kart.PISTA)}"', 1))
     print("disco", CUE)
 
 
 def armar():
     subprocess.run([sys.executable, os.path.join(RAIZ, "scripts", "mapa_kart.py")], check=True)
+    subprocess.run([sys.executable, os.path.join(RAIZ, "scripts", "musica_kart.py")], check=True)
     armar_exe()
     armar_disco()
 
@@ -71,8 +82,8 @@ def leer(e, dir_, tam=4):
 
 
 def probar():
-    """Una prueba sin ventana: llega a la pista, espera la cuenta atras, acelera, gira y derrapa, y va diciendo
-    donde esta Sabrina; saca capturas en notas/capturas/kart_*.png."""
+    """Una prueba sin ventana: llega a la pista, espera la cuenta atras, deja que el kart acelere solo, gira, y va
+    diciendo donde esta Sabrina; saca capturas en notas/capturas/kart_*.png."""
     from nivel_plataformas import P_SABRINA
     with Emu(iso=CUE, log="kart.log", extra=("-fastboot",), puerto=8096) as e:
         recorrer(e, "kart_arranque", PASOS_HASTA_EL_HUB)
@@ -88,16 +99,20 @@ def probar():
         e.captura(os.path.join(CAP, "kart_1_cuenta.png"))
         e.esperar(150)
         donde("salida")
-        e.lua("boton", b="CROSS", f=180)
         e.esperar(90)
         e.captura(os.path.join(CAP, "kart_2_acelera.png"))
         e.esperar(90)
         donde("recta")
         e.captura(os.path.join(CAP, "kart_3_recta.png"))
-        e.lua("boton", b="CROSS,RIGHT", f=60)
-        e.esperar(60)
-        donde("giro")
+        e.lua("boton", b="RIGHT", f=60)
+        e.esperar(30)
         e.captura(os.path.join(CAP, "kart_4_giro.png"))
+        e.esperar(30)
+        donde("giro")
+        e.lua("boton", b="RIGHT", f=400)
+        e.esperar(400)
+        donde("contra el muro")
+        e.captura(os.path.join(CAP, "kart_5_muro.png"))
 
 
 if __name__ == "__main__":

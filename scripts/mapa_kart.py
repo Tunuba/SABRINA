@@ -5,11 +5,13 @@ pensado como si fuera un nivel escondido de A Twitch in Time: cada tramo es una 
 
 - Recta de Greendale (la salida): marmol, el arco de meta con el letrero y el primer turbo.
 - Curva y recta de Egipto: arena dorada, muros de jeroglificos, obeliscos y la fila de cajas de hechizo.
-- El Oeste: tablones, la rampa y el salto sobre el rio Sweetwater (quien no llega cae al agua y Salem lo saca).
+- El Oeste: tablones y el puente sobre el rio Sweetwater.
 - La Edad de Piedra: la horquilla de piedra que entra al centro del circuito y vuelve a salir.
 - El Vortice del tiempo: el remolino azul de la ultima recta, con otra fila de cajas y el ultimo turbo.
 
-Afuera de la pista todo es hierba un poco mas abajo (frena el kart) y un muro bajo cierra el circuito por fuera.
+Por dentro, el centro del circuito son setos macizos de hierba (450 de alto, mas de lo que Sabrina sube sola) y
+por fuera un muro igual de alto: no hay por donde salirse. Sin rampas ni saltos. Los dos puentes cruzan el rio
+entre barandas.
 La salida del juego (128, -896) queda en la recta de Greendale, antes de la linea de meta.
 
 El .h dice al codigo del kart (decomp/src/objetos/camara_g08.c, SABRINA_KART) donde estan los puntos de control
@@ -32,7 +34,7 @@ PANELES = 110
 ANCHO = 1536                     # ancho de la pista
 MEDIO = ANCHO // 2
 HIERBA_H = 96                    # la hierba queda 96 por debajo de la pista
-MURO_H = 220                     # alto del muro de fuera
+MURO_H = 450                     # alto de los muros: con menos de ~370 Sabrina se sube sola
 RIO = (8320, 8704)               # el rio Sweetwater cruza todo el mapa de norte a sur
 GRANDE = (-4864, -2560, 11904, 8832)   # lo que cubre la hierba
 
@@ -42,6 +44,7 @@ A, B, C, D = (-3072, -896), (10240, -896), (10240, 7168), (6144, 7168)
 E, F, G, H = (6144, 3584), (2048, 3584), (2048, 7168), (-3072, 7168)
 
 bloques = []
+pista = []                       # los trozos de pista (para levantar los muros de dentro)
 cp, turbos, cajas = [], [], []
 
 
@@ -52,6 +55,7 @@ def bloque(nombre, x0, z0, x1, z1, h=0, **kw):
     kw.setdefault("paso_lado", 1024)
     kw.setdefault("tex_lado", PIEDRA)
     bloques.append(n.nueva(nombre, x0, z0, x1, z1, h, **kw))
+    pista.append(bloques[-1])
 
 
 def pared(nombre, x0, z0, x1, z1, alto=MURO_H, base=0, **kw):
@@ -73,9 +77,9 @@ def punto_control(x0, z0, x1, z1, rumbo):
     cp.append((x0, z0, x1, z1, (x0 + x1) // 2, (z0 + z1) // 2, rumbo))
 
 
-# ============================================================ la hierba y el rio
-# Solo donde se puede salir de la pista (por fuera la cierra el muro): el centro del circuito partido por el rio,
-# los dos lados de la horquilla y el hueco del sur entre las curvas G y D. Nada de hierba debajo de la pista.
+# ============================================================ los setos y el rio
+# Todo lo que no es pista dentro del muro de fuera: el centro del circuito partido por el rio, los dos lados de la
+# horquilla y el hueco del sur entre las curvas G y D. Son setos macizos: sus lados son los muros de dentro.
 color_hierba = (78, 112, 64)
 for nombre, x0, z0, x1, z1 in (("hierba_centro_o", A[0] + MEDIO, A[1] + MEDIO, RIO[0], E[1] - MEDIO),
                                ("hierba_centro_e", RIO[1], A[1] + MEDIO, B[0] - MEDIO, E[1] - MEDIO),
@@ -83,10 +87,12 @@ for nombre, x0, z0, x1, z1 in (("hierba_centro_o", A[0] + MEDIO, A[1] + MEDIO, R
                                ("hierba_este_o", E[0] + MEDIO, E[1] - MEDIO, RIO[0], C[1] - MEDIO),
                                ("hierba_este_e", RIO[1], E[1] - MEDIO, B[0] - MEDIO, C[1] - MEDIO),
                                ("hierba_horquilla", F[0] + MEDIO, E[1] + MEDIO, E[0] - MEDIO, C[1] + MEDIO)):
-    bloques.append(n.nueva(nombre, x0, z0, x1, z1, HIERBA_H, color=color_hierba, tex_tapa=HIERBA, tex_lado=PIEDRA,
-                           prof=300, paso=512, paso_lado=1024))
+    pared(nombre, x0, z0, x1, z1, color=color_hierba, tex_tapa=HIERBA, tex_lado=VALLA)
 bloques.append(n.nueva("rio", RIO[0], A[1] - MEDIO, RIO[1], C[1] + MEDIO, 900, color=(70, 110, 140), tex_tapa=AGUA,
                        tex_lado=PIEDRA, prof=200, paso=512, paso_lado=1024, pared=True))
+# barandas de los puentes del lado del rio que no tiene seto
+for nombre, z0 in (("baranda_n", A[1] + MEDIO), ("baranda_s", C[1] - MEDIO - 256)):
+    pared(nombre, RIO[0], z0, RIO[1], z0 + 256, color=(120, 100, 80), tex_tapa=TABLONES, tex_lado=TABLONES, extra=900)
 
 # ============================================================ recta de Greendale (la salida)
 GREEN = dict(color=(150, 150, 170), tex_tapa=MARMOL)
@@ -118,16 +124,14 @@ for i, z in enumerate((-256, 1792, 3840, 5888)):
     pared(f"obelisco{i}", 11392, z, 11648, z + 256, alto=1400, color=(180, 160, 110), tex_tapa=ORO,
           tex_lado=JEROGLIFOS, paso_lado=512)
 
-# ============================================================ el Oeste: curva C, rampa y salto del rio
-OESTE = dict(color=(140, 110, 85), tex_tapa=TABLONES, tex_lado=TABLONES)
+# ============================================================ el Oeste: curva C y el puente del rio
+OESTE = dict(color=(140, 110, 85), tex_tapa=TABLONES, tex_lado=VALLA)
 bloque("curva_c", *esquina(C), **OESTE)
-bloque("rampa", RIO[1], C[1] - MEDIO, C[0] - MEDIO, C[1] + MEDIO, -256, h2=0, eje="x", **OESTE)
+bloque("oeste", RIO[1], C[1] - MEDIO, C[0] - MEDIO, C[1] + MEDIO, **OESTE)
+bloque("puente_oeste", RIO[0], C[1] - MEDIO, RIO[1], C[1] + MEDIO, color=(120, 100, 80), tex_tapa=TABLONES,
+       tex_lado=TABLONES)
 bloque("llegada", D[0] + MEDIO, C[1] - MEDIO, RIO[0], C[1] + MEDIO, **OESTE)
 punto_control(7168, C[1] - MEDIO, 7680, C[1] + MEDIO, 0xC00)           # 2
-# vallas del Oeste a los lados de la llegada (por dentro, sobre la hierba)
-for i, x in enumerate((6912, 7680)):
-    pared(f"valla{i}", x, C[1] - MEDIO - 384, x + 512, C[1] - MEDIO - 128, alto=180, color=(110, 150, 90),
-          tex_tapa=TABLONES, tex_lado=VALLA, paso_lado=512)
 
 # ============================================================ Edad de Piedra: la horquilla D-E-F-G
 PIEDRA_K = dict(color=(135, 128, 118), tex_tapa=PIEDRA3, tex_lado=PIEDRA)
